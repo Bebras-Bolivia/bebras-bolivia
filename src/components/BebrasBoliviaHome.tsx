@@ -64,7 +64,7 @@ const faqs = [
 
 export default function BebrasBoliviaHome() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white text-foreground">
+    <div className="relative min-h-screen overflow-hidden bg-primary text-foreground">
       <ParticlesBackground />
       <div className="relative z-10">
         <BebrasHeader />

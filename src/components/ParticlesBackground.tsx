@@ -19,15 +19,15 @@ export function ParticlesBackground() {
       background: { color: "transparent" },
       detectRetina: true,
       particles: {
-        number: { value: 30, density: { enable: true, width: 1200, height: 800 } },
-        color: { value: ["#d62828", "#f4b400", "#2d6a4f"] },
-        opacity: { value: 0.15 },
-        size: { value: { min: 1, max: 3 } },
+        number: { value: 42, density: { enable: true, width: 1200, height: 800 } },
+        color: { value: "#ffffff" },
+        opacity: { value: 0.55 },
+        size: { value: { min: 1, max: 3.5 } },
         links: {
           enable: true,
           distance: 150,
-          color: "#9ca3af",
-          opacity: 0.12,
+          color: "#ffffff",
+          opacity: 0.28,
           width: 1,
         },
         move: {
@@ -46,7 +46,7 @@ export function ParticlesBackground() {
         modes: {
           grab: {
             distance: 140,
-            links: { opacity: 0.2 },
+            links: { opacity: 0.4, color: "#ffffff" },
           },
         },
       },
@@ -57,7 +57,7 @@ export function ParticlesBackground() {
   if (!ready) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 -z-0">
+    <div className="pointer-events-none absolute inset-0 z-0">
       <Particles id="bebras-particles" options={options} className="h-full w-full" />
     </div>
   );
