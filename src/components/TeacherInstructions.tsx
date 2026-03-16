@@ -22,7 +22,7 @@ interface Props {
 
 export default function TeacherInstructions({ sectionTag, heading, subtitle, tabs }: Props) {
   return (
-    <section className="bg-muted/30 py-20 lg:py-24">
+    <section className="bg-muted py-20 lg:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <p className="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3 text-center">
           {sectionTag}

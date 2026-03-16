@@ -46,7 +46,7 @@ export default function NewsCarousel({ slides }: Props) {
   }, [api]);
 
   return (
-    <section className="relative border-y border-border bg-card">
+    <section className="relative border-y border-border bg-card shadow-sm">
       {/* Accent top line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 

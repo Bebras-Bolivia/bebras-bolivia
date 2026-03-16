@@ -26,3 +26,9 @@ pnpm-debug.log*
 # skills
 .agents/
 skills*
+
+# cli
+.playwright-cli/
+
+# assets
+screenshots/
