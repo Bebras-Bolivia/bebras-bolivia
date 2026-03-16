@@ -14,6 +14,8 @@ interface Props {
   currentPath?: string;
   noindex?: boolean;
   showNav?: boolean;
+  showHeader?: boolean;
+  showFooter?: boolean;
 }
 
 const siteUrl = Astro.site?.origin ?? siteData.siteUrl;
@@ -25,6 +27,8 @@ const {
   currentPath = Astro.url.pathname,
   noindex = false,
   showNav = true,
+  showHeader = showNav,
+  showFooter = showNav,
 } = Astro.props;
 
 const fullTitle = title === "Inicio" ? siteData.siteName : `${title} | ${siteData.siteName}`;
@@ -79,11 +83,11 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
     </a>
 
     <div class="relative z-10 flex flex-col min-h-screen">
-      {showNav && <BebrasHeader currentPath={currentPath} client:load transition:persist />}
+      {showHeader && <BebrasHeader currentPath={currentPath} client:load transition:persist />}
       <main id="main-content" class="flex-1">
         <slot />
       </main>
-      {showNav && <Footer />}
+      {showFooter && <Footer blendWithHero={currentPath === "/"} />}
     </div>
 
     <script>

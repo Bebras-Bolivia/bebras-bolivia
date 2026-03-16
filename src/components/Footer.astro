@@ -1,13 +1,26 @@
 ---
 import navData from "@/data/navigation.json";
 import siteData from "@/data/site.json";
+import castorCircle from "@/assets/castor-circle.png";
 
 const currentYear = new Date().getFullYear();
+const { blendWithHero = false } = Astro.props;
 
 const { brand, footerColumns, socialLinks, internationalLinks } = navData;
+const socialIconMap: Record<string, string> = {
+  facebook:
+    '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />',
+  instagram:
+    '<rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37a4 4 0 1 1-7.75 1.26 4 4 0 0 1 7.75-1.26z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />',
+  email:
+    '<rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />',
+};
 ---
 
-<footer class="relative border-t border-border bg-card">
+<footer class:list={[
+  "relative border-t",
+  blendWithHero ? "border-white/20 bg-primary/95 text-primary-foreground" : "border-border bg-card",
+]}>
   <!-- Top accent gradient line -->
   <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
@@ -18,20 +31,20 @@ const { brand, footerColumns, socialLinks, internationalLinks } = navData;
       <div class="sm:col-span-2 lg:col-span-1">
         <a href={brand.href} class="flex items-center gap-3 group">
           <img
-            src="/images/logo-placeholder.svg"
+            src={castorCircle.src}
             alt={`${brand.name} ${brand.suffix}`}
-            class="h-8 w-auto"
+            class="size-9 rounded-full object-cover ring-1 ring-black/10"
           />
           <div class="flex flex-col">
-            <span class="text-base font-bold tracking-tight text-foreground leading-tight">
+            <span class:list={["text-base font-bold tracking-tight leading-tight", blendWithHero ? "text-primary-foreground" : "text-foreground"]}>
               {brand.name}
             </span>
-            <span class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium leading-tight">
+            <span class:list={["text-[10px] uppercase tracking-[0.2em] font-medium leading-tight", blendWithHero ? "text-primary-foreground/70" : "text-muted-foreground"]}>
               {brand.suffix}
             </span>
           </div>
         </a>
-        <p class="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
+        <p class:list={["mt-4 text-sm leading-relaxed max-w-xs", blendWithHero ? "text-primary-foreground/80" : "text-muted-foreground"]}>
           {siteData.brandDescription}
         </p>
         <!-- Social icons -->
@@ -42,9 +55,25 @@ const { brand, footerColumns, socialLinks, internationalLinks } = navData;
               aria-label={link.label}
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center justify-center size-9 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary/30 hover:-translate-y-px transition-all duration-200"
+              class:list={[
+                "inline-flex items-center justify-center size-9 rounded-lg hover:-translate-y-px transition-all duration-200",
+                blendWithHero
+                  ? "border border-white/30 text-primary-foreground/80 hover:text-primary-foreground hover:border-white/60"
+                  : "border border-border text-muted-foreground hover:text-primary hover:border-primary/30",
+              ]}
             >
-              <span class="text-xs font-semibold">{link.icon === "facebook" ? "Fb" : link.icon === "instagram" ? "Ig" : "✉"}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={socialIconMap[link.icon] ?? socialIconMap.email}
+              />
             </a>
           ))}
         </div>
@@ -53,13 +82,13 @@ const { brand, footerColumns, socialLinks, internationalLinks } = navData;
       <!-- Dynamic footer columns -->
       {footerColumns.map((column) => (
         <div>
-          <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-foreground mb-4">{column.title}</h3>
+          <h3 class:list={["text-xs uppercase tracking-[0.2em] font-bold mb-4", blendWithHero ? "text-primary-foreground" : "text-foreground"]}>{column.title}</h3>
           <ul class="space-y-2.5">
             {column.links.map((link) => (
               <li>
                 <a
                   href={link.href}
-                  class="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
+                  class:list={["text-sm transition-colors duration-200", blendWithHero ? "text-primary-foreground/80 hover:text-primary-foreground" : "text-muted-foreground hover:text-primary"]}
                 >
                   {link.label}
                 </a>
@@ -71,7 +100,7 @@ const { brand, footerColumns, socialLinks, internationalLinks } = navData;
 
       <!-- International -->
       <div>
-        <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-foreground mb-4">Comunidad</h3>
+        <h3 class:list={["text-xs uppercase tracking-[0.2em] font-bold mb-4", blendWithHero ? "text-primary-foreground" : "text-foreground"]}>Comunidad</h3>
         <ul class="space-y-2.5">
           {internationalLinks.map((link) => (
             <li>
@@ -79,7 +108,7 @@ const { brand, footerColumns, socialLinks, internationalLinks } = navData;
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
+                class:list={["text-sm transition-colors duration-200", blendWithHero ? "text-primary-foreground/80 hover:text-primary-foreground" : "text-muted-foreground hover:text-primary"]}
               >
                 {link.label}
               </a>
@@ -90,17 +119,17 @@ const { brand, footerColumns, socialLinks, internationalLinks } = navData;
     </div>
 
     <!-- Bottom bar -->
-    <div class="border-t border-border py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <p class="text-xs text-muted-foreground">
+    <div class:list={["py-6 flex flex-col sm:flex-row items-center justify-between gap-3", blendWithHero ? "border-t border-white/20" : "border-t border-border"]}>
+      <p class:list={["text-xs", blendWithHero ? "text-primary-foreground/70" : "text-muted-foreground"]}>
         &copy; {currentYear} {siteData.copyrightText}
       </p>
-      <p class="text-xs text-muted-foreground">
+      <p class:list={["text-xs", blendWithHero ? "text-primary-foreground/70" : "text-muted-foreground"]}>
         {siteData.trademarkNote} &mdash;
         <a
           href={siteData.trademarkUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:text-primary transition-colors underline underline-offset-2"
+          class:list={["transition-colors underline underline-offset-2", blendWithHero ? "hover:text-primary-foreground" : "hover:text-primary"]}
         >
           bebras.org
         </a>
