@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60" fill="none">
+  <rect width="200" height="60" rx="8" fill="#FEF2F2"/>
+  <circle cx="30" cy="30" r="16" fill="#DC2626" opacity="0.15"/>
+  <text x="56" y="35" font-family="system-ui,sans-serif" font-size="16" font-weight="700" fill="#DC2626">Bebras Bolivia</text>
+</svg>

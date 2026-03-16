@@ -1,0 +1,144 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AgeCategories from "@/components/AgeCategories.astro";
+import ScoringTable from "@/components/ScoringTable.astro";
+import data from "@/data/estudiantes.json";
+
+const header = data.header;
+const sections = data.sections;
+const participacion = sections.find((s) => s.id === "participacion")!;
+const desafio = sections.find((s) => s.id === "desafio")!;
+const habilidades = sections.find((s) => s.id === "habilidades")!;
+const formato = sections.find((s) => s.id === "formato")!;
+const certificados = sections.find((s) => s.id === "certificados")!;
+---
+
+<Layout title={data.pageTitle} description={data.pageDescription}>
+  <!-- Page header -->
+  <section class="relative bg-background py-20 lg:py-24 grain-overlay">
+    <div class="absolute inset-0 bg-dot-pattern opacity-30" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-4">{header.tag}</p>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+        Informacion para <span class="text-primary">{header.headingHighlight}</span>
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
+        {header.subtitle}
+      </p>
+    </div>
+  </section>
+
+  <!-- How to participate -->
+  <section class="bg-muted py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{participacion.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-6 tracking-tight">{participacion.heading}</h2>
+      </div>
+      <div data-animate class="space-y-4 text-muted-foreground leading-relaxed">
+        {participacion.content?.map((p: string) => <p>{p}</p>)}
+        {participacion.link && (
+          <p>
+            <a href={participacion.link.href} class="text-primary hover:text-primary/80 underline underline-offset-2 font-medium">{participacion.link.label}</a>
+          </p>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- What is the Bebras Challenge -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{desafio.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-6 tracking-tight">{desafio.heading}</h2>
+      </div>
+      <div data-animate class="space-y-4 text-muted-foreground leading-relaxed">
+        {desafio.content?.map((p: string) => <p>{p}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- What is Computational Thinking -->
+  <section class="bg-muted py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{habilidades.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-6 tracking-tight">{habilidades.heading}</h2>
+      </div>
+      <div data-animate class="space-y-4 text-muted-foreground leading-relaxed">
+        <p>{habilidades.intro}</p>
+        <ul class="space-y-4 ml-1">
+          {habilidades.skills?.map((item: { title: string; desc: string }) => (
+            <li class="flex items-start gap-3">
+              <span class="text-primary mt-1 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              <span><strong class="text-foreground">{item.title}</strong> {item.desc}</span>
+            </li>
+          ))}
+        </ul>
+        <p>{habilidades.outro}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What does the challenge involve -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{formato.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-8 tracking-tight">{formato.heading}</h2>
+      </div>
+      <div data-animate class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        {formato.stats?.map((stat: { value: string; label: string }) => (
+          <div class="card-accent-left rounded-xl border border-border bg-card p-6 text-center shadow-sm">
+            <p class="font-mono text-3xl font-bold text-primary">{stat.value}</p>
+            <p class="text-xs text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+      <div data-animate class="space-y-4 text-muted-foreground leading-relaxed">
+        {formato.content?.map((p: string) => <p>{p}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Age Categories -->
+  <AgeCategories />
+
+  <!-- Scoring Table -->
+  <ScoringTable />
+
+  <!-- Certificates -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{certificados.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-8 tracking-tight">{certificados.heading}</h2>
+      </div>
+      <div data-animate class="rounded-xl border border-border bg-card p-8 shadow-sm card-accent-left text-left">
+        <div class="flex items-start gap-5">
+          <div class="flex items-center justify-center size-14 rounded-xl bg-primary/10 text-primary shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </div>
+          <p class="text-muted-foreground leading-relaxed">
+            {certificados.content?.[0]}
+          </p>
+        </div>
+      </div>
+
+      {certificados.cta && (
+        <div class="mt-12">
+          <a
+            href={certificados.cta.href}
+            class="group inline-flex items-center justify-center rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+          >
+            {certificados.cta.label}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>

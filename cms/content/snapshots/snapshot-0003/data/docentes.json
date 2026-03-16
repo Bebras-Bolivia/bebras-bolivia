@@ -1,0 +1,50 @@
+{
+  "pageTitle": "Docentes",
+  "pageDescription": "Informacion para docentes y coordinadores escolares sobre como inscribir estudiantes en el Desafio Bebras Bolivia.",
+  "header": {
+    "tag": "Para docentes",
+    "heading": "Informacion para Docentes",
+    "headingHighlight": "Docentes",
+    "subtitle": "Guia completa para coordinadores escolares que desean inscribir a sus estudiantes en el Desafio Bebras."
+  },
+  "sections": [
+    {
+      "id": "registro",
+      "tag": "Registro",
+      "heading": "Como inscriben a sus estudiantes?",
+      "intro": "El proceso de inscripcion es simple y gratuito. Un docente o representante de la escuela actua como coordinador y se encarga de registrar a los estudiantes.",
+      "steps": [
+        { "num": "1", "title": "Registro del coordinador", "desc": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela." },
+        { "num": "2", "title": "Inscripcion de estudiantes", "desc": "Agregar a los estudiantes organizados por categorias de edad (Kits a Seniors)." },
+        { "num": "3", "title": "Dia del desafio", "desc": "Supervisar la sesion en la escuela durante los 45 minutos del desafio." }
+      ]
+    },
+    {
+      "id": "requisitos",
+      "tag": "Requisitos",
+      "heading": "Que necesita la escuela?",
+      "requirements": [
+        { "icon": "monitor", "title": "Computadoras con navegador web", "desc": "Chrome, Firefox, Edge o Safari actualizados." },
+        { "icon": "wifi", "title": "Conexion a internet", "desc": "Estable durante los 45 minutos del desafio." },
+        { "icon": "user", "title": "Un coordinador registrado", "desc": "Docente o representante que supervise la sesion." },
+        { "icon": "clock", "title": "45 minutos de clase", "desc": "Un bloque horario durante la semana del desafio." }
+      ]
+    },
+    {
+      "id": "alcance",
+      "tag": "Alcance",
+      "heading": "Quien deberia participar?",
+      "content": [
+        "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel academico. El desafio esta disenado para ser accesible y no requiere conocimientos previos de informatica o programacion.",
+        "La participacion masiva tiene ventajas: permite comparar resultados a nivel escolar y motivar a mas estudiantes a desarrollar habilidades de pensamiento computacional."
+      ],
+      "tip": "Tip: No se necesita una clase de informatica dedicada. El desafio puede realizarse en cualquier hora de clase con acceso a computadoras."
+    },
+    {
+      "id": "cta",
+      "heading": "Listo para inscribir a tu escuela?",
+      "content": ["El registro es rapido, gratuito y te permite inscribir a todos los estudiantes que desees."],
+      "cta": { "label": "Registrarse como Coordinador", "href": "/registro" }
+    }
+  ]
+}
