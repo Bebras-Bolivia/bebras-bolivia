@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import castorCircle from "../assets/castor-circle.png";
 import BebrasHeader from "@/components/BebrasHeader";
 import { ParticlesBackground } from "@/components/ParticlesBackground";
 import Footer from "@/components/Footer.astro";
@@ -37,13 +38,11 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href={castorCircle.src} />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={fullTitle} />
@@ -52,13 +51,11 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
     <meta property="og:site_name" content={siteData.siteName} />
     <meta property="og:locale" content={siteData.locale} />
 
-    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <!-- Structured data (Organization) -->
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -69,13 +66,11 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
     })} />
 
     <title>{fullTitle}</title>
-
     <ClientRouter />
   </head>
   <body class="relative min-h-screen flex flex-col bg-primary text-foreground antialiased overflow-x-hidden">
     <ParticlesBackground client:load transition:persist />
 
-    <!-- Skip to content (accessibility) -->
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
@@ -91,7 +86,6 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
       {showNav && <Footer />}
     </div>
 
-    <!-- Scroll reveal observer -->
     <script>
       function initScrollReveal() {
         const observer = new IntersectionObserver(
