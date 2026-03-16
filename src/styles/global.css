@@ -131,3 +131,75 @@
     @apply font-sans;
     }
 }
+
+@layer utilities {
+  @keyframes beaver-entry {
+    from {
+      transform: translateX(64px) scale(0.92) rotate(-3deg);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes beaver-float {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes beaver-sway {
+    0% {
+      rotate: -0.8deg;
+      scale: 1;
+    }
+    50% {
+      rotate: 0.9deg;
+      scale: 1.012;
+    }
+    100% {
+      rotate: -0.8deg;
+      scale: 1;
+    }
+  }
+
+  @keyframes avatar-float {
+    from {
+      transform: translate(-50%, -50%) translate(var(--x), var(--y));
+    }
+    to {
+      transform: translate(-50%, -50%) translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy)));
+    }
+  }
+
+  .beaver-entry {
+    animation: beaver-entry 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+  }
+
+  .beaver-float {
+    animation: beaver-float 2.1s ease-in-out infinite alternate;
+  }
+
+  .beaver-idle {
+    animation:
+      beaver-float 2.1s ease-in-out infinite alternate,
+      beaver-sway 4.6s ease-in-out infinite;
+    transform-origin: 52% 65%;
+    will-change: transform;
+  }
+
+  .avatar-float {
+    animation: avatar-float var(--dur) ease-in-out infinite alternate;
+    animation-delay: var(--delay, 0s);
+    will-change: transform;
+  }
+
+  .avatar-float:hover {
+    animation-play-state: paused;
+  }
+}

@@ -1,73 +1,76 @@
-import { ArrowRight, CalendarDays, MapPin, School, Users } from "lucide-react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ArrowRight } from "lucide-react";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BebrasBeaverShowcase } from "@/components/BebrasBeaverShowcase";
 import { BebrasHeader } from "@/components/BebrasHeader";
 import { ParticlesBackground } from "@/components/ParticlesBackground";
 
-const categories = [
-  {
-    name: "Castores",
-    ages: "8 a 10 años",
-    level: "Primaria inicial",
-    description: "Retos visuales para introducir lógica, patrones y secuencias.",
-  },
-  {
-    name: "Benjamin",
-    ages: "10 a 12 años",
-    level: "Primaria alta",
-    description: "Problemas cortos que fortalecen razonamiento y descomposición.",
-  },
-  {
-    name: "Cadet",
-    ages: "12 a 14 años",
-    level: "Secundaria inicial",
-    description: "Desafíos con tablas, decisiones y conceptos básicos de algoritmos.",
-  },
-  {
-    name: "Junior",
-    ages: "14 a 16 años",
-    level: "Secundaria media",
-    description: "Retos intermedios sobre eficiencia, datos y estrategia de solución.",
-  },
-  {
-    name: "Senior",
-    ages: "16 a 19 años",
-    level: "Secundaria superior",
-    description: "Problemas avanzados de pensamiento computacional aplicado.",
-  },
-];
-
-const timeline = [
-  { month: "Mayo - Junio", title: "Registro de colegios", detail: "Inscripción de unidades educativas y docentes coordinadores." },
-  { month: "Agosto", title: "Capacitación docente", detail: "Sesiones breves para formato de prueba y acompañamiento pedagógico." },
-  { month: "Septiembre", title: "Semana Bebras Bolivia", detail: "Aplicación del desafío en línea o presencial por categorías." },
-  { month: "Octubre", title: "Resultados y reconocimiento", detail: "Publicación de resultados y entrega de certificados digitales." },
-];
-
-const faqs = [
-  {
-    question: "¿Bebras Bolivia requiere conocimientos de programación?",
-    answer: "No. El desafío evalúa pensamiento computacional, lógica y resolución de problemas, sin necesidad de escribir código.",
-  },
-  {
-    question: "¿Cómo se aplica en colegios con conectividad limitada?",
-    answer: "Se puede coordinar modalidad mixta: versión en línea para sedes con internet y cuadernillos supervisados para zonas con baja conectividad.",
-  },
-  {
-    question: "¿Quiénes pueden participar?",
-    answer: "Estudiantes de primaria y secundaria de colegios públicos, privados y de convenio en todo el país.",
-  },
-];
-
 export default function BebrasBoliviaHome() {
+  const heroTextRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (heroTextRef.current) {
+        gsap.fromTo(
+          heroTextRef.current.children,
+          { y: 28, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            stagger: 0.12,
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-primary text-foreground">
+    <div className="relative min-h-screen overflow-hidden bg-primary text-primary-foreground">
       <ParticlesBackground />
       <div className="relative z-10">
         <BebrasHeader />
+        <main className="mx-auto max-w-9/12 px-4 pb-16 md:px-6">
+          <section
+            id="inicio"
+            className="grid min-h-[82vh] items-center gap-10 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4"
+          >
+            <div ref={heroTextRef} className="space-y-5 text-center lg:text-left">
+              <p className="text-4xl font-black tracking-tight text-primary-foreground sm:text-5xl">
+                Bienvenido a
+              </p>
+              <h1
+                className="text-5xl leading-tight text-primary-foreground sm:text-7xl"
+                style={{ fontFamily: "'Pacifico', cursive" }}
+              >
+                Bebras Bolivia 2026
+              </h1>
+              <p className="text-balance text-2xl leading-snug text-primary-foreground sm:text-4xl">
+                El desafío internacional de pensamiento computacional para estudiantes de todo el país.
+              </p>
+              <p className="text-balance text-2xl leading-snug text-primary-foreground/80 sm:text-4xl">
+                Inscribe a tu unidad educativa y participa junto a más de 70 países.
+              </p>
+              <div className="pt-3">
+                <Button
+                  className="h-14 rounded-2xl bg-card px-10 text-base font-extrabold text-card-foreground transition hover:bg-card/90"
+                  asChild
+                >
+                  <a href="#inicio">
+                    Regístrate aquí <ArrowRight className="ml-2 size-5" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            <BebrasBeaverShowcase />
+          </section>
+        </main>
       </div>
     </div>
   );
