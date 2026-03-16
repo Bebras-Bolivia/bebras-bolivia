@@ -55,7 +55,7 @@ const sectionToNavId: Record<SectionId, string> = {
   contacto: "contacto",
 };
 
-export function BebrasHeader() {
+export default function BebrasHeader() {
   const [activeNavId, setActiveNavId] = useState("inicio");
   const castorRef = useRef<HTMLImageElement>(null);
   const uniqueSectionIds = useMemo(

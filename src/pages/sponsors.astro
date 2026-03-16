@@ -1,0 +1,107 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import data from "@/data/sponsors.json";
+
+const header = data.header;
+const anchor = data.anchor;
+const sponsorsSection = data.sponsorsSection;
+const sponsors = data.sponsors;
+const cta = data.cta;
+---
+
+<Layout title={data.pageTitle} description={data.pageDescription}>
+  <!-- Page header -->
+  <section class="relative bg-background py-20 lg:py-24 grain-overlay">
+    <div class="absolute inset-0 bg-dot-pattern opacity-30" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-4">{header.tag}</p>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+        Nuestros <span class="text-primary">{header.headingHighlight}</span>
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
+        {header.subtitle}
+      </p>
+    </div>
+  </section>
+
+  <!-- Main sponsor / anchor institution -->
+  <section class="bg-muted py-20 lg:py-24">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div data-animate class="mb-16">
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3 text-center">{anchor.tag}</p>
+        <div class="rule-line mx-auto max-w-xs mb-8"></div>
+        <div class="flex justify-center">
+          <div class="card-accent-left rounded-xl border border-border bg-card p-8 shadow-sm max-w-lg w-full">
+            <div class="flex items-start gap-6">
+              <div class="flex items-center justify-center size-16 shrink-0 rounded-xl bg-primary/10">
+                <img
+                  src="/images/sponsors/sponsor-placeholder.svg"
+                  alt={anchor.name}
+                  class="h-10 w-auto opacity-80"
+                />
+              </div>
+              <div>
+                <span class="font-mono text-xs text-primary/60 mb-1 block">00</span>
+                <h3 class="text-lg font-bold text-foreground tracking-tight">{anchor.name}</h3>
+                <p class="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  {anchor.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other sponsors -->
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3 text-center">{sponsorsSection.tag}</p>
+        <div class="rule-line mx-auto max-w-xs mb-8"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sponsors.map((sponsor, i) => (
+            <div class="card-accent-left rounded-xl border border-border bg-card p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="flex items-center justify-center size-12 shrink-0 rounded-lg bg-primary/10">
+                  <img
+                    src="/images/sponsors/sponsor-placeholder.svg"
+                    alt={sponsor.name}
+                    class="h-7 w-auto opacity-70"
+                  />
+                </div>
+                <span class="font-mono text-xs text-primary/60">{String(i + 1).padStart(2, "0")}</span>
+              </div>
+              <h3 class="text-base font-bold text-foreground tracking-tight">{sponsor.name}</h3>
+              <p class="text-sm text-muted-foreground mt-2 leading-relaxed">
+                {sponsor.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Become a sponsor CTA -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center" data-animate>
+      <div class="relative rounded-xl border border-primary/20 bg-primary/5 p-10 lg:p-12 overflow-hidden">
+        <div class="absolute inset-0 bg-dot-pattern opacity-15" aria-hidden="true"></div>
+        <div class="relative">
+          <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-4">{cta.tag}</p>
+          <h2 class="text-2xl font-bold text-foreground mb-4 tracking-tight">
+            {cta.heading}
+          </h2>
+          <p class="text-muted-foreground mb-8 max-w-lg mx-auto">
+            {cta.paragraph}
+          </p>
+          <a
+            href={cta.buttonHref}
+            class="group inline-flex items-center justify-center rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+          >
+            {cta.buttonLabel}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="300" viewBox="0 0 240 300" fill="none">
+  <rect width="240" height="300" rx="24" fill="#FEF2F2"/>
+  <!-- Body -->
+  <ellipse cx="120" cy="200" rx="60" ry="70" fill="#DC2626" opacity="0.2"/>
+  <!-- Head -->
+  <circle cx="120" cy="110" r="45" fill="#DC2626" opacity="0.25"/>
+  <!-- Eyes -->
+  <circle cx="105" cy="105" r="8" fill="#1C1917"/>
+  <circle cx="135" cy="105" r="8" fill="#1C1917"/>
+  <circle cx="107" cy="103" r="3" fill="white"/>
+  <circle cx="137" cy="103" r="3" fill="white"/>
+  <!-- Smile -->
+  <path d="M105 125 Q120 140 135 125" stroke="#1C1917" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Label -->
+  <text x="120" y="285" font-family="system-ui,sans-serif" font-size="13" fill="#A8A29E" text-anchor="middle">Mascota Bebras</text>
+</svg>

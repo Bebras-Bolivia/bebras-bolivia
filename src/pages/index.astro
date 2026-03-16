@@ -1,11 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
+import BebrasHeader from "../components/BebrasHeader";
 ---
 
 <Layout
 	title="Bebras Bolivia | Desafío Internacional de Pensamiento Computacional"
 	description="Sitio oficial de Bebras Bolivia. Competencia de pensamiento computacional para estudiantes de primaria y secundaria."
+	showNav={false}
 >
-	<BebrasBoliviaHome client:load />
+	<div class="min-h-screen">
+		<BebrasHeader currentPath="/" client:load />
+	</div>
 </Layout>

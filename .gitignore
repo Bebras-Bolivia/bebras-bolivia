@@ -1,6 +1,6 @@
 # build output
 dist/
-
+.agents/
 # generated types
 .astro/
 
@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# skills
+.agents/
+skills*
+
+# cli
+.playwright-cli/
+
+# assets
+screenshots/

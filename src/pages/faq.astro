@@ -1,0 +1,45 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import FAQAccordion from "@/components/FAQAccordion";
+import faqData from "@/data/faq.json";
+---
+
+<Layout title="Preguntas Frecuentes" description="Preguntas frecuentes sobre el Desafio Bebras Bolivia -- informacion para estudiantes, docentes y coordinadores.">
+  <!-- Page header -->
+  <section class="relative bg-background py-20 lg:py-24 grain-overlay">
+    <div class="absolute inset-0 bg-dot-pattern opacity-30" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-4">Ayuda</p>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+        Preguntas <span class="text-primary">Frecuentes</span>
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
+        Encuentra respuestas a las preguntas mas comunes sobre el Desafio Bebras Bolivia.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion -->
+  <section class="bg-muted pb-16 lg:pb-20">
+    <FAQAccordion categories={faqData.categories} client:visible />
+  </section>
+
+  <!-- Still have questions CTA -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-foreground mb-4 tracking-tight">
+        No encontraste lo que buscabas?
+      </h2>
+      <p class="text-muted-foreground mb-8">
+        Contactanos y con gusto resolveremos tus dudas.
+      </p>
+      <a
+        href="/contacto"
+        class="group inline-flex items-center justify-center rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+      >
+        Ir a Contacto
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+</Layout>

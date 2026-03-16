@@ -1,0 +1,133 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import TeacherInstructions from "@/components/TeacherInstructions";
+import data from "@/data/docentes.json";
+import teacherData from "@/data/teacher-instructions.json";
+
+const header = data.header;
+const sections = data.sections;
+const registro = sections.find((s) => s.id === "registro")!;
+const requisitos = sections.find((s) => s.id === "requisitos")!;
+const alcance = sections.find((s) => s.id === "alcance")!;
+const cta = sections.find((s) => s.id === "cta")!;
+
+// Icon map for requirements
+const iconMap: Record<string, string> = {
+  monitor: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="8" x="5" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 18h2"/><path d="M12 18h6"/></svg>`,
+  wifi: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>`,
+  user: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  clock: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+};
+---
+
+<Layout title={data.pageTitle} description={data.pageDescription}>
+  <!-- Page header -->
+  <section class="relative bg-background py-20 lg:py-24 grain-overlay">
+    <div class="absolute inset-0 bg-dot-pattern opacity-30" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-4">{header.tag}</p>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+        Informacion para <span class="text-primary">{header.headingHighlight}</span>
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
+        {header.subtitle}
+      </p>
+    </div>
+  </section>
+
+  <!-- How to register students -->
+  <section class="bg-muted py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{registro.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-6 tracking-tight">{registro.heading}</h2>
+      </div>
+      <div data-animate class="space-y-4 text-muted-foreground leading-relaxed">
+        <p>{registro.intro}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+          {registro.steps?.map((step: { num: string; title: string; desc: string }) => (
+            <div class="card-accent-left rounded-xl border border-border bg-card p-5 shadow-sm">
+              <div class="flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary mb-3 font-mono">
+                <span class="text-sm font-bold">{step.num}</span>
+              </div>
+              <p class="text-sm font-bold text-foreground">{step.title}</p>
+              <p class="text-xs text-muted-foreground mt-1">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What does the school need -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{requisitos.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-8 tracking-tight">{requisitos.heading}</h2>
+      </div>
+      <div data-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {requisitos.requirements?.map((item: { icon: string; title: string; desc: string }) => (
+          <div class="flex items-start gap-4 rounded-xl border border-border bg-card p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="flex items-center justify-center size-10 shrink-0 rounded-lg bg-primary/10 text-primary" set:html={iconMap[item.icon] || ""}>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-foreground">{item.title}</p>
+              <p class="text-xs text-muted-foreground mt-1">{item.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Who should participate -->
+  <section class="bg-muted py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div data-animate>
+        <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{alcance.tag}</p>
+        <h2 class="text-2xl font-bold text-foreground mb-6 tracking-tight">{alcance.heading}</h2>
+      </div>
+      <div data-animate class="space-y-4 text-muted-foreground leading-relaxed">
+        {alcance.content?.map((p: string) => <p>{p}</p>)}
+        {alcance.tip && (
+          <div class="editorial-quote rounded-xl border border-primary/20 bg-primary/[0.04] p-6 mt-8">
+            <p class="text-sm text-foreground leading-relaxed not-italic">
+              <strong>{alcance.tip}</strong>
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Teacher Instructions (Tabs) -->
+  <TeacherInstructions
+    sectionTag={teacherData.sectionTag}
+    heading={teacherData.heading}
+    subtitle={teacherData.subtitle}
+    tabs={teacherData.tabs}
+    client:visible
+  />
+
+  <!-- CTA -->
+  <section class="bg-background py-20 lg:py-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-foreground mb-4 tracking-tight">
+        {cta.heading}
+      </h2>
+      <p class="text-muted-foreground mb-8 max-w-xl mx-auto">
+        {cta.content?.[0]}
+      </p>
+      {cta.cta && (
+        <a
+          href={cta.cta.href}
+          class="group inline-flex items-center justify-center rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+        >
+          {cta.cta.label}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      )}
+    </div>
+  </section>
+</Layout>

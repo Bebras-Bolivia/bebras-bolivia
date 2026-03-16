@@ -1,0 +1,94 @@
+---
+import heroData from "@/data/hero.json";
+
+const { badge, headline, subtitle, ctaPrimary, ctaSecondary, mascot, stats } = heroData;
+---
+
+<section class="relative overflow-hidden bg-background grain-overlay shadow-sm">
+  <!-- Background dot pattern -->
+  <div class="absolute inset-0 bg-dot-pattern opacity-50" aria-hidden="true"></div>
+
+  <!-- Decorative geometric accent -->
+  <div class="absolute top-0 right-0 w-1/3 h-full bg-muted -skew-x-12 translate-x-1/4 opacity-30" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-20 lg:pt-24 lg:pb-28">
+    <!-- Top editorial rule -->
+    <div class="rule-line mb-10"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <!-- Text content — takes 7 cols -->
+      <div class="lg:col-span-7">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-primary/[0.06] px-4 py-1.5 text-sm font-medium text-primary mb-8">
+          <span class="size-1.5 rounded-full bg-primary animate-pulse-soft"></span>
+          {badge}
+        </div>
+
+        <!-- Large editorial headline -->
+        <h1>
+          <span class="block text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.05]">
+            {headline.line1}
+          </span>
+          <span class="block text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-primary leading-[1.05] mt-1">
+            {headline.line2}
+          </span>
+          <span class="block font-display text-3xl sm:text-4xl lg:text-5xl text-foreground/70 mt-3 leading-tight">
+            {headline.line3}
+          </span>
+        </h1>
+
+        <!-- Subtitle with editorial left rule -->
+        <div class="mt-8 pl-5 border-l-2 border-primary/40">
+          <p class="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg">
+            {subtitle}
+          </p>
+        </div>
+
+        <!-- CTAs -->
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a
+            href={ctaPrimary.href}
+            class="group inline-flex items-center justify-center rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+          >
+            {ctaPrimary.label}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a
+            href={ctaSecondary.href}
+            class="inline-flex items-center justify-center rounded-lg border border-border bg-background px-7 py-3.5 text-sm font-semibold text-foreground hover:bg-accent hover:border-primary/20 transition-all duration-300"
+          >
+            {ctaSecondary.label}
+          </a>
+        </div>
+      </div>
+
+      <!-- Right column — mascot + stats -->
+      <div class="lg:col-span-5 flex flex-col items-center lg:items-end gap-8">
+        <!-- Mascot illustration -->
+        <div class="relative hidden lg:block">
+          <div class="absolute -inset-8 rounded-full bg-primary/[0.06] blur-3xl" aria-hidden="true"></div>
+          <div class="relative p-4">
+            <img
+              src={mascot.src}
+              alt={mascot.alt}
+              class="w-72 h-72 xl:w-80 xl:h-80 object-contain drop-shadow-sm animate-float"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats bar — full width, bottom -->
+    <div class="mt-16">
+      <div class="rule-line mb-8"></div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {stats.map((stat) => (
+          <div class="group">
+            <p class="font-mono text-3xl lg:text-4xl font-bold text-primary tracking-tight">{stat.value}</p>
+            <p class="text-sm text-muted-foreground mt-1 uppercase tracking-wider font-medium">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
