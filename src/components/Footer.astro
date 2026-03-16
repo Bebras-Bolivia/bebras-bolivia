@@ -1,0 +1,110 @@
+---
+import navData from "@/data/navigation.json";
+import siteData from "@/data/site.json";
+
+const currentYear = new Date().getFullYear();
+
+const { brand, footerColumns, socialLinks, internationalLinks } = navData;
+---
+
+<footer class="relative border-t border-border bg-card">
+  <!-- Top accent gradient line -->
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <!-- Main footer content -->
+    <div class="grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Brand -->
+      <div class="sm:col-span-2 lg:col-span-1">
+        <a href={brand.href} class="flex items-center gap-3 group">
+          <img
+            src="/images/logo-placeholder.svg"
+            alt={`${brand.name} ${brand.suffix}`}
+            class="h-8 w-auto"
+          />
+          <div class="flex flex-col">
+            <span class="text-base font-bold tracking-tight text-foreground leading-tight">
+              {brand.name}
+            </span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium leading-tight">
+              {brand.suffix}
+            </span>
+          </div>
+        </a>
+        <p class="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
+          {siteData.brandDescription}
+        </p>
+        <!-- Social icons -->
+        <div class="mt-5 flex gap-2">
+          {socialLinks.map((link) => (
+            <a
+              href={link.href}
+              aria-label={link.label}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center size-9 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary/30 hover:-translate-y-px transition-all duration-200"
+            >
+              <span class="text-xs font-semibold">{link.icon === "facebook" ? "Fb" : link.icon === "instagram" ? "Ig" : "✉"}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Dynamic footer columns -->
+      {footerColumns.map((column) => (
+        <div>
+          <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-foreground mb-4">{column.title}</h3>
+          <ul class="space-y-2.5">
+            {column.links.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <!-- International -->
+      <div>
+        <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-foreground mb-4">Comunidad</h3>
+        <ul class="space-y-2.5">
+          {internationalLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-border py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs text-muted-foreground">
+        &copy; {currentYear} {siteData.copyrightText}
+      </p>
+      <p class="text-xs text-muted-foreground">
+        {siteData.trademarkNote} &mdash;
+        <a
+          href={siteData.trademarkUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-primary transition-colors underline underline-offset-2"
+        >
+          bebras.org
+        </a>
+      </p>
+    </div>
+  </div>
+</footer>

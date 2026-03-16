@@ -1,0 +1,75 @@
+---
+import catData from "@/data/categories.json";
+
+const { sectionTag, heading, subtitle, categories } = catData;
+
+const colorMap: Record<string, { border: string; bg: string; text: string }> = {
+  emerald: { border: "border-l-emerald-500", bg: "bg-emerald-500/10", text: "text-emerald-600" },
+  amber:   { border: "border-l-amber-500",   bg: "bg-amber-500/10",   text: "text-amber-600" },
+  sky:     { border: "border-l-sky-500",     bg: "bg-sky-500/10",     text: "text-sky-600" },
+  violet:  { border: "border-l-violet-500",  bg: "bg-violet-500/10",  text: "text-violet-600" },
+  rose:    { border: "border-l-rose-500",    bg: "bg-rose-500/10",    text: "text-rose-600" },
+  orange:  { border: "border-l-orange-500",  bg: "bg-orange-500/10",  text: "text-orange-600" },
+  indigo:  { border: "border-l-indigo-500",  bg: "bg-indigo-500/10",  text: "text-indigo-600" },
+};
+---
+
+<section class="py-20 lg:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <!-- Section header -->
+    <div data-animate class="mb-14">
+      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{sectionTag}</p>
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
+          {heading}
+        </h2>
+        <p class="text-muted-foreground text-sm md:text-base max-w-md md:text-right">
+          {subtitle}
+        </p>
+      </div>
+    </div>
+
+    <div class="rule-line mb-10"></div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {categories.map((cat, i) => {
+        const colors = colorMap[cat.color] || colorMap.violet;
+        return (
+          <div
+            data-animate
+            class:list={[
+              "group rounded-xl border border-border bg-card p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 border-l-[3px]",
+              colors.border,
+            ]}
+          >
+            <div class="flex items-start gap-4">
+              <div class:list={["flex items-center justify-center size-12 rounded-xl text-2xl shrink-0", colors.bg]}>
+                {cat.emoji}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3">
+                  <h3 class="font-display text-xl text-foreground font-semibold">
+                    {cat.name}
+                  </h3>
+                  <span class="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <span class:list={[
+                  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold mt-1.5",
+                  colors.bg,
+                  colors.text,
+                ]}>
+                  {cat.age}
+                </span>
+                <p class="text-sm text-muted-foreground mt-2.5 leading-relaxed">
+                  {cat.desc}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

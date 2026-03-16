@@ -1,0 +1,39 @@
+{
+  "badge": "Inscripciones abiertas 2026",
+  "headline": {
+    "line1": "Desafio",
+    "line2": "Bebras",
+    "line3": "Bolivia"
+  },
+  "subtitle": "Promovemos el pensamiento computacional entre estudiantes de 6 a 18 anos a traves de desafios divertidos, logicos y accesibles para todos.",
+  "ctaPrimary": {
+    "label": "Participa ahora",
+    "href": "/registro"
+  },
+  "ctaSecondary": {
+    "label": "Conoce mas",
+    "href": "/estudiantes"
+  },
+  "mascot": {
+    "src": "/images/mascot-placeholder.svg",
+    "alt": "Mascota Bebras - Castor"
+  },
+  "stats": [
+    {
+      "value": "60+",
+      "label": "Paises"
+    },
+    {
+      "value": "6",
+      "label": "Categorias"
+    },
+    {
+      "value": "45",
+      "label": "Minutos"
+    },
+    {
+      "value": "100%",
+      "label": "Gratuito"
+    }
+  ]
+}

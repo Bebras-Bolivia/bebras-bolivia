@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bebras Bolivia — CMS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- ── Shell layout ──────────────────────────────────── -->
+  <div class="shell">
+
+    <!-- ── Sidebar ───────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Bebras <span>CMS</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- Dashboard -->
+        <a class="sidebar-link active" data-nav="/" href="/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+
+        <!-- Content section -->
+        <div class="sidebar-section">Contenido</div>
+        <a class="sidebar-link" data-nav="/editor/site.json" href="/editor/site.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Sitio
+        </a>
+        <a class="sidebar-link" data-nav="/editor/navigation.json" href="/editor/navigation.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          Navegacion
+        </a>
+        <a class="sidebar-link" data-nav="/editor/hero.json" href="/editor/hero.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+          Hero
+        </a>
+        <a class="sidebar-link" data-nav="/editor/about.json" href="/editor/about.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Acerca de
+        </a>
+        <a class="sidebar-link" data-nav="/editor/categories.json" href="/editor/categories.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 2,7 12,12 22,7"/><polyline points="2,17 12,22 22,17"/><polyline points="2,12 12,17 22,12"/></svg>
+          Categorias
+        </a>
+        <a class="sidebar-link" data-nav="/editor/scoring.json" href="/editor/scoring.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Puntaje
+        </a>
+        <a class="sidebar-link" data-nav="/editor/news.json" href="/editor/news.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>
+          Noticias
+        </a>
+        <a class="sidebar-link" data-nav="/editor/faq.json" href="/editor/faq.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          FAQ
+        </a>
+        <a class="sidebar-link" data-nav="/editor/teacher-instructions.json" href="/editor/teacher-instructions.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Docentes (guia)
+        </a>
+        <a class="sidebar-link" data-nav="/editor/sponsors.json" href="/editor/sponsors.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Sponsors
+        </a>
+        <a class="sidebar-link" data-nav="/editor/contact.json" href="/editor/contact.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Contacto
+        </a>
+        <a class="sidebar-link" data-nav="/editor/registro.json" href="/editor/registro.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Registro
+        </a>
+        <a class="sidebar-link" data-nav="/editor/estudiantes.json" href="/editor/estudiantes.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 3 6 3s6-1.9 6-3v-5"/></svg>
+          Estudiantes
+        </a>
+        <a class="sidebar-link" data-nav="/editor/docentes.json" href="/editor/docentes.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Docentes
+        </a>
+        <a class="sidebar-link" data-nav="/editor/blog-ui.json" href="/editor/blog-ui.json">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Blog UI
+        </a>
+
+        <!-- Blog section -->
+        <div class="sidebar-section">Blog</div>
+        <a class="sidebar-link" data-nav="/blog" href="/blog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+          Publicaciones
+        </a>
+
+        <!-- System section -->
+        <div class="sidebar-section">Sistema</div>
+        <a class="sidebar-link" data-nav="/snapshots" href="/snapshots">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          Snapshots
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebar-user">
+          <div class="avatar">A</div>
+          <div class="info">
+            <div class="name">Admin</div>
+            <div class="email">admin@bebras.bo</div>
+          </div>
+        </div>
+        <a class="sidebar-link" id="logout-btn" href="#" style="margin-top:0.25rem;color:var(--text-muted);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Cerrar sesion
+        </a>
+      </div>
+    </aside>
+
+    <!-- ── Header ────────────────────────────────────── -->
+    <header class="header">
+      <div class="flex items-center gap-sm">
+        <button class="btn btn-icon mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="header-title" id="header-title">Dashboard</div>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-success" id="header-status">En linea</span>
+      </div>
+    </header>
+
+    <!-- ── Sidebar overlay (mobile) ──────────────────── -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ── Main content ──────────────────────────────── -->
+    <main class="main" id="main-content">
+      <div class="loading-state">
+        <div class="spinner"></div> Cargando...
+      </div>
+    </main>
+  </div>
+
+  <!-- ── Scripts (order matters: api → app → modules) ── -->
+  <script src="/js/api.js"></script>
+  <script src="/js/editor.js"></script>
+  <script src="/js/blog.js"></script>
+  <script src="/js/snapshots.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

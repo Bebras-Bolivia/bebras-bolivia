@@ -1,0 +1,164 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import data from "@/data/contact.json";
+
+const header = data.header;
+const info = data.info;
+const intl = data.international;
+const form = data.form;
+
+// Icon map for contact cards
+const contactIconMap: Record<string, string> = {
+  email: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+  clipboard: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>`,
+  share: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+};
+---
+
+<Layout title={data.pageTitle} description={data.pageDescription}>
+  <!-- Page header -->
+  <section class="relative bg-background py-20 lg:py-24 grain-overlay">
+    <div class="absolute inset-0 bg-dot-pattern opacity-30" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-4">{header.tag}</p>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+        <span class="text-primary">{header.heading}</span>
+      </h1>
+      <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
+        {header.subtitle}
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact section -->
+  <section class="bg-muted/30 py-20 lg:py-24">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+        <!-- Contact info -->
+        <div data-animate>
+          <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{info.tag}</p>
+          <h2 class="text-2xl font-bold text-foreground mb-8 tracking-tight">{info.heading}</h2>
+
+          <div class="space-y-6">
+            {info.cards.map((card) => (
+              <div class="card-accent-left rounded-lg border border-border bg-card p-5 shadow-sm">
+                <div class="flex items-start gap-4">
+                  <div class="flex items-center justify-center size-10 shrink-0 rounded-lg bg-primary/10 text-primary" set:html={contactIconMap[card.icon] || ""}>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-1">{card.title}</p>
+                    {card.linkHref && card.linkLabel && (
+                      <a href={card.linkHref} class="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+                        {card.linkLabel}
+                      </a>
+                    )}
+                    {card.socialLinks && (
+                      <div class="flex gap-3 mt-0.5">
+                        {card.socialLinks.map((social, idx) => (
+                          <>
+                            {idx > 0 && <span class="text-border">|</span>}
+                            <a href={social.href} class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">{social.label}</a>
+                          </>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- International links -->
+          <div class="mt-10" data-animate>
+            <p class="text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-4">{intl.tag}</p>
+            <div class="rule-line mb-4"></div>
+            <ul class="space-y-3">
+              {intl.links.map((link, i) => (
+                <li>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <span class="font-mono text-xs text-primary/60">{String(i + 1).padStart(2, "0")}</span>
+                    <span class="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <!-- Contact form (UI only, no backend) -->
+        <div data-animate>
+          <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{form.tag}</p>
+          <h2 class="text-2xl font-bold text-foreground mb-8 tracking-tight">{form.heading}</h2>
+          <form class="space-y-5" onsubmit="event.preventDefault()">
+            <div>
+              <label for="name" class="block text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-2">
+                {form.fields.name.label}
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder={form.fields.name.placeholder}
+                class="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 transition-colors"
+              />
+            </div>
+            <div>
+              <label for="email" class="block text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-2">
+                {form.fields.email.label}
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder={form.fields.email.placeholder}
+                class="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 transition-colors"
+              />
+            </div>
+            <div>
+              <label for="role" class="block text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-2">
+                {form.fields.role.label}
+              </label>
+              <select
+                id="role"
+                name="role"
+                class="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 transition-colors"
+              >
+                <option value="">{form.fields.role.placeholder}</option>
+                {form.fields.role.options.map((opt) => (
+                  <option value={opt.toLowerCase()}>{opt}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label for="message" class="block text-xs uppercase tracking-[0.15em] font-semibold text-muted-foreground mb-2">
+                {form.fields.message.label}
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                placeholder={form.fields.message.placeholder}
+                class="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 transition-colors resize-y"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              class="group w-full inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300"
+            >
+              {form.submitLabel}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+            <p class="text-xs text-muted-foreground/70 text-center font-mono">
+              {form.disclaimer}
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="16" fill="#F5F5F4"/>
+  <rect x="40" y="60" width="120" height="80" rx="8" fill="#E7E5E4"/>
+  <circle cx="80" cy="90" r="15" fill="#D6D3D1"/>
+  <path d="M40 120 L80 95 L110 115 L130 100 L160 120 L160 140 L40 140Z" fill="#D6D3D1"/>
+  <text x="100" y="170" font-family="system-ui,sans-serif" font-size="11" fill="#A8A29E" text-anchor="middle">Sponsor</text>
+</svg>

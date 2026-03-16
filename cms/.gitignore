@@ -1,0 +1,10 @@
+node_modules/
+bun.lock
+.env
+server.log
+content/cms.sqlite
+content/cms.sqlite-shm
+content/cms.sqlite-wal
+content/media/*
+!content/media/.gitkeep
+.check-build/

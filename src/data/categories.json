@@ -1,0 +1,13 @@
+{
+  "sectionTag": "Niveles",
+  "heading": "Categorias por Edad",
+  "subtitle": "Seis niveles disenados para desafiar a cada grupo de edad",
+  "categories": [
+    { "name": "Kits", "age": "6-8 anos", "emoji": "🧩", "color": "rose", "desc": "Primeros pasos en el pensamiento logico" },
+    { "name": "Castors", "age": "8-10 anos", "emoji": "🦫", "color": "amber", "desc": "Descubriendo patrones y secuencias" },
+    { "name": "Benjamins", "age": "10-12 anos", "emoji": "🔍", "color": "emerald", "desc": "Resolviendo problemas con creatividad" },
+    { "name": "Cadets", "age": "12-14 anos", "emoji": "⚙️", "color": "sky", "desc": "Algoritmos y pensamiento estructurado" },
+    { "name": "Juniors", "age": "14-16 anos", "emoji": "📊", "color": "violet", "desc": "Abstraccion y analisis de datos" },
+    { "name": "Seniors", "age": "16-18 anos", "emoji": "🚀", "color": "indigo", "desc": "Desafios avanzados de informatica" }
+  ]
+}
