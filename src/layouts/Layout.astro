@@ -87,7 +87,7 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
       <main id="main-content" class="flex-1">
         <slot />
       </main>
-      {showFooter && <Footer blendWithHero={currentPath === "/"} />}
+      {showFooter && <Footer blendWithHero={true} />}
     </div>
 
     <script>

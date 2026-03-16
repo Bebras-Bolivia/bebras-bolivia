@@ -100,11 +100,11 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
             {navData.links.map((link) => (
               <a
                 key={link.href}
-                className={
+                className={`relative transition-colors py-1 ${
                   isActive(link.href)
-                    ? "text-foreground underline decoration-2 underline-offset-8"
-                    : "text-foreground/75 transition-colors hover:text-foreground"
-                }
+                    ? "text-primary font-medium after:absolute after:-bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1.5 after:w-1.5 after:rounded-full after:bg-primary"
+                    : "text-foreground/75 hover:text-primary after:absolute after:-bottom-1 after:left-1/2 after:h-[2px] after:w-0 after:-translate-x-1/2 after:rounded-full after:bg-primary/50 after:transition-all after:duration-300 hover:after:w-full"
+                }`}
                 href={link.href}
               >
                 {link.label}

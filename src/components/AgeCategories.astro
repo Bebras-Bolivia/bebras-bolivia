@@ -14,11 +14,11 @@ const colorMap: Record<string, { border: string; bg: string; text: string }> = {
 };
 ---
 
-<section class="py-20 lg:py-28 bg-background">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+  <div class="mx-auto max-w-3xl">
     <!-- Section header -->
-    <div data-animate class="mb-14">
-      <p class="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3">{sectionTag}</p>
+    <div data-animate class="mb-14 text-center sm:text-left">
+      <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{sectionTag}</p>
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
           {heading}
@@ -31,19 +31,19 @@ const colorMap: Record<string, { border: string; bg: string; text: string }> = {
 
     <div class="rule-line mb-10"></div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
       {categories.map((cat, i) => {
         const colors = colorMap[cat.color] || colorMap.violet;
         return (
           <div
             data-animate
             class:list={[
-              "group rounded-xl border border-border bg-card p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 border-l-[3px]",
+              "group rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 border-l-[4px]",
               colors.border,
             ]}
           >
             <div class="flex items-start gap-4">
-              <div class:list={["flex items-center justify-center size-12 rounded-xl text-2xl shrink-0", colors.bg]}>
+              <div class:list={["flex items-center justify-center size-12 rounded-2xl text-2xl shrink-0 shadow-sm", colors.bg]}>
                 {cat.emoji}
               </div>
               <div class="flex-1 min-w-0">

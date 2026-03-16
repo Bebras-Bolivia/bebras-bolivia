@@ -1,7 +1,7 @@
 {
   "siteName": "Bebras Bolivia",
   "siteUrl": "https://bebras.bo",
-  "defaultDescription": "Desafío internacional de pensamiento computacional para estudiantes de Bolivia",
+  "defaultDescription": "Desaf�o internacional de pensamiento computacional para estudiantes de Bolivia",
   "locale": "es_BO",
   "lang": "es",
   "skipLinkText": "Saltar al contenido",
@@ -9,6 +9,6 @@
   "trademarkNote": "Bebras es una iniciativa internacional",
   "trademarkUrl": "https://www.bebras.org",
   "email": "contacto@bebras.bo",
-  "brandDescription": "Desafío de pensamiento computacional",
+  "brandDescription": "Desaf�o de pensamiento computacional",
   "defaultAuthor": "Bebras Bolivia"
 }

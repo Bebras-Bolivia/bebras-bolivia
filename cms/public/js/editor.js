@@ -115,13 +115,7 @@ const Editor = {
         this.dirty = true;
       });
 
-      // Warn about unsaved changes on page navigation
-      window.onbeforeunload = (e) => {
-        if (this.dirty) {
-          e.preventDefault();
-          return "";
-        }
-      };
+
     } catch (err) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${App.escapeHtml(err.message)}</p></div>`;
     }
@@ -604,7 +598,6 @@ const Editor = {
   // ── Reset ───────────────────────────────────────────────
 
   async reset() {
-    if (this.dirty && !confirm("Descartar cambios no guardados?")) return;
     await this.render(this.currentFile);
     Toast.info("Formulario reseteado");
   },

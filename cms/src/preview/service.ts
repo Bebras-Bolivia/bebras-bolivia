@@ -2,13 +2,14 @@ import { readdir, cp, mkdir } from "fs/promises";
 import { join } from "path";
 import { spawn, type ChildProcess } from "child_process";
 import { config } from "../config.js";
+import { createServer } from "net";
 
 // ── Dev Server State ──────────────────────────────────────
 let devProcess: ChildProcess | null = null;
 let devServerReady = false;
 let devServerStarting = false;
 let devServerError: string | null = null;
-let devServerPort = 4321;
+let devServerPort = 4322;
 
 export interface PreviewStatus {
   running: boolean;
@@ -24,6 +25,27 @@ export function getPreviewStatus(): PreviewStatus {
     port: devServerPort,
     error: devServerError,
   };
+}
+
+/**
+ * Helper to dynamically find a free port.
+ */
+async function getFreePort(startPort: number): Promise<number> {
+  return new Promise((resolve) => {
+    const server = createServer();
+    server.listen(startPort, () => {
+      const port = (server.address() as any).port;
+      server.close(() => resolve(port));
+    });
+    server.on("error", () => {
+      const fbServer = createServer();
+      fbServer.listen(0, () => {
+        const port = (fbServer.address() as any).port;
+        fbServer.close(() => resolve(port));
+      });
+      fbServer.on("error", () => resolve(startPort + 1));
+    });
+  });
 }
 
 /**
@@ -48,13 +70,16 @@ export async function startDevServer(): Promise<{ ok: true; port: number }> {
   // First, sync content to landing so the dev server has current data
   await syncContentToLanding();
 
+  // Find a free port so Astro doesn't prompt/hang
+  devServerPort = await getFreePort(4322);
+
   return new Promise((resolve, reject) => {
     const cmd = process.platform === "win32" ? "npx.cmd" : "npx";
 
     devProcess = spawn(cmd, ["astro", "dev", "--port", String(devServerPort)], {
       cwd: config.landingDir,
       stdio: ["pipe", "pipe", "pipe"],
-      env: { ...process.env },
+      env: { ...process.env, NODE_OPTIONS: "" },
       shell: process.platform === "win32",
     });
 
