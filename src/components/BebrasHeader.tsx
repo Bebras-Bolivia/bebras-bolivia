@@ -75,19 +75,19 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="mx-auto flex max-w-9/12 items-center justify-between gap-3 px-4 pt-4 md:px-6">
-        <div className="flex flex-1 items-center justify-between rounded-xl bg-card px-4 py-3">
+      <div className="mx-auto flex w-full items-center justify-between px-4 pt-4 md:max-w-9/12 md:px-6">
+        <div className="flex flex-1 items-center justify-between rounded-xl bg-card px-3 py-2.5 sm:px-4 sm:py-3">
           {/* Logo */}
-          <a className="flex items-center gap-3" href="/">
+          <a className="flex min-w-0 items-center gap-2.5 sm:gap-3" href="/">
             <img
               ref={castorRef}
               src={castorCircle.src}
               alt="Castor Bebras Bolivia"
-              className="size-12 rounded-full object-cover sm:size-14"
+              className="size-9 rounded-full object-cover sm:size-12"
             />
-            <div>
+            <div className="min-w-0">
               <p
-                className="text-4xl leading-tight text-primary"
+                className="text-[2rem] leading-[0.9] text-primary sm:text-4xl sm:leading-tight"
                 style={{ fontFamily: "'Pacifico', cursive" }}
               >
                 {navData.brand.name} {navData.brand.suffix}
@@ -120,8 +120,17 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
             )}
           </nav>
 
+          {navData.cta && (
+            <a
+              href={navData.cta.href}
+              className="mr-2 hidden rounded-lg bg-secondary px-3 py-2 text-sm font-semibold text-foreground transition-all duration-200 hover:bg-secondary/80 min-[560px]:inline-flex lg:hidden"
+            >
+              {navData.cta.label}
+            </a>
+          )}
+
           {/* Mobile menu */}
-          <MobileMenu links={navData.links} currentPath={currentPath} />
+          <MobileMenu links={navData.links} currentPath={currentPath} cta={navData.cta} />
         </div>
       </div>
     </header>

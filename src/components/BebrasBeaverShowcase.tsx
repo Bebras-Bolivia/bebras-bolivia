@@ -91,7 +91,7 @@ const orbitImages = [
 export function BebrasBeaverShowcase() {
   return (
     <div className="mx-auto flex w-full max-w-xl justify-center lg:justify-end">
-      <div className="relative beaver-entry w-[280px] sm:w-[360px] lg:w-[420px]">
+      <div className="relative beaver-entry w-[240px] sm:w-[320px] lg:w-[420px]">
         <div className="beaver-idle">
           <img
             src={castorImage.src}
@@ -99,7 +99,7 @@ export function BebrasBeaverShowcase() {
             className="h-auto w-full object-contain drop-shadow-xl transition duration-500 ease-out hover:scale-[1.03] hover:rotate-[1.2deg] hover:[filter:drop-shadow(0_18px_35px_hsl(var(--primary)/0.35))]"
           />
         </div>
-        <div className="absolute inset-0 [perspective:900px]">
+        <div className="absolute inset-0 hidden [perspective:900px] lg:block">
           {orbitImages.map((item, index) => (
             <div
               key={item.alt}

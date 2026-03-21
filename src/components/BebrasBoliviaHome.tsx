@@ -30,34 +30,38 @@ export default function BebrasBoliviaHome() {
 
   return (
     <div className="relative text-primary-foreground">
-      <main className="mx-auto max-w-9/12 px-4 pb-16 md:px-6">
+      <main className="mx-auto w-full px-4 pb-16 md:max-w-9/12 md:px-6">
         <section
           id="inicio"
-          className="grid min-h-[82vh] items-center gap-10 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4"
+          className="grid min-h-[78vh] items-center gap-8 py-8 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4"
         >
           <div ref={heroTextRef} className="space-y-5 text-center lg:text-left">
-            <p className="text-4xl font-black tracking-tight text-primary-foreground sm:text-5xl">
+            <p className="text-[clamp(2rem,8.5vw,2.75rem)] font-black tracking-tight text-primary-foreground sm:text-5xl">
               Bienvenido a
             </p>
             <h1
-              className="text-5xl leading-tight text-primary-foreground sm:text-7xl"
+              className="text-[clamp(2.9rem,13.2vw,4.5rem)] leading-[0.95] text-primary-foreground sm:text-7xl"
               style={{ fontFamily: "'Pacifico', cursive" }}
             >
               Bebras Bolivia 2026
             </h1>
-            <p className="text-balance text-2xl leading-snug text-primary-foreground sm:text-4xl">
+            <p className="mx-auto max-w-[20ch] text-balance text-xl leading-snug text-primary-foreground sm:text-4xl lg:mx-0">
               El desafío internacional de pensamiento computacional para estudiantes de todo el país.
             </p>
-            <p className="text-balance text-2xl leading-snug text-primary-foreground/80 sm:text-4xl">
+            <p className="mx-auto max-w-[20ch] text-balance text-xl leading-snug text-primary-foreground/80 sm:text-4xl lg:mx-0">
               Inscribe a tu unidad educativa y participa junto a más de 70 países.
             </p>
             <div className="pt-3">
               <Button
-                className="h-14 rounded-2xl bg-card px-10 text-base font-extrabold text-card-foreground transition hover:bg-card/90"
+                className="h-14 w-full max-w-xs rounded-2xl border border-black/10 bg-card px-6 text-base font-extrabold text-card-foreground transition hover:!bg-card focus-visible:!bg-card active:!bg-card lg:mx-0"
                 asChild
               >
-                <a href="#inicio">
-                  Regístrate aquí <ArrowRight className="ml-2 size-5" />
+                <a
+                  href="/registro"
+                  className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap leading-none"
+                >
+                  <span>Regístrate aquí</span>
+                  <ArrowRight className="size-5" />
                 </a>
               </Button>
             </div>

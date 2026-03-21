@@ -10,9 +10,10 @@ interface NavLink {
 interface Props {
   links: NavLink[];
   currentPath: string;
+  cta?: NavLink;
 }
 
-export default function MobileMenu({ links, currentPath: initialPath }: Props) {
+export default function MobileMenu({ links, currentPath: initialPath, cta }: Props) {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [currentPath, setCurrentPath] = useState(initialPath);
@@ -82,7 +83,7 @@ export default function MobileMenu({ links, currentPath: initialPath }: Props) {
       <button
         onClick={toggleMenu}
         aria-label={open ? "Cerrar menu" : "Abrir menu"}
-        className="relative inline-flex items-center justify-center size-9 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all duration-200 cursor-pointer lg:hidden overflow-hidden"
+        className="relative inline-flex size-10 items-center justify-center overflow-hidden rounded-full bg-primary/20 text-primary transition-all duration-200 hover:bg-primary/25 lg:hidden"
       >
         <Menu
           className={`size-5 absolute transition-all duration-300 ${
@@ -106,31 +107,83 @@ export default function MobileMenu({ links, currentPath: initialPath }: Props) {
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className={`fixed inset-0 top-16 z-40 lg:hidden overflow-y-auto transition-all duration-300 ${
+            className={`fixed inset-0 top-20 z-40 overflow-y-auto px-4 pb-6 transition-all duration-300 lg:hidden ${
               visible
-                ? "bg-background opacity-100"
-                : "bg-background/0 opacity-0"
+                ? "bg-transparent opacity-100"
+                : "bg-transparent opacity-0"
             }`}
             style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
           >
-            <nav
-              className={`flex flex-col gap-1 p-6 transition-transform duration-300 ${
+            <div
+              className={`mx-auto flex w-full max-w-[420px] flex-col gap-2 transition-transform duration-300 ${
                 visible ? "translate-y-0" : "-translate-y-4"
               }`}
               style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
             >
-              <p
-                className={`text-[10px] uppercase tracking-[0.25em] font-bold text-muted-foreground mb-4 transition-all duration-300 ${
+              <nav
+                className={`overflow-hidden rounded-xl border border-black/10 bg-white transition-all duration-300 ${
                   visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
                 }`}
                 style={{
                   transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                  transitionDelay: visible ? "50ms" : "0ms",
+                  transitionDelay: visible ? "40ms" : "0ms",
                 }}
               >
-                Navegacion
-              </p>
-              {links.map((link, i) => {
+                <div className="flex flex-col gap-2 p-3">
+                {links.map((link, i) => {
+                  const isContact =
+                    link.href === "/contacto" ||
+                    link.label.toLowerCase().includes("contact");
+                  if (isContact) return null;
+
+                  const isActive =
+                    currentPath === link.href ||
+                    (link.href !== "/" && currentPath.startsWith(link.href));
+
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className={`flex min-h-14 items-center rounded-lg px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
+                        isActive
+                          ? "text-primary"
+                          : "text-foreground hover:bg-black/5"
+                      } ${
+                        visible
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-3"
+                      }`}
+                      style={{
+                        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+                        transitionDelay: visible ? `${70 + i * 35}ms` : "0ms",
+                      }}
+                      onClick={closeMenu}
+                    >
+                      {link.label}
+                    </a>
+                  );
+                })}
+                </div>
+                {cta && (
+                  <div className="p-3">
+                    <a
+                      href={cta.href}
+                      className="flex min-h-14 items-center justify-center rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/10 transition-all duration-200 hover:bg-primary/90"
+                      onClick={closeMenu}
+                    >
+                      {cta.label}
+                    </a>
+                  </div>
+                )}
+              </nav>
+
+              {links
+                .filter(
+                  (link) =>
+                    link.href === "/contacto" ||
+                    link.label.toLowerCase().includes("contact")
+                )
+                .map((link, i) => {
                 const isActive =
                   currentPath === link.href ||
                   (link.href !== "/" && currentPath.startsWith(link.href));
@@ -138,10 +191,10 @@ export default function MobileMenu({ links, currentPath: initialPath }: Props) {
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`block rounded-lg px-4 py-3 text-base font-medium transition-all duration-300 ${
+                    className={`block rounded-xl border border-black/10 bg-white px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
                       isActive
-                        ? "bg-primary/10 text-primary border-l-2 border-primary"
-                        : "text-foreground hover:bg-accent hover:translate-x-1"
+                        ? "text-primary"
+                        : "text-foreground hover:bg-black/5"
                     } ${
                       visible
                         ? "opacity-100 translate-y-0"
@@ -149,7 +202,7 @@ export default function MobileMenu({ links, currentPath: initialPath }: Props) {
                     }`}
                     style={{
                       transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                      transitionDelay: visible ? `${80 + i * 40}ms` : "0ms",
+                      transitionDelay: visible ? `${90 + (links.length + i) * 35}ms` : "0ms",
                     }}
                     onClick={closeMenu}
                   >
@@ -157,26 +210,7 @@ export default function MobileMenu({ links, currentPath: initialPath }: Props) {
                   </a>
                 );
               })}
-              <div
-                className={`mt-6 pt-4 border-t border-border transition-all duration-300 ${
-                  visible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-3"
-                }`}
-                style={{
-                  transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                  transitionDelay: visible ? `${80 + links.length * 40}ms` : "0ms",
-                }}
-              >
-                <a
-                  href="/registro"
-                  className="block rounded-lg bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/10 transition-all duration-200"
-                  onClick={closeMenu}
-                >
-                  Inscribirse
-                </a>
-              </div>
-            </nav>
+            </div>
           </div>,
           document.body
         )}
