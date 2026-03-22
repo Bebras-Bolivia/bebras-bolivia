@@ -690,8 +690,19 @@ const Editor = {
   // ── Reset ───────────────────────────────────────────────
 
   async reset() {
-    await this.render(this.currentFile);
-    Toast.info("Formulario reseteado");
+    this.collectFormData();
+
+    try {
+      await API.syncPreviewDraft(this.currentFile, this.currentData);
+      this.loadPreviewIframe(true);
+      Toast.info("Vista previa actualizada con tus cambios");
+    } catch (err) {
+      if (err && err.message) {
+        Toast.error(`No se pudo actualizar la vista previa: ${err.message}`);
+      } else {
+        Toast.error("No se pudo actualizar la vista previa");
+      }
+    }
   },
 
   // ── Preview ────────────────────────────────────────────
@@ -755,7 +766,7 @@ const Editor = {
    * Load the correct landing page in the preview iframe.
    * Points directly to the Astro dev server for full HMR support.
    */
-  loadPreviewIframe() {
+  loadPreviewIframe(forceReload = false) {
     const iframe = document.getElementById("preview-frame");
     if (!iframe) return;
 
@@ -763,10 +774,12 @@ const Editor = {
 
     if (this.devServerReady && this.devServerPort) {
       // Point directly to Astro dev server for native HMR WebSocket support
-      iframe.src = `http://localhost:${this.devServerPort}${pagePath}`;
+      const base = `http://localhost:${this.devServerPort}${pagePath}`;
+      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
     } else {
       // Fallback: use proxied path (no HMR, but content still shows)
-      iframe.src = `/preview-site${pagePath}`;
+      const base = `/preview-site${pagePath}`;
+      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
     }
   },
 
