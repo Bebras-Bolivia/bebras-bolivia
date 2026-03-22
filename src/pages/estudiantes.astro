@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import AgeCategories from "@/components/AgeCategories.astro";
 import ScoringTable from "@/components/ScoringTable.astro";
 import data from "@/data/estudiantes.json";
+import pageComposition from "@/data/page-composition.json";
 
 const header = data.header;
 const sections = data.sections;
@@ -11,6 +12,8 @@ const desafio = sections.find((s) => s.id === "desafio")!;
 const habilidades = sections.find((s) => s.id === "habilidades")!;
 const formato = sections.find((s) => s.id === "formato")!;
 const certificados = sections.find((s) => s.id === "certificados")!;
+const formatoCols = formato.statsColumns || 3;
+const scoringPlacement = pageComposition?.estudiantes?.scoring;
 ---
 
 <Layout title={data.pageTitle} description={data.pageDescription}>
@@ -100,7 +103,13 @@ const certificados = sections.find((s) => s.id === "certificados")!;
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{formato.tag}</p>
             <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{formato.heading}</h2>
             
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+            <div class:list={[
+              "grid gap-6 mb-12",
+              formatoCols === 1 ? "grid-cols-1" : "",
+              formatoCols === 2 ? "grid-cols-1 sm:grid-cols-2" : "",
+              formatoCols === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "",
+              formatoCols >= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "",
+            ]}>
               {formato.stats?.map((stat: { value: string; label: string }) => (
                 <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-center transition-transform hover:-translate-y-2 duration-300">
                   <p class="font-mono text-5xl font-extrabold text-primary mb-3">{stat.value}</p>
@@ -116,11 +125,17 @@ const certificados = sections.find((s) => s.id === "certificados")!;
         </div>
       </section>
 
+      {scoringPlacement?.enabled && scoringPlacement?.afterSectionId === "formato" && (
+        <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+          <ScoringTable />
+        </div>
+      )}
+
       <!-- Age Categories / Componentes Normales -->
       <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
          <!-- Aplicamos a un div el reveal-section para que todos bajen uniformes -->
          <AgeCategories />
-         <div class="mt-16 lg:mt-24">
+         <div class="mt-16 lg:mt-24" style={scoringPlacement?.enabled && scoringPlacement?.afterSectionId === "formato" ? "display:none;" : undefined}>
             <ScoringTable />
          </div>
       </div>

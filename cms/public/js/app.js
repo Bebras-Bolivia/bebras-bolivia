@@ -22,7 +22,58 @@ const App = {
     "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
     "docentes.json": { label: "Docentes", desc: "Pagina de docentes (secciones)", icon: "briefcase" },
     "blog-ui.json": { label: "Blog UI", desc: "Textos de la interfaz del blog", icon: "file-text" },
+    "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
+    "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
   },
+
+  // ── Content hierarchy (parent page -> child sections) ───
+  contentHierarchy: [
+    {
+      label: "Inicio",
+      parent: "site.json",
+      children: ["navigation.json", "hero.json", "about.json", "categories.json", "news.json"],
+    },
+    {
+      label: "Estudiantes",
+      parent: "estudiantes.json",
+      children: ["scoring.json"],
+    },
+    {
+      label: "Docentes",
+      parent: "docentes.json",
+      children: ["teacher-instructions.json"],
+    },
+    {
+      label: "FAQ",
+      parent: "faq.json",
+      children: [],
+    },
+    {
+      label: "Blog",
+      parent: "blog-ui.json",
+      children: [],
+    },
+    {
+      label: "Sponsors",
+      parent: "sponsors.json",
+      children: [],
+    },
+    {
+      label: "Contacto",
+      parent: "contact.json",
+      children: [],
+    },
+    {
+      label: "Registro",
+      parent: "registro.json",
+      children: [],
+    },
+    {
+      label: "Paginas personalizadas",
+      parent: "custom-pages.json",
+      children: ["page-composition.json"],
+    },
+  ],
 
   // ── SVG icons (inline, small set) ───────────────────────
   icons: {
@@ -272,18 +323,33 @@ const App = {
           </div>
         </div>`;
 
-      // Build content list
-      const contentListHtml = files
-        .map((f) => {
-          const meta = this.contentMeta[f] || { label: f, desc: "" };
+      const contentTree = this.getContentTree(files);
+      const contentListHtml = contentTree
+        .map((node) => {
+          const parentMeta = this.contentMeta[node.parent] || { label: node.parent, desc: "" };
+          const childrenHtml = node.children
+            .map((child) => {
+              const childMeta = this.contentMeta[child] || { label: child, desc: "" };
+              return `
+                <button class="content-child" type="button" data-file="${this.escapeHtml(child)}">
+                  <span class="dot"></span>
+                  <span class="child-name">${this.escapeHtml(childMeta.label)}</span>
+                  <span class="child-desc">${this.escapeHtml(childMeta.desc || child)}</span>
+                </button>`;
+            })
+            .join("");
+
           return `
-          <div class="content-item" data-file="${this.escapeHtml(f)}">
-            <div>
-              <div class="name">${this.escapeHtml(meta.label)}</div>
-              <div class="desc">${this.escapeHtml(f)} — ${this.escapeHtml(meta.desc)}</div>
-            </div>
-            <span class="arrow">${this.icon("arrow")}</span>
-          </div>`;
+            <div class="content-tree-item">
+              <div class="content-item" data-file="${this.escapeHtml(node.parent)}">
+                <div>
+                  <div class="name">${this.escapeHtml(parentMeta.label)}</div>
+                  <div class="desc">${this.escapeHtml(parentMeta.desc)}</div>
+                </div>
+                <span class="arrow">${this.icon("arrow")}</span>
+              </div>
+              ${node.children.length ? `<div class="content-children">${childrenHtml}</div>` : ""}
+            </div>`;
         })
         .join("");
 
@@ -300,7 +366,7 @@ const App = {
         </div>`;
 
       // Bind events
-      main.querySelectorAll(".content-item").forEach((item) => {
+      main.querySelectorAll(".content-item, .content-child").forEach((item) => {
         item.addEventListener("click", () => {
           const file = item.getAttribute("data-file");
           this.navigate(`/editor/${encodeURIComponent(file)}`);
@@ -314,6 +380,25 @@ const App = {
     } catch (err) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(err.message)}</p></div>`;
     }
+  },
+
+  getContentTree(files) {
+    const existing = new Set(files);
+    const seen = new Set();
+
+    const nodes = this.contentHierarchy
+      .filter((entry) => existing.has(entry.parent))
+      .map((entry) => {
+        seen.add(entry.parent);
+        const validChildren = entry.children.filter((child) => existing.has(child));
+        validChildren.forEach((child) => seen.add(child));
+        return { parent: entry.parent, children: validChildren };
+      });
+
+    const leftovers = files.filter((f) => !seen.has(f));
+    leftovers.forEach((f) => nodes.push({ parent: f, children: [] }));
+
+    return nodes;
   },
 
   async handlePublish() {

@@ -11,5 +11,6 @@
   "summaryCards": [
     { "value": "45", "label": "Puntaje inicial" },
     { "value": "180", "label": "Puntaje maximo" }
-  ]
+  ],
+  "summaryColumns": 2
 }

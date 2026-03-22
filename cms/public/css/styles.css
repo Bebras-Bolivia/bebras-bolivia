@@ -460,7 +460,14 @@ a:hover { text-decoration: underline; }
 .content-list {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.75rem;
+}
+
+.content-tree-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  overflow: hidden;
 }
 
 .content-item {
@@ -468,16 +475,82 @@ a:hover { text-decoration: underline; }
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: transparent;
+  border: none;
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--transition);
 }
 
 .content-item:hover {
   background: var(--bg-hover);
+}
+
+.content-children {
+  border-top: 1px solid var(--border-subtle);
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--bg-base);
+}
+
+.content-child {
+  appearance: none;
+  border: 1px solid transparent;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.content-child .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.content-child .child-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.content-child .child-desc {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.content-child:hover {
   border-color: var(--border-focus);
+  background: var(--bg-hover);
+}
+
+.content-child:hover .dot {
+  background: var(--accent);
+}
+
+.editor-block-picker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.editor-block-picker .type-select {
+  max-width: 260px;
 }
 
 .content-item .name {

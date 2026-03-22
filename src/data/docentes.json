@@ -13,6 +13,7 @@
       "tag": "Registro",
       "heading": "Como inscriben a sus estudiantes?",
       "intro": "El proceso de inscripcion es simple y gratuito. Un docente o representante de la escuela actua como coordinador y se encarga de registrar a los estudiantes.",
+      "columns": 3,
       "steps": [
         {
           "num": "1",
@@ -35,6 +36,7 @@
       "id": "requisitos",
       "tag": "Requisitos",
       "heading": "Que necesita la escuela?",
+      "columns": 2,
       "requirements": [
         {
           "icon": "monitor",

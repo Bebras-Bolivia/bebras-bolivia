@@ -7,6 +7,50 @@ const LinkSchema = z.object({
   href: z.string(),
 });
 
+const GenericTextBlockSchema = z.object({
+  type: z.literal("text"),
+  sectionTag: z.string().optional(),
+  heading: z.string(),
+  paragraphs: z.array(z.string()),
+});
+
+const GenericCardsBlockSchema = z.object({
+  type: z.literal("cardsGrid"),
+  sectionTag: z.string().optional(),
+  heading: z.string(),
+  columns: z.number().int().min(1).max(4),
+  cards: z.array(
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      icon: z.string().optional(),
+    })
+  ),
+});
+
+const GenericTipBlockSchema = z.object({
+  type: z.literal("tip"),
+  sectionTag: z.string().optional(),
+  heading: z.string().optional(),
+  text: z.string(),
+});
+
+const GenericCtaBlockSchema = z.object({
+  type: z.literal("cta"),
+  sectionTag: z.string().optional(),
+  heading: z.string(),
+  text: z.string().optional(),
+  variant: z.enum(["button", "link"]),
+  action: LinkSchema,
+});
+
+const GenericPageBlockSchema = z.discriminatedUnion("type", [
+  GenericTextBlockSchema,
+  GenericCardsBlockSchema,
+  GenericTipBlockSchema,
+  GenericCtaBlockSchema,
+]);
+
 const StatSchema = z.object({
   value: z.string(),
   label: z.string(),
@@ -124,6 +168,7 @@ export const scoringSchema = z.object({
     })
   ),
   summaryCards: z.array(StatSchema),
+  summaryColumns: z.number().int().min(1).max(4).optional(),
 });
 
 // ── 7. news.json ─────────────────────────────────────────
@@ -321,6 +366,7 @@ const estudiantesHabilidades = estudiantesBaseSection.extend({
 const estudiantesFormato = estudiantesBaseSection.extend({
   id: z.literal("formato"),
   stats: z.array(StatSchema),
+  statsColumns: z.number().int().min(1).max(4).optional(),
   content: z.array(z.string()),
 });
 
@@ -358,6 +404,7 @@ const docentesRegistro = z.object({
   tag: z.string(),
   heading: z.string(),
   intro: z.string(),
+  columns: z.number().int().min(1).max(4).optional(),
   steps: z.array(
     z.object({
       num: z.string(),
@@ -371,6 +418,7 @@ const docentesRequisitos = z.object({
   id: z.literal("requisitos"),
   tag: z.string(),
   heading: z.string(),
+  columns: z.number().int().min(1).max(4).optional(),
   requirements: z.array(
     z.object({
       icon: z.string(),
@@ -439,6 +487,38 @@ export const blogUiSchema = z.object({
   }),
 });
 
+// ── 16. custom-pages.json ─────────────────────────────────
+
+export const customPagesSchema = z.object({
+  pages: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      slug: z.string(),
+      description: z.string(),
+      navLabel: z.string(),
+      showInHeader: z.boolean(),
+      blocks: z.array(GenericPageBlockSchema),
+    })
+  ),
+});
+
+// ── 17. page-composition.json ─────────────────────────────
+
+const ChildPlacementSchema = z.object({
+  enabled: z.boolean(),
+  afterSectionId: z.string(),
+});
+
+export const pageCompositionSchema = z.object({
+  docentes: z.object({
+    teacherInstructions: ChildPlacementSchema,
+  }),
+  estudiantes: z.object({
+    scoring: ChildPlacementSchema,
+  }),
+});
+
 // ── Schema registry (filename → schema) ──────────────────
 
 export const contentSchemas: Record<string, z.ZodType> = {
@@ -457,6 +537,8 @@ export const contentSchemas: Record<string, z.ZodType> = {
   "estudiantes.json": estudiantesSchema,
   "docentes.json": docentesSchema,
   "blog-ui.json": blogUiSchema,
+  "custom-pages.json": customPagesSchema,
+  "page-composition.json": pageCompositionSchema,
 };
 
 /** All valid content file names */

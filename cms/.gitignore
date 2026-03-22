@@ -8,3 +8,4 @@ content/cms.sqlite-wal
 content/media/*
 !content/media/.gitkeep
 .check-build/
+CMS_REFORMA_PLAN.md

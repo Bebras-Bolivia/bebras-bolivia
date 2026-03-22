@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import castorCircle from "@/assets/castor-circle.png";
 import navData from "@/data/navigation.json";
+import customPagesData from "@/data/custom-pages.json";
 import MobileMenu from "./MobileMenu";
 
 interface Props {
@@ -73,6 +74,12 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
     return currentPath === href || currentPath.startsWith(href + "/");
   };
 
+  const customHeaderLinks = (customPagesData.pages || [])
+    .filter((p) => p.showInHeader)
+    .map((p) => ({ label: p.navLabel || p.title, href: `/${p.slug}` }));
+
+  const allLinks = [...navData.links, ...customHeaderLinks];
+
   return (
     <header className="sticky top-0 z-50">
       <div className="mx-auto flex w-full items-center justify-between px-4 pt-4 md:max-w-9/12 md:px-6">
@@ -97,7 +104,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-6 font-medium text lg:flex">
-            {navData.links.map((link) => (
+            {allLinks.map((link) => (
               <a
                 key={link.href}
                 className={`relative transition-colors py-1 ${
@@ -130,7 +137,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           )}
 
           {/* Mobile menu */}
-          <MobileMenu links={navData.links} currentPath={currentPath} cta={navData.cta} />
+          <MobileMenu links={allLinks} currentPath={currentPath} cta={navData.cta} />
         </div>
       </div>
     </header>

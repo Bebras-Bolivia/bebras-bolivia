@@ -59,6 +59,7 @@
       "id": "formato",
       "tag": "El formato",
       "heading": "Que involucra el desafio?",
+      "statsColumns": 3,
       "stats": [
         {
           "value": "15",

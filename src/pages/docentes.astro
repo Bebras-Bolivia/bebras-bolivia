@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import TeacherInstructions from "@/components/TeacherInstructions";
 import data from "@/data/docentes.json";
 import teacherData from "@/data/teacher-instructions.json";
+import pageComposition from "@/data/page-composition.json";
 
 const header = data.header;
 const sections = data.sections;
@@ -10,6 +11,9 @@ const registro = sections.find((s) => s.id === "registro")!;
 const requisitos = sections.find((s) => s.id === "requisitos")!;
 const alcance = sections.find((s) => s.id === "alcance")!;
 const cta = sections.find((s) => s.id === "cta")!;
+const registroCols = registro.columns || 3;
+const requisitosCols = requisitos.columns || 2;
+const teacherPlacement = pageComposition?.docentes?.teacherInstructions;
 
 // Icon map for requirements
 const iconMap: Record<string, string> = {
@@ -49,7 +53,13 @@ const iconMap: Record<string, string> = {
             <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
               <p>{registro.intro}</p>
               
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12">
+              <div class:list={[
+                "grid gap-6 mt-12",
+                registroCols === 1 ? "grid-cols-1" : "",
+                registroCols === 2 ? "grid-cols-1 sm:grid-cols-2" : "",
+                registroCols === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "",
+                registroCols >= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "",
+              ]}>
                 {registro.steps?.map((step: { num: string; title: string; desc: string }) => (
                   <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
                     <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground mb-6 font-mono shadow-md">
@@ -72,7 +82,13 @@ const iconMap: Record<string, string> = {
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{requisitos.tag}</p>
             <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{requisitos.heading}</h2>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class:list={[
+              "grid gap-6",
+              requisitosCols === 1 ? "grid-cols-1" : "",
+              requisitosCols === 2 ? "grid-cols-1 sm:grid-cols-2" : "",
+              requisitosCols === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "",
+              requisitosCols >= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "",
+            ]}>
               {requisitos.requirements?.map((item: { icon: string; title: string; desc: string }) => (
                 <div class="flex items-start gap-5 rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 transition-transform hover:-translate-y-2 duration-300">
                   <div class="flex items-center justify-center size-14 shrink-0 rounded-2xl bg-primary text-primary-foreground shadow-md" set:html={iconMap[item.icon] || ""}>
@@ -110,8 +126,20 @@ const iconMap: Record<string, string> = {
         </div>
       </section>
 
+      {teacherPlacement?.enabled && teacherPlacement?.afterSectionId === "alcance" && (
+        <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+          <TeacherInstructions
+            sectionTag={teacherData.sectionTag}
+            heading={teacherData.heading}
+            subtitle={teacherData.subtitle}
+            tabs={teacherData.tabs}
+            client:visible
+          />
+        </div>
+      )}
+
       <!-- Instrucciones para profesores (Tablas) -->
-      <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+      <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6" style={teacherPlacement?.enabled && teacherPlacement?.afterSectionId === "alcance" ? "display:none;" : undefined}>
         <TeacherInstructions
           sectionTag={teacherData.sectionTag}
           heading={teacherData.heading}

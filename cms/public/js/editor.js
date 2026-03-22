@@ -64,6 +64,13 @@ const Editor = {
     color: "color",
   },
 
+  selectOptions: {
+    variant: ["button", "link"],
+    status: ["positive", "neutral", "negative"],
+  },
+
+  hiddenFields: new Set(["id"]),
+
   // ── Render the editor for a file ────────────────────────
   async render(filename) {
     const main = document.getElementById("main-content");
@@ -145,6 +152,8 @@ const Editor = {
       const val = obj[key];
       const fieldPath = path ? `${path}.${key}` : key;
 
+       if (this.shouldHideField(key)) continue;
+
       if (val === null || val === undefined) continue;
 
       if (Array.isArray(val)) {
@@ -170,7 +179,7 @@ const Editor = {
 
   renderPrimitive(container, value, path) {
     const key = path.split(".").pop();
-    const type = this.getFieldType(key, value);
+    const type = this.getFieldType(path, value);
 
     const group = document.createElement("div");
     group.className = "form-group";
@@ -186,6 +195,32 @@ const Editor = {
       input.className = "form-textarea";
       input.value = String(value);
       input.rows = Math.min(6, Math.max(2, String(value).split("\n").length + 1));
+      input.setAttribute("data-value-type", "string");
+    } else if (type === "boolean") {
+      input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = Boolean(value);
+      input.style.width = "16px";
+      input.style.height = "16px";
+      input.setAttribute("data-value-type", "boolean");
+    } else if (type === "number") {
+      input = document.createElement("input");
+      input.type = "number";
+      input.className = "form-input";
+      input.value = String(value);
+      input.setAttribute("data-value-type", "number");
+    } else if (type === "select") {
+      input = document.createElement("select");
+      input.className = "form-select";
+      const options = this.selectOptions[key] || [];
+      options.forEach((opt) => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt;
+        optionEl.textContent = this.formatLabel(opt);
+        input.appendChild(optionEl);
+      });
+      input.value = String(value);
+      input.setAttribute("data-value-type", "string");
     } else if (type === "color") {
       // Color: show both a color picker and text input
       const wrapper = document.createElement("div");
@@ -207,6 +242,7 @@ const Editor = {
       textInput.value = String(value);
       textInput.id = `field-${path}`;
       textInput.setAttribute("data-path", path);
+      textInput.setAttribute("data-value-type", "string");
 
       // Sync
       colorInput.addEventListener("input", () => {
@@ -229,6 +265,7 @@ const Editor = {
       input.type = type === "url" ? "url" : "text";
       input.className = "form-input";
       input.value = String(value);
+      input.setAttribute("data-value-type", "string");
     }
 
     input.id = `field-${path}`;
@@ -269,13 +306,41 @@ const Editor = {
     section.appendChild(arrayContainer);
 
     // Add item button
-    const addBtn = document.createElement("button");
-    addBtn.className = "add-item-btn";
-    addBtn.innerHTML = `${App.icon("plus")} Agregar`;
-    addBtn.addEventListener("click", () => {
-      this.addArrayItem(path, arr);
-    });
-    section.appendChild(addBtn);
+    const addOptions = this.getAddTypeOptions(path, arr);
+    if (addOptions && addOptions.length > 0) {
+      const picker = document.createElement("div");
+      picker.className = "editor-block-picker";
+
+      const typeSelect = document.createElement("select");
+      typeSelect.className = "form-select type-select";
+      addOptions.forEach((opt) => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt.value;
+        optionEl.textContent = opt.label;
+        typeSelect.appendChild(optionEl);
+      });
+
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-item-btn";
+      addBtn.type = "button";
+      addBtn.textContent = "Agregar bloque";
+      addBtn.addEventListener("click", () => {
+        this.addArrayItem(path, arr, typeSelect.value);
+      });
+
+      picker.appendChild(typeSelect);
+      picker.appendChild(addBtn);
+      section.appendChild(picker);
+    } else {
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-item-btn";
+      addBtn.type = "button";
+      addBtn.textContent = "Agregar";
+      addBtn.addEventListener("click", () => {
+        this.addArrayItem(path, arr);
+      });
+      section.appendChild(addBtn);
+    }
 
     container.appendChild(section);
   },
@@ -342,7 +407,6 @@ const Editor = {
       const header = document.createElement("div");
       header.style.cssText =
         "font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;width:100%;";
-      const idStr = obj.id ? ` — ${obj.id}` : "";
 
       const handleSpan = document.createElement("span");
       handleSpan.className = "drag-handle";
@@ -351,7 +415,7 @@ const Editor = {
       handleSpan.style.cssText = "margin-right:0.5rem;";
 
       const labelSpan = document.createElement("span");
-      labelSpan.textContent = `#${idx + 1}${idStr}`;
+      labelSpan.textContent = `#${idx + 1}`;
 
       const leftGroup = document.createElement("span");
       leftGroup.style.cssText = "display:flex;align-items:center;";
@@ -382,7 +446,23 @@ const Editor = {
 
   // ── Array mutations ─────────────────────────────────────
 
-  addArrayItem(path, currentArr) {
+  addArrayItem(path, currentArr, selectedType = null) {
+    if (selectedType) {
+      const typedTemplate = this.createTypedArrayItem(path, selectedType);
+      if (typedTemplate !== null) {
+        this.setNestedValue(this.currentData, path, [...currentArr, typedTemplate]);
+        this.dirty = true;
+        this.collectFormData();
+        const formContainer = document.getElementById("editor-form");
+        formContainer.innerHTML = "";
+        this.renderFields(formContainer, this.currentData, "");
+        formContainer.addEventListener("input", () => {
+          this.dirty = true;
+        });
+        return;
+      }
+    }
+
     if (currentArr.length === 0) {
       // Can't infer shape — add empty string
       this.setNestedValue(this.currentData, path, [...currentArr, ""]);
@@ -557,9 +637,21 @@ const Editor = {
     const inputs = document.querySelectorAll("[data-path]");
     inputs.forEach((input) => {
       const path = input.getAttribute("data-path");
-      const value = input.value;
+      const value = this.parseInputValue(input);
       this.setNestedValue(this.currentData, path, value);
     });
+  },
+
+  parseInputValue(input) {
+    const valueType = input.getAttribute("data-value-type") || "string";
+    if (valueType === "boolean") {
+      return Boolean(input.checked);
+    }
+    if (valueType === "number") {
+      const n = Number(input.value);
+      return Number.isNaN(n) ? 0 : n;
+    }
+    return input.value;
   },
 
   // ── Save ────────────────────────────────────────────────
@@ -689,10 +781,223 @@ const Editor = {
       .replace(/\b\w/g, (c) => c.toUpperCase());
   },
 
-  getFieldType(key, value) {
+  getFieldType(keyOrPath, value) {
+    const key = String(keyOrPath).split(".").pop();
+    if (typeof value === "boolean") return "boolean";
+    if (typeof value === "number") return "number";
+    if (this.selectOptions[key]) return "select";
     if (this.fieldHints[key]) return this.fieldHints[key];
     if (typeof value === "string" && value.length > 100) return "textarea";
     return "text";
+  },
+
+  shouldHideField(key) {
+    return this.hiddenFields.has(key);
+  },
+
+  getAddTypeOptions(path) {
+    if (this.currentFile === "custom-pages.json" && path === "pages") {
+      return [{ value: "customPage", label: "Pagina personalizada" }];
+    }
+
+    if (this.currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
+      return [
+        { value: "text", label: "Bloque de texto" },
+        { value: "cardsGrid", label: "Grid de cards" },
+        { value: "tip", label: "Tip / cita" },
+        { value: "cta", label: "CTA (boton o enlace)" },
+      ];
+    }
+
+    if (this.currentFile === "docentes.json" && path === "sections") {
+      return [
+        { value: "registro", label: "Docentes: Registro" },
+        { value: "requisitos", label: "Docentes: Requisitos" },
+        { value: "alcance", label: "Docentes: Alcance" },
+        { value: "cta", label: "Docentes: CTA" },
+      ];
+    }
+
+    if (this.currentFile === "estudiantes.json" && path === "sections") {
+      return [
+        { value: "participacion", label: "Estudiantes: Participacion" },
+        { value: "desafio", label: "Estudiantes: Desafio" },
+        { value: "habilidades", label: "Estudiantes: Habilidades" },
+        { value: "formato", label: "Estudiantes: Formato" },
+        { value: "certificados", label: "Estudiantes: Certificados" },
+      ];
+    }
+
+    return null;
+  },
+
+  createTypedArrayItem(path, selectedType) {
+    if (this.currentFile === "custom-pages.json" && path === "pages") {
+      const slugBase = this.generateUniqueSlug("nueva-pagina");
+      return {
+        id: slugBase,
+        title: "Nueva pagina",
+        slug: slugBase,
+        description: "Describe aqui la nueva pagina.",
+        navLabel: "Nueva pagina",
+        showInHeader: false,
+        blocks: [
+          {
+            type: "text",
+            sectionTag: "Seccion",
+            heading: "Titulo",
+            paragraphs: ["Contenido inicial."],
+          },
+        ],
+      };
+    }
+
+    if (this.currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
+      if (selectedType === "text") {
+        return {
+          type: "text",
+          sectionTag: "Seccion",
+          heading: "Titulo",
+          paragraphs: ["Escribe aqui el contenido."],
+        };
+      }
+      if (selectedType === "cardsGrid") {
+        return {
+          type: "cardsGrid",
+          sectionTag: "Grid",
+          heading: "Titulo de cards",
+          columns: 3,
+          cards: [
+            { title: "Card 1", description: "Descripcion de la card." },
+            { title: "Card 2", description: "Descripcion de la card." },
+            { title: "Card 3", description: "Descripcion de la card." },
+          ],
+        };
+      }
+      if (selectedType === "tip") {
+        return {
+          type: "tip",
+          sectionTag: "Tip",
+          heading: "Nota",
+          text: "Texto destacado tipo cita o recomendacion.",
+        };
+      }
+      if (selectedType === "cta") {
+        return {
+          type: "cta",
+          sectionTag: "CTA",
+          heading: "Llamado a la accion",
+          text: "Descripcion opcional del llamado a la accion.",
+          variant: "button",
+          action: {
+            label: "Ver mas",
+            href: "/",
+          },
+        };
+      }
+    }
+
+    if (this.currentFile === "docentes.json" && path === "sections") {
+      if (selectedType === "registro") {
+        return {
+          id: "registro",
+          tag: "Registro",
+          heading: "Titulo de registro",
+          intro: "Introduccion",
+          steps: [{ num: "1", title: "Paso", desc: "Descripcion" }],
+        };
+      }
+      if (selectedType === "requisitos") {
+        return {
+          id: "requisitos",
+          tag: "Requisitos",
+          heading: "Titulo de requisitos",
+          requirements: [{ icon: "monitor", title: "Requisito", desc: "Descripcion" }],
+        };
+      }
+      if (selectedType === "alcance") {
+        return {
+          id: "alcance",
+          tag: "Alcance",
+          heading: "Titulo de alcance",
+          content: ["Parrafo de alcance"],
+          tip: "Tip destacado",
+        };
+      }
+      if (selectedType === "cta") {
+        return {
+          id: "cta",
+          heading: "Titulo CTA",
+          content: ["Texto CTA"],
+          cta: {
+            label: "Accion",
+            href: "/registro",
+          },
+        };
+      }
+    }
+
+    if (this.currentFile === "estudiantes.json" && path === "sections") {
+      if (selectedType === "participacion") {
+        return {
+          id: "participacion",
+          tag: "Participacion",
+          heading: "Como participar",
+          content: ["Parrafo"],
+          link: { label: "Ver docentes", href: "/docentes" },
+        };
+      }
+      if (selectedType === "desafio") {
+        return {
+          id: "desafio",
+          tag: "Desafio",
+          heading: "Que es el desafio",
+          content: ["Parrafo"],
+        };
+      }
+      if (selectedType === "habilidades") {
+        return {
+          id: "habilidades",
+          tag: "Habilidades",
+          heading: "Habilidades clave",
+          intro: "Intro",
+          skills: [{ title: "Habilidad", desc: "Descripcion" }],
+          outro: "Cierre",
+        };
+      }
+      if (selectedType === "formato") {
+        return {
+          id: "formato",
+          tag: "Formato",
+          heading: "Formato del desafio",
+          stats: [
+            { value: "15", label: "Preguntas" },
+            { value: "45", label: "Minutos" },
+          ],
+          content: ["Parrafo"],
+        };
+      }
+      if (selectedType === "certificados") {
+        return {
+          id: "certificados",
+          tag: "Certificados",
+          heading: "Certificados",
+          content: ["Parrafo"],
+          cta: { label: "Inscribirse", href: "/registro" },
+        };
+      }
+    }
+
+    return null;
+  },
+
+  generateUniqueSlug(base) {
+    const pages = Array.isArray(this.currentData?.pages) ? this.currentData.pages : [];
+    const used = new Set(pages.map((p) => p.slug));
+    if (!used.has(base)) return base;
+    let i = 2;
+    while (used.has(`${base}-${i}`)) i++;
+    return `${base}-${i}`;
   },
 
   toHexColor(str) {
