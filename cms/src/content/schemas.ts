@@ -188,16 +188,35 @@ export const newsSchema = z.object({
 // ── 8. faq.json ──────────────────────────────────────────
 
 export const faqSchema = z.object({
-  categories: z.array(
-    z.object({
-      title: z.string(),
-      items: z.array(
-        z.object({
-          question: z.string(),
-          answer: z.string(),
-        })
-      ),
-    })
+  header: z.object({
+    tag: z.string(),
+    heading: z.string(),
+    subtitle: z.string(),
+  }),
+  components: z.array(
+    z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("faqQuestions"),
+        categories: z.array(
+          z.object({
+            title: z.string(),
+            items: z.array(
+              z.object({
+                question: z.string(),
+                answer: z.string(),
+              })
+            ),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("faqCta"),
+        heading: z.string(),
+        text: z.string(),
+        buttonLabel: z.string(),
+        buttonHref: z.string(),
+      }),
+    ])
   ),
 });
 

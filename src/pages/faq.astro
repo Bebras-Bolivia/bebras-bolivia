@@ -1,7 +1,12 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import FAQAccordion from "@/components/FAQAccordion";
+import FAQQuestionsBlock from "@/components/FAQQuestionsBlock.astro";
+import FAQCtaBlock from "@/components/FAQCtaBlock.astro";
 import faqData from "@/data/faq.json";
+
+const faq = faqData as any;
+const header = faq.header || { tag: "Ayuda", heading: "Preguntas Frecuentes", subtitle: "" };
+const components: any[] = Array.isArray(faq.components) ? faq.components : [];
 ---
 
 <Layout title="Preguntas Frecuentes" description="Preguntas frecuentes sobre el Desafio Bebras Bolivia -- informacion para estudiantes, docentes y coordinadores.">
@@ -10,12 +15,12 @@ import faqData from "@/data/faq.json";
     <!-- Hero Header (Fijo al fondo) -->
     <div class="sticky top-0 w-full min-h-[70vh] flex flex-col justify-center items-center z-0 pt-20 pb-32">
       <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
-        <p class="text-xs uppercase tracking-[0.25em] font-bold text-white mb-4">Ayuda</p>
+        <p class="text-xs uppercase tracking-[0.25em] font-bold text-white mb-4">{header.tag}</p>
         <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-sm mb-4">
-          Preguntas <span class="text-white sm:inline block mt-2 sm:mt-0">Frecuentes</span>
+          {header.heading}
         </h1>
         <p class="mt-6 text-xl text-white font-medium max-w-2xl mx-auto drop-shadow-sm leading-relaxed">
-          Encuentra respuestas a las preguntas mas comunes sobre el Desafio Bebras Bolivia.
+          {header.subtitle}
         </p>
       </div>
     </div>
@@ -23,35 +28,22 @@ import faqData from "@/data/faq.json";
     <!-- Contenedor Principal (Crema deslizante) -->
     <main class="relative z-10 w-full min-h-screen bg-[#F4F4F1] dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] -mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-16 lg:pt-24">
       
-      <!-- FAQ Accordion -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
-          <div class="mx-auto max-w-3xl">
-            <FAQAccordion categories={faqData.categories} client:visible />
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-2xl border border-black/5 dark:border-white/5 text-center">
-          <div class="mx-auto max-w-3xl">
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">
-              No encontraste lo que buscabas?
-            </h2>
-            <p class="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-              Contactanos y con gusto resolveremos tus dudas.
-            </p>
-            <a
-              href="/contacto"
-              class="group inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-            >
-              Ir a Contacto
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-      </section>
+      {components.map((component: any) => {
+        if (component.type === "faqQuestions") {
+          return <FAQQuestionsBlock categories={component.categories} />;
+        }
+        if (component.type === "faqCta") {
+          return (
+            <FAQCtaBlock
+              heading={component.heading}
+              text={component.text}
+              buttonLabel={component.buttonLabel}
+              buttonHref={component.buttonHref}
+            />
+          );
+        }
+        return null;
+      })}
 
     </main>
   </div>

@@ -653,6 +653,106 @@ a:hover { text-decoration: underline; }
   max-width: 260px;
 }
 
+.editor-modal-open {
+  overflow: hidden;
+}
+
+.editor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.editor-modal {
+  width: min(560px, 100%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.2);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
+  padding: 1rem;
+}
+
+.editor-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.editor-modal-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.editor-modal-subtitle {
+  margin: 0.35rem 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.editor-modal-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  border-radius: 8px;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.editor-modal-close:hover {
+  color: var(--text);
+  border-color: var(--border-focus);
+}
+
+.editor-modal-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.editor-modal-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.editor-modal-option {
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  border-radius: 10px;
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.editor-modal-option .title {
+  font-size: 0.875rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.editor-modal-option .desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.editor-modal-option:hover {
+  border-color: var(--border-focus);
+  background: var(--bg-hover);
+}
+
 .content-item .name {
   font-family: var(--font-mono);
   font-size: 0.8125rem;

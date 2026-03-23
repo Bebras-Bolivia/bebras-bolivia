@@ -305,6 +305,20 @@ const Editor = {
 
     section.appendChild(arrayContainer);
 
+    // Special: component picker modal (FAQ page)
+    if (this.currentFile === "faq.json" && path === "components") {
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-item-btn";
+      addBtn.type = "button";
+      addBtn.textContent = "Agregar nuevo componente";
+      addBtn.addEventListener("click", () => {
+        this.openAddComponentModal(path, arr);
+      });
+      section.appendChild(addBtn);
+      container.appendChild(section);
+      return;
+    }
+
     // Add item button
     const addOptions = this.getAddTypeOptions(path, arr);
     if (addOptions && addOptions.length > 0) {
@@ -910,6 +924,35 @@ const Editor = {
       }
     }
 
+    if (this.currentFile === "faq.json" && path === "components") {
+      if (selectedType === "faqQuestions") {
+        return {
+          type: "faqQuestions",
+          categories: [
+            {
+              title: "Nueva seccion FAQ",
+              items: [
+                {
+                  question: "Nueva pregunta",
+                  answer: "Nueva respuesta",
+                },
+              ],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "faqCta") {
+        return {
+          type: "faqCta",
+          heading: "No encontraste lo que buscabas?",
+          text: "Contactanos y con gusto resolveremos tus dudas.",
+          buttonLabel: "Ir a Contacto",
+          buttonHref: "/contacto",
+        };
+      }
+    }
+
     if (this.currentFile === "docentes.json" && path === "sections") {
       if (selectedType === "registro") {
         return {
@@ -1012,6 +1055,77 @@ const Editor = {
     }
 
     return "";
+  },
+
+  openAddComponentModal(path, currentArr) {
+    const options = this.getComponentOptions(path);
+    if (!options.length) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "editor-modal-overlay";
+
+    const modal = document.createElement("div");
+    modal.className = "editor-modal";
+    modal.innerHTML = `
+      <div class="editor-modal-header">
+        <h3>Agregar componente</h3>
+        <button type="button" class="editor-modal-close" aria-label="Cerrar">${App.icon("x")}</button>
+      </div>
+      <p class="editor-modal-subtitle">Selecciona el componente que deseas agregar.</p>
+      <div class="editor-modal-list"></div>
+    `;
+
+    const list = modal.querySelector(".editor-modal-list");
+    options.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "editor-modal-option";
+      btn.innerHTML = `<span class="title">${this.escapeForPre(opt.label)}</span><span class="desc">${this.escapeForPre(opt.description || "")}</span>`;
+      btn.addEventListener("click", () => {
+        this.addArrayItem(path, currentArr, opt.value);
+        closeModal();
+      });
+      list.appendChild(btn);
+    });
+
+    const closeModal = () => {
+      overlay.remove();
+      document.body.classList.remove("editor-modal-open");
+      document.removeEventListener("keydown", onEsc);
+    };
+
+    const onEsc = (e) => {
+      if (e.key === "Escape") closeModal();
+    };
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    modal.querySelector(".editor-modal-close").addEventListener("click", closeModal);
+    document.addEventListener("keydown", onEsc);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.classList.add("editor-modal-open");
+  },
+
+  getComponentOptions(path) {
+    if (this.currentFile === "faq.json" && path === "components") {
+      return [
+        {
+          value: "faqQuestions",
+          label: "FAQ",
+          description: "Bloque de preguntas y respuestas",
+        },
+        {
+          value: "faqCta",
+          label: "CTA FAQ",
+          description: "Bloque final con boton de contacto",
+        },
+      ];
+    }
+    return [];
   },
 
   generateUniqueSlug(base) {
