@@ -899,6 +899,22 @@ a:hover { text-decoration: underline; }
   background: var(--danger-soft);
 }
 
+.array-item .remove-btn.inline-remove-btn {
+  position: static;
+  padding: 0.3rem;
+  margin-right: 0.25rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border-radius: 6px;
+}
+
+.array-item .remove-btn.inline-remove-btn:hover {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border-subtle));
+  background: var(--danger-soft);
+}
+
 .array-item-body {
   width: 100%;
 }

@@ -1,0 +1,65 @@
+---
+interface SocialLink {
+  label: string;
+  href: string;
+}
+
+interface ContactCard {
+  icon: string;
+  title: string;
+  description: string;
+  linkLabel?: string;
+  linkHref?: string;
+  socialLinks?: SocialLink[];
+}
+
+interface Props {
+  tag: string;
+  heading: string;
+  cards: ContactCard[];
+}
+
+const { tag, heading, cards = [] } = Astro.props;
+
+const contactIconMap: Record<string, string> = {
+  email: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+  clipboard: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>`,
+  share: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+};
+---
+
+<section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+    <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>
+    <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-10 tracking-tight">{heading}</h2>
+
+    <div class="space-y-6">
+      {cards.map((card) => (
+        <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 transition-transform hover:-translate-y-2 duration-300">
+          <div class="flex items-start gap-6">
+            <div class="flex items-center justify-center size-14 shrink-0 rounded-2xl bg-white text-primary shadow-sm" set:html={contactIconMap[card.icon] || ""}></div>
+            <div>
+              <p class="text-sm uppercase tracking-[0.15em] font-bold text-muted-foreground mb-2">{card.title}</p>
+              {card.description && <p class="text-muted-foreground text-sm mb-2">{card.description}</p>}
+              {card.linkHref && card.linkLabel && (
+                <a href={card.linkHref} class="text-lg text-foreground hover:text-primary transition-colors font-bold tracking-tight">
+                  {card.linkLabel}
+                </a>
+              )}
+              {card.socialLinks && (
+                <div class="flex gap-4 mt-2">
+                  {card.socialLinks.map((social, idx) => (
+                    <>
+                      {idx > 0 && <span class="text-border">|</span>}
+                      <a href={social.href} class="text-base text-muted-foreground hover:text-primary transition-colors font-bold">{social.label}</a>
+                    </>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

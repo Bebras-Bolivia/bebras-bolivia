@@ -401,7 +401,7 @@ const Editor = {
 
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
-      removeBtn.innerHTML = App.icon("x");
+      removeBtn.innerHTML = App.icon("trash");
       removeBtn.title = "Eliminar";
       removeBtn.addEventListener("click", () => {
         this.removeArrayItem(path, idx);
@@ -450,6 +450,9 @@ const Editor = {
       leftGroup.appendChild(handleSpan);
       leftGroup.appendChild(labelSpan);
 
+      const rightGroup = document.createElement("span");
+      rightGroup.style.cssText = "display:flex;align-items:center;gap:0.375rem;padding-right:0rem;";
+
       if (isCollapsible) {
         const collapseBtn = document.createElement("button");
         collapseBtn.type = "button";
@@ -461,7 +464,23 @@ const Editor = {
         leftGroup.appendChild(collapseBtn);
       }
 
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.innerHTML = App.icon("trash");
+      removeBtn.title = "Eliminar";
+      removeBtn.addEventListener("click", () => {
+        this.removeArrayItem(path, idx);
+      });
+
+      if (isCollapsible) {
+        removeBtn.classList.add("inline-remove-btn");
+        rightGroup.appendChild(removeBtn);
+      }
+
       header.appendChild(leftGroup);
+      if (isCollapsible) {
+        header.appendChild(rightGroup);
+      }
       item.appendChild(header);
 
       const body = document.createElement("div");
@@ -498,14 +517,9 @@ const Editor = {
         }
       }
 
-      const removeBtn = document.createElement("button");
-      removeBtn.className = "remove-btn";
-      removeBtn.innerHTML = App.icon("x");
-      removeBtn.title = "Eliminar";
-      removeBtn.addEventListener("click", () => {
-        this.removeArrayItem(path, idx);
-      });
-      item.appendChild(removeBtn);
+      if (!isCollapsible) {
+        item.appendChild(removeBtn);
+      }
 
       // DnD events
       this.attachDragEvents(item, container, path);
@@ -1083,6 +1097,102 @@ const Editor = {
           ctaLabel: "Inscribirse al desafio",
         };
       }
+
+      if (selectedType === "contactInfoCards") {
+        return {
+          type: "contactInfoCards",
+          tag: "Informacion",
+          heading: "Informacion de Contacto",
+          cards: [
+            {
+              icon: "email",
+              title: "Email",
+              description: "Escribenos para cualquier consulta",
+              linkLabel: "info@bebras.bo",
+              linkHref: "mailto:info@bebras.bo",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "contactInternational") {
+        return {
+          type: "contactInternational",
+          tag: "Comunidad Internacional",
+          links: [
+            {
+              label: "Bebras Internacional ->",
+              href: "https://www.bebras.org/",
+              description: "Sitio oficial Bebras",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "contactForm") {
+        return {
+          type: "contactForm",
+          tag: "Formulario",
+          heading: "Envianos un Mensaje",
+          fields: {
+            name: { label: "Nombre completo", placeholder: "Tu nombre" },
+            email: { label: "Email", placeholder: "tu@email.com" },
+            role: {
+              label: "Rol",
+              placeholder: "Seleccionar...",
+              options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"],
+            },
+            message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
+          },
+          submitLabel: "Enviar mensaje",
+          disclaimer: "Este formulario es solo una vista previa.",
+        };
+      }
+
+      if (selectedType === "contactClassic") {
+        return {
+          type: "contactClassic",
+          info: {
+            tag: "Informacion",
+            heading: "Informacion de Contacto",
+            cards: [
+              {
+                icon: "email",
+                title: "Email",
+                description: "Escribenos para cualquier consulta",
+                linkLabel: "info@bebras.bo",
+                linkHref: "mailto:info@bebras.bo",
+              },
+            ],
+          },
+          international: {
+            tag: "Comunidad Internacional",
+            links: [
+              {
+                label: "Bebras Internacional ->",
+                href: "https://www.bebras.org/",
+                description: "Sitio oficial Bebras",
+              },
+            ],
+          },
+          form: {
+            tag: "Formulario",
+            heading: "Envianos un Mensaje",
+            fields: {
+              name: { label: "Nombre completo", placeholder: "Tu nombre" },
+              email: { label: "Email", placeholder: "tu@email.com" },
+              role: {
+                label: "Rol",
+                placeholder: "Seleccionar...",
+                options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"],
+              },
+              message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
+            },
+            submitLabel: "Enviar mensaje",
+            disclaimer: "Este formulario es solo una vista previa.",
+          },
+        };
+      }
     }
 
     if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
@@ -1227,6 +1337,10 @@ const Editor = {
       if (obj.type === "sponsorsCards") return `#${idx + 1} — Sponsors`;
       if (obj.type === "blogIndex") return `#${idx + 1} — Blog Index`;
       if (obj.type === "blogPostUi") return `#${idx + 1} — Blog Post UI`;
+      if (obj.type === "contactInfoCards") return `#${idx + 1} — Contacto Info`;
+      if (obj.type === "contactInternational") return `#${idx + 1} — Contacto Internacional`;
+      if (obj.type === "contactForm") return `#${idx + 1} — Contacto Formulario`;
+      if (obj.type === "contactClassic") return `#${idx + 1} — Contacto Clasico`;
       if (obj.type === "cta") return `#${idx + 1} — CTA`;
       if (obj.title) return `#${idx + 1} — ${obj.title}`;
       if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
@@ -1302,6 +1416,26 @@ const Editor = {
           value: "blogPostUi",
           label: "Blog Post UI",
           description: "Textos de volver y CTA del post",
+        },
+        {
+          value: "contactInfoCards",
+          label: "Contacto Info",
+          description: "Cards de informacion de contacto",
+        },
+        {
+          value: "contactInternational",
+          label: "Contacto Internacional",
+          description: "Lista de enlaces internacionales",
+        },
+        {
+          value: "contactForm",
+          label: "Contacto Formulario",
+          description: "Formulario de contacto UI",
+        },
+        {
+          value: "contactClassic",
+          label: "Contacto Clasico",
+          description: "Bloque completo como diseno anterior",
         },
         {
           value: "faqQuestions",

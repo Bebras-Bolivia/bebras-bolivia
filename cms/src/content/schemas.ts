@@ -262,7 +262,6 @@ export const sponsorsSchema = z.object({
     pageDescription: z.string(),
     tag: z.string(),
     heading: z.string(),
-    headingHighlight: z.string(),
     subtitle: z.string(),
   }),
   components: z.array(
@@ -308,60 +307,151 @@ export const sponsorsSchema = z.object({
 // ── 11. contact.json ─────────────────────────────────────
 
 export const contactSchema = z.object({
-  pageTitle: z.string(),
-  pageDescription: z.string(),
   header: z.object({
+    pageTitle: z.string(),
+    pageDescription: z.string(),
     tag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
   }),
-  info: z.object({
-    tag: z.string(),
-    heading: z.string(),
-    cards: z.array(
+  components: z.array(
+    z.discriminatedUnion("type", [
       z.object({
-        icon: z.string(),
-        title: z.string(),
-        description: z.string(),
-        linkLabel: z.string().optional(),
-        linkHref: z.string().optional(),
-        socialLinks: z
-          .array(
+        type: z.literal("contactInfoCards"),
+        tag: z.string(),
+        heading: z.string(),
+        cards: z.array(
+          z.object({
+            icon: z.string(),
+            title: z.string(),
+            description: z.string(),
+            linkLabel: z.string().optional(),
+            linkHref: z.string().optional(),
+            socialLinks: z
+              .array(
+                z.object({
+                  label: z.string(),
+                  href: z.string(),
+                })
+              )
+              .optional(),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("contactInternational"),
+        tag: z.string(),
+        links: z.array(
+          z.object({
+            label: z.string(),
+            href: z.string(),
+            description: z.string(),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("contactForm"),
+        tag: z.string(),
+        heading: z.string(),
+        fields: z.object({
+          name: z.object({ label: z.string(), placeholder: z.string() }),
+          email: z.object({ label: z.string(), placeholder: z.string() }),
+          role: z.object({
+            label: z.string(),
+            placeholder: z.string(),
+            options: z.array(z.string()),
+          }),
+          message: z.object({ label: z.string(), placeholder: z.string() }),
+        }),
+        submitLabel: z.string(),
+        disclaimer: z.string(),
+      }),
+      z.object({
+        type: z.literal("contactClassic"),
+        info: z.object({
+          tag: z.string(),
+          heading: z.string(),
+          cards: z.array(
+            z.object({
+              icon: z.string(),
+              title: z.string(),
+              description: z.string(),
+              linkLabel: z.string().optional(),
+              linkHref: z.string().optional(),
+              socialLinks: z
+                .array(
+                  z.object({
+                    label: z.string(),
+                    href: z.string(),
+                  })
+                )
+                .optional(),
+            })
+          ),
+        }),
+        international: z.object({
+          tag: z.string(),
+          links: z.array(
             z.object({
               label: z.string(),
               href: z.string(),
+              description: z.string(),
             })
-          )
-          .optional(),
-      })
-    ),
-  }),
-  international: z.object({
-    tag: z.string(),
-    links: z.array(
-      z.object({
-        label: z.string(),
-        href: z.string(),
-        description: z.string(),
-      })
-    ),
-  }),
-  form: z.object({
-    tag: z.string(),
-    heading: z.string(),
-    fields: z.object({
-      name: z.object({ label: z.string(), placeholder: z.string() }),
-      email: z.object({ label: z.string(), placeholder: z.string() }),
-      role: z.object({
-        label: z.string(),
-        placeholder: z.string(),
-        options: z.array(z.string()),
+          ),
+        }),
+        form: z.object({
+          tag: z.string(),
+          heading: z.string(),
+          fields: z.object({
+            name: z.object({ label: z.string(), placeholder: z.string() }),
+            email: z.object({ label: z.string(), placeholder: z.string() }),
+            role: z.object({
+              label: z.string(),
+              placeholder: z.string(),
+              options: z.array(z.string()),
+            }),
+            message: z.object({ label: z.string(), placeholder: z.string() }),
+          }),
+          submitLabel: z.string(),
+          disclaimer: z.string(),
+        }),
       }),
-      message: z.object({ label: z.string(), placeholder: z.string() }),
-    }),
-    submitLabel: z.string(),
-    disclaimer: z.string(),
-  }),
+      z.object({
+        type: z.literal("faqQuestions"),
+        categories: z.array(
+          z.object({
+            title: z.string(),
+            items: z.array(
+              z.object({
+                question: z.string(),
+                answer: z.string(),
+              })
+            ),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("sponsorsCards"),
+        tag: z.string(),
+        columns: z.number().int().min(1).max(4),
+        cards: z.array(
+          z.object({
+            name: z.string(),
+            desc: z.string(),
+            image: z.string(),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("cta"),
+        tag: z.string().optional(),
+        heading: z.string(),
+        text: z.string(),
+        buttonLabel: z.string(),
+        buttonHref: z.string(),
+      }),
+    ])
+  ),
 });
 
 // ── 12. registro.json ────────────────────────────────────
