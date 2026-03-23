@@ -1,0 +1,47 @@
+---
+interface StepItem {
+  num: string;
+  title: string;
+  desc: string;
+}
+
+interface Props {
+  tag: string;
+  heading: string;
+  intro: string;
+  columns?: number;
+  steps: StepItem[];
+}
+
+const { tag, heading, intro, columns = 3, steps = [] } = Astro.props;
+
+function getColsClass(cols: number) {
+  if (cols <= 1) return "grid-cols-1";
+  if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (cols === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+}
+---
+
+<section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+    <div class="mx-auto max-w-3xl">
+      <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>
+      <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>
+      <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
+        <p>{intro}</p>
+        <div class:list={["grid gap-6 mt-12", getColsClass(columns)]}>
+          {steps.map((step) => (
+            <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
+              <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground mb-6 font-mono shadow-md">
+                <span class="text-xl font-bold">{step.num}</span>
+              </div>
+              <p class="text-xl font-bold text-foreground mb-3">{step.title}</p>
+              <p class="text-base text-muted-foreground leading-relaxed">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

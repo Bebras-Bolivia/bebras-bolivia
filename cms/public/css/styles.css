@@ -901,12 +901,22 @@ a:hover { text-decoration: underline; }
 
 .array-item .remove-btn.inline-remove-btn {
   position: static;
-  padding: 0.3rem;
+  width: 24px;
+  height: 24px;
+  padding: 0;
   margin-right: 0.25rem;
   border: 1px solid var(--border-subtle);
   background: var(--bg-base);
   color: var(--text-secondary);
   border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.array-item .remove-btn.inline-remove-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 .array-item .remove-btn.inline-remove-btn:hover {

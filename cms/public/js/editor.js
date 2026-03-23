@@ -313,8 +313,8 @@ const Editor = {
 
     section.appendChild(arrayContainer);
 
-    // Special: component picker modal (FAQ page)
-    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json" || this.currentFile === "blog-ui.json") && path === "components") {
+    // Special: component picker modal for shared components arrays
+    if (path === "components") {
       const addBtn = document.createElement("button");
       addBtn.className = "add-item-btn component-add-btn";
       addBtn.type = "button";
@@ -962,15 +962,6 @@ const Editor = {
       ];
     }
 
-    if (this.currentFile === "docentes.json" && path === "sections") {
-      return [
-        { value: "registro", label: "Docentes: Registro" },
-        { value: "requisitos", label: "Docentes: Requisitos" },
-        { value: "alcance", label: "Docentes: Alcance" },
-        { value: "cta", label: "Docentes: CTA" },
-      ];
-    }
-
     if (this.currentFile === "estudiantes.json" && path === "sections") {
       return [
         { value: "participacion", label: "Estudiantes: Participacion" },
@@ -1050,7 +1041,7 @@ const Editor = {
       }
     }
 
-    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json" || this.currentFile === "blog-ui.json") && path === "components") {
+    if (path === "components") {
       if (selectedType === "faqQuestions") {
         return {
           type: "faqQuestions",
@@ -1063,6 +1054,76 @@ const Editor = {
                   answer: "Nueva respuesta",
                 },
               ],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "sponsorsCards") {
+        return {
+          type: "sponsorsCards",
+          tag: "Nueva seccion de sponsors",
+          columns: 3,
+          cards: [
+            {
+              name: "Nuevo sponsor",
+              desc: "Descripcion del sponsor.",
+              image: "/images/sponsor-placeholder.svg",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "docentesRegistro") {
+        return {
+          type: "docentesRegistro",
+          tag: "Registro",
+          heading: "Como inscriben a sus estudiantes?",
+          intro: "El proceso de inscripcion es simple y gratuito.",
+          columns: 3,
+          steps: [
+            { num: "1", title: "Registro del coordinador", desc: "Crear cuenta en la plataforma Bebras Bolivia." },
+            { num: "2", title: "Inscripcion de estudiantes", desc: "Agregar estudiantes por categoria de edad." },
+            { num: "3", title: "Dia del desafio", desc: "Supervisar la sesion en la escuela." },
+          ],
+        };
+      }
+
+      if (selectedType === "docentesRequisitos") {
+        return {
+          type: "docentesRequisitos",
+          tag: "Requisitos",
+          heading: "Que necesita la escuela?",
+          columns: 2,
+          requirements: [
+            { icon: "monitor", title: "Computadoras con navegador web", desc: "Chrome, Firefox, Edge o Safari actualizados." },
+            { icon: "wifi", title: "Conexion a internet", desc: "Estable durante los 45 minutos del desafio." },
+          ],
+        };
+      }
+
+      if (selectedType === "docentesAlcance") {
+        return {
+          type: "docentesAlcance",
+          tag: "Alcance",
+          heading: "Quien deberia participar?",
+          content: ["Contenido de alcance para docentes."],
+          tip: "Tip: El desafio no requiere conocimientos previos de programacion.",
+        };
+      }
+
+      if (selectedType === "teacherInstructionsTabs") {
+        return {
+          type: "teacherInstructionsTabs",
+          sectionTag: "Guia para coordinadores",
+          heading: "Instrucciones para Coordinadores",
+          subtitle: "Guia paso a paso para antes, durante y despues del desafio.",
+          tabs: [
+            {
+              id: "antes",
+              label: "Antes",
+              heading: "Antes del Desafio",
+              items: [{ title: "Registrarse como coordinador", desc: "Completar los datos de la escuela." }],
             },
           ],
         };
@@ -1195,74 +1256,6 @@ const Editor = {
       }
     }
 
-    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
-      if (selectedType === "sponsorsCards") {
-        return {
-          type: "sponsorsCards",
-          tag: "Nueva seccion de sponsors",
-          columns: 3,
-          cards: [
-            {
-              name: "Nuevo sponsor",
-              desc: "Descripcion del sponsor.",
-              image: "/images/sponsor-placeholder.svg",
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "cta") {
-        return {
-          type: "cta",
-          tag: "Colabora",
-          heading: "Te interesa colaborar?",
-          text: "Sumate como aliado del Desafio Bebras Bolivia.",
-          buttonLabel: "Contactanos",
-          buttonHref: "/contacto",
-        };
-      }
-    }
-
-    if (this.currentFile === "docentes.json" && path === "sections") {
-      if (selectedType === "registro") {
-        return {
-          id: "registro",
-          tag: "Registro",
-          heading: "Titulo de registro",
-          intro: "Introduccion",
-          steps: [{ num: "1", title: "Paso", desc: "Descripcion" }],
-        };
-      }
-      if (selectedType === "requisitos") {
-        return {
-          id: "requisitos",
-          tag: "Requisitos",
-          heading: "Titulo de requisitos",
-          requirements: [{ icon: "monitor", title: "Requisito", desc: "Descripcion" }],
-        };
-      }
-      if (selectedType === "alcance") {
-        return {
-          id: "alcance",
-          tag: "Alcance",
-          heading: "Titulo de alcance",
-          content: ["Parrafo de alcance"],
-          tip: "Tip destacado",
-        };
-      }
-      if (selectedType === "cta") {
-        return {
-          id: "cta",
-          heading: "Titulo CTA",
-          content: ["Texto CTA"],
-          cta: {
-            label: "Accion",
-            href: "/registro",
-          },
-        };
-      }
-    }
-
     if (this.currentFile === "estudiantes.json" && path === "sections") {
       if (selectedType === "participacion") {
         return {
@@ -1341,6 +1334,10 @@ const Editor = {
       if (obj.type === "contactInternational") return `#${idx + 1} — Contacto Internacional`;
       if (obj.type === "contactForm") return `#${idx + 1} — Contacto Formulario`;
       if (obj.type === "contactClassic") return `#${idx + 1} — Contacto Clasico`;
+      if (obj.type === "docentesRegistro") return `#${idx + 1} — Docentes Registro`;
+      if (obj.type === "docentesRequisitos") return `#${idx + 1} — Docentes Requisitos`;
+      if (obj.type === "docentesAlcance") return `#${idx + 1} — Docentes Alcance`;
+      if (obj.type === "teacherInstructionsTabs") return `#${idx + 1} — Docentes Guia`;
       if (obj.type === "cta") return `#${idx + 1} — CTA`;
       if (obj.title) return `#${idx + 1} — ${obj.title}`;
       if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
@@ -1446,6 +1443,26 @@ const Editor = {
           value: "sponsorsCards",
           label: "Sponsors",
           description: "Seccion de cards de patrocinadores",
+        },
+        {
+          value: "docentesRegistro",
+          label: "Docentes Registro",
+          description: "Seccion de pasos para registro",
+        },
+        {
+          value: "docentesRequisitos",
+          label: "Docentes Requisitos",
+          description: "Requisitos tecnicos de la escuela",
+        },
+        {
+          value: "docentesAlcance",
+          label: "Docentes Alcance",
+          description: "A quien esta dirigido y tip",
+        },
+        {
+          value: "teacherInstructionsTabs",
+          label: "Docentes Guia",
+          description: "Instrucciones por pestanas",
         },
         {
           value: "cta",

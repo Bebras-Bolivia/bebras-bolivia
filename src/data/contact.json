@@ -32,14 +32,8 @@
             "title": "Redes Sociales",
             "description": "Siguenos para novedades",
             "socialLinks": [
-              {
-                "label": "Facebook",
-                "href": "https://facebook.com/bebrasbolivia"
-              },
-              {
-                "label": "Instagram",
-                "href": "https://instagram.com/bebrasbolivia"
-              }
+              { "label": "Facebook", "href": "https://facebook.com/bebrasbolivia" },
+              { "label": "Instagram", "href": "https://instagram.com/bebrasbolivia" }
             ]
           }
         ]
@@ -47,48 +41,81 @@
       "international": {
         "tag": "Comunidad Internacional",
         "links": [
-          {
-            "label": "Bebras Internacional ->",
-            "href": "https://www.bebras.org/",
-            "description": "Sitio oficial de la iniciativa mundial Bebras"
-          },
-          {
-            "label": "Bebras USA ->",
-            "href": "https://www.bebraschallenge.org/",
-            "description": "Capitulo de Bebras en Estados Unidos"
-          }
+          { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" },
+          { "label": "Bebras USA ->", "href": "https://www.bebraschallenge.org/", "description": "Capitulo de Bebras en Estados Unidos" }
         ]
       },
       "form": {
         "tag": "Formulario",
         "heading": "Envianos un Mensaje",
         "fields": {
-          "name": {
-            "label": "Nombre completo",
-            "placeholder": "Tu nombre"
-          },
-          "email": {
-            "label": "Email",
-            "placeholder": "tu@email.com"
-          },
+          "name": { "label": "Nombre completo", "placeholder": "Tu nombre" },
+          "email": { "label": "Email", "placeholder": "tu@email.com" },
           "role": {
             "label": "Rol",
             "placeholder": "Seleccionar...",
-            "options": [
-              "Estudiante",
-              "Docente / Coordinador",
-              "Institucion",
-              "Otro"
-            ]
+            "options": ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"]
           },
-          "message": {
-            "label": "Mensaje",
-            "placeholder": "Escribe tu mensaje..."
-          }
+          "message": { "label": "Mensaje", "placeholder": "Escribe tu mensaje..." }
         },
         "submitLabel": "Enviar mensaje",
         "disclaimer": "Este formulario es solo una vista previa. La funcionalidad de envio se habilitara proximamente."
       }
+    },
+    {
+      "type": "contactInfoCards",
+      "tag": "Informacion",
+      "heading": "Informacion de Contacto",
+      "cards": [
+        {
+          "icon": "email",
+          "title": "Email",
+          "description": "Escribenos para cualquier consulta",
+          "linkLabel": "info@bebras.bo",
+          "linkHref": "mailto:info@bebras.bo"
+        },
+        {
+          "icon": "clipboard",
+          "title": "Registro",
+          "description": "Inscribe a tu escuela en el desafio",
+          "linkLabel": "Inscribirse al desafio ->",
+          "linkHref": "/registro"
+        },
+        {
+          "icon": "share",
+          "title": "Redes Sociales",
+          "description": "Siguenos para novedades",
+          "socialLinks": [
+            { "label": "Facebook", "href": "https://facebook.com/bebrasbolivia" },
+            { "label": "Instagram", "href": "https://instagram.com/bebrasbolivia" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "contactInternational",
+      "tag": "Comunidad Internacional",
+      "links": [
+        { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" },
+        { "label": "Bebras USA ->", "href": "https://www.bebraschallenge.org/", "description": "Capitulo de Bebras en Estados Unidos" }
+      ]
+    },
+    {
+      "type": "contactForm",
+      "tag": "Formulario",
+      "heading": "Envianos un Mensaje",
+      "fields": {
+        "name": { "label": "Nombre completo", "placeholder": "Tu nombre" },
+        "email": { "label": "Email", "placeholder": "tu@email.com" },
+        "role": {
+          "label": "Rol",
+          "placeholder": "Seleccionar...",
+          "options": ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"]
+        },
+        "message": { "label": "Mensaje", "placeholder": "Escribe tu mensaje..." }
+      },
+      "submitLabel": "Enviar mensaje",
+      "disclaimer": "Este formulario es solo una vista previa. La funcionalidad de envio se habilitara proximamente."
     }
   ]
 }

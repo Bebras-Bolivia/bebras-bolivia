@@ -1,0 +1,28 @@
+---
+import TeacherInstructions from "@/components/TeacherInstructions";
+
+interface Item {
+  title: string;
+  desc: string;
+}
+
+interface Tab {
+  id: string;
+  label: string;
+  heading: string;
+  items: Item[];
+}
+
+interface Props {
+  sectionTag: string;
+  heading: string;
+  subtitle: string;
+  tabs: Tab[];
+}
+
+const { sectionTag, heading, subtitle, tabs = [] } = Astro.props;
+---
+
+<div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+  <TeacherInstructions sectionTag={sectionTag} heading={heading} subtitle={subtitle} tabs={tabs} client:visible />
+</div>
