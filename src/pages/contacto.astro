@@ -1,12 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import FAQQuestionsBlock from "@/components/content-blocks/FAQQuestionsBlock.astro";
-import SponsorsCardsBlock from "@/components/content-blocks/SponsorsCardsBlock.astro";
-import CtaSectionBlock from "@/components/content-blocks/CtaSectionBlock.astro";
-import ContactInfoCardsBlock from "@/components/content-blocks/ContactInfoCardsBlock.astro";
-import ContactInternationalBlock from "@/components/content-blocks/ContactInternationalBlock.astro";
-import ContactFormBlock from "@/components/content-blocks/ContactFormBlock.astro";
-import ContactClassicBlock from "@/components/content-blocks/ContactClassicBlock.astro";
+import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import data from "@/data/contact.json";
 
 const contactData = data as any;
@@ -25,30 +19,7 @@ const components: any[] = Array.isArray(contactData.components) ? contactData.co
     </div>
 
     <main class="relative z-10 w-full min-h-screen bg-[#F4F4F1] dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] -mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-16 lg:pt-24">
-      {components.map((component: any) => {
-        if (component.type === "contactInfoCards") {
-          return <ContactInfoCardsBlock tag={component.tag} heading={component.heading} cards={component.cards} />;
-        }
-        if (component.type === "contactInternational") {
-          return <ContactInternationalBlock tag={component.tag} links={component.links} />;
-        }
-        if (component.type === "contactForm") {
-          return <ContactFormBlock data={component} />;
-        }
-        if (component.type === "contactClassic") {
-          return <ContactClassicBlock data={component} />;
-        }
-        if (component.type === "faqQuestions") {
-          return <FAQQuestionsBlock categories={component.categories} />;
-        }
-        if (component.type === "sponsorsCards") {
-          return <SponsorsCardsBlock tag={component.tag} columns={component.columns} cards={component.cards} />;
-        }
-        if (component.type === "cta") {
-          return <CtaSectionBlock tag={component.tag} heading={component.heading} text={component.text} buttonLabel={component.buttonLabel} buttonHref={component.buttonHref} />;
-        }
-        return null;
-      })}
+      <PageComponentsRenderer components={components} />
     </main>
   </div>
 </Layout>

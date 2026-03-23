@@ -4,38 +4,35 @@
   "header": {
     "tag": "Para estudiantes",
     "heading": "Informacion para Estudiantes",
-    "headingHighlight": "Estudiantes",
     "subtitle": "Todo lo que necesitas saber para participar en el Desafio Bebras Bolivia."
   },
-  "sections": [
+  "components": [
     {
-      "id": "participacion",
+      "type": "sectionRichText",
       "tag": "Participacion",
       "heading": "Como participar?",
-      "content": [
+      "paragraphs": [
         "Para participar en el Desafio Bebras, tu docente o coordinador de escuela debe registrarse en la plataforma. Una vez registrado, el coordinador inscribe a los estudiantes por categoria de edad. El dia del desafio, accedes a la plataforma desde una computadora con navegador web.",
         "Si tu escuela aun no esta inscrita, pide a tu profesor que visite la pagina para docentes para mas informacion sobre el proceso de registro."
       ],
-      "link": {
-        "label": "pagina para docentes",
-        "href": "/docentes"
-      }
+      "linkLabel": "pagina para docentes",
+      "linkHref": "/docentes"
     },
     {
-      "id": "desafio",
+      "type": "sectionRichText",
       "tag": "El desafio",
       "heading": "Que es el Desafio Bebras?",
-      "content": [
+      "paragraphs": [
         "Bebras es una competencia internacional de pensamiento computacional que se realiza en mas de 60 paises. No es una competencia de programacion: los problemas son acertijos logicos y situaciones que requieren pensar de forma estructurada.",
         "No necesitas saber programar ni tener conocimientos previos de informatica. Los desafios estan disenados para ser accesibles, divertidos y estimulantes."
       ]
     },
     {
-      "id": "habilidades",
+      "type": "featureList",
       "tag": "Habilidades clave",
       "heading": "Que es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
-      "skills": [
+      "items": [
         {
           "title": "Descomposicion:",
           "desc": "dividir un problema grande en partes mas pequenas."
@@ -56,10 +53,10 @@
       "outro": "Estas habilidades son utiles en la vida cotidiana, no solo en la informatica."
     },
     {
-      "id": "formato",
+      "type": "statsGrid",
       "tag": "El formato",
       "heading": "Que involucra el desafio?",
-      "statsColumns": 3,
+      "columns": 3,
       "stats": [
         {
           "value": "15",
@@ -78,22 +75,24 @@
           "label": "God"
         }
       ],
-      "content": [
+      "paragraphs": [
         "El desafio consiste en 15 preguntas que debes resolver en 45 minutos. Las preguntas tienen tres niveles de dificultad y cada nivel otorga diferente puntaje.",
         "Puedes responder las preguntas en cualquier orden y cambiar tus respuestas antes de que termine el tiempo."
       ]
     },
     {
-      "id": "certificados",
+      "type": "studentsScoringTable"
+    },
+    {
+      "type": "studentsAgeCategories"
+    },
+    {
+      "type": "cta",
       "tag": "Reconocimiento",
       "heading": "Certificados",
-      "content": [
-        "Todos los participantes reciben un certificado digital de participacion. Los estudiantes con los mejores puntajes de cada categoria reciben reconocimientos especiales."
-      ],
-      "cta": {
-        "label": "Inscribirse al desafio",
-        "href": "/registro"
-      }
+      "text": "Todos los participantes reciben un certificado digital de participacion. Los estudiantes con los mejores puntajes de cada categoria reciben reconocimientos especiales.",
+      "buttonLabel": "Inscribirse al desafio",
+      "buttonHref": "/registro"
     }
   ]
 }

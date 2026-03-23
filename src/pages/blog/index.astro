@@ -2,9 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import blogUi from "@/data/blog-ui.json";
-import FAQQuestionsBlock from "@/components/content-blocks/FAQQuestionsBlock.astro";
-import SponsorsCardsBlock from "@/components/content-blocks/SponsorsCardsBlock.astro";
-import CtaSectionBlock from "@/components/content-blocks/CtaSectionBlock.astro";
+import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -103,18 +101,7 @@ const indexUi = components.find((c) => c.type === "blogIndex") || {
         </div>
       </section>
 
-      {components.map((component: any) => {
-        if (component.type === "faqQuestions") {
-          return <FAQQuestionsBlock categories={component.categories} />;
-        }
-        if (component.type === "sponsorsCards") {
-          return <SponsorsCardsBlock tag={component.tag} columns={component.columns} cards={component.cards} />;
-        }
-        if (component.type === "cta") {
-          return <CtaSectionBlock tag={component.tag} heading={component.heading} text={component.text} buttonLabel={component.buttonLabel} buttonHref={component.buttonHref} />;
-        }
-        return null;
-      })}
+      <PageComponentsRenderer components={components} />
 
     </main>
   </div>

@@ -71,6 +71,7 @@ const Editor = {
   selectOptions: {
     variant: ["button", "link"],
     status: ["positive", "neutral", "negative"],
+    icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share"],
   },
 
   hiddenFields: new Set(["id", "pageTitle", "pageDescription"]),
@@ -188,6 +189,7 @@ const Editor = {
   renderPrimitive(container, value, path) {
     const key = path.split(".").pop();
     const type = this.getFieldType(path, value);
+    const isAutoNumberField = this.isAutoNumberField(path);
 
     const group = document.createElement("div");
     group.className = "form-group";
@@ -198,6 +200,7 @@ const Editor = {
     group.appendChild(label);
 
     let input;
+    let bindPath = true;
     if (type === "textarea") {
       input = document.createElement("textarea");
       input.className = "form-textarea";
@@ -213,10 +216,16 @@ const Editor = {
       input.setAttribute("data-value-type", "boolean");
     } else if (type === "number") {
       input = document.createElement("input");
-      input.type = "number";
+      input.type = isAutoNumberField ? "text" : "number";
       input.className = "form-input";
       input.value = String(value);
-      input.setAttribute("data-value-type", "number");
+      if (isAutoNumberField) {
+        input.readOnly = true;
+        input.disabled = true;
+        bindPath = false;
+      } else {
+        input.setAttribute("data-value-type", "number");
+      }
     } else if (type === "select") {
       input = document.createElement("select");
       input.className = "form-select";
@@ -277,7 +286,7 @@ const Editor = {
     }
 
     input.id = `field-${path}`;
-    input.setAttribute("data-path", path);
+    if (bindPath) input.setAttribute("data-path", path);
     group.appendChild(input);
     container.appendChild(group);
   },
@@ -535,6 +544,7 @@ const Editor = {
       const typedTemplate = this.createTypedArrayItem(path, selectedType);
       if (typedTemplate !== null) {
         this.setNestedValue(this.currentData, path, [...currentArr, typedTemplate]);
+        this.normalizeStructuredArrays();
         this.dirty = true;
         this.collectFormData();
         const formContainer = document.getElementById("editor-form");
@@ -560,6 +570,7 @@ const Editor = {
         this.setNestedValue(this.currentData, path, [...currentArr, blank]);
       }
     }
+    this.normalizeStructuredArrays();
     this.dirty = true;
     // Re-render the whole form
     this.collectFormData();
@@ -578,6 +589,7 @@ const Editor = {
       arr.splice(idx, 1);
       this.setNestedValue(this.currentData, path, arr);
     }
+    this.normalizeStructuredArrays();
     this.dirty = true;
     const formContainer = document.getElementById("editor-form");
     formContainer.innerHTML = "";
@@ -685,6 +697,7 @@ const Editor = {
     const [moved] = arr.splice(fromIdx, 1);
     arr.splice(toIdx, 0, moved);
     this.setNestedValue(this.currentData, path, arr);
+    this.normalizeStructuredArrays();
 
     this.dirty = true;
     const formContainer = document.getElementById("editor-form");
@@ -944,6 +957,31 @@ const Editor = {
     return "text";
   },
 
+  isAutoNumberField(path) {
+    if (!/\.items\[\d+\]\.number$/.test(path)) return false;
+    const parentPath = path.replace(/\.items\[\d+\]\.number$/, "");
+    const parent = this.getNestedValue(this.currentData, parentPath);
+    return !!(parent && parent.type === "itemsGrid" && parent.mediaType === "number");
+  },
+
+  normalizeStructuredArrays() {
+    const walk = (node) => {
+      if (!node || typeof node !== "object") return;
+      if (Array.isArray(node)) {
+        node.forEach(walk);
+        return;
+      }
+
+      if (node.type === "itemsGrid" && node.mediaType === "number" && Array.isArray(node.items)) {
+        node.items = node.items.map((item, idx) => ({ ...item, number: String(idx + 1) }));
+      }
+
+      Object.values(node).forEach(walk);
+    };
+
+    walk(this.currentData);
+  },
+
   shouldHideField(key) {
     return this.hiddenFields.has(key);
   },
@@ -970,6 +1008,26 @@ const Editor = {
         { value: "formato", label: "Estudiantes: Formato" },
         { value: "certificados", label: "Estudiantes: Certificados" },
       ];
+    }
+
+    if (/\.tabs$/.test(path)) {
+      const parentPath = path.replace(/\.tabs$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && (parent.type === "tabsGuide" || parent.type === "teacherInstructionsTabs")) {
+        return [{ value: "tabStep", label: "Pestana" }];
+      }
+    }
+
+    if (/\.tabs\[\d+\]\.items$/.test(path)) {
+      return [{ value: "tabItem", label: "Elemento de pestana" }];
+    }
+
+    if (/\.items$/.test(path)) {
+      const parentPath = path.replace(/\.items$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "itemsGrid") {
+        return [{ value: "gridItem", label: "Item de card" }];
+      }
     }
 
     return null;
@@ -1056,6 +1114,180 @@ const Editor = {
               ],
             },
           ],
+        };
+      }
+
+      if (selectedType === "faqAccordion") {
+        return {
+          type: "faqAccordion",
+          categories: [
+            {
+              title: "Nueva seccion FAQ",
+              items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "sectionRichText") {
+        return {
+          type: "sectionRichText",
+          tag: "Seccion",
+          heading: "Titulo de seccion",
+          paragraphs: ["Parrafo de ejemplo"],
+          tip: "Tip opcional",
+          linkLabel: "",
+          linkHref: "",
+        };
+      }
+
+      if (selectedType === "itemsGrid") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Titulo de cards",
+          intro: "Texto introductorio opcional",
+          columns: 3,
+          mediaType: "icon",
+          items: [
+            { title: "Card 1", description: "Descripcion", icon: "monitor" },
+            { title: "Card 2", description: "Descripcion", icon: "wifi" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridIcon") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Grid con iconos",
+          intro: "Seccion de cards con iconos.",
+          columns: 3,
+          mediaType: "icon",
+          items: [
+            { title: "Card 1", description: "Descripcion", icon: "monitor" },
+            { title: "Card 2", description: "Descripcion", icon: "wifi" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridImage") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Grid con imagenes",
+          intro: "Seccion de cards con imagen.",
+          columns: 3,
+          mediaType: "image",
+          items: [
+            { title: "Card 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+            { title: "Card 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridNumber") {
+        return {
+          type: "itemsGrid",
+          tag: "Pasos",
+          heading: "Grid numerado",
+          intro: "Seccion de pasos numerados.",
+          columns: 3,
+          mediaType: "number",
+          items: [
+            { number: "1", title: "Paso 1", description: "Descripcion" },
+            { number: "2", title: "Paso 2", description: "Descripcion" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridSimple") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Grid simple",
+          intro: "Seccion de cards sin media.",
+          columns: 3,
+          mediaType: "none",
+          items: [
+            { title: "Card 1", description: "Descripcion" },
+            { title: "Card 2", description: "Descripcion" },
+          ],
+        };
+      }
+
+      if (selectedType === "linksList") {
+        return {
+          type: "linksList",
+          tag: "Enlaces",
+          heading: "Recursos",
+          links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
+        };
+      }
+
+      if (selectedType === "featureList") {
+        return {
+          type: "featureList",
+          tag: "Habilidades",
+          heading: "Titulo de listado",
+          intro: "Texto introductorio",
+          items: [{ title: "Punto 1", desc: "Descripcion" }],
+          outro: "Texto de cierre",
+        };
+      }
+
+      if (selectedType === "statsGrid") {
+        return {
+          type: "statsGrid",
+          tag: "Estadisticas",
+          heading: "Titulo de estadisticas",
+          columns: 3,
+          stats: [
+            { value: "15", label: "Preguntas" },
+            { value: "45", label: "Minutos" },
+          ],
+          paragraphs: ["Descripcion del bloque."],
+        };
+      }
+
+      if (selectedType === "studentsAgeCategories") {
+        return { type: "studentsAgeCategories" };
+      }
+
+      if (selectedType === "studentsScoringTable") {
+        return { type: "studentsScoringTable" };
+      }
+
+      if (selectedType === "tabsGuide") {
+        return {
+          type: "tabsGuide",
+          sectionTag: "Guia",
+          heading: "Instrucciones",
+          subtitle: "Pasos por etapa",
+          tabs: [
+            {
+              id: "antes",
+              label: "Antes",
+              heading: "Antes del desafio",
+              items: [{ title: "Paso", desc: "Descripcion" }],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "formContact") {
+        return {
+          type: "formContact",
+          tag: "Formulario",
+          heading: "Envianos un mensaje",
+          fields: {
+            name: { label: "Nombre completo", placeholder: "Tu nombre" },
+            email: { label: "Email", placeholder: "tu@email.com" },
+            role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Docente", "Institucion", "Otro"] },
+            message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
+          },
+          submitLabel: "Enviar mensaje",
+          disclaimer: "Este formulario es solo una vista previa.",
         };
       }
 
@@ -1307,6 +1539,36 @@ const Editor = {
       }
     }
 
+    if (selectedType === "tabStep") {
+      return {
+        id: `tab-${Date.now()}`,
+        label: "Nueva pestana",
+        heading: "Titulo de pestana",
+        items: [{ title: "Nuevo punto", desc: "Descripcion" }],
+      };
+    }
+
+    if (selectedType === "tabItem") {
+      return { title: "Nuevo punto", desc: "Descripcion" };
+    }
+
+    if (selectedType === "gridItem") {
+      const parentPath = path.replace(/\.items$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "itemsGrid") {
+        if (parent.mediaType === "icon") {
+          return { title: "Nuevo item", description: "Descripcion", icon: "monitor" };
+        }
+        if (parent.mediaType === "image") {
+          return { title: "Nuevo item", description: "Descripcion", image: "/images/sponsor-placeholder.svg" };
+        }
+        if (parent.mediaType === "number") {
+          return { number: "", title: "Nuevo item", description: "Descripcion" };
+        }
+      }
+      return { title: "Nuevo item", description: "Descripcion" };
+    }
+
     return null;
   },
 
@@ -1315,6 +1577,27 @@ const Editor = {
 
     if (this.currentFile === "faq.json" && normalizedPath.endsWith("categories[].items")) {
       return { question: "", answer: "" };
+    }
+
+    if (normalizedPath.endsWith("tabs[].items")) {
+      return { title: "", desc: "" };
+    }
+
+    if (normalizedPath.endsWith(".items")) {
+      const parentPath = String(path).replace(/\.items$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "itemsGrid") {
+        if (parent.mediaType === "icon") {
+          return { title: "", description: "", icon: "monitor" };
+        }
+        if (parent.mediaType === "image") {
+          return { title: "", description: "", image: "/images/sponsor-placeholder.svg" };
+        }
+        if (parent.mediaType === "number") {
+          return { number: "", title: "", description: "" };
+        }
+        return { title: "", description: "" };
+      }
     }
 
     return "";
@@ -1338,6 +1621,16 @@ const Editor = {
       if (obj.type === "docentesRequisitos") return `#${idx + 1} — Docentes Requisitos`;
       if (obj.type === "docentesAlcance") return `#${idx + 1} — Docentes Alcance`;
       if (obj.type === "teacherInstructionsTabs") return `#${idx + 1} — Docentes Guia`;
+      if (obj.type === "sectionRichText") return `#${idx + 1} — Texto`; 
+      if (obj.type === "itemsGrid") return `#${idx + 1} — Grid de Cards`;
+      if (obj.type === "linksList") return `#${idx + 1} — Lista de Enlaces`;
+      if (obj.type === "featureList") return `#${idx + 1} — Lista de Caracteristicas`;
+      if (obj.type === "statsGrid") return `#${idx + 1} — Grid de Estadisticas`;
+      if (obj.type === "studentsAgeCategories") return `#${idx + 1} — Categorias de Edad`;
+      if (obj.type === "studentsScoringTable") return `#${idx + 1} — Tabla de Puntaje`;
+      if (obj.type === "faqAccordion") return `#${idx + 1} — FAQ Acordeon`;
+      if (obj.type === "tabsGuide") return `#${idx + 1} — Guia en Tabs`;
+      if (obj.type === "formContact") return `#${idx + 1} — Formulario`;
       if (obj.type === "cta") return `#${idx + 1} — CTA`;
       if (obj.title) return `#${idx + 1} — ${obj.title}`;
       if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
@@ -1405,6 +1698,71 @@ const Editor = {
     if (path === "components") {
       return [
         {
+          value: "sectionRichText",
+          label: "Seccion de Texto",
+          description: "Titulo, parrafos y tip opcional",
+        },
+        {
+          value: "itemsGridIcon",
+          label: "Grid cards + icono",
+          description: "Cards con icono visual",
+        },
+        {
+          value: "itemsGridImage",
+          label: "Grid cards + imagen",
+          description: "Cards con imagen",
+        },
+        {
+          value: "itemsGridNumber",
+          label: "Grid cards + numero",
+          description: "Cards tipo pasos numerados",
+        },
+        {
+          value: "itemsGridSimple",
+          label: "Grid cards simple",
+          description: "Cards sin icono ni imagen",
+        },
+        {
+          value: "linksList",
+          label: "Lista de Enlaces",
+          description: "Listado de recursos o enlaces externos",
+        },
+        {
+          value: "featureList",
+          label: "Lista de Caracteristicas",
+          description: "Lista con checks y texto introductorio",
+        },
+        {
+          value: "statsGrid",
+          label: "Grid de Estadisticas",
+          description: "Metricas en tarjetas con texto inferior",
+        },
+        {
+          value: "studentsAgeCategories",
+          label: "Categorias de Edad",
+          description: "Componente visual de categorias",
+        },
+        {
+          value: "studentsScoringTable",
+          label: "Tabla de Puntaje",
+          description: "Componente de tabla de puntuacion",
+        },
+        {
+          value: "faqAccordion",
+          label: "FAQ Acordeon",
+          description: "Preguntas y respuestas en acordeon",
+        },
+        {
+          value: "tabsGuide",
+          label: "Guia en Tabs",
+          description: "Contenido por pestanas",
+        },
+        {
+          value: "formContact",
+          label: "Formulario",
+          description: "Formulario de contacto editable",
+        },
+        {
           value: "blogIndex",
           label: "Blog Index",
           description: "Estado vacio y texto Leer mas",
@@ -1415,54 +1773,9 @@ const Editor = {
           description: "Textos de volver y CTA del post",
         },
         {
-          value: "contactInfoCards",
-          label: "Contacto Info",
-          description: "Cards de informacion de contacto",
-        },
-        {
-          value: "contactInternational",
-          label: "Contacto Internacional",
-          description: "Lista de enlaces internacionales",
-        },
-        {
-          value: "contactForm",
-          label: "Contacto Formulario",
-          description: "Formulario de contacto UI",
-        },
-        {
           value: "contactClassic",
           label: "Contacto Clasico",
           description: "Bloque completo como diseno anterior",
-        },
-        {
-          value: "faqQuestions",
-          label: "FAQ",
-          description: "Bloque de preguntas y respuestas",
-        },
-        {
-          value: "sponsorsCards",
-          label: "Sponsors",
-          description: "Seccion de cards de patrocinadores",
-        },
-        {
-          value: "docentesRegistro",
-          label: "Docentes Registro",
-          description: "Seccion de pasos para registro",
-        },
-        {
-          value: "docentesRequisitos",
-          label: "Docentes Requisitos",
-          description: "Requisitos tecnicos de la escuela",
-        },
-        {
-          value: "docentesAlcance",
-          label: "Docentes Alcance",
-          description: "A quien esta dirigido y tip",
-        },
-        {
-          value: "teacherInstructionsTabs",
-          label: "Docentes Guia",
-          description: "Instrucciones por pestanas",
         },
         {
           value: "cta",

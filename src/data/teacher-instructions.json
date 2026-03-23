@@ -6,7 +6,7 @@
   },
   "components": [
     {
-      "type": "teacherInstructionsTabs",
+      "type": "tabsGuide",
       "sectionTag": "Guia para coordinadores",
       "heading": "Instrucciones para Coordinadores",
       "subtitle": "Guia paso a paso para antes, durante y despues del desafio.",

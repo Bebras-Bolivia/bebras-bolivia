@@ -59,6 +59,136 @@ const StatSchema = z.object({
 
 const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
+    type: z.literal("sectionRichText"),
+    tag: z.string().optional(),
+    heading: z.string().optional(),
+    paragraphs: z.array(z.string()).optional(),
+    tip: z.string().optional(),
+    linkLabel: z.string().optional(),
+    linkHref: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("itemsGrid"),
+    tag: z.string().optional(),
+    heading: z.string().optional(),
+    intro: z.string().optional(),
+    columns: z.number().int().min(1).max(4).optional(),
+    mediaType: z.enum(["icon", "image", "number", "none"]).optional(),
+    items: z.array(
+      z.object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+        icon: z.string().optional(),
+        image: z.string().optional(),
+        number: z.string().optional(),
+        linkLabel: z.string().optional(),
+        linkHref: z.string().optional(),
+        socialLinks: z
+          .array(
+            z.object({
+              label: z.string(),
+              href: z.string(),
+            })
+          )
+          .optional(),
+      })
+    ),
+  }),
+  z.object({
+    type: z.literal("linksList"),
+    tag: z.string().optional(),
+    heading: z.string().optional(),
+    links: z.array(
+      z.object({
+        label: z.string(),
+        href: z.string(),
+        description: z.string().optional(),
+      })
+    ),
+  }),
+  z.object({
+    type: z.literal("faqAccordion"),
+    categories: z.array(
+      z.object({
+        title: z.string(),
+        items: z.array(
+          z.object({
+            question: z.string(),
+            answer: z.string(),
+          })
+        ),
+      })
+    ),
+  }),
+  z.object({
+    type: z.literal("tabsGuide"),
+    sectionTag: z.string(),
+    heading: z.string(),
+    subtitle: z.string(),
+    tabs: z.array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        heading: z.string(),
+        items: z.array(
+          z.object({
+            title: z.string(),
+            desc: z.string(),
+          })
+        ),
+      })
+    ),
+  }),
+  z.object({
+    type: z.literal("formContact"),
+    tag: z.string(),
+    heading: z.string(),
+    fields: z.object({
+      name: z.object({ label: z.string(), placeholder: z.string() }),
+      email: z.object({ label: z.string(), placeholder: z.string() }),
+      role: z.object({
+        label: z.string(),
+        placeholder: z.string(),
+        options: z.array(z.string()),
+      }),
+      message: z.object({ label: z.string(), placeholder: z.string() }),
+    }),
+    submitLabel: z.string(),
+    disclaimer: z.string(),
+  }),
+  z.object({
+    type: z.literal("featureList"),
+    tag: z.string().optional(),
+    heading: z.string().optional(),
+    intro: z.string().optional(),
+    items: z.array(
+      z.object({
+        title: z.string(),
+        desc: z.string(),
+      })
+    ),
+    outro: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("statsGrid"),
+    tag: z.string().optional(),
+    heading: z.string().optional(),
+    columns: z.number().int().min(1).max(4).optional(),
+    stats: z.array(
+      z.object({
+        value: z.string(),
+        label: z.string(),
+      })
+    ),
+    paragraphs: z.array(z.string()).optional(),
+  }),
+  z.object({
+    type: z.literal("studentsAgeCategories"),
+  }),
+  z.object({
+    type: z.literal("studentsScoringTable"),
+  }),
+  z.object({
     type: z.literal("blogIndex"),
     emptyState: z.object({
       tag: z.string(),
@@ -510,10 +640,9 @@ export const estudiantesSchema = z.object({
   header: z.object({
     tag: z.string(),
     heading: z.string(),
-    headingHighlight: z.string(),
     subtitle: z.string(),
   }),
-  sections: z.array(estudiantesSectionSchema),
+  components: z.array(SharedPageComponentSchema),
 });
 
 // ── 14. docentes.json ────────────────────────────────────

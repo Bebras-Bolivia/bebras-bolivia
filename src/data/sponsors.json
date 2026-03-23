@@ -8,35 +8,37 @@
   },
   "components": [
     {
-      "type": "sponsorsCards",
+      "type": "itemsGrid",
       "tag": "Institucion Organizadora",
       "columns": 1,
-      "cards": [
+      "mediaType": "image",
+      "items": [
         {
-          "name": "Universidad Placeholder",
-          "desc": "Institucion ancla que coordina y organiza el Desafio Bebras en Bolivia, proporcionando infraestructura academica y soporte tecnico para todas las actividades.",
+          "title": "Universidad Placeholder",
+          "description": "Institucion ancla que coordina y organiza el Desafio Bebras en Bolivia, proporcionando infraestructura academica y soporte tecnico para todas las actividades.",
           "image": "/images/university-placeholder.svg"
         }
       ]
     },
     {
-      "type": "sponsorsCards",
+      "type": "itemsGrid",
       "tag": "Patrocinadores y Aliados",
       "columns": 3,
-      "cards": [
+      "mediaType": "image",
+      "items": [
         {
-          "name": "Sponsor 1",
-          "desc": "Descripcion breve del patrocinador y su relacion con la educacion.",
+          "title": "Sponsor 1",
+          "description": "Descripcion breve del patrocinador y su relacion con la educacion.",
           "image": "/images/sponsor-placeholder.svg"
         },
         {
-          "name": "Sponsor 2",
-          "desc": "Descripcion breve del patrocinador y su contribucion al proyecto.",
+          "title": "Sponsor 2",
+          "description": "Descripcion breve del patrocinador y su contribucion al proyecto.",
           "image": "/images/sponsor-placeholder.svg"
         },
         {
-          "name": "Sponsor 3",
-          "desc": "Descripcion breve del patrocinador y como apoya la iniciativa.",
+          "title": "Sponsor 3",
+          "description": "Descripcion breve del patrocinador y como apoya la iniciativa.",
           "image": "/images/sponsor-placeholder.svg"
         }
       ]

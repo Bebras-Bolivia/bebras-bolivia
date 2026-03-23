@@ -1,0 +1,220 @@
+---
+import FAQQuestionsBlock from "@/components/content-blocks/FAQQuestionsBlock.astro";
+import CtaSectionBlock from "@/components/content-blocks/CtaSectionBlock.astro";
+import ContactFormBlock from "@/components/content-blocks/ContactFormBlock.astro";
+import TeacherInstructionsTabsBlock from "@/components/content-blocks/TeacherInstructionsTabsBlock.astro";
+import ContactClassicBlock from "@/components/content-blocks/ContactClassicBlock.astro";
+import ItemsGridBlock from "@/components/content-blocks/ItemsGridBlock.astro";
+import LinksListBlock from "@/components/content-blocks/LinksListBlock.astro";
+import SectionRichTextBlock from "@/components/content-blocks/SectionRichTextBlock.astro";
+import FeatureListBlock from "@/components/content-blocks/FeatureListBlock.astro";
+import StatsGridBlock from "@/components/content-blocks/StatsGridBlock.astro";
+import AgeCategories from "@/components/AgeCategories.astro";
+import ScoringTable from "@/components/ScoringTable.astro";
+
+interface Props {
+  components: any[];
+}
+
+const { components = [] } = Astro.props;
+
+function mapLegacyToUnified(component: any) {
+  if (!component || typeof component !== "object") return component;
+
+  if (component.type === "sponsorsCards") {
+    return {
+      type: "itemsGrid",
+      tag: component.tag,
+      columns: component.columns,
+      mediaType: "image",
+      items: (component.cards || []).map((c: any) => ({
+        title: c.name,
+        description: c.desc,
+        image: c.image,
+      })),
+    };
+  }
+
+  if (component.type === "contactInfoCards") {
+    return {
+      type: "itemsGrid",
+      tag: component.tag,
+      heading: component.heading,
+      columns: 1,
+      mediaType: "icon",
+      items: (component.cards || []).map((c: any) => ({
+        title: c.title,
+        description: c.description,
+        icon: c.icon,
+        linkLabel: c.linkLabel,
+        linkHref: c.linkHref,
+        socialLinks: c.socialLinks,
+      })),
+    };
+  }
+
+  if (component.type === "contactInternational") {
+    return {
+      type: "linksList",
+      tag: component.tag,
+      links: component.links || [],
+    };
+  }
+
+  if (component.type === "docentesRegistro") {
+    return {
+      type: "itemsGrid",
+      tag: component.tag,
+      heading: component.heading,
+      intro: component.intro,
+      columns: component.columns || 3,
+      mediaType: "number",
+      items: (component.steps || []).map((s: any) => ({
+        number: s.num,
+        title: s.title,
+        description: s.desc,
+      })),
+    };
+  }
+
+  if (component.type === "docentesRequisitos") {
+    return {
+      type: "itemsGrid",
+      tag: component.tag,
+      heading: component.heading,
+      columns: component.columns || 2,
+      mediaType: "icon",
+      items: (component.requirements || []).map((r: any) => ({
+        icon: r.icon,
+        title: r.title,
+        description: r.desc,
+      })),
+    };
+  }
+
+  if (component.type === "docentesAlcance") {
+    return {
+      type: "sectionRichText",
+      tag: component.tag,
+      heading: component.heading,
+      paragraphs: component.content || [],
+      tip: component.tip,
+    };
+  }
+
+  if (component.type === "teacherInstructionsTabs") {
+    return {
+      type: "tabsGuide",
+      sectionTag: component.sectionTag,
+      heading: component.heading,
+      subtitle: component.subtitle,
+      tabs: component.tabs || [],
+    };
+  }
+
+  return component;
+}
+---
+
+{components.map((rawComponent: any) => {
+  const component = mapLegacyToUnified(rawComponent);
+
+  if (component.type === "itemsGrid") {
+    return (
+      <ItemsGridBlock
+        tag={component.tag}
+        heading={component.heading}
+        intro={component.intro}
+        columns={component.columns}
+        mediaType={component.mediaType}
+        items={component.items}
+      />
+    );
+  }
+
+  if (component.type === "sectionRichText") {
+    return (
+      <SectionRichTextBlock
+        tag={component.tag}
+        heading={component.heading}
+        paragraphs={component.paragraphs}
+        tip={component.tip}
+        linkLabel={component.linkLabel}
+        linkHref={component.linkHref}
+      />
+    );
+  }
+
+  if (component.type === "featureList") {
+    return <FeatureListBlock tag={component.tag} heading={component.heading} intro={component.intro} items={component.items} outro={component.outro} />;
+  }
+
+  if (component.type === "statsGrid") {
+    return <StatsGridBlock tag={component.tag} heading={component.heading} columns={component.columns} stats={component.stats} paragraphs={component.paragraphs} />;
+  }
+
+  if (component.type === "studentsAgeCategories") {
+    return (
+      <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+        <AgeCategories />
+      </div>
+    );
+  }
+
+  if (component.type === "studentsScoringTable") {
+    return (
+      <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+        <ScoringTable />
+      </div>
+    );
+  }
+
+  if (component.type === "linksList") {
+    return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} />;
+  }
+
+  if (component.type === "faqQuestions" || component.type === "faqAccordion") {
+    return <FAQQuestionsBlock categories={component.categories} />;
+  }
+
+  if (component.type === "tabsGuide") {
+    return <TeacherInstructionsTabsBlock sectionTag={component.sectionTag} heading={component.heading} subtitle={component.subtitle} tabs={component.tabs} />;
+  }
+
+  if (component.type === "formContact") {
+    return <ContactFormBlock data={component} />;
+  }
+
+  if (component.type === "contactForm") {
+    return <ContactFormBlock data={component} />;
+  }
+
+  if (component.type === "contactClassic") {
+    return <ContactClassicBlock data={component} />;
+  }
+
+  if (component.type === "cta") {
+    if (component.action) {
+      return (
+        <CtaSectionBlock
+          tag={component.sectionTag}
+          heading={component.heading}
+          text={component.text}
+          buttonLabel={component.action.label}
+          buttonHref={component.action.href}
+        />
+      );
+    }
+    return (
+      <CtaSectionBlock
+        tag={component.tag}
+        heading={component.heading}
+        text={component.text}
+        buttonLabel={component.buttonLabel}
+        buttonHref={component.buttonHref}
+      />
+    );
+  }
+
+  return null;
+})}

@@ -8,69 +8,71 @@
   },
   "components": [
     {
-      "type": "docentesRegistro",
+      "type": "itemsGrid",
       "tag": "Registro",
       "heading": "Como inscriben a sus estudiantes?",
       "intro": "El proceso de inscripcion es simple y gratuito. Un docente o representante de la escuela actua como coordinador y se encarga de registrar a los estudiantes.",
       "columns": 3,
-      "steps": [
+      "mediaType": "number",
+      "items": [
         {
-          "num": "1",
+          "number": "1",
           "title": "Registro del coordinador",
-          "desc": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
+          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
         },
         {
-          "num": "2",
+          "number": "2",
           "title": "Inscripcion de estudiantes",
-          "desc": "Agregar a los estudiantes organizados por categorias de edad (Kits a Seniors)."
+          "description": "Agregar a los estudiantes organizados por categorias de edad (Kits a Seniors)."
         },
         {
-          "num": "3",
+          "number": "3",
           "title": "Dia del desafio",
-          "desc": "Supervisar la sesion en la escuela durante los 45 minutos del desafio."
+          "description": "Supervisar la sesion en la escuela durante los 45 minutos del desafio."
         }
       ]
     },
     {
-      "type": "docentesRequisitos",
+      "type": "itemsGrid",
       "tag": "Requisitos",
       "heading": "Que necesita la escuela?",
       "columns": 2,
-      "requirements": [
+      "mediaType": "icon",
+      "items": [
         {
           "icon": "monitor",
           "title": "Computadoras con navegador web",
-          "desc": "Chrome, Firefox, Edge o Safari actualizados."
+          "description": "Chrome, Firefox, Edge o Safari actualizados."
         },
         {
           "icon": "wifi",
           "title": "Conexion a internet",
-          "desc": "Estable durante los 45 minutos del desafio."
+          "description": "Estable durante los 45 minutos del desafio."
         },
         {
           "icon": "user",
           "title": "Un coordinador registrado",
-          "desc": "Docente o representante que supervise la sesion."
+          "description": "Docente o representante que supervise la sesion."
         },
         {
           "icon": "clock",
           "title": "45 minutos de clase",
-          "desc": "Un bloque horario durante la semana del desafio."
+          "description": "Un bloque horario durante la semana del desafio."
         }
       ]
     },
     {
-      "type": "docentesAlcance",
+      "type": "sectionRichText",
       "tag": "Alcance",
       "heading": "Quien deberia participar?",
-      "content": [
+      "paragraphs": [
         "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel academico. El desafio esta disenado para ser accesible y no requiere conocimientos previos de informatica o programacion.",
         "La participacion masiva tiene ventajas: permite comparar resultados a nivel escolar y motivar a mas estudiantes a desarrollar habilidades de pensamiento computacional."
       ],
       "tip": "Tip: No se necesita una clase de informatica dedicada. El desafio puede realizarse en cualquier hora de clase con acceso a computadoras."
     },
     {
-      "type": "teacherInstructionsTabs",
+      "type": "tabsGuide",
       "sectionTag": "Guia para coordinadores",
       "heading": "Instrucciones para Coordinadores",
       "subtitle": "Guia paso a paso para antes, durante y despues del desafio.",

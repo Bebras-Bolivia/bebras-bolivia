@@ -63,10 +63,12 @@
       }
     },
     {
-      "type": "contactInfoCards",
+      "type": "itemsGrid",
       "tag": "Informacion",
       "heading": "Informacion de Contacto",
-      "cards": [
+      "columns": 1,
+      "mediaType": "icon",
+      "items": [
         {
           "icon": "email",
           "title": "Email",
@@ -93,7 +95,7 @@
       ]
     },
     {
-      "type": "contactInternational",
+      "type": "linksList",
       "tag": "Comunidad Internacional",
       "links": [
         { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" },
@@ -101,7 +103,7 @@
       ]
     },
     {
-      "type": "contactForm",
+      "type": "formContact",
       "tag": "Formulario",
       "heading": "Envianos un Mensaje",
       "fields": {
