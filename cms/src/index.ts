@@ -40,10 +40,7 @@ app.post("/api/preview/start", (req, res, next) => {
   console.log(`[DEBUG] Direct /api/preview/start matched! method=${req.method}`);
   next();
 });
-app.use("/api/preview", (req, _res, next) => {
-  console.log(`[DEBUG] Preview router hit: ${req.method} ${req.path} ${req.originalUrl}`);
-  next();
-}, requireAuth, previewRouter);
+app.use("/api/preview", requireAuth, previewRouter);
 
 // ── Health check ───────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
