@@ -1,0 +1,138 @@
+---
+type Link = {
+  label: string;
+  href: string;
+};
+
+type TextBlock = {
+  type: "text";
+  sectionTag?: string;
+  heading: string;
+  paragraphs: string[];
+};
+
+type CardsGridBlock = {
+  type: "cardsGrid";
+  sectionTag?: string;
+  heading: string;
+  columns: number;
+  cards: { title: string; description: string; icon?: string }[];
+};
+
+type TipBlock = {
+  type: "tip";
+  sectionTag?: string;
+  heading?: string;
+  text: string;
+};
+
+type CtaBlock = {
+  type: "cta";
+  sectionTag?: string;
+  heading: string;
+  text?: string;
+  variant: "button" | "link";
+  action: Link;
+};
+
+type GenericBlock = TextBlock | CardsGridBlock | TipBlock | CtaBlock;
+
+interface Props {
+  blocks: any[];
+}
+
+const { blocks = [] } = Astro.props as { blocks: GenericBlock[] };
+
+function getCardsColumnsClass(columns: number) {
+  if (columns <= 1) return "grid-cols-1";
+  if (columns === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (columns === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+}
+---
+
+<div class="space-y-16 lg:space-y-20">
+  {blocks.map((block) => {
+    if (block.type === "text") {
+      return (
+        <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+          <div class="mx-auto max-w-3xl">
+            {block.sectionTag && (
+              <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
+            )}
+            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
+            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
+              {block.paragraphs.map((p) => <p>{p}</p>)}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === "cardsGrid") {
+      const colsClass = getCardsColumnsClass(block.columns);
+      return (
+        <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+          <div class="mx-auto max-w-5xl">
+            {block.sectionTag && (
+              <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
+            )}
+            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{block.heading}</h2>
+            <div class:list={["grid gap-6", colsClass]}>
+              {block.cards.map((card) => (
+                <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8">
+                  <p class="text-xl font-bold text-foreground mb-3">{card.title}</p>
+                  <p class="text-base text-muted-foreground leading-relaxed">{card.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (block.type === "tip") {
+      return (
+        <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+          <div class="mx-auto max-w-3xl">
+            {block.sectionTag && (
+              <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
+            )}
+            {block.heading && (
+              <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
+            )}
+            <div class="rounded-3xl border border-primary/20 bg-primary/5 p-8">
+              <p class="text-lg text-foreground font-medium italic leading-relaxed">{block.text}</p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    return (
+      <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5 text-center">
+        <div class="mx-auto max-w-3xl">
+          {block.sectionTag && (
+            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
+          )}
+          <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{block.heading}</h2>
+          {block.text && (
+            <p class="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">{block.text}</p>
+          )}
+          {block.variant === "button" ? (
+            <a
+              href={block.action.href}
+              class="inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+            >
+              {block.action.label}
+            </a>
+          ) : (
+            <a href={block.action.href} class="inline-flex items-center text-primary font-bold text-xl">
+              {block.action.label}
+            </a>
+          )}
+        </div>
+      </section>
+    );
+  })}
+</div>

@@ -22,7 +22,59 @@ const App = {
     "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
     "docentes.json": { label: "Docentes", desc: "Pagina de docentes (secciones)", icon: "briefcase" },
     "blog-ui.json": { label: "Blog UI", desc: "Textos de la interfaz del blog", icon: "file-text" },
+    "blog-content": { label: "Publicaciones", desc: "Entradas del blog", icon: "layers" },
+    "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
+    "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
   },
+
+  // ── Content hierarchy (parent page -> child sections) ───
+  contentHierarchy: [
+    {
+      label: "Inicio",
+      parent: "site.json",
+      children: ["navigation.json", "hero.json", "about.json", "categories.json", "news.json"],
+    },
+    {
+      label: "Estudiantes",
+      parent: "estudiantes.json",
+      children: ["scoring.json"],
+    },
+    {
+      label: "Docentes",
+      parent: "docentes.json",
+      children: ["teacher-instructions.json"],
+    },
+    {
+      label: "FAQ",
+      parent: "faq.json",
+      children: [],
+    },
+    {
+      label: "Blog",
+      parent: "blog-ui.json",
+      children: [],
+    },
+    {
+      label: "Sponsors",
+      parent: "sponsors.json",
+      children: [],
+    },
+    {
+      label: "Contacto",
+      parent: "contact.json",
+      children: [],
+    },
+    {
+      label: "Registro",
+      parent: "registro.json",
+      children: [],
+    },
+    {
+      label: "Paginas personalizadas",
+      parent: "custom-pages.json",
+      children: ["page-composition.json"],
+    },
+  ],
 
   // ── SVG icons (inline, small set) ───────────────────────
   icons: {
@@ -66,6 +118,9 @@ const App = {
     // Setup navigation
     this.setupNav();
 
+    // Render hierarchical content tree in sidebar
+    await this.renderSidebarContentTree();
+
     // Setup mobile sidebar toggle
     this.setupMobileSidebar();
 
@@ -98,15 +153,18 @@ const App = {
 
   // ── Navigation setup ────────────────────────────────────
   setupNav() {
-    // Sidebar link clicks
-    document.querySelectorAll("[data-nav]").forEach((el) => {
-      el.addEventListener("click", (e) => {
+    // Sidebar link clicks (delegated, supports dynamic tree entries)
+    const sidebarNav = document.querySelector(".sidebar-nav");
+    if (sidebarNav) {
+      sidebarNav.addEventListener("click", (e) => {
+        const target = e.target.closest("[data-nav]");
+        if (!target) return;
         e.preventDefault();
-        const path = el.getAttribute("data-nav");
+        const path = target.getAttribute("data-nav");
         this.navigate(path);
         this.closeMobileSidebar();
       });
-    });
+    }
 
     // Logout button
     const logoutBtn = document.getElementById("logout-btn");
@@ -169,6 +227,53 @@ const App = {
     if (window.location.pathname === path) return;
     history.pushState(null, "", path);
     this.route();
+  },
+
+  async renderSidebarContentTree() {
+    const container = document.getElementById("sidebar-content-tree");
+    if (!container) return;
+
+    try {
+      const contentData = await API.listContent();
+      const files = contentData.files || [];
+      const tree = this.getContentTree(files);
+
+      let html = tree
+        .map((node) => {
+          const parentMeta = this.contentMeta[node.parent] || { label: node.parent, icon: "edit" };
+          const childrenHtml = node.children
+            .map((child) => {
+              const childMeta = this.contentMeta[child] || { label: child };
+              return `<a class="sidebar-tree-child" data-nav="/editor/${this.escapeHtml(child)}" href="/editor/${this.escapeHtml(child)}">${this.escapeHtml(childMeta.label)}</a>`;
+            })
+            .join("");
+
+          return `
+            <div class="sidebar-tree-group">
+              <a class="sidebar-tree-parent" data-nav="/editor/${this.escapeHtml(node.parent)}" href="/editor/${this.escapeHtml(node.parent)}">
+                ${this.icon(parentMeta.icon || "edit")}
+                <span>${this.escapeHtml(parentMeta.label)}</span>
+              </a>
+              ${node.children.length ? `<div class="sidebar-tree-children">${childrenHtml}</div>` : ""}
+            </div>
+          `;
+        })
+        .join("");
+
+      html += `
+        <div class="sidebar-tree-group">
+          <a class="sidebar-tree-parent" data-nav="/blog" href="/blog">
+            ${this.icon("layers")}
+            <span>Publicaciones</span>
+          </a>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    } catch (err) {
+      container.innerHTML = `<div class="sidebar-tree-loading">No se pudo cargar el contenido</div>`;
+      console.error("Failed to render sidebar content tree", err);
+    }
   },
 
   // ── Router ──────────────────────────────────────────────
@@ -272,18 +377,33 @@ const App = {
           </div>
         </div>`;
 
-      // Build content list
-      const contentListHtml = files
-        .map((f) => {
-          const meta = this.contentMeta[f] || { label: f, desc: "" };
+      const contentTree = this.getContentTree(files);
+      const contentListHtml = contentTree
+        .map((node) => {
+          const parentMeta = this.contentMeta[node.parent] || { label: node.parent, desc: "" };
+          const childrenHtml = node.children
+            .map((child) => {
+              const childMeta = this.contentMeta[child] || { label: child, desc: "" };
+              return `
+                <button class="content-child" type="button" data-file="${this.escapeHtml(child)}">
+                  <span class="dot"></span>
+                  <span class="child-name">${this.escapeHtml(childMeta.label)}</span>
+                  <span class="child-desc">${this.escapeHtml(childMeta.desc || child)}</span>
+                </button>`;
+            })
+            .join("");
+
           return `
-          <div class="content-item" data-file="${this.escapeHtml(f)}">
-            <div>
-              <div class="name">${this.escapeHtml(meta.label)}</div>
-              <div class="desc">${this.escapeHtml(f)} — ${this.escapeHtml(meta.desc)}</div>
-            </div>
-            <span class="arrow">${this.icon("arrow")}</span>
-          </div>`;
+            <div class="content-tree-item">
+              <div class="content-item" data-file="${this.escapeHtml(node.parent)}">
+                <div>
+                  <div class="name">${this.escapeHtml(parentMeta.label)}</div>
+                  <div class="desc">${this.escapeHtml(parentMeta.desc)}</div>
+                </div>
+                <span class="arrow">${this.icon("arrow")}</span>
+              </div>
+              ${node.children.length ? `<div class="content-children">${childrenHtml}</div>` : ""}
+            </div>`;
         })
         .join("");
 
@@ -300,7 +420,7 @@ const App = {
         </div>`;
 
       // Bind events
-      main.querySelectorAll(".content-item").forEach((item) => {
+      main.querySelectorAll(".content-item, .content-child").forEach((item) => {
         item.addEventListener("click", () => {
           const file = item.getAttribute("data-file");
           this.navigate(`/editor/${encodeURIComponent(file)}`);
@@ -314,6 +434,25 @@ const App = {
     } catch (err) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(err.message)}</p></div>`;
     }
+  },
+
+  getContentTree(files) {
+    const existing = new Set(files);
+    const seen = new Set();
+
+    const nodes = this.contentHierarchy
+      .filter((entry) => existing.has(entry.parent))
+      .map((entry) => {
+        seen.add(entry.parent);
+        const validChildren = entry.children.filter((child) => existing.has(child));
+        validChildren.forEach((child) => seen.add(child));
+        return { parent: entry.parent, children: validChildren };
+      });
+
+    const leftovers = files.filter((f) => !seen.has(f));
+    leftovers.forEach((f) => nodes.push({ parent: f, children: [] }));
+
+    return nodes;
   },
 
   async handlePublish() {

@@ -1,8 +1,9 @@
-import { readdir, cp, mkdir } from "fs/promises";
+import { readdir, cp, mkdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { spawn, type ChildProcess } from "child_process";
 import { config } from "../config.js";
 import { createServer } from "net";
+import { contentSchemas, CONTENT_FILES } from "../content/schemas.js";
 
 // ── Dev Server State ──────────────────────────────────────
 let devProcess: ChildProcess | null = null;
@@ -265,6 +266,32 @@ export async function syncFileToLanding(filename: string): Promise<void> {
   const src = join(config.currentDataDir, filename);
   const dest = join(config.landingDataDir, filename);
   await cp(src, dest);
+}
+
+/**
+ * Sync an unsaved draft directly to landing preview data.
+ * This does not persist into the CMS current content directory.
+ */
+export async function syncDraftToLanding(
+  filename: string,
+  data: unknown
+): Promise<void> {
+  if (!CONTENT_FILES.includes(filename)) {
+    throw new PreviewError(`Unknown content file: ${filename}`, 404);
+  }
+
+  const schema = contentSchemas[filename];
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    const details = result.error.issues
+      .map((i) => `${i.path.join(".")}: ${i.message}`)
+      .join("; ");
+    throw new PreviewError(`Draft validation failed: ${details}`, 400);
+  }
+
+  await mkdir(config.landingDataDir, { recursive: true });
+  const dest = join(config.landingDataDir, filename);
+  await writeFile(dest, JSON.stringify(result.data, null, 2) + "\n", "utf-8");
 }
 
 /**

@@ -9,6 +9,8 @@ const Editor = {
   dirty: false,
   devServerReady: false,
   devServerStarting: false,
+  collapsedItems: new Set(),
+  itemExpandedState: new Map(),
 
   // ── Map content files to landing page routes ────────────
   // Used to load the correct page in the preview iframe.
@@ -55,6 +57,8 @@ const Editor = {
     outro: "textarea",
     tip: "textarea",
     text: "textarea",
+    pageDescription: "textarea",
+    headingHighlight: "text",
     instruction: "textarea",
     disclaimer: "textarea",
     content: "textarea",    // string arrays rendered as textarea per item
@@ -63,6 +67,15 @@ const Editor = {
     trademarkNote: "textarea",
     color: "color",
   },
+
+  selectOptions: {
+    variant: ["button", "link"],
+    status: ["positive", "neutral", "negative"],
+    icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share"],
+    color: ["emerald", "amber", "sky", "violet", "rose", "orange", "indigo"],
+  },
+
+  hiddenFields: new Set(["id", "pageTitle", "pageDescription"]),
 
   // ── Render the editor for a file ────────────────────────
   async render(filename) {
@@ -102,6 +115,10 @@ const Editor = {
       // Render form fields
       const formContainer = document.getElementById("editor-form");
       this.renderFields(formContainer, this.currentData, "");
+
+      if (this.currentFile === "blog-ui.json") {
+        await this.renderBlogPostsSection(formContainer);
+      }
 
       // Bind save/reset
       document.getElementById("editor-save").addEventListener("click", () => this.save());
@@ -145,6 +162,8 @@ const Editor = {
       const val = obj[key];
       const fieldPath = path ? `${path}.${key}` : key;
 
+       if (this.shouldHideField(key)) continue;
+
       if (val === null || val === undefined) continue;
 
       if (Array.isArray(val)) {
@@ -170,7 +189,8 @@ const Editor = {
 
   renderPrimitive(container, value, path) {
     const key = path.split(".").pop();
-    const type = this.getFieldType(key, value);
+    const type = this.getFieldType(path, value);
+    const isAutoNumberField = this.isAutoNumberField(path);
 
     const group = document.createElement("div");
     group.className = "form-group";
@@ -181,11 +201,44 @@ const Editor = {
     group.appendChild(label);
 
     let input;
+    let bindPath = true;
     if (type === "textarea") {
       input = document.createElement("textarea");
       input.className = "form-textarea";
       input.value = String(value);
       input.rows = Math.min(6, Math.max(2, String(value).split("\n").length + 1));
+      input.setAttribute("data-value-type", "string");
+    } else if (type === "boolean") {
+      input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = Boolean(value);
+      input.style.width = "16px";
+      input.style.height = "16px";
+      input.setAttribute("data-value-type", "boolean");
+    } else if (type === "number") {
+      input = document.createElement("input");
+      input.type = isAutoNumberField ? "text" : "number";
+      input.className = "form-input";
+      input.value = String(value);
+      if (isAutoNumberField) {
+        input.readOnly = true;
+        input.disabled = true;
+        bindPath = false;
+      } else {
+        input.setAttribute("data-value-type", "number");
+      }
+    } else if (type === "select") {
+      input = document.createElement("select");
+      input.className = "form-select";
+      const options = this.selectOptions[key] || [];
+      options.forEach((opt) => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt;
+        optionEl.textContent = this.formatLabel(opt);
+        input.appendChild(optionEl);
+      });
+      input.value = String(value);
+      input.setAttribute("data-value-type", "string");
     } else if (type === "color") {
       // Color: show both a color picker and text input
       const wrapper = document.createElement("div");
@@ -207,6 +260,7 @@ const Editor = {
       textInput.value = String(value);
       textInput.id = `field-${path}`;
       textInput.setAttribute("data-path", path);
+      textInput.setAttribute("data-value-type", "string");
 
       // Sync
       colorInput.addEventListener("input", () => {
@@ -229,10 +283,11 @@ const Editor = {
       input.type = type === "url" ? "url" : "text";
       input.className = "form-input";
       input.value = String(value);
+      input.setAttribute("data-value-type", "string");
     }
 
     input.id = `field-${path}`;
-    input.setAttribute("data-path", path);
+    if (bindPath) input.setAttribute("data-path", path);
     group.appendChild(input);
     container.appendChild(group);
   },
@@ -268,14 +323,56 @@ const Editor = {
 
     section.appendChild(arrayContainer);
 
+    // Special: component picker modal for shared components arrays
+    if (path === "components") {
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-item-btn component-add-btn";
+      addBtn.type = "button";
+      addBtn.textContent = "Agregar nuevo componente";
+      addBtn.addEventListener("click", () => {
+        this.openAddComponentModal(path, arr);
+      });
+      section.appendChild(addBtn);
+      container.appendChild(section);
+      return;
+    }
+
     // Add item button
-    const addBtn = document.createElement("button");
-    addBtn.className = "add-item-btn";
-    addBtn.innerHTML = `${App.icon("plus")} Agregar`;
-    addBtn.addEventListener("click", () => {
-      this.addArrayItem(path, arr);
-    });
-    section.appendChild(addBtn);
+    const addOptions = this.getAddTypeOptions(path, arr);
+    if (addOptions && addOptions.length > 0) {
+      const picker = document.createElement("div");
+      picker.className = "editor-block-picker";
+
+      const typeSelect = document.createElement("select");
+      typeSelect.className = "form-select type-select";
+      addOptions.forEach((opt) => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt.value;
+        optionEl.textContent = opt.label;
+        typeSelect.appendChild(optionEl);
+      });
+
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-item-btn";
+      addBtn.type = "button";
+      addBtn.textContent = "Agregar bloque";
+      addBtn.addEventListener("click", () => {
+        this.addArrayItem(path, arr, typeSelect.value);
+      });
+
+      picker.appendChild(typeSelect);
+      picker.appendChild(addBtn);
+      section.appendChild(picker);
+    } else {
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-item-btn";
+      addBtn.type = "button";
+      addBtn.textContent = "Agregar";
+      addBtn.addEventListener("click", () => {
+        this.addArrayItem(path, arr);
+      });
+      section.appendChild(addBtn);
+    }
 
     container.appendChild(section);
   },
@@ -314,7 +411,7 @@ const Editor = {
 
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
-      removeBtn.innerHTML = App.icon("x");
+      removeBtn.innerHTML = App.icon("trash");
       removeBtn.title = "Eliminar";
       removeBtn.addEventListener("click", () => {
         this.removeArrayItem(path, idx);
@@ -333,6 +430,12 @@ const Editor = {
 
     arr.forEach((obj, idx) => {
       const itemPath = `${path}[${idx}]`;
+      const isCollapsible = this.isCollapsibleArray(path);
+      if (isCollapsible && !this.itemExpandedState.has(itemPath)) {
+        this.itemExpandedState.set(itemPath, false);
+      }
+      const isExpanded = isCollapsible ? this.itemExpandedState.get(itemPath) === true : true;
+
       const item = document.createElement("div");
       item.className = "array-item";
       item.setAttribute("draggable", "false");
@@ -342,7 +445,6 @@ const Editor = {
       const header = document.createElement("div");
       header.style.cssText =
         "font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;width:100%;";
-      const idStr = obj.id ? ` — ${obj.id}` : "";
 
       const handleSpan = document.createElement("span");
       handleSpan.className = "drag-handle";
@@ -351,27 +453,83 @@ const Editor = {
       handleSpan.style.cssText = "margin-right:0.5rem;";
 
       const labelSpan = document.createElement("span");
-      labelSpan.textContent = `#${idx + 1}${idStr}`;
+      labelSpan.textContent = this.getArrayItemLabel(obj, idx);
 
       const leftGroup = document.createElement("span");
       leftGroup.style.cssText = "display:flex;align-items:center;";
       leftGroup.appendChild(handleSpan);
       leftGroup.appendChild(labelSpan);
 
-      header.appendChild(leftGroup);
-      item.appendChild(header);
+      const rightGroup = document.createElement("span");
+      rightGroup.style.cssText = "display:flex;align-items:center;gap:0.375rem;padding-right:0rem;";
 
-      // Render each field in the object
-      this.renderObject(item, obj, itemPath, depth + 1);
+      if (isCollapsible) {
+        const collapseBtn = document.createElement("button");
+        collapseBtn.type = "button";
+        collapseBtn.className = "array-collapse-btn";
+        collapseBtn.innerHTML = `${App.icon("arrow")}`;
+        collapseBtn.title = isExpanded ? "Minimizar" : "Expandir";
+        collapseBtn.setAttribute("aria-expanded", String(isExpanded));
+        if (!isExpanded) collapseBtn.classList.add("collapsed");
+        leftGroup.appendChild(collapseBtn);
+      }
 
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
-      removeBtn.innerHTML = App.icon("x");
+      removeBtn.innerHTML = App.icon("trash");
       removeBtn.title = "Eliminar";
       removeBtn.addEventListener("click", () => {
         this.removeArrayItem(path, idx);
       });
-      item.appendChild(removeBtn);
+
+      if (isCollapsible) {
+        removeBtn.classList.add("inline-remove-btn");
+        rightGroup.appendChild(removeBtn);
+      }
+
+      header.appendChild(leftGroup);
+      if (isCollapsible) {
+        header.appendChild(rightGroup);
+      }
+      item.appendChild(header);
+
+      const body = document.createElement("div");
+      body.className = "array-item-body";
+      if (isCollapsible && !isExpanded) {
+        body.style.display = "none";
+      }
+
+      // Render each field in the object
+      this.renderObject(body, obj, itemPath, depth + 1);
+      item.appendChild(body);
+
+      if (isCollapsible) {
+        const collapseBtn = item.querySelector(".array-collapse-btn");
+        if (collapseBtn) {
+          collapseBtn.addEventListener("click", () => {
+            const isOpen = body.style.display !== "none";
+            if (isOpen) {
+              body.style.display = "none";
+              collapseBtn.classList.add("collapsed");
+              collapseBtn.setAttribute("aria-expanded", "false");
+              collapseBtn.title = "Expandir";
+              this.collapsedItems.add(itemPath);
+              this.itemExpandedState.set(itemPath, false);
+            } else {
+              body.style.display = "";
+              collapseBtn.classList.remove("collapsed");
+              collapseBtn.setAttribute("aria-expanded", "true");
+              collapseBtn.title = "Minimizar";
+              this.collapsedItems.delete(itemPath);
+              this.itemExpandedState.set(itemPath, true);
+            }
+          });
+        }
+      }
+
+      if (!isCollapsible) {
+        item.appendChild(removeBtn);
+      }
 
       // DnD events
       this.attachDragEvents(item, container, path);
@@ -382,10 +540,27 @@ const Editor = {
 
   // ── Array mutations ─────────────────────────────────────
 
-  addArrayItem(path, currentArr) {
+  addArrayItem(path, currentArr, selectedType = null) {
+    if (selectedType) {
+      const typedTemplate = this.createTypedArrayItem(path, selectedType);
+      if (typedTemplate !== null) {
+        this.setNestedValue(this.currentData, path, [...currentArr, typedTemplate]);
+        this.normalizeStructuredArrays();
+        this.dirty = true;
+        this.collectFormData();
+        const formContainer = document.getElementById("editor-form");
+        formContainer.innerHTML = "";
+        this.renderFields(formContainer, this.currentData, "");
+        formContainer.addEventListener("input", () => {
+          this.dirty = true;
+        });
+        return;
+      }
+    }
+
     if (currentArr.length === 0) {
-      // Can't infer shape — add empty string
-      this.setNestedValue(this.currentData, path, [...currentArr, ""]);
+      const emptyTemplate = this.createEmptyArrayItem(path);
+      this.setNestedValue(this.currentData, path, [...currentArr, emptyTemplate]);
     } else {
       const template = currentArr[currentArr.length - 1];
       if (typeof template === "string") {
@@ -396,6 +571,7 @@ const Editor = {
         this.setNestedValue(this.currentData, path, [...currentArr, blank]);
       }
     }
+    this.normalizeStructuredArrays();
     this.dirty = true;
     // Re-render the whole form
     this.collectFormData();
@@ -414,6 +590,7 @@ const Editor = {
       arr.splice(idx, 1);
       this.setNestedValue(this.currentData, path, arr);
     }
+    this.normalizeStructuredArrays();
     this.dirty = true;
     const formContainer = document.getElementById("editor-form");
     formContainer.innerHTML = "";
@@ -521,6 +698,7 @@ const Editor = {
     const [moved] = arr.splice(fromIdx, 1);
     arr.splice(toIdx, 0, moved);
     this.setNestedValue(this.currentData, path, arr);
+    this.normalizeStructuredArrays();
 
     this.dirty = true;
     const formContainer = document.getElementById("editor-form");
@@ -557,9 +735,77 @@ const Editor = {
     const inputs = document.querySelectorAll("[data-path]");
     inputs.forEach((input) => {
       const path = input.getAttribute("data-path");
-      const value = input.value;
+      const value = this.parseInputValue(input);
       this.setNestedValue(this.currentData, path, value);
     });
+  },
+
+  async renderBlogPostsSection(container) {
+    const section = document.createElement("div");
+    section.className = "field-section";
+
+    const title = document.createElement("div");
+    title.className = "field-section-title";
+    title.textContent = "Publicaciones";
+    section.appendChild(title);
+
+    const list = document.createElement("div");
+    list.className = "blog-links-list";
+    list.innerHTML = `<div class="text-sm text-muted">Cargando publicaciones...</div>`;
+    section.appendChild(list);
+
+    container.appendChild(section);
+
+    try {
+      const data = await API.listBlog();
+      const posts = (data.posts || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (posts.length === 0) {
+        list.innerHTML = `<div class="text-sm text-muted">No hay publicaciones creadas.</div>`;
+        return;
+      }
+
+      list.innerHTML = posts
+        .map((post) => {
+          const slug = App.escapeHtml(post.slug);
+          const title = App.escapeHtml(post.title || post.slug);
+          const date = new Date(post.date).toLocaleDateString("es-BO", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+
+          return `
+            <button class="blog-link-item" type="button" data-blog-slug="${slug}">
+              <span class="blog-link-title">${title}</span>
+              <span class="blog-link-meta">${slug} — ${date}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      list.querySelectorAll(".blog-link-item").forEach((el) => {
+        el.addEventListener("click", () => {
+          const slug = el.getAttribute("data-blog-slug");
+          if (!slug) return;
+          App.navigate(`/blog/edit/${encodeURIComponent(slug)}`);
+        });
+      });
+    } catch (err) {
+      list.innerHTML = `<div class="text-sm text-muted">No se pudieron cargar las publicaciones.</div>`;
+    }
+  },
+
+  parseInputValue(input) {
+    const valueType = input.getAttribute("data-value-type") || "string";
+    if (valueType === "boolean") {
+      return Boolean(input.checked);
+    }
+    if (valueType === "number") {
+      const n = Number(input.value);
+      return Number.isNaN(n) ? 0 : n;
+    }
+    return input.value;
   },
 
   // ── Save ────────────────────────────────────────────────
@@ -598,8 +844,19 @@ const Editor = {
   // ── Reset ───────────────────────────────────────────────
 
   async reset() {
-    await this.render(this.currentFile);
-    Toast.info("Formulario reseteado");
+    this.collectFormData();
+
+    try {
+      await API.syncPreviewDraft(this.currentFile, this.currentData);
+      this.loadPreviewIframe(true);
+      Toast.info("Vista previa actualizada con tus cambios");
+    } catch (err) {
+      if (err && err.message) {
+        Toast.error(`No se pudo actualizar la vista previa: ${err.message}`);
+      } else {
+        Toast.error("No se pudo actualizar la vista previa");
+      }
+    }
   },
 
   // ── Preview ────────────────────────────────────────────
@@ -663,7 +920,7 @@ const Editor = {
    * Load the correct landing page in the preview iframe.
    * Points directly to the Astro dev server for full HMR support.
    */
-  loadPreviewIframe() {
+  loadPreviewIframe(forceReload = false) {
     const iframe = document.getElementById("preview-frame");
     if (!iframe) return;
 
@@ -671,10 +928,12 @@ const Editor = {
 
     if (this.devServerReady && this.devServerPort) {
       // Point directly to Astro dev server for native HMR WebSocket support
-      iframe.src = `http://localhost:${this.devServerPort}${pagePath}`;
+      const base = `http://localhost:${this.devServerPort}${pagePath}`;
+      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
     } else {
       // Fallback: use proxied path (no HMR, but content still shows)
-      iframe.src = `/preview-site${pagePath}`;
+      const base = `/preview-site${pagePath}`;
+      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
     }
   },
 
@@ -689,10 +948,921 @@ const Editor = {
       .replace(/\b\w/g, (c) => c.toUpperCase());
   },
 
-  getFieldType(key, value) {
+  getFieldType(keyOrPath, value) {
+    const key = String(keyOrPath).split(".").pop();
+    if (typeof value === "boolean") return "boolean";
+    if (typeof value === "number") return "number";
+    if (this.selectOptions[key]) return "select";
     if (this.fieldHints[key]) return this.fieldHints[key];
     if (typeof value === "string" && value.length > 100) return "textarea";
     return "text";
+  },
+
+  isAutoNumberField(path) {
+    if (!/\.items\[\d+\]\.number$/.test(path)) return false;
+    const parentPath = path.replace(/\.items\[\d+\]\.number$/, "");
+    const parent = this.getNestedValue(this.currentData, parentPath);
+    return !!(parent && parent.type === "itemsGrid" && parent.mediaType === "number");
+  },
+
+  normalizeStructuredArrays() {
+    const walk = (node) => {
+      if (!node || typeof node !== "object") return;
+      if (Array.isArray(node)) {
+        node.forEach(walk);
+        return;
+      }
+
+      if (node.type === "itemsGrid" && node.mediaType === "number" && Array.isArray(node.items)) {
+        node.items = node.items.map((item, idx) => ({ ...item, number: String(idx + 1) }));
+      }
+
+      Object.values(node).forEach(walk);
+    };
+
+    walk(this.currentData);
+  },
+
+  shouldHideField(key) {
+    return this.hiddenFields.has(key);
+  },
+
+  getAddTypeOptions(path) {
+    if (this.currentFile === "custom-pages.json" && path === "pages") {
+      return [{ value: "customPage", label: "Pagina personalizada" }];
+    }
+
+    if (this.currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
+      return [
+        { value: "text", label: "Bloque de texto" },
+        { value: "cardsGrid", label: "Grid de cards" },
+        { value: "tip", label: "Tip / cita" },
+        { value: "cta", label: "CTA (boton o enlace)" },
+      ];
+    }
+
+    if (this.currentFile === "estudiantes.json" && path === "sections") {
+      return [
+        { value: "participacion", label: "Estudiantes: Participacion" },
+        { value: "desafio", label: "Estudiantes: Desafio" },
+        { value: "habilidades", label: "Estudiantes: Habilidades" },
+        { value: "formato", label: "Estudiantes: Formato" },
+        { value: "certificados", label: "Estudiantes: Certificados" },
+      ];
+    }
+
+    if (/\.tabs$/.test(path)) {
+      const parentPath = path.replace(/\.tabs$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && (parent.type === "tabsGuide" || parent.type === "teacherInstructionsTabs")) {
+        return [{ value: "tabStep", label: "Pestana" }];
+      }
+    }
+
+    if (/\.tabs\[\d+\]\.items$/.test(path)) {
+      return [{ value: "tabItem", label: "Elemento de pestana" }];
+    }
+
+    if (/\.items$/.test(path)) {
+      const parentPath = path.replace(/\.items$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "itemsGrid") {
+        return [{ value: "gridItem", label: "Item de card" }];
+      }
+      if (parent && parent.type === "featureList") {
+        return [{ value: "featureItem", label: "Item de lista" }];
+      }
+    }
+
+    if (/\.categories$/.test(path)) {
+      const parentPath = path.replace(/\.categories$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "studentsAgeCategories") {
+        return [{ value: "ageCategoryItem", label: "Categoria" }];
+      }
+    }
+
+    if (/\.rows$/.test(path)) {
+      const parentPath = path.replace(/\.rows$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "studentsScoringTable") {
+        return [{ value: "scoringRow", label: "Fila de tabla" }];
+      }
+    }
+
+    if (/\.summaryCards$/.test(path)) {
+      const parentPath = path.replace(/\.summaryCards$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "studentsScoringTable") {
+        return [{ value: "scoringSummary", label: "Resumen" }];
+      }
+    }
+
+    return null;
+  },
+
+  createTypedArrayItem(path, selectedType) {
+    if (this.currentFile === "custom-pages.json" && path === "pages") {
+      const slugBase = this.generateUniqueSlug("nueva-pagina");
+      return {
+        id: slugBase,
+        title: "Nueva pagina",
+        slug: slugBase,
+        description: "Describe aqui la nueva pagina.",
+        navLabel: "Nueva pagina",
+        showInHeader: false,
+        blocks: [
+          {
+            type: "text",
+            sectionTag: "Seccion",
+            heading: "Titulo",
+            paragraphs: ["Contenido inicial."],
+          },
+        ],
+      };
+    }
+
+    if (this.currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
+      if (selectedType === "text") {
+        return {
+          type: "text",
+          sectionTag: "Seccion",
+          heading: "Titulo",
+          paragraphs: ["Escribe aqui el contenido."],
+        };
+      }
+      if (selectedType === "cardsGrid") {
+        return {
+          type: "cardsGrid",
+          sectionTag: "Grid",
+          heading: "Titulo de cards",
+          columns: 3,
+          cards: [
+            { title: "Card 1", description: "Descripcion de la card." },
+            { title: "Card 2", description: "Descripcion de la card." },
+            { title: "Card 3", description: "Descripcion de la card." },
+          ],
+        };
+      }
+      if (selectedType === "tip") {
+        return {
+          type: "tip",
+          sectionTag: "Tip",
+          heading: "Nota",
+          text: "Texto destacado tipo cita o recomendacion.",
+        };
+      }
+      if (selectedType === "cta") {
+        return {
+          type: "cta",
+          sectionTag: "CTA",
+          heading: "Llamado a la accion",
+          text: "Descripcion opcional del llamado a la accion.",
+          variant: "button",
+          action: {
+            label: "Ver mas",
+            href: "/",
+          },
+        };
+      }
+    }
+
+    if (path === "components") {
+      if (selectedType === "faqQuestions") {
+        return {
+          type: "faqQuestions",
+          categories: [
+            {
+              title: "Nueva seccion FAQ",
+              items: [
+                {
+                  question: "Nueva pregunta",
+                  answer: "Nueva respuesta",
+                },
+              ],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "faqAccordion") {
+        return {
+          type: "faqAccordion",
+          categories: [
+            {
+              title: "Nueva seccion FAQ",
+              items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "sectionRichText") {
+        return {
+          type: "sectionRichText",
+          tag: "Seccion",
+          heading: "Titulo de seccion",
+          paragraphs: ["Parrafo de ejemplo"],
+          tip: "Tip opcional",
+          linkLabel: "",
+          linkHref: "",
+        };
+      }
+
+      if (selectedType === "itemsGrid") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Titulo de cards",
+          intro: "Texto introductorio opcional",
+          columns: 3,
+          mediaType: "icon",
+          items: [
+            { title: "Card 1", description: "Descripcion", icon: "monitor" },
+            { title: "Card 2", description: "Descripcion", icon: "wifi" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridIcon") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Grid con iconos",
+          intro: "Seccion de cards con iconos.",
+          columns: 3,
+          mediaType: "icon",
+          items: [
+            { title: "Card 1", description: "Descripcion", icon: "monitor" },
+            { title: "Card 2", description: "Descripcion", icon: "wifi" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridImage") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Grid con imagenes",
+          intro: "Seccion de cards con imagen.",
+          columns: 3,
+          mediaType: "image",
+          items: [
+            { title: "Card 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+            { title: "Card 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridNumber") {
+        return {
+          type: "itemsGrid",
+          tag: "Pasos",
+          heading: "Grid numerado",
+          intro: "Seccion de pasos numerados.",
+          columns: 3,
+          mediaType: "number",
+          items: [
+            { number: "1", title: "Paso 1", description: "Descripcion" },
+            { number: "2", title: "Paso 2", description: "Descripcion" },
+          ],
+        };
+      }
+
+      if (selectedType === "itemsGridSimple") {
+        return {
+          type: "itemsGrid",
+          tag: "Cards",
+          heading: "Grid simple",
+          intro: "Seccion de cards sin media.",
+          columns: 3,
+          mediaType: "none",
+          items: [
+            { title: "Card 1", description: "Descripcion" },
+            { title: "Card 2", description: "Descripcion" },
+          ],
+        };
+      }
+
+      if (selectedType === "linksList") {
+        return {
+          type: "linksList",
+          tag: "Enlaces",
+          heading: "Recursos",
+          links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
+        };
+      }
+
+      if (selectedType === "featureList") {
+        return {
+          type: "featureList",
+          tag: "Habilidades",
+          heading: "Titulo de listado",
+          intro: "Texto introductorio",
+          items: [{ title: "Punto 1", desc: "Descripcion" }],
+          outro: "Texto de cierre",
+        };
+      }
+
+      if (selectedType === "statsGrid") {
+        return {
+          type: "statsGrid",
+          tag: "Estadisticas",
+          heading: "Titulo de estadisticas",
+          columns: 3,
+          stats: [
+            { value: "15", label: "Preguntas" },
+            { value: "45", label: "Minutos" },
+          ],
+          paragraphs: ["Descripcion del bloque."],
+        };
+      }
+
+      if (selectedType === "studentsAgeCategories") {
+        return {
+          type: "studentsAgeCategories",
+          sectionTag: "Niveles",
+          heading: "Categorias por Edad",
+          subtitle: "Seis niveles disenados para desafiar a cada grupo de edad",
+          categories: [
+            { name: "Kits", age: "6-8 anos", emoji: "🧩", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
+            { name: "Castors", age: "8-10 anos", emoji: "🦫", color: "amber", desc: "Descubriendo patrones y secuencias" },
+          ],
+        };
+      }
+
+      if (selectedType === "studentsScoringTable") {
+        return {
+          type: "studentsScoringTable",
+          sectionTag: "Puntuacion",
+          heading: "Sistema de Puntuacion",
+          subtitle: "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
+          tableHeaders: ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
+          rows: [
+            { label: "Correcta", values: ["+6", "+9", "+12"], status: "positive" },
+            { label: "Sin respuesta", values: ["0", "0", "0"], status: "neutral" },
+            { label: "Incorrecta", values: ["-2", "-3", "-4"], status: "negative" },
+          ],
+          summaryCards: [
+            { value: "45", label: "Puntaje inicial" },
+            { value: "180", label: "Puntaje maximo" },
+          ],
+          summaryColumns: 2,
+        };
+      }
+
+      if (selectedType === "tabsGuide") {
+        return {
+          type: "tabsGuide",
+          sectionTag: "Guia",
+          heading: "Instrucciones",
+          subtitle: "Pasos por etapa",
+          tabs: [
+            {
+              id: "antes",
+              label: "Antes",
+              heading: "Antes del desafio",
+              items: [{ title: "Paso", desc: "Descripcion" }],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "formContact") {
+        return {
+          type: "formContact",
+          tag: "Formulario",
+          heading: "Envianos un mensaje",
+          fields: {
+            name: { label: "Nombre completo", placeholder: "Tu nombre" },
+            email: { label: "Email", placeholder: "tu@email.com" },
+            role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Docente", "Institucion", "Otro"] },
+            message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
+          },
+          submitLabel: "Enviar mensaje",
+          disclaimer: "Este formulario es solo una vista previa.",
+        };
+      }
+
+      if (selectedType === "sponsorsCards") {
+        return {
+          type: "sponsorsCards",
+          tag: "Nueva seccion de sponsors",
+          columns: 3,
+          cards: [
+            {
+              name: "Nuevo sponsor",
+              desc: "Descripcion del sponsor.",
+              image: "/images/sponsor-placeholder.svg",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "docentesRegistro") {
+        return {
+          type: "docentesRegistro",
+          tag: "Registro",
+          heading: "Como inscriben a sus estudiantes?",
+          intro: "El proceso de inscripcion es simple y gratuito.",
+          columns: 3,
+          steps: [
+            { num: "1", title: "Registro del coordinador", desc: "Crear cuenta en la plataforma Bebras Bolivia." },
+            { num: "2", title: "Inscripcion de estudiantes", desc: "Agregar estudiantes por categoria de edad." },
+            { num: "3", title: "Dia del desafio", desc: "Supervisar la sesion en la escuela." },
+          ],
+        };
+      }
+
+      if (selectedType === "docentesRequisitos") {
+        return {
+          type: "docentesRequisitos",
+          tag: "Requisitos",
+          heading: "Que necesita la escuela?",
+          columns: 2,
+          requirements: [
+            { icon: "monitor", title: "Computadoras con navegador web", desc: "Chrome, Firefox, Edge o Safari actualizados." },
+            { icon: "wifi", title: "Conexion a internet", desc: "Estable durante los 45 minutos del desafio." },
+          ],
+        };
+      }
+
+      if (selectedType === "docentesAlcance") {
+        return {
+          type: "docentesAlcance",
+          tag: "Alcance",
+          heading: "Quien deberia participar?",
+          content: ["Contenido de alcance para docentes."],
+          tip: "Tip: El desafio no requiere conocimientos previos de programacion.",
+        };
+      }
+
+      if (selectedType === "teacherInstructionsTabs") {
+        return {
+          type: "teacherInstructionsTabs",
+          sectionTag: "Guia para coordinadores",
+          heading: "Instrucciones para Coordinadores",
+          subtitle: "Guia paso a paso para antes, durante y despues del desafio.",
+          tabs: [
+            {
+              id: "antes",
+              label: "Antes",
+              heading: "Antes del Desafio",
+              items: [{ title: "Registrarse como coordinador", desc: "Completar los datos de la escuela." }],
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "cta") {
+        return {
+          type: "cta",
+          tag: "",
+          heading: "No encontraste lo que buscabas?",
+          text: "Contactanos y con gusto resolveremos tus dudas.",
+          buttonLabel: "Ir a Contacto",
+          buttonHref: "/contacto",
+        };
+      }
+
+      if (selectedType === "blogIndex") {
+        return {
+          type: "blogIndex",
+          emptyState: {
+            tag: "Sin contenido",
+            text: "No hay publicaciones aun. Vuelve pronto!",
+          },
+          readMoreLabel: "Leer mas",
+        };
+      }
+
+      if (selectedType === "blogPostUi") {
+        return {
+          type: "blogPostUi",
+          backLabel: "Volver al blog",
+          ctaLabel: "Inscribirse al desafio",
+        };
+      }
+
+      if (selectedType === "contactInfoCards") {
+        return {
+          type: "contactInfoCards",
+          tag: "Informacion",
+          heading: "Informacion de Contacto",
+          cards: [
+            {
+              icon: "email",
+              title: "Email",
+              description: "Escribenos para cualquier consulta",
+              linkLabel: "info@bebras.bo",
+              linkHref: "mailto:info@bebras.bo",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "contactInternational") {
+        return {
+          type: "contactInternational",
+          tag: "Comunidad Internacional",
+          links: [
+            {
+              label: "Bebras Internacional ->",
+              href: "https://www.bebras.org/",
+              description: "Sitio oficial Bebras",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "contactForm") {
+        return {
+          type: "contactForm",
+          tag: "Formulario",
+          heading: "Envianos un Mensaje",
+          fields: {
+            name: { label: "Nombre completo", placeholder: "Tu nombre" },
+            email: { label: "Email", placeholder: "tu@email.com" },
+            role: {
+              label: "Rol",
+              placeholder: "Seleccionar...",
+              options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"],
+            },
+            message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
+          },
+          submitLabel: "Enviar mensaje",
+          disclaimer: "Este formulario es solo una vista previa.",
+        };
+      }
+
+      if (selectedType === "contactClassic") {
+        return {
+          type: "contactClassic",
+          info: {
+            tag: "Informacion",
+            heading: "Informacion de Contacto",
+            cards: [
+              {
+                icon: "email",
+                title: "Email",
+                description: "Escribenos para cualquier consulta",
+                linkLabel: "info@bebras.bo",
+                linkHref: "mailto:info@bebras.bo",
+              },
+            ],
+          },
+          international: {
+            tag: "Comunidad Internacional",
+            links: [
+              {
+                label: "Bebras Internacional ->",
+                href: "https://www.bebras.org/",
+                description: "Sitio oficial Bebras",
+              },
+            ],
+          },
+          form: {
+            tag: "Formulario",
+            heading: "Envianos un Mensaje",
+            fields: {
+              name: { label: "Nombre completo", placeholder: "Tu nombre" },
+              email: { label: "Email", placeholder: "tu@email.com" },
+              role: {
+                label: "Rol",
+                placeholder: "Seleccionar...",
+                options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"],
+              },
+              message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
+            },
+            submitLabel: "Enviar mensaje",
+            disclaimer: "Este formulario es solo una vista previa.",
+          },
+        };
+      }
+    }
+
+    if (this.currentFile === "estudiantes.json" && path === "sections") {
+      if (selectedType === "participacion") {
+        return {
+          id: "participacion",
+          tag: "Participacion",
+          heading: "Como participar",
+          content: ["Parrafo"],
+          link: { label: "Ver docentes", href: "/docentes" },
+        };
+      }
+      if (selectedType === "desafio") {
+        return {
+          id: "desafio",
+          tag: "Desafio",
+          heading: "Que es el desafio",
+          content: ["Parrafo"],
+        };
+      }
+      if (selectedType === "habilidades") {
+        return {
+          id: "habilidades",
+          tag: "Habilidades",
+          heading: "Habilidades clave",
+          intro: "Intro",
+          skills: [{ title: "Habilidad", desc: "Descripcion" }],
+          outro: "Cierre",
+        };
+      }
+      if (selectedType === "formato") {
+        return {
+          id: "formato",
+          tag: "Formato",
+          heading: "Formato del desafio",
+          stats: [
+            { value: "15", label: "Preguntas" },
+            { value: "45", label: "Minutos" },
+          ],
+          content: ["Parrafo"],
+        };
+      }
+      if (selectedType === "certificados") {
+        return {
+          id: "certificados",
+          tag: "Certificados",
+          heading: "Certificados",
+          content: ["Parrafo"],
+          cta: { label: "Inscribirse", href: "/registro" },
+        };
+      }
+    }
+
+    if (selectedType === "tabStep") {
+      return {
+        id: `tab-${Date.now()}`,
+        label: "Nueva pestana",
+        heading: "Titulo de pestana",
+        items: [{ title: "Nuevo punto", desc: "Descripcion" }],
+      };
+    }
+
+    if (selectedType === "tabItem") {
+      return { title: "Nuevo punto", desc: "Descripcion" };
+    }
+
+    if (selectedType === "gridItem") {
+      const parentPath = path.replace(/\.items$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "itemsGrid") {
+        if (parent.mediaType === "icon") {
+          return { title: "Nuevo item", description: "Descripcion", icon: "monitor" };
+        }
+        if (parent.mediaType === "image") {
+          return { title: "Nuevo item", description: "Descripcion", image: "/images/sponsor-placeholder.svg" };
+        }
+        if (parent.mediaType === "number") {
+          return { number: "", title: "Nuevo item", description: "Descripcion" };
+        }
+      }
+      return { title: "Nuevo item", description: "Descripcion" };
+    }
+
+    if (selectedType === "featureItem") {
+      return { title: "Nueva habilidad", desc: "Descripcion" };
+    }
+
+    if (selectedType === "ageCategoryItem") {
+      return { name: "Nueva categoria", age: "0-0 anos", emoji: "🧩", color: "violet", desc: "Descripcion" };
+    }
+
+    if (selectedType === "scoringRow") {
+      return { label: "Nueva fila", values: ["0", "0", "0"], status: "neutral" };
+    }
+
+    if (selectedType === "scoringSummary") {
+      return { value: "0", label: "Resumen" };
+    }
+
+    return null;
+  },
+
+  createEmptyArrayItem(path) {
+    const normalizedPath = String(path).replace(/\[\d+\]/g, "[]");
+
+    if (this.currentFile === "faq.json" && normalizedPath.endsWith("categories[].items")) {
+      return { question: "", answer: "" };
+    }
+
+    if (normalizedPath.endsWith("tabs[].items")) {
+      return { title: "", desc: "" };
+    }
+
+    if (normalizedPath.endsWith(".items")) {
+      const parentPath = String(path).replace(/\.items$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "itemsGrid") {
+        if (parent.mediaType === "icon") {
+          return { title: "", description: "", icon: "monitor" };
+        }
+        if (parent.mediaType === "image") {
+          return { title: "", description: "", image: "/images/sponsor-placeholder.svg" };
+        }
+        if (parent.mediaType === "number") {
+          return { number: "", title: "", description: "" };
+        }
+        return { title: "", description: "" };
+      }
+    }
+
+    return "";
+  },
+
+  isCollapsibleArray(path) {
+    return path === "components" || path.endsWith(".components");
+  },
+
+  getArrayItemLabel(obj, idx) {
+    if (obj && typeof obj === "object") {
+      if (obj.type === "faqQuestions") return `#${idx + 1} — FAQ`;
+      if (obj.type === "sponsorsCards") return `#${idx + 1} — Sponsors`;
+      if (obj.type === "blogIndex") return `#${idx + 1} — Blog Index`;
+      if (obj.type === "blogPostUi") return `#${idx + 1} — Blog Post UI`;
+      if (obj.type === "contactInfoCards") return `#${idx + 1} — Contacto Info`;
+      if (obj.type === "contactInternational") return `#${idx + 1} — Contacto Internacional`;
+      if (obj.type === "contactForm") return `#${idx + 1} — Contacto Formulario`;
+      if (obj.type === "contactClassic") return `#${idx + 1} — Contacto Clasico`;
+      if (obj.type === "docentesRegistro") return `#${idx + 1} — Docentes Registro`;
+      if (obj.type === "docentesRequisitos") return `#${idx + 1} — Docentes Requisitos`;
+      if (obj.type === "docentesAlcance") return `#${idx + 1} — Docentes Alcance`;
+      if (obj.type === "teacherInstructionsTabs") return `#${idx + 1} — Docentes Guia`;
+      if (obj.type === "sectionRichText") return `#${idx + 1} — Texto`; 
+      if (obj.type === "itemsGrid") return `#${idx + 1} — Grid de Cards`;
+      if (obj.type === "linksList") return `#${idx + 1} — Lista de Enlaces`;
+      if (obj.type === "featureList") return `#${idx + 1} — Lista de Caracteristicas`;
+      if (obj.type === "statsGrid") return `#${idx + 1} — Grid de Estadisticas`;
+      if (obj.type === "studentsAgeCategories") return `#${idx + 1} — Categorias de Edad`;
+      if (obj.type === "studentsScoringTable") return `#${idx + 1} — Tabla de Puntaje`;
+      if (obj.type === "faqAccordion") return `#${idx + 1} — FAQ Acordeon`;
+      if (obj.type === "tabsGuide") return `#${idx + 1} — Guia en Tabs`;
+      if (obj.type === "formContact") return `#${idx + 1} — Formulario`;
+      if (obj.type === "cta") return `#${idx + 1} — CTA`;
+      if (obj.title) return `#${idx + 1} — ${obj.title}`;
+      if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
+      if (obj.label) return `#${idx + 1} — ${obj.label}`;
+      if (obj.tag) return `#${idx + 1} — ${obj.tag}`;
+      if (obj.type) return `#${idx + 1} — ${obj.type}`;
+    }
+    return `#${idx + 1}`;
+  },
+
+  openAddComponentModal(path, currentArr) {
+    const options = this.getComponentOptions(path);
+    if (!options.length) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "editor-modal-overlay";
+
+    const modal = document.createElement("div");
+    modal.className = "editor-modal";
+    modal.innerHTML = `
+      <div class="editor-modal-header">
+        <h3>Agregar componente</h3>
+        <button type="button" class="editor-modal-close" aria-label="Cerrar">${App.icon("x")}</button>
+      </div>
+      <p class="editor-modal-subtitle">Selecciona el componente que deseas agregar.</p>
+      <div class="editor-modal-list"></div>
+    `;
+
+    const list = modal.querySelector(".editor-modal-list");
+    options.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "editor-modal-option";
+      btn.innerHTML = `<span class="title">${this.escapeForPre(opt.label)}</span><span class="desc">${this.escapeForPre(opt.description || "")}</span>`;
+      btn.addEventListener("click", () => {
+        this.addArrayItem(path, currentArr, opt.value);
+        closeModal();
+      });
+      list.appendChild(btn);
+    });
+
+    const closeModal = () => {
+      overlay.remove();
+      document.body.classList.remove("editor-modal-open");
+      document.removeEventListener("keydown", onEsc);
+    };
+
+    const onEsc = (e) => {
+      if (e.key === "Escape") closeModal();
+    };
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    modal.querySelector(".editor-modal-close").addEventListener("click", closeModal);
+    document.addEventListener("keydown", onEsc);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.classList.add("editor-modal-open");
+  },
+
+  getComponentOptions(path) {
+    if (path === "components") {
+      return [
+        {
+          value: "sectionRichText",
+          label: "Seccion de Texto",
+          description: "Titulo, parrafos y tip opcional",
+        },
+        {
+          value: "itemsGridIcon",
+          label: "Grid cards + icono",
+          description: "Cards con icono visual",
+        },
+        {
+          value: "itemsGridImage",
+          label: "Grid cards + imagen",
+          description: "Cards con imagen",
+        },
+        {
+          value: "itemsGridNumber",
+          label: "Grid cards + numero",
+          description: "Cards tipo pasos numerados",
+        },
+        {
+          value: "itemsGridSimple",
+          label: "Grid cards simple",
+          description: "Cards sin icono ni imagen",
+        },
+        {
+          value: "linksList",
+          label: "Lista de Enlaces",
+          description: "Listado de recursos o enlaces externos",
+        },
+        {
+          value: "featureList",
+          label: "Lista de Caracteristicas",
+          description: "Lista con checks y texto introductorio",
+        },
+        {
+          value: "statsGrid",
+          label: "Grid de Estadisticas",
+          description: "Metricas en tarjetas con texto inferior",
+        },
+        {
+          value: "studentsAgeCategories",
+          label: "Categorias de Edad",
+          description: "Categorias completas y editables",
+        },
+        {
+          value: "studentsScoringTable",
+          label: "Tabla de Puntaje",
+          description: "Tabla completa y editable",
+        },
+        {
+          value: "faqAccordion",
+          label: "FAQ Acordeon",
+          description: "Preguntas y respuestas en acordeon",
+        },
+        {
+          value: "tabsGuide",
+          label: "Guia en Tabs",
+          description: "Contenido por pestanas",
+        },
+        {
+          value: "formContact",
+          label: "Formulario",
+          description: "Formulario de contacto editable",
+        },
+        {
+          value: "blogIndex",
+          label: "Blog Index",
+          description: "Estado vacio y texto Leer mas",
+        },
+        {
+          value: "blogPostUi",
+          label: "Blog Post UI",
+          description: "Textos de volver y CTA del post",
+        },
+        {
+          value: "contactClassic",
+          label: "Contacto Clasico",
+          description: "Bloque completo como diseno anterior",
+        },
+        {
+          value: "cta",
+          label: "CTA",
+          description: "Bloque de titulo, texto y boton",
+        },
+      ];
+    }
+    return [];
+  },
+
+  generateUniqueSlug(base) {
+    const pages = Array.isArray(this.currentData?.pages) ? this.currentData.pages : [];
+    const used = new Set(pages.map((p) => p.slug));
+    if (!used.has(base)) return base;
+    let i = 2;
+    while (used.has(`${base}-${i}`)) i++;
+    return `${base}-${i}`;
   },
 
   toHexColor(str) {

@@ -4,6 +4,7 @@ import {
   stopDevServer,
   getPreviewStatus,
   syncContentToLanding,
+  syncDraftToLanding,
   PreviewError,
 } from "./service.js";
 
@@ -68,5 +69,28 @@ previewRouter.post("/sync", async (_req: Request, res: Response) => {
   } catch (err) {
     console.error("Error syncing content:", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * POST /api/preview/draft
+ * Sync an unsaved editor draft to landing preview data.
+ */
+previewRouter.post("/draft", async (req: Request, res: Response) => {
+  try {
+    const { filename, data } = req.body ?? {};
+    if (!filename || data === undefined) {
+      return res.status(400).json({ error: "filename and data are required" });
+    }
+
+    await syncDraftToLanding(String(filename), data);
+    res.json({ ok: true });
+  } catch (err) {
+    if (err instanceof PreviewError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error syncing draft preview:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 });

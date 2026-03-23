@@ -1,0 +1,92 @@
+---
+interface GridItem {
+  title?: string;
+  description?: string;
+  icon?: string;
+  image?: string;
+  number?: string;
+  linkLabel?: string;
+  linkHref?: string;
+  socialLinks?: { label: string; href: string }[];
+}
+
+interface Props {
+  tag?: string;
+  heading?: string;
+  intro?: string;
+  columns?: number;
+  mediaType?: "icon" | "image" | "number" | "none";
+  items: GridItem[];
+}
+
+const { tag, heading, intro, columns = 3, mediaType = "none", items = [] } = Astro.props;
+
+function normalizedMediaType(type: string) {
+  if (type === "icon" || type === "image" || type === "number" || type === "none") return type;
+  return "none";
+}
+
+const effectiveMediaType = normalizedMediaType(mediaType);
+
+const iconMap: Record<string, string> = {
+  monitor: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="8" x="5" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 18h2"/><path d="M12 18h6"/></svg>`,
+  wifi: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>`,
+  user: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  clock: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  email: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>`,
+};
+
+function getColsClass(cols: number) {
+  if (cols <= 1) return "grid-cols-1";
+  if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (cols === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+}
+---
+
+<section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+    <div class="mx-auto max-w-5xl">
+      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
+      {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
+      {intro && <p class="text-xl text-muted-foreground leading-relaxed mb-10">{intro}</p>}
+      <div class:list={["grid gap-6", getColsClass(columns)]}>
+        {items.map((item, i) => (
+          <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
+            {effectiveMediaType !== "none" && (
+              <div class="mb-6">
+                {effectiveMediaType === "number" && (
+                  <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground font-mono shadow-md">
+                    <span class="text-xl font-bold">{item.number || String(i + 1)}</span>
+                  </div>
+                )}
+                {effectiveMediaType === "icon" && (
+                  <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground shadow-md" set:html={iconMap[item.icon || ""] || ""}></div>
+                )}
+                {effectiveMediaType === "image" && (
+                  <div class="flex items-center justify-center size-14 rounded-xl bg-white shadow-sm">
+                    <img src={item.image || "/images/sponsors/sponsor-placeholder.svg"} alt={item.title || "Imagen"} class="h-8 w-auto opacity-80" />
+                  </div>
+                )}
+              </div>
+            )}
+            {item.title && <p class="text-xl font-bold text-foreground mb-3">{item.title}</p>}
+            {item.description && <p class="text-base text-muted-foreground leading-relaxed">{item.description}</p>}
+            {item.linkLabel && item.linkHref && (
+              <a href={item.linkHref} class="inline-flex mt-4 text-sm font-semibold text-primary hover:underline">{item.linkLabel}</a>
+            )}
+            {item.socialLinks && item.socialLinks.length > 0 && (
+              <div class="mt-4 flex flex-wrap gap-3">
+                {item.socialLinks.map((social) => (
+                  <a href={social.href} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-primary hover:underline">
+                    {social.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

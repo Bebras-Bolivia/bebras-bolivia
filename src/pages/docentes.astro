@@ -1,23 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import TeacherInstructions from "@/components/TeacherInstructions";
+import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import data from "@/data/docentes.json";
-import teacherData from "@/data/teacher-instructions.json";
 
 const header = data.header;
-const sections = data.sections;
-const registro = sections.find((s) => s.id === "registro")!;
-const requisitos = sections.find((s) => s.id === "requisitos")!;
-const alcance = sections.find((s) => s.id === "alcance")!;
-const cta = sections.find((s) => s.id === "cta")!;
-
-// Icon map for requirements
-const iconMap: Record<string, string> = {
-  monitor: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="8" x="5" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 18h2"/><path d="M12 18h6"/></svg>`,
-  wifi: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>`,
-  user: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-  clock: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-};
+const components: any[] = Array.isArray((data as any).components) ? (data as any).components : [];
 ---
 
 <Layout title={data.pageTitle} description={data.pageDescription}>
@@ -28,7 +15,7 @@ const iconMap: Record<string, string> = {
       <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
         <p class="text-xs uppercase tracking-[0.25em] font-bold text-white mb-4">{header.tag}</p>
         <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-sm mb-4">
-          Informacion para <span class="text-white sm:inline block mt-2 sm:mt-0">{header.headingHighlight}</span>
+          {header.heading}
         </h1>
         <p class="mt-6 text-xl text-white font-medium max-w-2xl mx-auto drop-shadow-sm leading-relaxed">
           {header.subtitle}
@@ -39,110 +26,7 @@ const iconMap: Record<string, string> = {
     <!-- Contenedor Principal (Crema deslizante) -->
     <main class="relative z-10 w-full min-h-screen bg-[#F4F4F1] dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] -mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-16 lg:pt-24">
       
-      <!-- Como registrar estudiantes -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
-          <div class="mx-auto max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{registro.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{registro.heading}</h2>
-            
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              <p>{registro.intro}</p>
-              
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12">
-                {registro.steps?.map((step: { num: string; title: string; desc: string }) => (
-                  <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
-                    <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground mb-6 font-mono shadow-md">
-                      <span class="text-xl font-bold">{step.num}</span>
-                    </div>
-                    <p class="text-xl font-bold text-foreground mb-3">{step.title}</p>
-                    <p class="text-base text-muted-foreground leading-relaxed">{step.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Requisitos -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
-          <div class="mx-auto max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{requisitos.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{requisitos.heading}</h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {requisitos.requirements?.map((item: { icon: string; title: string; desc: string }) => (
-                <div class="flex items-start gap-5 rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 transition-transform hover:-translate-y-2 duration-300">
-                  <div class="flex items-center justify-center size-14 shrink-0 rounded-2xl bg-primary text-primary-foreground shadow-md" set:html={iconMap[item.icon] || ""}>
-                  </div>
-                  <div>
-                    <p class="text-xl font-bold text-foreground mb-2">{item.title}</p>
-                    <p class="text-base text-muted-foreground">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- A quien esta dirigido / Alcance -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
-          <div class="mx-auto max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{alcance.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{alcance.heading}</h2>
-            
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              {alcance.content?.map((p: string) => <p>{p}</p>)}
-              
-              {alcance.tip && (
-                <div class="rounded-3xl border border-primary/20 bg-primary/5 p-8 mt-10">
-                  <p class="text-lg text-foreground font-medium italic leading-relaxed">
-                    {alcance.tip}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Instrucciones para profesores (Tablas) -->
-      <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
-        <TeacherInstructions
-          sectionTag={teacherData.sectionTag}
-          heading={teacherData.heading}
-          subtitle={teacherData.subtitle}
-          tabs={teacherData.tabs}
-          client:visible
-        />
-      </div>
-
-      <!-- CTA Final -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-2xl border border-black/5 dark:border-white/5 text-center">
-          <div class="mx-auto max-w-3xl">
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">
-              {cta.heading}
-            </h2>
-            <p class="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-              {cta.content?.[0]}
-            </p>
-            {cta.cta && (
-              <a
-                href={cta.cta.href}
-                class="group inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-              >
-                {cta.cta.label}
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </a>
-            )}
-          </div>
-        </div>
-      </section>
+        <PageComponentsRenderer components={components} />
 
     </main>
   </div>
