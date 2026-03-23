@@ -22,6 +22,7 @@ const App = {
     "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
     "docentes.json": { label: "Docentes", desc: "Pagina de docentes (secciones)", icon: "briefcase" },
     "blog-ui.json": { label: "Blog UI", desc: "Textos de la interfaz del blog", icon: "file-text" },
+    "blog-content": { label: "Publicaciones", desc: "Entradas del blog", icon: "layers" },
     "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
     "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
   },
@@ -237,7 +238,7 @@ const App = {
       const files = contentData.files || [];
       const tree = this.getContentTree(files);
 
-      container.innerHTML = tree
+      let html = tree
         .map((node) => {
           const parentMeta = this.contentMeta[node.parent] || { label: node.parent, icon: "edit" };
           const childrenHtml = node.children
@@ -258,6 +259,17 @@ const App = {
           `;
         })
         .join("");
+
+      html += `
+        <div class="sidebar-tree-group">
+          <a class="sidebar-tree-parent" data-nav="/blog" href="/blog">
+            ${this.icon("layers")}
+            <span>Publicaciones</span>
+          </a>
+        </div>
+      `;
+
+      container.innerHTML = html;
     } catch (err) {
       container.innerHTML = `<div class="sidebar-tree-loading">No se pudo cargar el contenido</div>`;
       console.error("Failed to render sidebar content tree", err);

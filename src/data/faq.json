@@ -105,18 +105,6 @@
       "text": "Contactanos y con gusto resolveremos tus dudas.",
       "buttonLabel": "Ir a Contacto",
       "buttonHref": "/contacto"
-    },
-    {
-      "type": "sponsorsCards",
-      "tag": "Nueva seccion de sponsors",
-      "columns": 3,
-      "cards": [
-        {
-          "name": "Nuevo sponsor",
-          "desc": "Descripcion del sponsor.",
-          "image": "/images/sponsor-placeholder.svg"
-        }
-      ]
     }
   ]
 }

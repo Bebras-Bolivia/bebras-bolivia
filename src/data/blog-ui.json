@@ -1,22 +1,25 @@
 {
-  "index": {
+  "header": {
     "pageTitle": "Blog",
-    "pageDescription": "Noticias, recursos y novedades del Desafío Bebras Bolivia.",
-    "header": {
-      "tag": "Publicaciones",
-      "heading": "Blog & Noticias",
-      "headingHighlight": "Blog",
-      "subtitle": "Novedades, recursos y consejos para estudiantes y docentes."
-    },
-    "emptyState": {
-      "tag": "Sin contenido",
-      "text": "No hay publicaciones aún. ¡Vuelve pronto!"
-    },
-    "readMoreLabel": "Leer más"
+    "pageDescription": "Noticias, recursos y novedades del Desafio Bebras Bolivia.",
+    "tag": "Publicaciones",
+    "heading": "Blog",
+    "headingHighlight": "Noticias",
+    "subtitle": "Novedades, recursos y consejos para estudiantes y docentes."
   },
-  "post": {
-    "backLabel": "Volver al blog",
-    "ctaLabel": "Inscribirse al desafío",
-    "ctaHref": "/registro"
-  }
+  "components": [
+    {
+      "type": "blogIndex",
+      "emptyState": {
+        "tag": "Sin contenido",
+        "text": "No hay publicaciones aun. Vuelve pronto!"
+      },
+      "readMoreLabel": "Más"
+    },
+    {
+      "type": "blogPostUi",
+      "backLabel": "Volver al blog",
+      "ctaLabel": "Inscribirse al desafio"
+    }
+  ]
 }

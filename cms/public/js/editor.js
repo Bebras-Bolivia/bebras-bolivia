@@ -114,6 +114,10 @@ const Editor = {
       const formContainer = document.getElementById("editor-form");
       this.renderFields(formContainer, this.currentData, "");
 
+      if (this.currentFile === "blog-ui.json") {
+        await this.renderBlogPostsSection(formContainer);
+      }
+
       // Bind save/reset
       document.getElementById("editor-save").addEventListener("click", () => this.save());
       document.getElementById("editor-reset").addEventListener("click", () => this.reset());
@@ -310,7 +314,7 @@ const Editor = {
     section.appendChild(arrayContainer);
 
     // Special: component picker modal (FAQ page)
-    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
+    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json" || this.currentFile === "blog-ui.json") && path === "components") {
       const addBtn = document.createElement("button");
       addBtn.className = "add-item-btn component-add-btn";
       addBtn.type = "button";
@@ -708,6 +712,62 @@ const Editor = {
     });
   },
 
+  async renderBlogPostsSection(container) {
+    const section = document.createElement("div");
+    section.className = "field-section";
+
+    const title = document.createElement("div");
+    title.className = "field-section-title";
+    title.textContent = "Publicaciones";
+    section.appendChild(title);
+
+    const list = document.createElement("div");
+    list.className = "blog-links-list";
+    list.innerHTML = `<div class="text-sm text-muted">Cargando publicaciones...</div>`;
+    section.appendChild(list);
+
+    container.appendChild(section);
+
+    try {
+      const data = await API.listBlog();
+      const posts = (data.posts || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (posts.length === 0) {
+        list.innerHTML = `<div class="text-sm text-muted">No hay publicaciones creadas.</div>`;
+        return;
+      }
+
+      list.innerHTML = posts
+        .map((post) => {
+          const slug = App.escapeHtml(post.slug);
+          const title = App.escapeHtml(post.title || post.slug);
+          const date = new Date(post.date).toLocaleDateString("es-BO", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+
+          return `
+            <button class="blog-link-item" type="button" data-blog-slug="${slug}">
+              <span class="blog-link-title">${title}</span>
+              <span class="blog-link-meta">${slug} — ${date}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      list.querySelectorAll(".blog-link-item").forEach((el) => {
+        el.addEventListener("click", () => {
+          const slug = el.getAttribute("data-blog-slug");
+          if (!slug) return;
+          App.navigate(`/blog/edit/${encodeURIComponent(slug)}`);
+        });
+      });
+    } catch (err) {
+      list.innerHTML = `<div class="text-sm text-muted">No se pudieron cargar las publicaciones.</div>`;
+    }
+  },
+
   parseInputValue(input) {
     const valueType = input.getAttribute("data-value-type") || "string";
     if (valueType === "boolean") {
@@ -976,7 +1036,7 @@ const Editor = {
       }
     }
 
-    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
+    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json" || this.currentFile === "blog-ui.json") && path === "components") {
       if (selectedType === "faqQuestions") {
         return {
           type: "faqQuestions",
@@ -1002,6 +1062,25 @@ const Editor = {
           text: "Contactanos y con gusto resolveremos tus dudas.",
           buttonLabel: "Ir a Contacto",
           buttonHref: "/contacto",
+        };
+      }
+
+      if (selectedType === "blogIndex") {
+        return {
+          type: "blogIndex",
+          emptyState: {
+            tag: "Sin contenido",
+            text: "No hay publicaciones aun. Vuelve pronto!",
+          },
+          readMoreLabel: "Leer mas",
+        };
+      }
+
+      if (selectedType === "blogPostUi") {
+        return {
+          type: "blogPostUi",
+          backLabel: "Volver al blog",
+          ctaLabel: "Inscribirse al desafio",
         };
       }
     }
@@ -1146,6 +1225,8 @@ const Editor = {
     if (obj && typeof obj === "object") {
       if (obj.type === "faqQuestions") return `#${idx + 1} — FAQ`;
       if (obj.type === "sponsorsCards") return `#${idx + 1} — Sponsors`;
+      if (obj.type === "blogIndex") return `#${idx + 1} — Blog Index`;
+      if (obj.type === "blogPostUi") return `#${idx + 1} — Blog Post UI`;
       if (obj.type === "cta") return `#${idx + 1} — CTA`;
       if (obj.title) return `#${idx + 1} — ${obj.title}`;
       if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
@@ -1212,6 +1293,16 @@ const Editor = {
   getComponentOptions(path) {
     if (path === "components") {
       return [
+        {
+          value: "blogIndex",
+          label: "Blog Index",
+          description: "Estado vacio y texto Leer mas",
+        },
+        {
+          value: "blogPostUi",
+          label: "Blog Post UI",
+          description: "Textos de volver y CTA del post",
+        },
         {
           value: "faqQuestions",
           label: "FAQ",

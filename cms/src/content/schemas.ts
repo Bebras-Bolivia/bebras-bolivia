@@ -512,26 +512,65 @@ export const docentesSchema = z.object({
 // ── 15. blog-ui.json ─────────────────────────────────────
 
 export const blogUiSchema = z.object({
-  index: z.object({
+  header: z.object({
     pageTitle: z.string(),
     pageDescription: z.string(),
-    header: z.object({
-      tag: z.string(),
-      heading: z.string(),
-      headingHighlight: z.string(),
-      subtitle: z.string(),
-    }),
-    emptyState: z.object({
-      tag: z.string(),
-      text: z.string(),
-    }),
-    readMoreLabel: z.string(),
+    tag: z.string(),
+    heading: z.string(),
+    headingHighlight: z.string(),
+    subtitle: z.string(),
   }),
-  post: z.object({
-    backLabel: z.string(),
-    ctaLabel: z.string(),
-    ctaHref: z.string(),
-  }),
+  components: z.array(
+    z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("blogIndex"),
+        emptyState: z.object({
+          tag: z.string(),
+          text: z.string(),
+        }),
+        readMoreLabel: z.string(),
+      }),
+      z.object({
+        type: z.literal("blogPostUi"),
+        backLabel: z.string(),
+        ctaLabel: z.string(),
+      }),
+      z.object({
+        type: z.literal("faqQuestions"),
+        categories: z.array(
+          z.object({
+            title: z.string(),
+            items: z.array(
+              z.object({
+                question: z.string(),
+                answer: z.string(),
+              })
+            ),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("sponsorsCards"),
+        tag: z.string(),
+        columns: z.number().int().min(1).max(4),
+        cards: z.array(
+          z.object({
+            name: z.string(),
+            desc: z.string(),
+            image: z.string(),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("cta"),
+        tag: z.string().optional(),
+        heading: z.string(),
+        text: z.string(),
+        buttonLabel: z.string(),
+        buttonHref: z.string(),
+      }),
+    ])
+  ),
 });
 
 // ── 16. custom-pages.json ─────────────────────────────────

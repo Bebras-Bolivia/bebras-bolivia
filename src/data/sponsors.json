@@ -49,62 +49,6 @@
       "text": "Unete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",
       "buttonLabel": "Contactanos",
       "buttonHref": "/contacto"
-    },
-    {
-      "type": "faqQuestions",
-      "categories": [
-        {
-          "title": "Nueva seccion FAQ",
-          "items": [
-            {
-              "question": "Nueva pregunta",
-              "answer": "Nueva respuesta"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "cta",
-      "tag": "",
-      "heading": "No encontraste lo que buscabas?",
-      "text": "Contactanos y con gusto resolveremos tus dudas.",
-      "buttonLabel": "Ir a Contacto",
-      "buttonHref": "/contacto"
-    },
-    {
-      "type": "faqQuestions",
-      "categories": [
-        {
-          "title": "Nueva seccion FAQ",
-          "items": [
-            {
-              "question": "Nueva pregunta",
-              "answer": "Nueva respuesta"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "cta",
-      "tag": "",
-      "heading": "No encontraste lo que buscabas?",
-      "text": "Contactanos y con gusto resolveremos tus dudas.",
-      "buttonLabel": "Ir a Contacto",
-      "buttonHref": "/contacto"
-    },
-    {
-      "type": "sponsorsCards",
-      "tag": "Nueva seccion de sponsors",
-      "columns": 3,
-      "cards": [
-        {
-          "name": "Nuevo sponsor",
-          "desc": "Descripcion del sponsor.",
-          "image": "/images/sponsor-placeholder.svg"
-        }
-      ]
     }
   ]
 }
