@@ -72,6 +72,7 @@ const Editor = {
     variant: ["button", "link"],
     status: ["positive", "neutral", "negative"],
     icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share"],
+    color: ["emerald", "amber", "sky", "violet", "rose", "orange", "indigo"],
   },
 
   hiddenFields: new Set(["id", "pageTitle", "pageDescription"]),
@@ -1028,6 +1029,33 @@ const Editor = {
       if (parent && parent.type === "itemsGrid") {
         return [{ value: "gridItem", label: "Item de card" }];
       }
+      if (parent && parent.type === "featureList") {
+        return [{ value: "featureItem", label: "Item de lista" }];
+      }
+    }
+
+    if (/\.categories$/.test(path)) {
+      const parentPath = path.replace(/\.categories$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "studentsAgeCategories") {
+        return [{ value: "ageCategoryItem", label: "Categoria" }];
+      }
+    }
+
+    if (/\.rows$/.test(path)) {
+      const parentPath = path.replace(/\.rows$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "studentsScoringTable") {
+        return [{ value: "scoringRow", label: "Fila de tabla" }];
+      }
+    }
+
+    if (/\.summaryCards$/.test(path)) {
+      const parentPath = path.replace(/\.summaryCards$/, "");
+      const parent = this.getNestedValue(this.currentData, parentPath);
+      if (parent && parent.type === "studentsScoringTable") {
+        return [{ value: "scoringSummary", label: "Resumen" }];
+      }
     }
 
     return null;
@@ -1251,11 +1279,36 @@ const Editor = {
       }
 
       if (selectedType === "studentsAgeCategories") {
-        return { type: "studentsAgeCategories" };
+        return {
+          type: "studentsAgeCategories",
+          sectionTag: "Niveles",
+          heading: "Categorias por Edad",
+          subtitle: "Seis niveles disenados para desafiar a cada grupo de edad",
+          categories: [
+            { name: "Kits", age: "6-8 anos", emoji: "🧩", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
+            { name: "Castors", age: "8-10 anos", emoji: "🦫", color: "amber", desc: "Descubriendo patrones y secuencias" },
+          ],
+        };
       }
 
       if (selectedType === "studentsScoringTable") {
-        return { type: "studentsScoringTable" };
+        return {
+          type: "studentsScoringTable",
+          sectionTag: "Puntuacion",
+          heading: "Sistema de Puntuacion",
+          subtitle: "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
+          tableHeaders: ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
+          rows: [
+            { label: "Correcta", values: ["+6", "+9", "+12"], status: "positive" },
+            { label: "Sin respuesta", values: ["0", "0", "0"], status: "neutral" },
+            { label: "Incorrecta", values: ["-2", "-3", "-4"], status: "negative" },
+          ],
+          summaryCards: [
+            { value: "45", label: "Puntaje inicial" },
+            { value: "180", label: "Puntaje maximo" },
+          ],
+          summaryColumns: 2,
+        };
       }
 
       if (selectedType === "tabsGuide") {
@@ -1569,6 +1622,22 @@ const Editor = {
       return { title: "Nuevo item", description: "Descripcion" };
     }
 
+    if (selectedType === "featureItem") {
+      return { title: "Nueva habilidad", desc: "Descripcion" };
+    }
+
+    if (selectedType === "ageCategoryItem") {
+      return { name: "Nueva categoria", age: "0-0 anos", emoji: "🧩", color: "violet", desc: "Descripcion" };
+    }
+
+    if (selectedType === "scoringRow") {
+      return { label: "Nueva fila", values: ["0", "0", "0"], status: "neutral" };
+    }
+
+    if (selectedType === "scoringSummary") {
+      return { value: "0", label: "Resumen" };
+    }
+
     return null;
   },
 
@@ -1740,12 +1809,12 @@ const Editor = {
         {
           value: "studentsAgeCategories",
           label: "Categorias de Edad",
-          description: "Componente visual de categorias",
+          description: "Categorias completas y editables",
         },
         {
           value: "studentsScoringTable",
           label: "Tabla de Puntaje",
-          description: "Componente de tabla de puntuacion",
+          description: "Tabla completa y editable",
         },
         {
           value: "faqAccordion",

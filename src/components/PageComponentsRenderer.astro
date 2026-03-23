@@ -11,6 +11,8 @@ import FeatureListBlock from "@/components/content-blocks/FeatureListBlock.astro
 import StatsGridBlock from "@/components/content-blocks/StatsGridBlock.astro";
 import AgeCategories from "@/components/AgeCategories.astro";
 import ScoringTable from "@/components/ScoringTable.astro";
+import categoriesData from "@/data/categories.json";
+import scoringData from "@/data/scoring.json";
 
 interface Props {
   components: any[];
@@ -154,17 +156,29 @@ function mapLegacyToUnified(component: any) {
   }
 
   if (component.type === "studentsAgeCategories") {
+    const categoryPayload = {
+      ...categoriesData,
+      ...(component || {}),
+      categories: Array.isArray(component?.categories) ? component.categories : categoriesData.categories,
+    };
     return (
       <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
-        <AgeCategories />
+        <AgeCategories data={categoryPayload} />
       </div>
     );
   }
 
   if (component.type === "studentsScoringTable") {
+    const scoringPayload = {
+      ...scoringData,
+      ...(component || {}),
+      tableHeaders: Array.isArray(component?.tableHeaders) ? component.tableHeaders : scoringData.tableHeaders,
+      rows: Array.isArray(component?.rows) ? component.rows : scoringData.rows,
+      summaryCards: Array.isArray(component?.summaryCards) ? component.summaryCards : scoringData.summaryCards,
+    };
     return (
       <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
-        <ScoringTable />
+        <ScoringTable data={scoringPayload} />
       </div>
     );
   }

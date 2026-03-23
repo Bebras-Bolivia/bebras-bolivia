@@ -81,10 +81,99 @@
       ]
     },
     {
-      "type": "studentsScoringTable"
+      "type": "studentsScoringTable",
+      "sectionTag": "Puntuacion",
+      "heading": "Sistema de Puntuacion",
+      "subtitle": "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
+      "tableHeaders": [
+        "Resultado",
+        "Cat. A",
+        "Cat. B",
+        "Cat. C"
+      ],
+      "rows": [
+        {
+          "label": "Correcta",
+          "values": [
+            "+6",
+            "+9",
+            "+12"
+          ],
+          "status": "positive"
+        },
+        {
+          "label": "Sin respuesta",
+          "values": [
+            "0",
+            "0",
+            "0"
+          ],
+          "status": "neutral"
+        },
+        {
+          "label": "Incorrecta",
+          "values": [
+            "-2",
+            "-3",
+            "-4"
+          ],
+          "status": "negative"
+        }
+      ],
+      "summaryCards": [
+        {
+          "value": "45",
+          "label": "Puntaje inicial"
+        },
+        {
+          "value": "180",
+          "label": "Puntaje maximo"
+        }
+      ],
+      "summaryColumns": 2
     },
     {
-      "type": "studentsAgeCategories"
+      "type": "studentsAgeCategories",
+      "sectionTag": "Niveles",
+      "heading": "Categorias por Edad",
+      "subtitle": "Seis niveles disenados para desafiar a cada grupo de edad",
+      "categories": [
+        {
+          "name": "Guacamayo",
+          "age": "5-8 anos",
+          "emoji": "🦜",
+          "color": "rose",
+          "desc": "Primeros pasos en el pensamiento logico"
+        },
+        {
+          "name": "Capibara",
+          "age": "8-10 anos",
+          "emoji": "🦫",
+          "color": "amber",
+          "desc": "Descubriendo patrones y secuencias"
+        },
+        {
+          "name": "Titi",
+          "age": "10-12 anos",
+          "emoji": "🐒",
+          "color": "emerald",
+          "desc": "Resolviendo problemas con creatividad"
+        },
+        {
+          "name": "Jucumari",
+          "age": "12-14 anos",
+          "emoji": "🐻",
+          "color": "sky",
+          "desc": "Algoritmos y pensamiento estructurado"
+        },
+        {
+          "name": "Yaguarete",
+          "age": "14-18 anos",
+          "emoji": "🐆",
+          "color": "indigo",
+          "desc": "Desafios avanzados de informatica"
+        }
+      ]
     },
     {
       "type": "cta",

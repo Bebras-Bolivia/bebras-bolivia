@@ -184,9 +184,39 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("studentsAgeCategories"),
+    sectionTag: z.string(),
+    heading: z.string(),
+    subtitle: z.string(),
+    categories: z.array(
+      z.object({
+        name: z.string(),
+        age: z.string(),
+        emoji: z.string(),
+        color: z.string(),
+        desc: z.string(),
+      })
+    ),
   }),
   z.object({
     type: z.literal("studentsScoringTable"),
+    sectionTag: z.string(),
+    heading: z.string(),
+    subtitle: z.string(),
+    tableHeaders: z.array(z.string()),
+    rows: z.array(
+      z.object({
+        label: z.string(),
+        values: z.array(z.string()),
+        status: z.string(),
+      })
+    ),
+    summaryCards: z.array(
+      z.object({
+        value: z.string(),
+        label: z.string(),
+      })
+    ),
+    summaryColumns: z.number().int().min(1).max(4).optional(),
   }),
   z.object({
     type: z.literal("blogIndex"),
@@ -587,52 +617,6 @@ export const registroSchema = z.object({
 });
 
 // ── 13. estudiantes.json ─────────────────────────────────
-// Polymorphic sections discriminated by `id`
-
-const estudiantesBaseSection = z.object({
-  id: z.string(),
-  tag: z.string(),
-  heading: z.string(),
-});
-
-const estudiantesParticipacion = estudiantesBaseSection.extend({
-  id: z.literal("participacion"),
-  content: z.array(z.string()),
-  link: LinkSchema,
-});
-
-const estudiantesDesafio = estudiantesBaseSection.extend({
-  id: z.literal("desafio"),
-  content: z.array(z.string()),
-});
-
-const estudiantesHabilidades = estudiantesBaseSection.extend({
-  id: z.literal("habilidades"),
-  intro: z.string(),
-  skills: z.array(z.object({ title: z.string(), desc: z.string() })),
-  outro: z.string(),
-});
-
-const estudiantesFormato = estudiantesBaseSection.extend({
-  id: z.literal("formato"),
-  stats: z.array(StatSchema),
-  statsColumns: z.number().int().min(1).max(4).optional(),
-  content: z.array(z.string()),
-});
-
-const estudiantesCertificados = estudiantesBaseSection.extend({
-  id: z.literal("certificados"),
-  content: z.array(z.string()),
-  cta: LinkSchema,
-});
-
-const estudiantesSectionSchema = z.discriminatedUnion("id", [
-  estudiantesParticipacion,
-  estudiantesDesafio,
-  estudiantesHabilidades,
-  estudiantesFormato,
-  estudiantesCertificados,
-]);
 
 export const estudiantesSchema = z.object({
   pageTitle: z.string(),

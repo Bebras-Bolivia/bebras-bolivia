@@ -1,7 +1,32 @@
 ---
 import scoringData from "@/data/scoring.json";
 
-const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards, summaryColumns = 2 } = scoringData;
+interface ScoringRow {
+  label: string;
+  values: string[];
+  status: string;
+}
+
+interface ScoringStat {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  data?: {
+    sectionTag: string;
+    heading: string;
+    subtitle: string;
+    tableHeaders: string[];
+    rows: ScoringRow[];
+    summaryCards: ScoringStat[];
+    summaryColumns?: number;
+  };
+}
+
+const props = Astro.props as Props;
+const source = props.data || scoringData;
+const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards, summaryColumns = 2 } = source;
 
 function getSummaryColsClass(columns: number) {
   if (columns <= 1) return "grid-cols-1";

@@ -41,8 +41,7 @@
       "international": {
         "tag": "Comunidad Internacional",
         "links": [
-          { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" },
-          { "label": "Bebras USA ->", "href": "https://www.bebraschallenge.org/", "description": "Capitulo de Bebras en Estados Unidos" }
+          { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" }
         ]
       },
       "form": {
@@ -98,8 +97,7 @@
       "type": "linksList",
       "tag": "Comunidad Internacional",
       "links": [
-        { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" },
-        { "label": "Bebras USA ->", "href": "https://www.bebraschallenge.org/", "description": "Capitulo de Bebras en Estados Unidos" }
+        { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" }
       ]
     },
     {
