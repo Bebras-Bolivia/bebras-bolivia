@@ -117,6 +117,9 @@ const App = {
     // Setup navigation
     this.setupNav();
 
+    // Render hierarchical content tree in sidebar
+    await this.renderSidebarContentTree();
+
     // Setup mobile sidebar toggle
     this.setupMobileSidebar();
 
@@ -149,15 +152,18 @@ const App = {
 
   // ── Navigation setup ────────────────────────────────────
   setupNav() {
-    // Sidebar link clicks
-    document.querySelectorAll("[data-nav]").forEach((el) => {
-      el.addEventListener("click", (e) => {
+    // Sidebar link clicks (delegated, supports dynamic tree entries)
+    const sidebarNav = document.querySelector(".sidebar-nav");
+    if (sidebarNav) {
+      sidebarNav.addEventListener("click", (e) => {
+        const target = e.target.closest("[data-nav]");
+        if (!target) return;
         e.preventDefault();
-        const path = el.getAttribute("data-nav");
+        const path = target.getAttribute("data-nav");
         this.navigate(path);
         this.closeMobileSidebar();
       });
-    });
+    }
 
     // Logout button
     const logoutBtn = document.getElementById("logout-btn");
@@ -220,6 +226,42 @@ const App = {
     if (window.location.pathname === path) return;
     history.pushState(null, "", path);
     this.route();
+  },
+
+  async renderSidebarContentTree() {
+    const container = document.getElementById("sidebar-content-tree");
+    if (!container) return;
+
+    try {
+      const contentData = await API.listContent();
+      const files = contentData.files || [];
+      const tree = this.getContentTree(files);
+
+      container.innerHTML = tree
+        .map((node) => {
+          const parentMeta = this.contentMeta[node.parent] || { label: node.parent, icon: "edit" };
+          const childrenHtml = node.children
+            .map((child) => {
+              const childMeta = this.contentMeta[child] || { label: child };
+              return `<a class="sidebar-tree-child" data-nav="/editor/${this.escapeHtml(child)}" href="/editor/${this.escapeHtml(child)}">${this.escapeHtml(childMeta.label)}</a>`;
+            })
+            .join("");
+
+          return `
+            <div class="sidebar-tree-group">
+              <a class="sidebar-tree-parent" data-nav="/editor/${this.escapeHtml(node.parent)}" href="/editor/${this.escapeHtml(node.parent)}">
+                ${this.icon(parentMeta.icon || "edit")}
+                <span>${this.escapeHtml(parentMeta.label)}</span>
+              </a>
+              ${node.children.length ? `<div class="sidebar-tree-children">${childrenHtml}</div>` : ""}
+            </div>
+          `;
+        })
+        .join("");
+    } catch (err) {
+      container.innerHTML = `<div class="sidebar-tree-loading">No se pudo cargar el contenido</div>`;
+      console.error("Failed to render sidebar content tree", err);
+    }
   },
 
   // ── Router ──────────────────────────────────────────────
