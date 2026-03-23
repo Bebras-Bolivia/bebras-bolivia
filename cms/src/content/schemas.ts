@@ -210,7 +210,20 @@ export const faqSchema = z.object({
         ),
       }),
       z.object({
-        type: z.literal("faqCta"),
+        type: z.literal("sponsorsCards"),
+        tag: z.string(),
+        columns: z.number().int().min(1).max(4),
+        cards: z.array(
+          z.object({
+            name: z.string(),
+            desc: z.string(),
+            image: z.string(),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("cta"),
+        tag: z.string().optional(),
         heading: z.string(),
         text: z.string(),
         buttonLabel: z.string(),
@@ -244,37 +257,52 @@ export const teacherInstructionsSchema = z.object({
 // ── 10. sponsors.json ────────────────────────────────────
 
 export const sponsorsSchema = z.object({
-  pageTitle: z.string(),
-  pageDescription: z.string(),
   header: z.object({
+    pageTitle: z.string(),
+    pageDescription: z.string(),
     tag: z.string(),
     heading: z.string(),
     headingHighlight: z.string(),
     subtitle: z.string(),
   }),
-  anchor: z.object({
-    tag: z.string(),
-    name: z.string(),
-    description: z.string(),
-    image: z.string(),
-  }),
-  sponsorsSection: z.object({
-    tag: z.string(),
-  }),
-  sponsors: z.array(
-    z.object({
-      name: z.string(),
-      desc: z.string(),
-      image: z.string(),
-    })
+  components: z.array(
+    z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("faqQuestions"),
+        categories: z.array(
+          z.object({
+            title: z.string(),
+            items: z.array(
+              z.object({
+                question: z.string(),
+                answer: z.string(),
+              })
+            ),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("sponsorsCards"),
+        tag: z.string(),
+        columns: z.number().int().min(1).max(4),
+        cards: z.array(
+          z.object({
+            name: z.string(),
+            desc: z.string(),
+            image: z.string(),
+          })
+        ),
+      }),
+      z.object({
+        type: z.literal("cta"),
+        tag: z.string().optional(),
+        heading: z.string(),
+        text: z.string(),
+        buttonLabel: z.string(),
+        buttonHref: z.string(),
+      }),
+    ])
   ),
-  cta: z.object({
-    tag: z.string(),
-    heading: z.string(),
-    paragraph: z.string(),
-    buttonLabel: z.string(),
-    buttonHref: z.string(),
-  }),
 });
 
 // ── 11. contact.json ─────────────────────────────────────

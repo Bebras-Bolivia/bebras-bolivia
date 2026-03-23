@@ -1,7 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import FAQQuestionsBlock from "@/components/FAQQuestionsBlock.astro";
-import FAQCtaBlock from "@/components/FAQCtaBlock.astro";
+import FAQQuestionsBlock from "@/components/content-blocks/FAQQuestionsBlock.astro";
+import SponsorsCardsBlock from "@/components/content-blocks/SponsorsCardsBlock.astro";
+import CtaSectionBlock from "@/components/content-blocks/CtaSectionBlock.astro";
 import faqData from "@/data/faq.json";
 
 const faq = faqData as any;
@@ -32,9 +33,13 @@ const components: any[] = Array.isArray(faq.components) ? faq.components : [];
         if (component.type === "faqQuestions") {
           return <FAQQuestionsBlock categories={component.categories} />;
         }
-        if (component.type === "faqCta") {
+        if (component.type === "sponsorsCards") {
+          return <SponsorsCardsBlock tag={component.tag} columns={component.columns} cards={component.cards} />;
+        }
+        if (component.type === "cta") {
           return (
-            <FAQCtaBlock
+            <CtaSectionBlock
+              tag={component.tag}
               heading={component.heading}
               text={component.text}
               buttonLabel={component.buttonLabel}

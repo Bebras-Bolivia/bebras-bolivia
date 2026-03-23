@@ -9,6 +9,8 @@ const Editor = {
   dirty: false,
   devServerReady: false,
   devServerStarting: false,
+  collapsedItems: new Set(),
+  itemExpandedState: new Map(),
 
   // ── Map content files to landing page routes ────────────
   // Used to load the correct page in the preview iframe.
@@ -55,6 +57,8 @@ const Editor = {
     outro: "textarea",
     tip: "textarea",
     text: "textarea",
+    pageDescription: "textarea",
+    headingHighlight: "text",
     instruction: "textarea",
     disclaimer: "textarea",
     content: "textarea",    // string arrays rendered as textarea per item
@@ -69,7 +73,7 @@ const Editor = {
     status: ["positive", "neutral", "negative"],
   },
 
-  hiddenFields: new Set(["id"]),
+  hiddenFields: new Set(["id", "pageTitle", "pageDescription"]),
 
   // ── Render the editor for a file ────────────────────────
   async render(filename) {
@@ -306,9 +310,9 @@ const Editor = {
     section.appendChild(arrayContainer);
 
     // Special: component picker modal (FAQ page)
-    if (this.currentFile === "faq.json" && path === "components") {
+    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
       const addBtn = document.createElement("button");
-      addBtn.className = "add-item-btn";
+      addBtn.className = "add-item-btn component-add-btn";
       addBtn.type = "button";
       addBtn.textContent = "Agregar nuevo componente";
       addBtn.addEventListener("click", () => {
@@ -412,6 +416,12 @@ const Editor = {
 
     arr.forEach((obj, idx) => {
       const itemPath = `${path}[${idx}]`;
+      const isCollapsible = this.isCollapsibleArray(path);
+      if (isCollapsible && !this.itemExpandedState.has(itemPath)) {
+        this.itemExpandedState.set(itemPath, false);
+      }
+      const isExpanded = isCollapsible ? this.itemExpandedState.get(itemPath) === true : true;
+
       const item = document.createElement("div");
       item.className = "array-item";
       item.setAttribute("draggable", "false");
@@ -429,18 +439,60 @@ const Editor = {
       handleSpan.style.cssText = "margin-right:0.5rem;";
 
       const labelSpan = document.createElement("span");
-      labelSpan.textContent = `#${idx + 1}`;
+      labelSpan.textContent = this.getArrayItemLabel(obj, idx);
 
       const leftGroup = document.createElement("span");
       leftGroup.style.cssText = "display:flex;align-items:center;";
       leftGroup.appendChild(handleSpan);
       leftGroup.appendChild(labelSpan);
 
+      if (isCollapsible) {
+        const collapseBtn = document.createElement("button");
+        collapseBtn.type = "button";
+        collapseBtn.className = "array-collapse-btn";
+        collapseBtn.innerHTML = `${App.icon("arrow")}`;
+        collapseBtn.title = isExpanded ? "Minimizar" : "Expandir";
+        collapseBtn.setAttribute("aria-expanded", String(isExpanded));
+        if (!isExpanded) collapseBtn.classList.add("collapsed");
+        leftGroup.appendChild(collapseBtn);
+      }
+
       header.appendChild(leftGroup);
       item.appendChild(header);
 
+      const body = document.createElement("div");
+      body.className = "array-item-body";
+      if (isCollapsible && !isExpanded) {
+        body.style.display = "none";
+      }
+
       // Render each field in the object
-      this.renderObject(item, obj, itemPath, depth + 1);
+      this.renderObject(body, obj, itemPath, depth + 1);
+      item.appendChild(body);
+
+      if (isCollapsible) {
+        const collapseBtn = item.querySelector(".array-collapse-btn");
+        if (collapseBtn) {
+          collapseBtn.addEventListener("click", () => {
+            const isOpen = body.style.display !== "none";
+            if (isOpen) {
+              body.style.display = "none";
+              collapseBtn.classList.add("collapsed");
+              collapseBtn.setAttribute("aria-expanded", "false");
+              collapseBtn.title = "Expandir";
+              this.collapsedItems.add(itemPath);
+              this.itemExpandedState.set(itemPath, false);
+            } else {
+              body.style.display = "";
+              collapseBtn.classList.remove("collapsed");
+              collapseBtn.setAttribute("aria-expanded", "true");
+              collapseBtn.title = "Minimizar";
+              this.collapsedItems.delete(itemPath);
+              this.itemExpandedState.set(itemPath, true);
+            }
+          });
+        }
+      }
 
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
@@ -924,7 +976,7 @@ const Editor = {
       }
     }
 
-    if (this.currentFile === "faq.json" && path === "components") {
+    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
       if (selectedType === "faqQuestions") {
         return {
           type: "faqQuestions",
@@ -942,12 +994,41 @@ const Editor = {
         };
       }
 
-      if (selectedType === "faqCta") {
+      if (selectedType === "cta") {
         return {
-          type: "faqCta",
+          type: "cta",
+          tag: "",
           heading: "No encontraste lo que buscabas?",
           text: "Contactanos y con gusto resolveremos tus dudas.",
           buttonLabel: "Ir a Contacto",
+          buttonHref: "/contacto",
+        };
+      }
+    }
+
+    if ((this.currentFile === "faq.json" || this.currentFile === "sponsors.json") && path === "components") {
+      if (selectedType === "sponsorsCards") {
+        return {
+          type: "sponsorsCards",
+          tag: "Nueva seccion de sponsors",
+          columns: 3,
+          cards: [
+            {
+              name: "Nuevo sponsor",
+              desc: "Descripcion del sponsor.",
+              image: "/images/sponsor-placeholder.svg",
+            },
+          ],
+        };
+      }
+
+      if (selectedType === "cta") {
+        return {
+          type: "cta",
+          tag: "Colabora",
+          heading: "Te interesa colaborar?",
+          text: "Sumate como aliado del Desafio Bebras Bolivia.",
+          buttonLabel: "Contactanos",
           buttonHref: "/contacto",
         };
       }
@@ -1057,6 +1138,24 @@ const Editor = {
     return "";
   },
 
+  isCollapsibleArray(path) {
+    return path === "components" || path.endsWith(".components");
+  },
+
+  getArrayItemLabel(obj, idx) {
+    if (obj && typeof obj === "object") {
+      if (obj.type === "faqQuestions") return `#${idx + 1} — FAQ`;
+      if (obj.type === "sponsorsCards") return `#${idx + 1} — Sponsors`;
+      if (obj.type === "cta") return `#${idx + 1} — CTA`;
+      if (obj.title) return `#${idx + 1} — ${obj.title}`;
+      if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
+      if (obj.label) return `#${idx + 1} — ${obj.label}`;
+      if (obj.tag) return `#${idx + 1} — ${obj.tag}`;
+      if (obj.type) return `#${idx + 1} — ${obj.type}`;
+    }
+    return `#${idx + 1}`;
+  },
+
   openAddComponentModal(path, currentArr) {
     const options = this.getComponentOptions(path);
     if (!options.length) return;
@@ -1111,7 +1210,7 @@ const Editor = {
   },
 
   getComponentOptions(path) {
-    if (this.currentFile === "faq.json" && path === "components") {
+    if (path === "components") {
       return [
         {
           value: "faqQuestions",
@@ -1119,9 +1218,14 @@ const Editor = {
           description: "Bloque de preguntas y respuestas",
         },
         {
-          value: "faqCta",
-          label: "CTA FAQ",
-          description: "Bloque final con boton de contacto",
+          value: "sponsorsCards",
+          label: "Sponsors",
+          description: "Seccion de cards de patrocinadores",
+        },
+        {
+          value: "cta",
+          label: "CTA",
+          description: "Bloque de titulo, texto y boton",
         },
       ];
     }

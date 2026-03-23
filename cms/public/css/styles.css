@@ -899,6 +899,39 @@ a:hover { text-decoration: underline; }
   background: var(--danger-soft);
 }
 
+.array-item-body {
+  width: 100%;
+}
+
+.array-collapse-btn {
+  margin-left: 0.5rem;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-base);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.array-collapse-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.array-collapse-btn:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-focus);
+}
+
+.array-collapse-btn.collapsed svg {
+  transform: rotate(-90deg);
+}
+
 .add-item-btn {
   display: flex;
   align-items: center;
@@ -915,6 +948,10 @@ a:hover { text-decoration: underline; }
   transition: all var(--transition);
   width: 100%;
   font-family: var(--font-sans);
+}
+
+.component-add-btn {
+  margin-top: 0.5rem;
 }
 
 .add-item-btn:hover {

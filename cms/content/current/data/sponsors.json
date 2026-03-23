@@ -1,31 +1,54 @@
 {
-  "pageTitle": "Sponsors",
-  "pageDescription": "Patrocinadores y organizaciones que apoyan el Desafío Bebras Bolivia.",
   "header": {
+    "pageTitle": "Sponsors",
+    "pageDescription": "Patrocinadores y organizaciones que apoyan el Desafio Bebras Bolivia.",
     "tag": "Aliados",
-    "heading": "Nuestros Patrocinadores",
+    "heading": "Nuestros",
     "headingHighlight": "Patrocinadores",
-    "subtitle": "Bebras Bolivia es posible gracias al apoyo de instituciones comprometidas con la educación."
+    "subtitle": "Bebras Bolivia es posible gracias al apoyo de instituciones comprometidas con la educacion."
   },
-  "anchor": {
-    "tag": "Institución Organizadora",
-    "name": "Universidad Placeholder",
-    "description": "Institución ancla que coordina y organiza el Desafío Bebras en Bolivia, proporcionando infraestructura académica y soporte técnico para todas las actividades.",
-    "image": "/images/university-placeholder.svg"
-  },
-  "sponsorsSection": {
-    "tag": "Patrocinadores y Aliados"
-  },
-  "sponsors": [
-    { "name": "Sponsor 1", "desc": "Descripción breve del patrocinador y su relación con la educación.", "image": "/images/sponsor-placeholder.svg" },
-    { "name": "Sponsor 2", "desc": "Descripción breve del patrocinador y su contribución al proyecto.", "image": "/images/sponsor-placeholder.svg" },
-    { "name": "Sponsor 3", "desc": "Descripción breve del patrocinador y cómo apoya la iniciativa.", "image": "/images/sponsor-placeholder.svg" }
-  ],
-  "cta": {
-    "tag": "Colabora",
-    "heading": "¿Te interesa patrocinar Bebras Bolivia?",
-    "paragraph": "Únete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",
-    "buttonLabel": "Contáctanos",
-    "buttonHref": "/contacto"
-  }
+  "components": [
+    {
+      "type": "sponsorsCards",
+      "tag": "Institucion Organizadora",
+      "columns": 1,
+      "cards": [
+        {
+          "name": "Universidad Placeholder",
+          "desc": "Institucion ancla que coordina y organiza el Desafio Bebras en Bolivia, proporcionando infraestructura academica y soporte tecnico para todas las actividades.",
+          "image": "/images/university-placeholder.svg"
+        }
+      ]
+    },
+    {
+      "type": "sponsorsCards",
+      "tag": "Patrocinadores y Aliados",
+      "columns": 3,
+      "cards": [
+        {
+          "name": "Sponsor 1",
+          "desc": "Descripcion breve del patrocinador y su relacion con la educacion.",
+          "image": "/images/sponsor-placeholder.svg"
+        },
+        {
+          "name": "Sponsor 2",
+          "desc": "Descripcion breve del patrocinador y su contribucion al proyecto.",
+          "image": "/images/sponsor-placeholder.svg"
+        },
+        {
+          "name": "Sponsor 3",
+          "desc": "Descripcion breve del patrocinador y como apoya la iniciativa.",
+          "image": "/images/sponsor-placeholder.svg"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "tag": "Colabora",
+      "heading": "Te interesa patrocinar Bebras Bolivia?",
+      "text": "Unete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",
+      "buttonLabel": "Contactanos",
+      "buttonHref": "/contacto"
+    }
+  ]
 }

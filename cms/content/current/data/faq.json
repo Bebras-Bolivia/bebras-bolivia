@@ -99,7 +99,8 @@
       ]
     },
     {
-      "type": "faqCta",
+      "type": "cta",
+      "tag": "",
       "heading": "No encontraste lo que buscabas?",
       "text": "Contactanos y con gusto resolveremos tus dudas.",
       "buttonLabel": "Ir a Contacto",
