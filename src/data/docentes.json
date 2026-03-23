@@ -13,7 +13,7 @@
       "tag": "Registro",
       "heading": "Como inscriben a sus estudiantes?",
       "intro": "El proceso de inscripcion es simple y gratuito. Un docente o representante de la escuela actua como coordinador y se encarga de registrar a los estudiantes.",
-      "columns": 2,
+      "columns": 3,
       "steps": [
         {
           "num": "1",
@@ -57,11 +57,6 @@
           "icon": "clock",
           "title": "45 minutos de clase",
           "desc": "Un bloque horario durante la semana del desafio."
-        },
-        {
-          "icon": "clock",
-          "title": "Este es un meme",
-          "desc": "Mememememememmememe, sisisisiiss, ok boomer"
         }
       ]
     },
@@ -85,19 +80,6 @@
         "label": "Registrarse como Coordinador",
         "href": "/registro"
       }
-    },
-    {
-      "id": "registro",
-      "tag": "Este es un nuevo registro dentro de la pagina previa",
-      "heading": "Titulo de registro",
-      "intro": "Introduccion",
-      "steps": [
-        {
-          "num": "1",
-          "title": "Paso",
-          "desc": "Descripcion"
-        }
-      ]
     }
   ]
 }

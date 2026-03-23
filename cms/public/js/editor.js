@@ -464,8 +464,8 @@ const Editor = {
     }
 
     if (currentArr.length === 0) {
-      // Can't infer shape — add empty string
-      this.setNestedValue(this.currentData, path, [...currentArr, ""]);
+      const emptyTemplate = this.createEmptyArrayItem(path);
+      this.setNestedValue(this.currentData, path, [...currentArr, emptyTemplate]);
     } else {
       const template = currentArr[currentArr.length - 1];
       if (typeof template === "string") {
@@ -1002,6 +1002,16 @@ const Editor = {
     }
 
     return null;
+  },
+
+  createEmptyArrayItem(path) {
+    const normalizedPath = String(path).replace(/\[\d+\]/g, "[]");
+
+    if (this.currentFile === "faq.json" && normalizedPath.endsWith("categories[].items")) {
+      return { question: "", answer: "" };
+    }
+
+    return "";
   },
 
   generateUniqueSlug(base) {

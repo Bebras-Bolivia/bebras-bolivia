@@ -87,6 +87,15 @@
           "answer": "El coordinador puede contactar al soporte técnico durante el desafío. Se pueden hacer ajustes de tiempo si hay problemas verificables de conectividad."
         }
       ]
+    },
+    {
+      "title": "Seccion sin Preguntas",
+      "items": [
+        {
+          "question": "Esta es una nueva sección",
+          "answer": "Aquí presentamos una nueva pregunta"
+        }
+      ]
     }
   ]
 }
