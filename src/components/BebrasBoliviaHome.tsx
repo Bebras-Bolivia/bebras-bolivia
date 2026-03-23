@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { BebrasBeaverShowcase } from "@/components/BebrasBeaverShowcase";
 
 export default function BebrasBoliviaHome() {
-  const heroTextRef = useRef<HTMLDivElement>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      if (heroTextRef.current) {
+      if (heroSectionRef.current) {
         gsap.fromTo(
-          heroTextRef.current.children,
+          "[data-hero-item]",
           { y: 28, opacity: 0 },
           {
             y: 0,
@@ -29,13 +29,14 @@ export default function BebrasBoliviaHome() {
   }, []);
 
   return (
-    <div className="relative text-primary-foreground">
+    <div className="relative text-primary-foreground py-10">
       <main className="mx-auto w-full px-4 pb-16 md:max-w-9/12 md:px-6">
         <section
           id="inicio"
+          ref={heroSectionRef}
           className="grid min-h-[78vh] items-center gap-8 py-8 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4"
         >
-          <div ref={heroTextRef} className="space-y-5 text-center lg:text-left">
+          <div data-hero-item className="order-1 space-y-5 text-center lg:text-left lg:col-start-1 lg:row-start-1">
             <p className="text-[clamp(2rem,8.5vw,2.75rem)] font-black tracking-tight text-primary-foreground sm:text-5xl">
               Bienvenido a
             </p>
@@ -45,7 +46,14 @@ export default function BebrasBoliviaHome() {
             >
               Bebras Bolivia 2026
             </h1>
-            <p className="mx-auto max-w-[20ch] text-balance text-xl leading-snug text-primary-foreground sm:text-4xl lg:mx-0">
+          </div>
+
+          <div className="order-2 mt-12 sm:mt-10 lg:mt-0 lg:col-start-2 lg:row-start-1 lg:row-span-2">
+            <BebrasBeaverShowcase />
+          </div>
+
+          <div data-hero-item className="order-3 space-y-5 text-center lg:text-left lg:col-start-1 lg:row-start-2">
+            <p className="mx-auto max-w-[20ch] text-balance text-xl leading-snug text-primary-foreground sm:text-4xl lg:mx-0 pt-6">
               El desafío internacional de pensamiento computacional para estudiantes de todo el país.
             </p>
             <p className="mx-auto max-w-[20ch] text-balance text-xl leading-snug text-primary-foreground/80 sm:text-4xl lg:mx-0">
@@ -66,8 +74,6 @@ export default function BebrasBoliviaHome() {
               </Button>
             </div>
           </div>
-
-          <BebrasBeaverShowcase />
         </section>
       </main>
     </div>

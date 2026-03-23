@@ -107,7 +107,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className={`fixed inset-0 top-20 z-40 overflow-y-auto px-4 pb-6 transition-all duration-300 lg:hidden ${
+            className={`fixed inset-0 top-20 z-40 overflow-y-auto px-4 pb-6 pt-1 transition-all duration-300 lg:hidden ${
               visible
                 ? "bg-transparent opacity-100"
                 : "bg-transparent opacity-0"
