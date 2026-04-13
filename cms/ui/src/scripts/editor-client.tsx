@@ -1,18 +1,7 @@
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
-import EditorShellView from "../components/EditorShellView";
 import ArrayActionsView from "../components/ArrayActionsView";
 import ArrayItemActionsView from "../components/ArrayItemActionsView";
-
-type Payload = {
-  title: string;
-  filename: string;
-  icons: Record<string, string>;
-  onSave: () => void;
-  onReset: () => void;
-  onInitForm: (el: HTMLElement) => void;
-  onInitPreview: () => void;
-};
 
 type PrimitivesPayload = {
   title: string;
@@ -47,20 +36,9 @@ const roots = new WeakMap<Element, Root>();
 declare global {
   interface Window {
     CMSEditor?: {
-      mountShell: (target: Element, payload: Payload) => void;
       mountPrimitives: (target: Element, payload: PrimitivesPayload) => void;
     };
   }
-}
-
-function mountShell(target: Element, payload: Payload) {
-  let root = roots.get(target);
-  if (!root) {
-    root = createRoot(target);
-    roots.set(target, root);
-  }
-
-  root.render(<EditorShellView {...payload} />);
 }
 
 function EditorPrimitivesView({
@@ -227,5 +205,5 @@ function mountPrimitives(target: Element, payload: PrimitivesPayload) {
 }
 
 export function registerEditorRenderer() {
-  window.CMSEditor = { mountShell, mountPrimitives };
+  window.CMSEditor = { mountPrimitives };
 }
