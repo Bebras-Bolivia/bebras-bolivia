@@ -90,6 +90,30 @@ const Editor = {
 
       const meta = App.contentMeta[filename] || { label: filename, desc: "" };
 
+      if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+        const primitiveFields = this.extractPrimitiveFields(this.currentData);
+        if (primitiveFields.length > 0 && !this.hasComplexStructure(this.currentData)) {
+          main.innerHTML = '<div id="react-editor-primitives-root"></div>';
+          const root = document.getElementById("react-editor-primitives-root");
+          if (root) {
+            window.CMSEditor.mountPrimitives(root, {
+              title: meta.label,
+              filename,
+              fields: primitiveFields,
+              icons: App.icons,
+              onSave: () => this.save(),
+              onReset: () => this.reset(),
+              onFieldChange: (path, value) => {
+                this.setNestedValue(this.currentData, path, value);
+                this.dirty = true;
+              },
+              onInitPreview: () => this.ensureDevServer(),
+            });
+            return;
+          }
+        }
+      }
+
       if (window.CMSEditor && typeof window.CMSEditor.mountShell === "function") {
         main.innerHTML = '<div id="react-editor-shell-root"></div>';
         const root = document.getElementById("react-editor-shell-root");
@@ -975,6 +999,52 @@ const Editor = {
       .replace(/[-_]/g, " ")
       .replace(/([a-z])([A-Z])/g, "$1 $2")
       .replace(/\b\w/g, (c) => c.toUpperCase());
+  },
+
+  hasComplexStructure(node) {
+    if (Array.isArray(node)) return true;
+    if (!node || typeof node !== "object") return false;
+
+    return Object.values(node).some((value) => {
+      if (Array.isArray(value)) return true;
+      if (value && typeof value === "object") return this.hasComplexStructure(value);
+      return false;
+    });
+  },
+
+  extractPrimitiveFields(obj, path = "") {
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
+    const out = [];
+
+    Object.entries(obj).forEach(([key, value]) => {
+      if (this.shouldHideField(key)) return;
+      const fieldPath = path ? `${path}.${key}` : key;
+
+      if (value === null || value === undefined) return;
+      if (Array.isArray(value)) return;
+
+      if (typeof value === "object") {
+        out.push(...this.extractPrimitiveFields(value, fieldPath));
+        return;
+      }
+
+      const type = this.getFieldType(fieldPath, value);
+      const editorType = type === "textarea" || type === "boolean" || type === "number" || type === "url" || type === "select"
+        ? type
+        : "text";
+      const readOnly = editorType === "number" && this.isAutoNumberField(fieldPath);
+
+      out.push({
+        path: fieldPath,
+        label: this.formatLabel(key),
+        type: editorType,
+        value,
+        options: editorType === "select" ? this.selectOptions[key] || [] : undefined,
+        readOnly,
+      });
+    });
+
+    return out;
   },
 
   getFieldType(keyOrPath, value) {
