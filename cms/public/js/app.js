@@ -238,6 +238,33 @@ const App = {
       const files = contentData.files || [];
       const tree = this.getContentTree(files);
 
+      if (window.CMSSidebar && typeof window.CMSSidebar.mountTree === "function") {
+        const nodes = tree.map((node) => {
+          const parentMeta = this.contentMeta[node.parent] || { label: node.parent, icon: "edit" };
+          return {
+            parent: node.parent,
+            children: node.children,
+            parentLabel: parentMeta.label || node.parent,
+            parentIcon: parentMeta.icon || "edit",
+            childrenMeta: node.children.map((child) => {
+              const childMeta = this.contentMeta[child] || { label: child };
+              return { key: child, label: childMeta.label || child };
+            }),
+          };
+        });
+
+        container.innerHTML = '<div id="react-sidebar-tree-root"></div>';
+        const root = document.getElementById("react-sidebar-tree-root");
+        if (root) {
+          window.CMSSidebar.mountTree(root, {
+            nodes,
+            icons: this.icons,
+            onNavigate: (path) => this.navigate(path),
+          });
+          return;
+        }
+      }
+
       let html = tree
         .map((node) => {
           const parentMeta = this.contentMeta[node.parent] || { label: node.parent, icon: "edit" };
@@ -517,6 +544,7 @@ window.CMSDashboard = window.CMSDashboard || null;
 window.CMSBlog = window.CMSBlog || null;
 window.CMSSnapshots = window.CMSSnapshots || null;
 window.CMSEditor = window.CMSEditor || null;
+window.CMSSidebar = window.CMSSidebar || null;
 
 // ── Boot ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => App.init());
