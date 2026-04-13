@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import ArrayActionsView from "../components/ArrayActionsView";
 import ArrayItemActionsView from "../components/ArrayItemActionsView";
 import ArrayCollapseToggleView from "../components/ArrayCollapseToggleView";
+import ComplexNodesView, { type ComplexNode } from "../components/ComplexNodesView";
 
 type PrimitivesPayload = {
   title: string;
@@ -32,6 +33,8 @@ type PrimitivesPayload = {
   onRemoveArrayItem?: (id: string) => void;
   getArrayCollapseTargets?: () => Array<{ id: string; expanded: boolean }>;
   onToggleArrayCollapse?: (id: string) => void;
+  complexNodes?: ComplexNode[];
+  onArrayMount?: (path: string, el: HTMLElement) => void;
 };
 
 const roots = new WeakMap<Element, Root>();
@@ -60,6 +63,8 @@ function EditorPrimitivesView({
   onRemoveArrayItem,
   getArrayCollapseTargets,
   onToggleArrayCollapse,
+  complexNodes = [],
+  onArrayMount,
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -89,6 +94,15 @@ function EditorPrimitivesView({
             }}
           />
         );
+      });
+    }
+
+    if (complexRef.current && onArrayMount) {
+      complexNodes.forEach((node) => {
+        if (node.kind !== "array") return;
+        const slot = complexRef.current?.querySelector(`[data-complex-array-path="${node.path}"]`);
+        if (!slot) return;
+        onArrayMount(node.path, slot as HTMLElement);
       });
     }
 
@@ -140,6 +154,8 @@ function EditorPrimitivesView({
     getArrayItemActionTargets,
     onToggleArrayCollapse,
     getArrayCollapseTargets,
+    complexNodes,
+    onArrayMount,
   ]);
 
   return (
@@ -213,7 +229,11 @@ function EditorPrimitivesView({
               )}
             </div>
           ))}
-          <div ref={complexRef}></div>
+          <div ref={complexRef}>
+            {complexNodes.length > 0 ? (
+              <ComplexNodesView nodes={complexNodes} />
+            ) : null}
+          </div>
         </div>
 
         <div className="editor-preview" id="editor-preview-panel">

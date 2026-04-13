@@ -1075,16 +1075,19 @@ const Editor = {
         this._arrayActionTargets = [];
         this._arrayItemActionTargets = [];
         this._arrayCollapseTargets = [];
-        if (this.hasComplexStructure(this.currentData)) {
-          this.renderComplexFields(el, this.currentData, "", 0);
-          el.addEventListener("input", () => {
-            this.dirty = true;
-          });
-        }
+        el.addEventListener("input", () => {
+          this.dirty = true;
+        });
 
         if (this.currentFile === "blog-ui.json") {
           this.renderBlogPostsSection(el);
         }
+      },
+      complexNodes: this.buildComplexNodes(this.currentData, ""),
+      onArrayMount: (path, el) => {
+        const value = this.getNestedValue(this.currentData, path);
+        if (!Array.isArray(value)) return;
+        this.renderArray(el, value, path, 0);
       },
       getArrayActionTargets: () => [...this._arrayActionTargets],
       onAddArrayItem: (id, selectedType) => {
@@ -1120,15 +1123,29 @@ const Editor = {
     return true;
   },
 
-  hasComplexStructure(node) {
-    if (Array.isArray(node)) return true;
-    if (!node || typeof node !== "object") return false;
+  buildComplexNodes(obj, path = "") {
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
+    const nodes = [];
 
-    return Object.values(node).some((value) => {
-      if (Array.isArray(value)) return true;
-      if (value && typeof value === "object") return this.hasComplexStructure(value);
-      return false;
+    Object.entries(obj).forEach(([key, value]) => {
+      if (this.shouldHideField(key)) return;
+      const fieldPath = path ? `${path}.${key}` : key;
+      if (value === null || value === undefined) return;
+
+      if (Array.isArray(value)) {
+        nodes.push({ kind: "array", path: fieldPath, label: this.formatLabel(key) });
+        return;
+      }
+
+      if (typeof value === "object") {
+        const children = this.buildComplexNodes(value, fieldPath);
+        if (children.length > 0) {
+          nodes.push({ kind: "object", path: fieldPath, label: this.formatLabel(key), children });
+        }
+      }
     });
+
+    return nodes;
   },
 
   extractPrimitiveFields(obj, path = "") {
@@ -1164,36 +1181,6 @@ const Editor = {
     });
 
     return out;
-  },
-
-  renderComplexFields(container, obj, path, depth = 0) {
-    if (!obj || typeof obj !== "object") return;
-
-    Object.entries(obj).forEach(([key, value]) => {
-      if (this.shouldHideField(key)) return;
-      const fieldPath = path ? `${path}.${key}` : key;
-      if (value === null || value === undefined) return;
-
-      if (Array.isArray(value)) {
-        this.renderArray(container, value, fieldPath, depth);
-        return;
-      }
-
-      if (typeof value === "object") {
-        const section = document.createElement("div");
-        section.className = "field-section";
-
-        const title = document.createElement("div");
-        title.className = "field-section-title";
-        title.textContent = this.formatLabel(key);
-        section.appendChild(title);
-
-        this.renderComplexFields(section, value, fieldPath, depth + 1);
-        if (section.children.length > 1) {
-          container.appendChild(section);
-        }
-      }
-    });
   },
 
   getFieldType(keyOrPath, value) {
