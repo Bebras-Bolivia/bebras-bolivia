@@ -28,6 +28,7 @@ type PrimitivesPayload = {
   onReset: () => void;
   onFieldChange: (path: string, value: string | number | boolean) => void;
   onInitPreview: () => void;
+  onInitComplex: (el: HTMLElement) => void;
 };
 
 const roots = new WeakMap<Element, Root>();
@@ -60,10 +61,16 @@ function EditorPrimitivesView({
   onReset,
   onFieldChange,
   onInitPreview,
+  onInitComplex,
 }: PrimitivesPayload) {
+  const complexRef = React.useRef<HTMLDivElement | null>(null);
+
   React.useEffect(() => {
     onInitPreview();
-  }, [onInitPreview]);
+    if (complexRef.current) {
+      onInitComplex(complexRef.current);
+    }
+  }, [onInitPreview, onInitComplex]);
 
   return (
     <>
@@ -136,6 +143,7 @@ function EditorPrimitivesView({
               )}
             </div>
           ))}
+          <div ref={complexRef}></div>
         </div>
 
         <div className="editor-preview" id="editor-preview-panel">

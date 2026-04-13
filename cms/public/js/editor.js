@@ -92,7 +92,7 @@ const Editor = {
 
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
         const primitiveFields = this.extractPrimitiveFields(this.currentData);
-        if (primitiveFields.length > 0 && !this.hasComplexStructure(this.currentData)) {
+        if (primitiveFields.length > 0) {
           main.innerHTML = '<div id="react-editor-primitives-root"></div>';
           const root = document.getElementById("react-editor-primitives-root");
           if (root) {
@@ -108,6 +108,14 @@ const Editor = {
                 this.dirty = true;
               },
               onInitPreview: () => this.ensureDevServer(),
+              onInitComplex: (el) => {
+                if (this.hasComplexStructure(this.currentData)) {
+                  this.renderComplexFields(el, this.currentData, "", 0);
+                  el.addEventListener("input", () => {
+                    this.dirty = true;
+                  });
+                }
+              },
             });
             return;
           }
@@ -1045,6 +1053,36 @@ const Editor = {
     });
 
     return out;
+  },
+
+  renderComplexFields(container, obj, path, depth = 0) {
+    if (!obj || typeof obj !== "object") return;
+
+    Object.entries(obj).forEach(([key, value]) => {
+      if (this.shouldHideField(key)) return;
+      const fieldPath = path ? `${path}.${key}` : key;
+      if (value === null || value === undefined) return;
+
+      if (Array.isArray(value)) {
+        this.renderArray(container, value, fieldPath, depth);
+        return;
+      }
+
+      if (typeof value === "object") {
+        const section = document.createElement("div");
+        section.className = "field-section";
+
+        const title = document.createElement("div");
+        title.className = "field-section-title";
+        title.textContent = this.formatLabel(key);
+        section.appendChild(title);
+
+        this.renderComplexFields(section, value, fieldPath, depth + 1);
+        if (section.children.length > 1) {
+          container.appendChild(section);
+        }
+      }
+    });
   },
 
   getFieldType(keyOrPath, value) {
