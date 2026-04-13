@@ -541,14 +541,22 @@ const Editor = {
       rightGroup.style.cssText = "display:flex;align-items:center;gap:0.375rem;padding-right:0rem;";
 
       if (isCollapsible) {
-        const collapseBtn = document.createElement("button");
-        collapseBtn.type = "button";
-        collapseBtn.className = "array-collapse-btn";
-        collapseBtn.innerHTML = `${App.icon("arrow")}`;
-        collapseBtn.title = isExpanded ? "Minimizar" : "Expandir";
-        collapseBtn.setAttribute("aria-expanded", String(isExpanded));
-        if (!isExpanded) collapseBtn.classList.add("collapsed");
-        leftGroup.appendChild(collapseBtn);
+        if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+          const collapseId = `arr-collapse-${itemPath}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          this._arrayCollapseTargets.push({ id: collapseId, itemPath, expanded: isExpanded });
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-array-collapse-placeholder", collapseId);
+          leftGroup.appendChild(placeholder);
+        } else {
+          const collapseBtn = document.createElement("button");
+          collapseBtn.type = "button";
+          collapseBtn.className = "array-collapse-btn";
+          collapseBtn.innerHTML = `${App.icon("arrow")}`;
+          collapseBtn.title = isExpanded ? "Minimizar" : "Expandir";
+          collapseBtn.setAttribute("aria-expanded", String(isExpanded));
+          if (!isExpanded) collapseBtn.classList.add("collapsed");
+          leftGroup.appendChild(collapseBtn);
+        }
       }
 
       const removeBtn = document.createElement("button");
@@ -590,7 +598,7 @@ const Editor = {
 
       if (isCollapsible) {
         const collapseBtn = item.querySelector(".array-collapse-btn");
-        if (collapseBtn) {
+        if (collapseBtn && !(window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function")) {
           collapseBtn.addEventListener("click", () => {
             const isOpen = body.style.display !== "none";
             if (isOpen) {
@@ -701,6 +709,7 @@ const Editor = {
   _dndBoundContainers: new WeakSet(),
   _arrayActionTargets: [],
   _arrayItemActionTargets: [],
+  _arrayCollapseTargets: [],
 
   attachDragEvents(item, container, arrayPath) {
     this.bindContainerDnd(container, arrayPath);
@@ -1065,6 +1074,7 @@ const Editor = {
       onInitComplex: (el) => {
         this._arrayActionTargets = [];
         this._arrayItemActionTargets = [];
+        this._arrayCollapseTargets = [];
         if (this.hasComplexStructure(this.currentData)) {
           this.renderComplexFields(el, this.currentData, "", 0);
           el.addEventListener("input", () => {
@@ -1091,6 +1101,19 @@ const Editor = {
         const target = this._arrayItemActionTargets.find((x) => x.id === id);
         if (!target) return;
         this.removeArrayItem(target.path, target.idx);
+      },
+      getArrayCollapseTargets: () => [...this._arrayCollapseTargets],
+      onToggleArrayCollapse: (id) => {
+        const target = this._arrayCollapseTargets.find((x) => x.id === id);
+        if (!target) return;
+        const nextExpanded = !target.expanded;
+        this.itemExpandedState.set(target.itemPath, nextExpanded);
+        if (nextExpanded) {
+          this.collapsedItems.delete(target.itemPath);
+        } else {
+          this.collapsedItems.add(target.itemPath);
+        }
+        this.rerenderEditorForm();
       },
     });
 

@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import ArrayActionsView from "../components/ArrayActionsView";
 import ArrayItemActionsView from "../components/ArrayItemActionsView";
+import ArrayCollapseToggleView from "../components/ArrayCollapseToggleView";
 
 type PrimitivesPayload = {
   title: string;
@@ -29,6 +30,8 @@ type PrimitivesPayload = {
   onAddArrayItem?: (id: string, selectedType: string | null) => void;
   getArrayItemActionTargets?: () => Array<{ id: string; inline?: boolean }>;
   onRemoveArrayItem?: (id: string) => void;
+  getArrayCollapseTargets?: () => Array<{ id: string; expanded: boolean }>;
+  onToggleArrayCollapse?: (id: string) => void;
 };
 
 const roots = new WeakMap<Element, Root>();
@@ -55,6 +58,8 @@ function EditorPrimitivesView({
   onAddArrayItem,
   getArrayItemActionTargets,
   onRemoveArrayItem,
+  getArrayCollapseTargets,
+  onToggleArrayCollapse,
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -106,7 +111,36 @@ function EditorPrimitivesView({
         );
       });
     }
-  }, [onInitPreview, onInitComplex, onAddArrayItem, getArrayActionTargets]);
+
+    if (complexRef.current && onToggleArrayCollapse && getArrayCollapseTargets) {
+      const targets = getArrayCollapseTargets();
+      targets.forEach((target) => {
+        const slot = complexRef.current?.querySelector(`[data-array-collapse-placeholder="${target.id}"]`);
+        if (!slot) return;
+        let root = roots.get(slot);
+        if (!root) {
+          root = createRoot(slot);
+          roots.set(slot, root);
+        }
+        root.render(
+          <ArrayCollapseToggleView
+            arrowIcon={icons.arrow || ""}
+            expanded={target.expanded}
+            onToggle={() => onToggleArrayCollapse(target.id)}
+          />
+        );
+      });
+    }
+  }, [
+    onInitPreview,
+    onInitComplex,
+    onAddArrayItem,
+    getArrayActionTargets,
+    onRemoveArrayItem,
+    getArrayItemActionTargets,
+    onToggleArrayCollapse,
+    getArrayCollapseTargets,
+  ]);
 
   return (
     <>
