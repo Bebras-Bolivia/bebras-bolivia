@@ -349,6 +349,35 @@ const Editor = {
 
     input.id = `field-${path}`;
     if (bindPath) input.setAttribute("data-path", path);
+
+    if (type === "text" && this.isImagePathField(path, value)) {
+      const wrapper = document.createElement("div");
+      wrapper.style.display = "flex";
+      wrapper.style.gap = "0.5rem";
+      wrapper.style.alignItems = "center";
+
+      wrapper.appendChild(input);
+
+      const mediaBtn = document.createElement("button");
+      mediaBtn.type = "button";
+      mediaBtn.className = "btn btn-ghost btn-sm";
+      mediaBtn.textContent = "Media";
+      mediaBtn.addEventListener("click", async () => {
+        if (window.CMSMediaPicker && typeof window.CMSMediaPicker.open === "function") {
+          const selected = await window.CMSMediaPicker.open();
+          if (selected) {
+            input.value = selected;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        }
+      });
+      wrapper.appendChild(mediaBtn);
+
+      group.appendChild(wrapper);
+      container.appendChild(group);
+      return;
+    }
+
     group.appendChild(input);
     container.appendChild(group);
   },
@@ -1097,6 +1126,13 @@ const Editor = {
     if (this.fieldHints[key]) return this.fieldHints[key];
     if (typeof value === "string" && value.length > 100) return "textarea";
     return "text";
+  },
+
+  isImagePathField(path, value) {
+    if (typeof value !== "string") return false;
+    const key = String(path).split(".").pop() || "";
+    if (["image", "src", "logo", "icon"].includes(key)) return true;
+    return value.startsWith("/images/") || value.startsWith("/api/media/file/");
   },
 
   isAutoNumberField(path) {

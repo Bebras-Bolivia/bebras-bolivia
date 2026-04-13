@@ -546,6 +546,7 @@ window.CMSSnapshots = window.CMSSnapshots || null;
 window.CMSEditor = window.CMSEditor || null;
 window.CMSSidebar = window.CMSSidebar || null;
 window.CMSModal = window.CMSModal || null;
+window.CMSMediaPicker = window.CMSMediaPicker || null;
 
 // ── Boot ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => App.init());
