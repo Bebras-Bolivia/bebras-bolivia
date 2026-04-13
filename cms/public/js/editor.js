@@ -1851,9 +1851,21 @@ const Editor = {
     return `#${idx + 1}`;
   },
 
-  openAddComponentModal(path, currentArr) {
+  async openAddComponentModal(path, currentArr) {
     const options = this.getComponentOptions(path);
     if (!options.length) return;
+
+    if (window.CMSModal && typeof window.CMSModal.openPicker === "function") {
+      const selected = await window.CMSModal.openPicker({
+        title: "Agregar componente",
+        subtitle: "Selecciona el componente que deseas agregar.",
+        options,
+      });
+      if (selected) {
+        this.addArrayItem(path, currentArr, selected);
+      }
+      return;
+    }
 
     const overlay = document.createElement("div");
     overlay.className = "editor-modal-overlay";
