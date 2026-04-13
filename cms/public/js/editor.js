@@ -90,6 +90,35 @@ const Editor = {
 
       const meta = App.contentMeta[filename] || { label: filename, desc: "" };
 
+      if (window.CMSEditor && typeof window.CMSEditor.mountShell === "function") {
+        main.innerHTML = '<div id="react-editor-shell-root"></div>';
+        const root = document.getElementById("react-editor-shell-root");
+        if (root) {
+          window.CMSEditor.mountShell(root, {
+            title: meta.label,
+            filename,
+            icons: App.icons,
+            onSave: () => this.save(),
+            onReset: () => this.reset(),
+            onInitForm: (formContainer) => {
+              this.renderFields(formContainer, this.currentData, "");
+
+              if (this.currentFile === "blog-ui.json") {
+                this.renderBlogPostsSection(formContainer);
+              }
+
+              formContainer.addEventListener("input", () => {
+                this.dirty = true;
+              });
+            },
+            onInitPreview: () => {
+              this.ensureDevServer();
+            },
+          });
+          return;
+        }
+      }
+
       main.innerHTML = `
         <div class="editor-toolbar">
           <div>

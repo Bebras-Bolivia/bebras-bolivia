@@ -516,6 +516,7 @@ const App = {
 window.CMSDashboard = window.CMSDashboard || null;
 window.CMSBlog = window.CMSBlog || null;
 window.CMSSnapshots = window.CMSSnapshots || null;
+window.CMSEditor = window.CMSEditor || null;
 
 // ── Boot ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => App.init());
