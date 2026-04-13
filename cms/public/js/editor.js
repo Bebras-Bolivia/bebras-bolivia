@@ -91,34 +91,10 @@ const Editor = {
       const meta = App.contentMeta[filename] || { label: filename, desc: "" };
 
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
-        const primitiveFields = this.extractPrimitiveFields(this.currentData);
-        if (primitiveFields.length > 0) {
-          main.innerHTML = '<div id="react-editor-primitives-root"></div>';
-          const root = document.getElementById("react-editor-primitives-root");
-          if (root) {
-            window.CMSEditor.mountPrimitives(root, {
-              title: meta.label,
-              filename,
-              fields: primitiveFields,
-              icons: App.icons,
-              onSave: () => this.save(),
-              onReset: () => this.reset(),
-              onFieldChange: (path, value) => {
-                this.setNestedValue(this.currentData, path, value);
-                this.dirty = true;
-              },
-              onInitPreview: () => this.ensureDevServer(),
-              onInitComplex: (el) => {
-                if (this.hasComplexStructure(this.currentData)) {
-                  this.renderComplexFields(el, this.currentData, "", 0);
-                  el.addEventListener("input", () => {
-                    this.dirty = true;
-                  });
-                }
-              },
-            });
-            return;
-          }
+        main.innerHTML = '<div id="react-editor-primitives-root"></div>';
+        const root = document.getElementById("react-editor-primitives-root");
+        if (root && this.mountReactPrimitives(root, meta.label, filename)) {
+          return;
         }
       }
 
@@ -430,38 +406,54 @@ const Editor = {
     // Add item button
     const addOptions = this.getAddTypeOptions(path, arr);
     if (addOptions && addOptions.length > 0) {
-      const picker = document.createElement("div");
-      picker.className = "editor-block-picker";
+      if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+        const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        this._arrayActionTargets.push({ id: actionId, path, currentArr: arr, options: addOptions });
+        const placeholder = document.createElement("div");
+        placeholder.setAttribute("data-array-action-placeholder", actionId);
+        section.appendChild(placeholder);
+      } else {
+        const picker = document.createElement("div");
+        picker.className = "editor-block-picker";
 
-      const typeSelect = document.createElement("select");
-      typeSelect.className = "form-select type-select";
-      addOptions.forEach((opt) => {
-        const optionEl = document.createElement("option");
-        optionEl.value = opt.value;
-        optionEl.textContent = opt.label;
-        typeSelect.appendChild(optionEl);
-      });
+        const typeSelect = document.createElement("select");
+        typeSelect.className = "form-select type-select";
+        addOptions.forEach((opt) => {
+          const optionEl = document.createElement("option");
+          optionEl.value = opt.value;
+          optionEl.textContent = opt.label;
+          typeSelect.appendChild(optionEl);
+        });
 
-      const addBtn = document.createElement("button");
-      addBtn.className = "add-item-btn";
-      addBtn.type = "button";
-      addBtn.textContent = "Agregar bloque";
-      addBtn.addEventListener("click", () => {
-        this.addArrayItem(path, arr, typeSelect.value);
-      });
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-item-btn";
+        addBtn.type = "button";
+        addBtn.textContent = "Agregar bloque";
+        addBtn.addEventListener("click", () => {
+          this.addArrayItem(path, arr, typeSelect.value);
+        });
 
-      picker.appendChild(typeSelect);
-      picker.appendChild(addBtn);
-      section.appendChild(picker);
+        picker.appendChild(typeSelect);
+        picker.appendChild(addBtn);
+        section.appendChild(picker);
+      }
     } else {
-      const addBtn = document.createElement("button");
-      addBtn.className = "add-item-btn";
-      addBtn.type = "button";
-      addBtn.textContent = "Agregar";
-      addBtn.addEventListener("click", () => {
-        this.addArrayItem(path, arr);
-      });
-      section.appendChild(addBtn);
+      if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+        const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        this._arrayActionTargets.push({ id: actionId, path, currentArr: arr, options: [] });
+        const placeholder = document.createElement("div");
+        placeholder.setAttribute("data-array-action-placeholder", actionId);
+        section.appendChild(placeholder);
+      } else {
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-item-btn";
+        addBtn.type = "button";
+        addBtn.textContent = "Agregar";
+        addBtn.addEventListener("click", () => {
+          this.addArrayItem(path, arr);
+        });
+        section.appendChild(addBtn);
+      }
     }
 
     container.appendChild(section);
@@ -630,6 +622,23 @@ const Editor = {
 
   // ── Array mutations ─────────────────────────────────────
 
+  rerenderEditorForm() {
+    const root = document.getElementById("react-editor-primitives-root");
+    if (root && window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+      const meta = App.contentMeta[this.currentFile] || { label: this.currentFile, desc: "" };
+      this.mountReactPrimitives(root, meta.label, this.currentFile);
+      return;
+    }
+
+    const formContainer = document.getElementById("editor-form");
+    if (!formContainer) return;
+    formContainer.innerHTML = "";
+    this.renderFields(formContainer, this.currentData, "");
+    formContainer.addEventListener("input", () => {
+      this.dirty = true;
+    });
+  },
+
   addArrayItem(path, currentArr, selectedType = null) {
     if (selectedType) {
       const typedTemplate = this.createTypedArrayItem(path, selectedType);
@@ -638,12 +647,7 @@ const Editor = {
         this.normalizeStructuredArrays();
         this.dirty = true;
         this.collectFormData();
-        const formContainer = document.getElementById("editor-form");
-        formContainer.innerHTML = "";
-        this.renderFields(formContainer, this.currentData, "");
-        formContainer.addEventListener("input", () => {
-          this.dirty = true;
-        });
+        this.rerenderEditorForm();
         return;
       }
     }
@@ -665,12 +669,7 @@ const Editor = {
     this.dirty = true;
     // Re-render the whole form
     this.collectFormData();
-    const formContainer = document.getElementById("editor-form");
-    formContainer.innerHTML = "";
-    this.renderFields(formContainer, this.currentData, "");
-    formContainer.addEventListener("input", () => {
-      this.dirty = true;
-    });
+    this.rerenderEditorForm();
   },
 
   removeArrayItem(path, idx) {
@@ -682,18 +681,14 @@ const Editor = {
     }
     this.normalizeStructuredArrays();
     this.dirty = true;
-    const formContainer = document.getElementById("editor-form");
-    formContainer.innerHTML = "";
-    this.renderFields(formContainer, this.currentData, "");
-    formContainer.addEventListener("input", () => {
-      this.dirty = true;
-    });
+    this.rerenderEditorForm();
   },
 
   // ── Drag-and-drop reordering ────────────────────────────
 
   _dragState: null,
   _dndBoundContainers: new WeakSet(),
+  _arrayActionTargets: [],
 
   attachDragEvents(item, container, arrayPath) {
     this.bindContainerDnd(container, arrayPath);
@@ -795,12 +790,7 @@ const Editor = {
     this.normalizeStructuredArrays();
 
     this.dirty = true;
-    const formContainer = document.getElementById("editor-form");
-    formContainer.innerHTML = "";
-    this.renderFields(formContainer, this.currentData, "");
-    formContainer.addEventListener("input", () => {
-      this.dirty = true;
-    });
+    this.rerenderEditorForm();
   },
 
   blankClone(obj) {
@@ -1040,6 +1030,48 @@ const Editor = {
       .replace(/[-_]/g, " ")
       .replace(/([a-z])([A-Z])/g, "$1 $2")
       .replace(/\b\w/g, (c) => c.toUpperCase());
+  },
+
+  mountReactPrimitives(root, title, filename) {
+    const primitiveFields = this.extractPrimitiveFields(this.currentData);
+    if (!window.CMSEditor || typeof window.CMSEditor.mountPrimitives !== "function") {
+      return false;
+    }
+
+    window.CMSEditor.mountPrimitives(root, {
+      title,
+      filename,
+      fields: primitiveFields,
+      icons: App.icons,
+      onSave: () => this.save(),
+      onReset: () => this.reset(),
+      onFieldChange: (path, value) => {
+        this.setNestedValue(this.currentData, path, value);
+        this.dirty = true;
+      },
+      onInitPreview: () => this.ensureDevServer(),
+      onInitComplex: (el) => {
+        this._arrayActionTargets = [];
+        if (this.hasComplexStructure(this.currentData)) {
+          this.renderComplexFields(el, this.currentData, "", 0);
+          el.addEventListener("input", () => {
+            this.dirty = true;
+          });
+        }
+
+        if (this.currentFile === "blog-ui.json") {
+          this.renderBlogPostsSection(el);
+        }
+      },
+      getArrayActionTargets: () => [...this._arrayActionTargets],
+      onAddArrayItem: (id, selectedType) => {
+        const target = this._arrayActionTargets.find((x) => x.id === id);
+        if (!target) return;
+        this.addArrayItem(target.path, target.currentArr, selectedType || null);
+      },
+    });
+
+    return true;
   },
 
   hasComplexStructure(node) {

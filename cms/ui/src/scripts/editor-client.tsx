@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import EditorShellView from "../components/EditorShellView";
+import ArrayActionsView from "../components/ArrayActionsView";
 
 type Payload = {
   title: string;
@@ -29,6 +30,11 @@ type PrimitivesPayload = {
   onFieldChange: (path: string, value: string | number | boolean) => void;
   onInitPreview: () => void;
   onInitComplex: (el: HTMLElement) => void;
+  getArrayActionTargets?: () => Array<{
+    id: string;
+    options: Array<{ value: string; label: string }>;
+  }>;
+  onAddArrayItem?: (id: string, selectedType: string | null) => void;
 };
 
 const roots = new WeakMap<Element, Root>();
@@ -62,6 +68,8 @@ function EditorPrimitivesView({
   onFieldChange,
   onInitPreview,
   onInitComplex,
+  getArrayActionTargets,
+  onAddArrayItem,
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -70,7 +78,28 @@ function EditorPrimitivesView({
     if (complexRef.current) {
       onInitComplex(complexRef.current);
     }
-  }, [onInitPreview, onInitComplex]);
+
+    if (complexRef.current && onAddArrayItem && getArrayActionTargets) {
+      const targets = getArrayActionTargets();
+      targets.forEach((target) => {
+        const slot = complexRef.current?.querySelector(`[data-array-action-placeholder="${target.id}"]`);
+        if (!slot) return;
+        let root = roots.get(slot);
+        if (!root) {
+          root = createRoot(slot);
+          roots.set(slot, root);
+        }
+        root.render(
+          <ArrayActionsView
+            options={target.options}
+            onAdd={(selectedType) => {
+              onAddArrayItem(target.id, selectedType);
+            }}
+          />
+        );
+      });
+    }
+  }, [onInitPreview, onInitComplex, onAddArrayItem, getArrayActionTargets]);
 
   return (
     <>
@@ -90,7 +119,7 @@ function EditorPrimitivesView({
       </div>
 
       <div className="editor-layout">
-        <div className="editor-form">
+        <div className="editor-form" id="editor-form">
           {fields.map((field) => (
             <div className="form-group" key={field.path}>
               <label htmlFor={`field-${field.path}`}>{field.label}</label>
