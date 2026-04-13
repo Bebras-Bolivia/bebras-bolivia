@@ -664,11 +664,11 @@ const Editor = {
   // ── Drag-and-drop reordering ────────────────────────────
 
   _dragState: null,
+  _dndBoundContainers: new WeakSet(),
 
   attachDragEvents(item, container, arrayPath) {
-    // Only allow drag when initiated from the handle
+    this.bindContainerDnd(container, arrayPath);
     const handle = item.querySelector(".drag-handle");
-
     if (handle) {
       handle.addEventListener("mousedown", () => {
         item.setAttribute("draggable", "true");
@@ -677,8 +677,15 @@ const Editor = {
         item.setAttribute("draggable", "false");
       });
     }
+  },
 
-    item.addEventListener("dragstart", (e) => {
+  bindContainerDnd(container, arrayPath) {
+    if (this._dndBoundContainers.has(container)) return;
+    this._dndBoundContainers.add(container);
+
+    container.addEventListener("dragstart", (e) => {
+      const item = e.target.closest(".array-item");
+      if (!item) return;
       this._dragState = {
         arrayPath,
         fromIdx: parseInt(item.getAttribute("data-dnd-idx"), 10),
@@ -686,62 +693,59 @@ const Editor = {
       };
       item.classList.add("dragging");
       e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", ""); // Required for Firefox
+      e.dataTransfer.setData("text/plain", "");
     });
 
-    item.addEventListener("dragend", () => {
-      item.classList.remove("dragging");
-      item.setAttribute("draggable", "false");
-      // Remove all drop indicators
+    container.addEventListener("dragend", (e) => {
+      const item = e.target.closest(".array-item");
+      if (item) {
+        item.classList.remove("dragging");
+        item.setAttribute("draggable", "false");
+      }
       container.querySelectorAll(".array-item").forEach((el) => {
         el.classList.remove("drag-over-above", "drag-over-below");
       });
       this._dragState = null;
     });
 
-    item.addEventListener("dragover", (e) => {
+    container.addEventListener("dragover", (e) => {
       if (!this._dragState || this._dragState.arrayPath !== arrayPath) return;
+      const item = e.target.closest(".array-item");
+      if (!item) return;
+
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
 
-      // Determine if above or below midpoint
       const rect = item.getBoundingClientRect();
       const midY = rect.top + rect.height / 2;
       const isAbove = e.clientY < midY;
 
-      // Clear all indicators in this container
       container.querySelectorAll(".array-item").forEach((el) => {
         el.classList.remove("drag-over-above", "drag-over-below");
       });
-
       item.classList.add(isAbove ? "drag-over-above" : "drag-over-below");
     });
 
-    item.addEventListener("dragleave", () => {
-      item.classList.remove("drag-over-above", "drag-over-below");
-    });
-
-    item.addEventListener("drop", (e) => {
-      e.preventDefault();
+    container.addEventListener("drop", (e) => {
       if (!this._dragState || this._dragState.arrayPath !== arrayPath) return;
+      const item = e.target.closest(".array-item");
+      if (!item) return;
 
+      e.preventDefault();
       const fromIdx = this._dragState.fromIdx;
       const toIdx = parseInt(item.getAttribute("data-dnd-idx"), 10);
 
-      // Determine final position based on indicator
       const rect = item.getBoundingClientRect();
       const midY = rect.top + rect.height / 2;
       const isAbove = e.clientY < midY;
 
       let targetIdx = isAbove ? toIdx : toIdx + 1;
-      // Adjust if dragging from before the target
       if (fromIdx < targetIdx) targetIdx--;
 
       if (fromIdx !== targetIdx) {
         this.moveArrayItem(arrayPath, fromIdx, targetIdx);
       }
 
-      // Cleanup
       container.querySelectorAll(".array-item").forEach((el) => {
         el.classList.remove("drag-over-above", "drag-over-below");
       });
