@@ -53,6 +53,21 @@ const Blog = {
           <div class="blog-list">${listHtml}</div>`;
       }
 
+      if (window.CMSBlog && typeof window.CMSBlog.mountList === "function") {
+        main.innerHTML = '<div id="react-blog-list-root"></div>';
+        const blogRoot = document.getElementById("react-blog-list-root");
+        if (blogRoot) {
+          window.CMSBlog.mountList(blogRoot, {
+            posts,
+            icons: App.icons,
+            onNew: () => App.navigate("/blog/new"),
+            onEdit: (slug) => App.navigate(`/blog/edit/${encodeURIComponent(slug)}`),
+            onDelete: (slug) => this.handleDelete(slug),
+          });
+          return;
+        }
+      }
+
       // Bind events
       const newBtn = document.getElementById("blog-new-btn");
       if (newBtn) {
