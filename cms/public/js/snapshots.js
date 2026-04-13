@@ -56,6 +56,21 @@ const Snapshots = {
           <div>${listHtml}</div>`;
       }
 
+      if (window.CMSSnapshots && typeof window.CMSSnapshots.mountList === "function") {
+        main.innerHTML = '<div id="react-snapshots-root"></div>';
+        const root = document.getElementById("react-snapshots-root");
+        if (root) {
+          window.CMSSnapshots.mountList(root, {
+            snapshots,
+            icons: App.icons,
+            onCreate: () => this.handleCreate(),
+            onRestore: (id) => this.handleRestore(id),
+            onDelete: (id) => this.handleDelete(id),
+          });
+          return;
+        }
+      }
+
       // Bind events
       document.getElementById("snapshot-create-btn").addEventListener("click", () => {
         this.handleCreate();
