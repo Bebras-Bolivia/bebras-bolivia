@@ -1,4 +1,5 @@
 <script>
+  import { registerEditorLib } from "../scripts/editor-lib-client";
   import { registerDashboardRenderer } from "../scripts/dashboard-client";
   import { registerBlogRenderer } from "../scripts/blog-client";
   import { registerSnapshotsRenderer } from "../scripts/snapshots-client";
@@ -7,6 +8,7 @@
   import { registerModalRenderer } from "../scripts/modal-client";
   import { registerMediaPickerRenderer } from "../scripts/media-picker-client";
 
+  registerEditorLib();
   registerDashboardRenderer();
   registerBlogRenderer();
   registerSnapshotsRenderer();

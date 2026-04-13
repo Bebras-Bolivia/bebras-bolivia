@@ -47,6 +47,95 @@ declare global {
   }
 }
 
+// ── Individual field component with local state ──────────
+function FieldInput({
+  field,
+  onFieldChange,
+}: {
+  field: PrimitivesPayload["fields"][number];
+  onFieldChange: PrimitivesPayload["onFieldChange"];
+}) {
+  const [value, setValue] = React.useState(field.value);
+
+  // Sync from props when the field identity changes (e.g. after re-render)
+  React.useEffect(() => {
+    setValue(field.value);
+  }, [field.path, field.value]);
+
+  if (field.type === "textarea") {
+    return (
+      <textarea
+        id={`field-${field.path}`}
+        className="form-textarea"
+        rows={3}
+        value={String(value ?? "")}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onFieldChange(field.path, e.target.value);
+        }}
+      ></textarea>
+    );
+  }
+
+  if (field.type === "boolean") {
+    return (
+      <input
+        id={`field-${field.path}`}
+        type="checkbox"
+        checked={Boolean(value)}
+        onChange={(e) => {
+          setValue(e.target.checked);
+          onFieldChange(field.path, e.target.checked);
+        }}
+        style={{ width: "16px", height: "16px" }}
+      />
+    );
+  }
+
+  if (field.type === "select") {
+    return (
+      <select
+        id={`field-${field.path}`}
+        className="form-select"
+        value={String(value ?? "")}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onFieldChange(field.path, e.target.value);
+        }}
+      >
+        {(field.options || []).map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  // text | number | url
+  return (
+    <input
+      id={`field-${field.path}`}
+      className="form-input"
+      type={field.type === "number" ? "number" : field.type === "url" ? "url" : "text"}
+      readOnly={Boolean(field.readOnly)}
+      disabled={Boolean(field.readOnly)}
+      value={String(value ?? "")}
+      onChange={(e) => {
+        if (field.type === "number") {
+          const n = Number(e.target.value);
+          const parsed = Number.isNaN(n) ? 0 : n;
+          setValue(parsed);
+          onFieldChange(field.path, parsed);
+        } else {
+          setValue(e.target.value);
+          onFieldChange(field.path, e.target.value);
+        }
+      }}
+    />
+  );
+}
+
 function EditorPrimitivesView({
   title,
   filename,
@@ -67,6 +156,7 @@ function EditorPrimitivesView({
   onArrayMount,
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
+  const [saving, setSaving] = React.useState(false);
 
   React.useEffect(() => {
     onInitPreview();
@@ -158,6 +248,15 @@ function EditorPrimitivesView({
     onArrayMount,
   ]);
 
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <>
       <div className="editor-toolbar">
@@ -169,8 +268,17 @@ function EditorPrimitivesView({
           <button className="btn btn-ghost btn-sm" onClick={onReset}>
             <span dangerouslySetInnerHTML={{ __html: icons.refresh || "" }}></span> Resetear
           </button>
-          <button className="btn btn-primary btn-sm" onClick={onSave}>
-            <span dangerouslySetInnerHTML={{ __html: icons.save || "" }}></span> Guardar
+          <button
+            className="btn btn-primary btn-sm"
+            id="editor-save"
+            disabled={saving}
+            onClick={handleSave}
+          >
+            {saving ? (
+              <><div className="spinner" style={{ width: 14, height: 14, display: "inline-block" }}></div> Guardando...</>
+            ) : (
+              <><span dangerouslySetInnerHTML={{ __html: icons.save || "" }}></span> Guardar</>
+            )}
           </button>
         </div>
       </div>
@@ -180,53 +288,7 @@ function EditorPrimitivesView({
           {fields.map((field) => (
             <div className="form-group" key={field.path}>
               <label htmlFor={`field-${field.path}`}>{field.label}</label>
-              {field.type === "textarea" ? (
-                <textarea
-                  id={`field-${field.path}`}
-                  className="form-textarea"
-                  rows={3}
-                  value={String(field.value ?? "")}
-                  onChange={(e) => onFieldChange(field.path, e.target.value)}
-                ></textarea>
-              ) : field.type === "boolean" ? (
-                <input
-                  id={`field-${field.path}`}
-                  type="checkbox"
-                  checked={Boolean(field.value)}
-                  onChange={(e) => onFieldChange(field.path, e.target.checked)}
-                  style={{ width: "16px", height: "16px" }}
-                />
-              ) : field.type === "select" ? (
-                <select
-                  id={`field-${field.path}`}
-                  className="form-select"
-                  value={String(field.value ?? "")}
-                  onChange={(e) => onFieldChange(field.path, e.target.value)}
-                >
-                  {(field.options || []).map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  id={`field-${field.path}`}
-                  className="form-input"
-                  type={field.type === "number" ? "number" : field.type === "url" ? "url" : "text"}
-                  readOnly={Boolean(field.readOnly)}
-                  disabled={Boolean(field.readOnly)}
-                  value={String(field.value ?? "")}
-                  onChange={(e) => {
-                    if (field.type === "number") {
-                      const n = Number(e.target.value);
-                      onFieldChange(field.path, Number.isNaN(n) ? 0 : n);
-                    } else {
-                      onFieldChange(field.path, e.target.value);
-                    }
-                  }}
-                />
-              )}
+              <FieldInput field={field} onFieldChange={onFieldChange} />
             </div>
           ))}
           <div ref={complexRef}>

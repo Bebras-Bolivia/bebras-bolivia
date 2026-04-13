@@ -2,6 +2,9 @@
 // Dynamic form generation for all 15 JSON content files.
 // Reads the live JSON data, builds form fields, saves back via API.
 // Preview uses a persistent Astro dev server with HMR for instant updates.
+//
+// Utilities (path helpers, templates, DnD) live in cms/ui/src/lib/*
+// and are exposed at runtime via window.CMSEditorLib.
 
 const Editor = {
   currentFile: null,
@@ -12,70 +15,74 @@ const Editor = {
   collapsedItems: new Set(),
   itemExpandedState: new Map(),
 
-  // ── Map content files to landing page routes ────────────
-  // Used to load the correct page in the preview iframe.
-  fileToPage: {
-    "site.json": "/",
-    "navigation.json": "/",
-    "hero.json": "/",
-    "about.json": "/",
-    "categories.json": "/",
-    "scoring.json": "/",
-    "news.json": "/",
-    "faq.json": "/faq/",
-    "teacher-instructions.json": "/docentes/",
-    "sponsors.json": "/sponsors/",
-    "contact.json": "/contacto/",
-    "registro.json": "/registro/",
-    "estudiantes.json": "/estudiantes/",
-    "docentes.json": "/docentes/",
-    "blog-ui.json": "/blog/",
+  _arrayActionTargets: [],
+  _arrayItemActionTargets: [],
+  _arrayCollapseTargets: [],
+
+  // ── Lib accessor (populated by CMSEditorLib registration) ──
+  get _lib() {
+    return window.CMSEditorLib;
   },
 
-  // ── Schema hints: field types that need special treatment ─
-  // By default all string fields become text inputs; these overrides
-  // specify textarea, url, select, etc.
-  fieldHints: {
-    // Global hints (match any field path ending with these keys)
-    href: "url",
-    siteUrl: "url",
-    trademarkUrl: "url",
-    linkHref: "url",
-    buttonHref: "url",
-    ctaHref: "url",
-    link: "url",           // news.json slides[].link
-    image: "text",
-    src: "text",
-    defaultDescription: "textarea",
-    subtitle: "textarea",
-    body: "textarea",
-    description: "textarea",
-    paragraph: "textarea",
-    answer: "textarea",
-    desc: "textarea",
-    intro: "textarea",
-    outro: "textarea",
-    tip: "textarea",
-    text: "textarea",
-    pageDescription: "textarea",
-    headingHighlight: "text",
-    instruction: "textarea",
-    disclaimer: "textarea",
-    content: "textarea",    // string arrays rendered as textarea per item
-    brandDescription: "textarea",
-    copyrightText: "textarea",
-    trademarkNote: "textarea",
-    color: "color",
+  // ── Delegate: path helpers ─────────────────────────────
+  get fileToPage()    { return this._lib?.fileToPage    || {}; },
+  get fieldHints()    { return this._lib?.fieldHints    || {}; },
+  get selectOptions() { return this._lib?.selectOptions || {}; },
+  get hiddenFields()  { return this._lib?.hiddenFields  || new Set(); },
+
+  parsePath(p)              { return this._lib.parsePath(p); },
+  getNestedValue(o, p)      { return this._lib.getNestedValue(o, p); },
+  setNestedValue(o, p, v)   { return this._lib.setNestedValue(o, p, v); },
+  escapeForPre(s)            { return this._lib.escapeForPre(s); },
+  toHexColor(s)              { return this._lib.toHexColor(s); },
+  formatLabel(k)             { return this._lib.formatLabel(k); },
+
+  shouldHideField(k)         { return this._lib.shouldHideField(k); },
+  getFieldType(k, v)         { return this._lib.getFieldType(k, v); },
+  isImagePathField(p, v)     { return this._lib.isImagePathField(p, v); },
+  isAutoNumberField(p)       { return this._lib.isAutoNumberField(p, this.currentData); },
+  isCollapsibleArray(p)      { return this._lib.isCollapsibleArray(p); },
+  getArrayItemLabel(o, i)    { return this._lib.getArrayItemLabel(o, i); },
+  getComponentOptions(p)     { return this._lib.getComponentOptions(p); },
+  blankClone(o)              { return this._lib.blankClone(o); },
+
+  getAddTypeOptions(path) {
+    return this._lib.getAddTypeOptions(path, this.currentFile, this.currentData);
+  },
+  createTypedArrayItem(path, selectedType) {
+    return this._lib.createTypedArrayItem(path, selectedType, this.currentFile, this.currentData);
+  },
+  createEmptyArrayItem(path) {
+    return this._lib.createEmptyArrayItem(path, this.currentFile, this.currentData);
+  },
+  generateUniqueSlug(base) {
+    return this._lib.generateUniqueSlug(this.currentData, base);
   },
 
-  selectOptions: {
-    variant: ["button", "link"],
-    status: ["positive", "neutral", "negative"],
-    icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share"],
-    color: ["emerald", "amber", "sky", "violet", "rose", "orange", "indigo"],
+  // ── Delegate: DnD ──────────────────────────────────────
+  _dndCallbacks() {
+    return {
+      collectFormData:          () => this.collectFormData(),
+      getCurrentData:           () => this.currentData,
+      normalizeStructuredArrays:() => this.normalizeStructuredArrays(),
+      setDirty:                 () => { this.dirty = true; },
+      rerenderEditorForm:       () => this.rerenderEditorForm(),
+      isReactEditorActive:      () => this.isReactEditorActive(),
+    };
   },
 
-  hiddenFields: new Set(["id", "pageTitle", "pageDescription"]),
+  attachDragEvents(item, container, arrayPath) {
+    this._lib.attachDragEvents(item, container, arrayPath, this._dndCallbacks());
+  },
+
+  moveArrayItem(path, fromIdx, toIdx) {
+    this._lib.moveArrayItem(path, fromIdx, toIdx, this._dndCallbacks());
+  },
+
+  // ── React editor detection ─────────────────────────────
+  isReactEditorActive() {
+    return !!(window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function" && document.getElementById("react-editor-primitives-root"));
+  },
 
   // ── Render the editor for a file ────────────────────────
   async render(filename) {
@@ -140,15 +147,12 @@ const Editor = {
         this.dirty = true;
       });
 
-
     } catch (err) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${App.escapeHtml(err.message)}</p></div>`;
     }
   },
 
   // ── Recursive field renderer ────────────────────────────
-  // Walks the data object and generates form fields.
-  // `path` is a dot-separated key path (e.g. "header.tag").
 
   renderFields(container, data, path, depth = 0) {
     if (data === null || data === undefined) return;
@@ -158,7 +162,6 @@ const Editor = {
     } else if (typeof data === "object") {
       this.renderObject(container, data, path, depth);
     } else {
-      // Primitive — should be handled by parent
       this.renderPrimitive(container, data, path);
     }
   },
@@ -177,7 +180,6 @@ const Editor = {
       if (Array.isArray(val)) {
         this.renderArray(container, val, fieldPath, depth);
       } else if (typeof val === "object") {
-        // Nested object — render as a section
         const section = document.createElement("div");
         section.className = "field-section";
 
@@ -189,7 +191,6 @@ const Editor = {
         this.renderObject(section, val, fieldPath, depth + 1);
         container.appendChild(section);
       } else {
-        // Primitive value
         this.renderPrimitive(container, val, fieldPath);
       }
     }
@@ -198,7 +199,7 @@ const Editor = {
   renderPrimitive(container, value, path) {
     const key = path.split(".").pop();
     const type = this.getFieldType(path, value);
-    const isAutoNumberField = this.isAutoNumberField(path);
+    const isAutoNum = this.isAutoNumberField(path);
 
     const group = document.createElement("div");
     group.className = "form-group";
@@ -225,10 +226,10 @@ const Editor = {
       input.setAttribute("data-value-type", "boolean");
     } else if (type === "number") {
       input = document.createElement("input");
-      input.type = isAutoNumberField ? "text" : "number";
+      input.type = isAutoNum ? "text" : "number";
       input.className = "form-input";
       input.value = String(value);
-      if (isAutoNumberField) {
+      if (isAutoNum) {
         input.readOnly = true;
         input.disabled = true;
         bindPath = false;
@@ -248,7 +249,6 @@ const Editor = {
       input.value = String(value);
       input.setAttribute("data-value-type", "string");
     } else if (type === "color") {
-      // Color: show both a color picker and text input
       const wrapper = document.createElement("div");
       wrapper.style.display = "flex";
       wrapper.style.gap = "0.5rem";
@@ -270,7 +270,6 @@ const Editor = {
       textInput.setAttribute("data-path", path);
       textInput.setAttribute("data-value-type", "string");
 
-      // Sync
       colorInput.addEventListener("input", () => {
         textInput.value = colorInput.value;
         textInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -349,12 +348,9 @@ const Editor = {
     arrayContainer.className = "array-field";
     arrayContainer.setAttribute("data-array-path", path);
 
-    // Check type of array items
     if (arr.length > 0 && typeof arr[0] === "string") {
-      // Array of strings
       this.renderStringArray(arrayContainer, arr, path);
     } else if (arr.length > 0 && typeof arr[0] === "object") {
-      // Array of objects
       this.renderObjectArray(arrayContainer, arr, path, depth);
     }
 
@@ -365,13 +361,8 @@ const Editor = {
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
         const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         this._arrayActionTargets.push({
-          id: actionId,
-          path,
-          currentArr: arr,
-          options: [],
-          mode: "button",
-          buttonLabel: "Agregar nuevo componente",
-          action: "component-modal",
+          id: actionId, path, currentArr: arr, options: [],
+          mode: "button", buttonLabel: "Agregar nuevo componente", action: "component-modal",
         });
         const placeholder = document.createElement("div");
         placeholder.setAttribute("data-array-action-placeholder", actionId);
@@ -391,7 +382,7 @@ const Editor = {
     }
 
     // Add item button
-    const addOptions = this.getAddTypeOptions(path, arr);
+    const addOptions = this.getAddTypeOptions(path);
     if (addOptions && addOptions.length > 0) {
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
         const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -456,7 +447,6 @@ const Editor = {
       item.setAttribute("draggable", "false");
       item.setAttribute("data-dnd-idx", idx);
 
-      // Drag handle
       const handle = document.createElement("div");
       handle.className = "drag-handle";
       handle.innerHTML = App.icon("grip");
@@ -478,7 +468,6 @@ const Editor = {
       input.setAttribute("data-path", itemPath);
       item.appendChild(input);
 
-      const removeBtn = document.createElement("button");
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
         const actionId = `arr-item-${itemPath}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         this._arrayItemActionTargets.push({ id: actionId, path, idx, inline: false });
@@ -486,6 +475,7 @@ const Editor = {
         placeholder.setAttribute("data-array-item-action-placeholder", actionId);
         item.appendChild(placeholder);
       } else {
+        const removeBtn = document.createElement("button");
         removeBtn.className = "remove-btn";
         removeBtn.innerHTML = App.icon("trash");
         removeBtn.title = "Eliminar";
@@ -495,9 +485,7 @@ const Editor = {
         item.appendChild(removeBtn);
       }
 
-      // DnD events
       this.attachDragEvents(item, container, path);
-
       container.appendChild(item);
     });
   },
@@ -518,7 +506,6 @@ const Editor = {
       item.setAttribute("draggable", "false");
       item.setAttribute("data-dnd-idx", idx);
 
-      // Header row with drag handle, index label, and remove button
       const header = document.createElement("div");
       header.style.cssText =
         "font-size:0.6875rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;width:100%;";
@@ -592,7 +579,6 @@ const Editor = {
         body.style.display = "none";
       }
 
-      // Render each field in the object
       this.renderObject(body, obj, itemPath, depth + 1);
       item.appendChild(body);
 
@@ -632,9 +618,7 @@ const Editor = {
         }
       }
 
-      // DnD events
       this.attachDragEvents(item, container, path);
-
       container.appendChild(item);
     });
   },
@@ -681,14 +665,12 @@ const Editor = {
       if (typeof template === "string") {
         this.setNestedValue(this.currentData, path, [...currentArr, ""]);
       } else if (typeof template === "object") {
-        // Clone template with empty values
         const blank = this.blankClone(template);
         this.setNestedValue(this.currentData, path, [...currentArr, blank]);
       }
     }
     this.normalizeStructuredArrays();
     this.dirty = true;
-    // Re-render the whole form
     if (!this.isReactEditorActive()) {
       this.collectFormData();
     }
@@ -707,143 +689,6 @@ const Editor = {
     this.normalizeStructuredArrays();
     this.dirty = true;
     this.rerenderEditorForm();
-  },
-
-  // ── Drag-and-drop reordering ────────────────────────────
-
-  _dragState: null,
-  _dndBoundContainers: new WeakSet(),
-  _arrayActionTargets: [],
-  _arrayItemActionTargets: [],
-  _arrayCollapseTargets: [],
-
-  isReactEditorActive() {
-    return !!(window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function" && document.getElementById("react-editor-primitives-root"));
-  },
-
-  attachDragEvents(item, container, arrayPath) {
-    this.bindContainerDnd(container, arrayPath);
-    const handle = item.querySelector(".drag-handle");
-    if (handle) {
-      handle.addEventListener("mousedown", () => {
-        item.setAttribute("draggable", "true");
-      });
-      handle.addEventListener("mouseup", () => {
-        item.setAttribute("draggable", "false");
-      });
-    }
-  },
-
-  bindContainerDnd(container, arrayPath) {
-    if (this._dndBoundContainers.has(container)) return;
-    this._dndBoundContainers.add(container);
-
-    container.addEventListener("dragstart", (e) => {
-      const item = e.target.closest(".array-item");
-      if (!item) return;
-      this._dragState = {
-        arrayPath,
-        fromIdx: parseInt(item.getAttribute("data-dnd-idx"), 10),
-        container,
-      };
-      item.classList.add("dragging");
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", "");
-    });
-
-    container.addEventListener("dragend", (e) => {
-      const item = e.target.closest(".array-item");
-      if (item) {
-        item.classList.remove("dragging");
-        item.setAttribute("draggable", "false");
-      }
-      container.querySelectorAll(".array-item").forEach((el) => {
-        el.classList.remove("drag-over-above", "drag-over-below");
-      });
-      this._dragState = null;
-    });
-
-    container.addEventListener("dragover", (e) => {
-      if (!this._dragState || this._dragState.arrayPath !== arrayPath) return;
-      const item = e.target.closest(".array-item");
-      if (!item) return;
-
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-
-      const rect = item.getBoundingClientRect();
-      const midY = rect.top + rect.height / 2;
-      const isAbove = e.clientY < midY;
-
-      container.querySelectorAll(".array-item").forEach((el) => {
-        el.classList.remove("drag-over-above", "drag-over-below");
-      });
-      item.classList.add(isAbove ? "drag-over-above" : "drag-over-below");
-    });
-
-    container.addEventListener("drop", (e) => {
-      if (!this._dragState || this._dragState.arrayPath !== arrayPath) return;
-      const item = e.target.closest(".array-item");
-      if (!item) return;
-
-      e.preventDefault();
-      const fromIdx = this._dragState.fromIdx;
-      const toIdx = parseInt(item.getAttribute("data-dnd-idx"), 10);
-
-      const rect = item.getBoundingClientRect();
-      const midY = rect.top + rect.height / 2;
-      const isAbove = e.clientY < midY;
-
-      let targetIdx = isAbove ? toIdx : toIdx + 1;
-      if (fromIdx < targetIdx) targetIdx--;
-
-      if (fromIdx !== targetIdx) {
-        this.moveArrayItem(arrayPath, fromIdx, targetIdx);
-      }
-
-      container.querySelectorAll(".array-item").forEach((el) => {
-        el.classList.remove("drag-over-above", "drag-over-below");
-      });
-      this._dragState = null;
-    });
-  },
-
-  moveArrayItem(path, fromIdx, toIdx) {
-    if (!this.isReactEditorActive()) {
-      this.collectFormData();
-    }
-    const arr = this.getNestedValue(this.currentData, path);
-    if (!Array.isArray(arr) || fromIdx === toIdx) return;
-    if (fromIdx < 0 || fromIdx >= arr.length) return;
-    if (toIdx < 0 || toIdx >= arr.length) return;
-
-    const [moved] = arr.splice(fromIdx, 1);
-    arr.splice(toIdx, 0, moved);
-    this.setNestedValue(this.currentData, path, arr);
-    this.normalizeStructuredArrays();
-
-    this.dirty = true;
-    this.rerenderEditorForm();
-  },
-
-  blankClone(obj) {
-    if (Array.isArray(obj)) {
-      return [];
-    }
-    if (typeof obj === "object" && obj !== null) {
-      const clone = {};
-      for (const [k, v] of Object.entries(obj)) {
-        if (Array.isArray(v)) {
-          clone[k] = [];
-        } else if (typeof v === "object" && v !== null) {
-          clone[k] = this.blankClone(v);
-        } else {
-          clone[k] = "";
-        }
-      }
-      return clone;
-    }
-    return "";
   },
 
   // ── Collect all form data back into the data object ─────
@@ -946,7 +791,6 @@ const Editor = {
         Toast.success("Contenido guardado");
       }
     } catch (err) {
-      // Show validation details if available
       if (err.details) {
         Toast.error(`Error de validacion: ${err.details}`);
       } else {
@@ -978,16 +822,11 @@ const Editor = {
 
   // ── Preview ────────────────────────────────────────────
 
-  /**
-   * Ensure the Astro dev server is running, then load the preview iframe.
-   * Called when the editor opens a file.
-   */
   async ensureDevServer() {
     const overlay = document.getElementById("preview-overlay");
     const overlayText = document.getElementById("preview-overlay-text");
     const iframe = document.getElementById("preview-frame");
 
-    // Check if already running
     try {
       const status = await API.previewStatus();
       if (status.running) {
@@ -1000,7 +839,6 @@ const Editor = {
       // Ignore — will try to start
     }
 
-    // Show starting overlay
     if (overlay) overlay.style.display = "flex";
     if (overlayText) overlayText.textContent = "Iniciando servidor de vista previa...";
     this.devServerStarting = true;
@@ -1011,7 +849,6 @@ const Editor = {
       this.devServerStarting = false;
       this.devServerPort = result.port;
 
-      // Small delay to let the dev server stabilize
       await new Promise((r) => setTimeout(r, 500));
 
       this.loadPreviewIframe();
@@ -1020,7 +857,6 @@ const Editor = {
       this.devServerStarting = false;
       Toast.error(`Error al iniciar vista previa: ${err.message}`);
 
-      // Show error in iframe
       if (iframe) {
         iframe.srcdoc = `<html><body style="font-family:system-ui;padding:2rem;background:#1a1a2e;color:#e2e8f0;">
           <h3 style="color:#ef4444;">Error al iniciar el servidor de vista previa</h3>
@@ -1033,10 +869,6 @@ const Editor = {
     }
   },
 
-  /**
-   * Load the correct landing page in the preview iframe.
-   * Points directly to the Astro dev server for full HMR support.
-   */
   loadPreviewIframe(forceReload = false) {
     const iframe = document.getElementById("preview-frame");
     if (!iframe) return;
@@ -1044,26 +876,15 @@ const Editor = {
     const pagePath = this.fileToPage[this.currentFile] || "/";
 
     if (this.devServerReady && this.devServerPort) {
-      // Point directly to Astro dev server for native HMR WebSocket support
       const base = `http://localhost:${this.devServerPort}${pagePath}`;
       iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
     } else {
-      // Fallback: use proxied path (no HMR, but content still shows)
       const base = `/preview-site${pagePath}`;
       iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
     }
   },
 
-  // ── Helpers ─────────────────────────────────────────────
-
-  formatLabel(key) {
-    if (!key) return "";
-    // Convert camelCase/kebab-case to words
-    return key
-      .replace(/[-_]/g, " ")
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-  },
+  // ── React primitives mount ─────────────────────────────
 
   mountReactPrimitives(root, title, filename) {
     const primitiveFields = this.extractPrimitiveFields(this.currentData);
@@ -1195,29 +1016,7 @@ const Editor = {
     return out;
   },
 
-  getFieldType(keyOrPath, value) {
-    const key = String(keyOrPath).split(".").pop();
-    if (typeof value === "boolean") return "boolean";
-    if (typeof value === "number") return "number";
-    if (this.selectOptions[key]) return "select";
-    if (this.fieldHints[key]) return this.fieldHints[key];
-    if (typeof value === "string" && value.length > 100) return "textarea";
-    return "text";
-  },
-
-  isImagePathField(path, value) {
-    if (typeof value !== "string") return false;
-    const key = String(path).split(".").pop() || "";
-    if (["image", "src", "logo", "icon"].includes(key)) return true;
-    return value.startsWith("/images/") || value.startsWith("/api/media/file/");
-  },
-
-  isAutoNumberField(path) {
-    if (!/\.items\[\d+\]\.number$/.test(path)) return false;
-    const parentPath = path.replace(/\.items\[\d+\]\.number$/, "");
-    const parent = this.getNestedValue(this.currentData, parentPath);
-    return !!(parent && parent.type === "itemsGrid" && parent.mediaType === "number");
-  },
+  // ── Normalize structured arrays ─────────────────────────
 
   normalizeStructuredArrays() {
     const walk = (node) => {
@@ -1237,732 +1036,7 @@ const Editor = {
     walk(this.currentData);
   },
 
-  shouldHideField(key) {
-    return this.hiddenFields.has(key);
-  },
-
-  getAddTypeOptions(path) {
-    if (this.currentFile === "custom-pages.json" && path === "pages") {
-      return [{ value: "customPage", label: "Pagina personalizada" }];
-    }
-
-    if (this.currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
-      return [
-        { value: "text", label: "Bloque de texto" },
-        { value: "cardsGrid", label: "Grid de cards" },
-        { value: "tip", label: "Tip / cita" },
-        { value: "cta", label: "CTA (boton o enlace)" },
-      ];
-    }
-
-    if (this.currentFile === "estudiantes.json" && path === "sections") {
-      return [
-        { value: "participacion", label: "Estudiantes: Participacion" },
-        { value: "desafio", label: "Estudiantes: Desafio" },
-        { value: "habilidades", label: "Estudiantes: Habilidades" },
-        { value: "formato", label: "Estudiantes: Formato" },
-        { value: "certificados", label: "Estudiantes: Certificados" },
-      ];
-    }
-
-    if (/\.tabs$/.test(path)) {
-      const parentPath = path.replace(/\.tabs$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && (parent.type === "tabsGuide" || parent.type === "teacherInstructionsTabs")) {
-        return [{ value: "tabStep", label: "Pestana" }];
-      }
-    }
-
-    if (/\.tabs\[\d+\]\.items$/.test(path)) {
-      return [{ value: "tabItem", label: "Elemento de pestana" }];
-    }
-
-    if (/\.items$/.test(path)) {
-      const parentPath = path.replace(/\.items$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && parent.type === "itemsGrid") {
-        return [{ value: "gridItem", label: "Item de card" }];
-      }
-      if (parent && parent.type === "featureList") {
-        return [{ value: "featureItem", label: "Item de lista" }];
-      }
-    }
-
-    if (/\.categories$/.test(path)) {
-      const parentPath = path.replace(/\.categories$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && parent.type === "studentsAgeCategories") {
-        return [{ value: "ageCategoryItem", label: "Categoria" }];
-      }
-    }
-
-    if (/\.rows$/.test(path)) {
-      const parentPath = path.replace(/\.rows$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && parent.type === "studentsScoringTable") {
-        return [{ value: "scoringRow", label: "Fila de tabla" }];
-      }
-    }
-
-    if (/\.summaryCards$/.test(path)) {
-      const parentPath = path.replace(/\.summaryCards$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && parent.type === "studentsScoringTable") {
-        return [{ value: "scoringSummary", label: "Resumen" }];
-      }
-    }
-
-    return null;
-  },
-
-  createTypedArrayItem(path, selectedType) {
-    if (this.currentFile === "custom-pages.json" && path === "pages") {
-      const slugBase = this.generateUniqueSlug("nueva-pagina");
-      return {
-        id: slugBase,
-        title: "Nueva pagina",
-        slug: slugBase,
-        description: "Describe aqui la nueva pagina.",
-        navLabel: "Nueva pagina",
-        showInHeader: false,
-        blocks: [
-          {
-            type: "text",
-            sectionTag: "Seccion",
-            heading: "Titulo",
-            paragraphs: ["Contenido inicial."],
-          },
-        ],
-      };
-    }
-
-    if (this.currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
-      if (selectedType === "text") {
-        return {
-          type: "text",
-          sectionTag: "Seccion",
-          heading: "Titulo",
-          paragraphs: ["Escribe aqui el contenido."],
-        };
-      }
-      if (selectedType === "cardsGrid") {
-        return {
-          type: "cardsGrid",
-          sectionTag: "Grid",
-          heading: "Titulo de cards",
-          columns: 3,
-          cards: [
-            { title: "Card 1", description: "Descripcion de la card." },
-            { title: "Card 2", description: "Descripcion de la card." },
-            { title: "Card 3", description: "Descripcion de la card." },
-          ],
-        };
-      }
-      if (selectedType === "tip") {
-        return {
-          type: "tip",
-          sectionTag: "Tip",
-          heading: "Nota",
-          text: "Texto destacado tipo cita o recomendacion.",
-        };
-      }
-      if (selectedType === "cta") {
-        return {
-          type: "cta",
-          sectionTag: "CTA",
-          heading: "Llamado a la accion",
-          text: "Descripcion opcional del llamado a la accion.",
-          variant: "button",
-          action: {
-            label: "Ver mas",
-            href: "/",
-          },
-        };
-      }
-    }
-
-    if (path === "components") {
-      if (selectedType === "faqQuestions") {
-        return {
-          type: "faqQuestions",
-          categories: [
-            {
-              title: "Nueva seccion FAQ",
-              items: [
-                {
-                  question: "Nueva pregunta",
-                  answer: "Nueva respuesta",
-                },
-              ],
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "faqAccordion") {
-        return {
-          type: "faqAccordion",
-          categories: [
-            {
-              title: "Nueva seccion FAQ",
-              items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }],
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "sectionRichText") {
-        return {
-          type: "sectionRichText",
-          tag: "Seccion",
-          heading: "Titulo de seccion",
-          paragraphs: ["Parrafo de ejemplo"],
-          tip: "Tip opcional",
-          linkLabel: "",
-          linkHref: "",
-        };
-      }
-
-      if (selectedType === "itemsGrid") {
-        return {
-          type: "itemsGrid",
-          tag: "Cards",
-          heading: "Titulo de cards",
-          intro: "Texto introductorio opcional",
-          columns: 3,
-          mediaType: "icon",
-          items: [
-            { title: "Card 1", description: "Descripcion", icon: "monitor" },
-            { title: "Card 2", description: "Descripcion", icon: "wifi" },
-          ],
-        };
-      }
-
-      if (selectedType === "itemsGridIcon") {
-        return {
-          type: "itemsGrid",
-          tag: "Cards",
-          heading: "Grid con iconos",
-          intro: "Seccion de cards con iconos.",
-          columns: 3,
-          mediaType: "icon",
-          items: [
-            { title: "Card 1", description: "Descripcion", icon: "monitor" },
-            { title: "Card 2", description: "Descripcion", icon: "wifi" },
-          ],
-        };
-      }
-
-      if (selectedType === "itemsGridImage") {
-        return {
-          type: "itemsGrid",
-          tag: "Cards",
-          heading: "Grid con imagenes",
-          intro: "Seccion de cards con imagen.",
-          columns: 3,
-          mediaType: "image",
-          items: [
-            { title: "Card 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
-            { title: "Card 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
-          ],
-        };
-      }
-
-      if (selectedType === "itemsGridNumber") {
-        return {
-          type: "itemsGrid",
-          tag: "Pasos",
-          heading: "Grid numerado",
-          intro: "Seccion de pasos numerados.",
-          columns: 3,
-          mediaType: "number",
-          items: [
-            { number: "1", title: "Paso 1", description: "Descripcion" },
-            { number: "2", title: "Paso 2", description: "Descripcion" },
-          ],
-        };
-      }
-
-      if (selectedType === "itemsGridSimple") {
-        return {
-          type: "itemsGrid",
-          tag: "Cards",
-          heading: "Grid simple",
-          intro: "Seccion de cards sin media.",
-          columns: 3,
-          mediaType: "none",
-          items: [
-            { title: "Card 1", description: "Descripcion" },
-            { title: "Card 2", description: "Descripcion" },
-          ],
-        };
-      }
-
-      if (selectedType === "linksList") {
-        return {
-          type: "linksList",
-          tag: "Enlaces",
-          heading: "Recursos",
-          links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
-        };
-      }
-
-      if (selectedType === "featureList") {
-        return {
-          type: "featureList",
-          tag: "Habilidades",
-          heading: "Titulo de listado",
-          intro: "Texto introductorio",
-          items: [{ title: "Punto 1", desc: "Descripcion" }],
-          outro: "Texto de cierre",
-        };
-      }
-
-      if (selectedType === "statsGrid") {
-        return {
-          type: "statsGrid",
-          tag: "Estadisticas",
-          heading: "Titulo de estadisticas",
-          columns: 3,
-          stats: [
-            { value: "15", label: "Preguntas" },
-            { value: "45", label: "Minutos" },
-          ],
-          paragraphs: ["Descripcion del bloque."],
-        };
-      }
-
-      if (selectedType === "studentsAgeCategories") {
-        return {
-          type: "studentsAgeCategories",
-          sectionTag: "Niveles",
-          heading: "Categorias por Edad",
-          subtitle: "Seis niveles disenados para desafiar a cada grupo de edad",
-          categories: [
-            { name: "Kits", age: "6-8 anos", emoji: "🧩", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
-            { name: "Castors", age: "8-10 anos", emoji: "🦫", color: "amber", desc: "Descubriendo patrones y secuencias" },
-          ],
-        };
-      }
-
-      if (selectedType === "studentsScoringTable") {
-        return {
-          type: "studentsScoringTable",
-          sectionTag: "Puntuacion",
-          heading: "Sistema de Puntuacion",
-          subtitle: "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
-          tableHeaders: ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
-          rows: [
-            { label: "Correcta", values: ["+6", "+9", "+12"], status: "positive" },
-            { label: "Sin respuesta", values: ["0", "0", "0"], status: "neutral" },
-            { label: "Incorrecta", values: ["-2", "-3", "-4"], status: "negative" },
-          ],
-          summaryCards: [
-            { value: "45", label: "Puntaje inicial" },
-            { value: "180", label: "Puntaje maximo" },
-          ],
-          summaryColumns: 2,
-        };
-      }
-
-      if (selectedType === "tabsGuide") {
-        return {
-          type: "tabsGuide",
-          sectionTag: "Guia",
-          heading: "Instrucciones",
-          subtitle: "Pasos por etapa",
-          tabs: [
-            {
-              id: "antes",
-              label: "Antes",
-              heading: "Antes del desafio",
-              items: [{ title: "Paso", desc: "Descripcion" }],
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "formContact") {
-        return {
-          type: "formContact",
-          tag: "Formulario",
-          heading: "Envianos un mensaje",
-          fields: {
-            name: { label: "Nombre completo", placeholder: "Tu nombre" },
-            email: { label: "Email", placeholder: "tu@email.com" },
-            role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Docente", "Institucion", "Otro"] },
-            message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
-          },
-          submitLabel: "Enviar mensaje",
-          disclaimer: "Este formulario es solo una vista previa.",
-        };
-      }
-
-      if (selectedType === "sponsorsCards") {
-        return {
-          type: "sponsorsCards",
-          tag: "Nueva seccion de sponsors",
-          columns: 3,
-          cards: [
-            {
-              name: "Nuevo sponsor",
-              desc: "Descripcion del sponsor.",
-              image: "/images/sponsor-placeholder.svg",
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "docentesRegistro") {
-        return {
-          type: "docentesRegistro",
-          tag: "Registro",
-          heading: "Como inscriben a sus estudiantes?",
-          intro: "El proceso de inscripcion es simple y gratuito.",
-          columns: 3,
-          steps: [
-            { num: "1", title: "Registro del coordinador", desc: "Crear cuenta en la plataforma Bebras Bolivia." },
-            { num: "2", title: "Inscripcion de estudiantes", desc: "Agregar estudiantes por categoria de edad." },
-            { num: "3", title: "Dia del desafio", desc: "Supervisar la sesion en la escuela." },
-          ],
-        };
-      }
-
-      if (selectedType === "docentesRequisitos") {
-        return {
-          type: "docentesRequisitos",
-          tag: "Requisitos",
-          heading: "Que necesita la escuela?",
-          columns: 2,
-          requirements: [
-            { icon: "monitor", title: "Computadoras con navegador web", desc: "Chrome, Firefox, Edge o Safari actualizados." },
-            { icon: "wifi", title: "Conexion a internet", desc: "Estable durante los 45 minutos del desafio." },
-          ],
-        };
-      }
-
-      if (selectedType === "docentesAlcance") {
-        return {
-          type: "docentesAlcance",
-          tag: "Alcance",
-          heading: "Quien deberia participar?",
-          content: ["Contenido de alcance para docentes."],
-          tip: "Tip: El desafio no requiere conocimientos previos de programacion.",
-        };
-      }
-
-      if (selectedType === "teacherInstructionsTabs") {
-        return {
-          type: "teacherInstructionsTabs",
-          sectionTag: "Guia para coordinadores",
-          heading: "Instrucciones para Coordinadores",
-          subtitle: "Guia paso a paso para antes, durante y despues del desafio.",
-          tabs: [
-            {
-              id: "antes",
-              label: "Antes",
-              heading: "Antes del Desafio",
-              items: [{ title: "Registrarse como coordinador", desc: "Completar los datos de la escuela." }],
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "cta") {
-        return {
-          type: "cta",
-          tag: "",
-          heading: "No encontraste lo que buscabas?",
-          text: "Contactanos y con gusto resolveremos tus dudas.",
-          buttonLabel: "Ir a Contacto",
-          buttonHref: "/contacto",
-        };
-      }
-
-      if (selectedType === "blogIndex") {
-        return {
-          type: "blogIndex",
-          emptyState: {
-            tag: "Sin contenido",
-            text: "No hay publicaciones aun. Vuelve pronto!",
-          },
-          readMoreLabel: "Leer mas",
-        };
-      }
-
-      if (selectedType === "blogPostUi") {
-        return {
-          type: "blogPostUi",
-          backLabel: "Volver al blog",
-          ctaLabel: "Inscribirse al desafio",
-        };
-      }
-
-      if (selectedType === "contactInfoCards") {
-        return {
-          type: "contactInfoCards",
-          tag: "Informacion",
-          heading: "Informacion de Contacto",
-          cards: [
-            {
-              icon: "email",
-              title: "Email",
-              description: "Escribenos para cualquier consulta",
-              linkLabel: "info@bebras.bo",
-              linkHref: "mailto:info@bebras.bo",
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "contactInternational") {
-        return {
-          type: "contactInternational",
-          tag: "Comunidad Internacional",
-          links: [
-            {
-              label: "Bebras Internacional ->",
-              href: "https://www.bebras.org/",
-              description: "Sitio oficial Bebras",
-            },
-          ],
-        };
-      }
-
-      if (selectedType === "contactForm") {
-        return {
-          type: "contactForm",
-          tag: "Formulario",
-          heading: "Envianos un Mensaje",
-          fields: {
-            name: { label: "Nombre completo", placeholder: "Tu nombre" },
-            email: { label: "Email", placeholder: "tu@email.com" },
-            role: {
-              label: "Rol",
-              placeholder: "Seleccionar...",
-              options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"],
-            },
-            message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
-          },
-          submitLabel: "Enviar mensaje",
-          disclaimer: "Este formulario es solo una vista previa.",
-        };
-      }
-
-      if (selectedType === "contactClassic") {
-        return {
-          type: "contactClassic",
-          info: {
-            tag: "Informacion",
-            heading: "Informacion de Contacto",
-            cards: [
-              {
-                icon: "email",
-                title: "Email",
-                description: "Escribenos para cualquier consulta",
-                linkLabel: "info@bebras.bo",
-                linkHref: "mailto:info@bebras.bo",
-              },
-            ],
-          },
-          international: {
-            tag: "Comunidad Internacional",
-            links: [
-              {
-                label: "Bebras Internacional ->",
-                href: "https://www.bebras.org/",
-                description: "Sitio oficial Bebras",
-              },
-            ],
-          },
-          form: {
-            tag: "Formulario",
-            heading: "Envianos un Mensaje",
-            fields: {
-              name: { label: "Nombre completo", placeholder: "Tu nombre" },
-              email: { label: "Email", placeholder: "tu@email.com" },
-              role: {
-                label: "Rol",
-                placeholder: "Seleccionar...",
-                options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"],
-              },
-              message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
-            },
-            submitLabel: "Enviar mensaje",
-            disclaimer: "Este formulario es solo una vista previa.",
-          },
-        };
-      }
-    }
-
-    if (this.currentFile === "estudiantes.json" && path === "sections") {
-      if (selectedType === "participacion") {
-        return {
-          id: "participacion",
-          tag: "Participacion",
-          heading: "Como participar",
-          content: ["Parrafo"],
-          link: { label: "Ver docentes", href: "/docentes" },
-        };
-      }
-      if (selectedType === "desafio") {
-        return {
-          id: "desafio",
-          tag: "Desafio",
-          heading: "Que es el desafio",
-          content: ["Parrafo"],
-        };
-      }
-      if (selectedType === "habilidades") {
-        return {
-          id: "habilidades",
-          tag: "Habilidades",
-          heading: "Habilidades clave",
-          intro: "Intro",
-          skills: [{ title: "Habilidad", desc: "Descripcion" }],
-          outro: "Cierre",
-        };
-      }
-      if (selectedType === "formato") {
-        return {
-          id: "formato",
-          tag: "Formato",
-          heading: "Formato del desafio",
-          stats: [
-            { value: "15", label: "Preguntas" },
-            { value: "45", label: "Minutos" },
-          ],
-          content: ["Parrafo"],
-        };
-      }
-      if (selectedType === "certificados") {
-        return {
-          id: "certificados",
-          tag: "Certificados",
-          heading: "Certificados",
-          content: ["Parrafo"],
-          cta: { label: "Inscribirse", href: "/registro" },
-        };
-      }
-    }
-
-    if (selectedType === "tabStep") {
-      return {
-        id: `tab-${Date.now()}`,
-        label: "Nueva pestana",
-        heading: "Titulo de pestana",
-        items: [{ title: "Nuevo punto", desc: "Descripcion" }],
-      };
-    }
-
-    if (selectedType === "tabItem") {
-      return { title: "Nuevo punto", desc: "Descripcion" };
-    }
-
-    if (selectedType === "gridItem") {
-      const parentPath = path.replace(/\.items$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && parent.type === "itemsGrid") {
-        if (parent.mediaType === "icon") {
-          return { title: "Nuevo item", description: "Descripcion", icon: "monitor" };
-        }
-        if (parent.mediaType === "image") {
-          return { title: "Nuevo item", description: "Descripcion", image: "/images/sponsor-placeholder.svg" };
-        }
-        if (parent.mediaType === "number") {
-          return { number: "", title: "Nuevo item", description: "Descripcion" };
-        }
-      }
-      return { title: "Nuevo item", description: "Descripcion" };
-    }
-
-    if (selectedType === "featureItem") {
-      return { title: "Nueva habilidad", desc: "Descripcion" };
-    }
-
-    if (selectedType === "ageCategoryItem") {
-      return { name: "Nueva categoria", age: "0-0 anos", emoji: "🧩", color: "violet", desc: "Descripcion" };
-    }
-
-    if (selectedType === "scoringRow") {
-      return { label: "Nueva fila", values: ["0", "0", "0"], status: "neutral" };
-    }
-
-    if (selectedType === "scoringSummary") {
-      return { value: "0", label: "Resumen" };
-    }
-
-    return null;
-  },
-
-  createEmptyArrayItem(path) {
-    const normalizedPath = String(path).replace(/\[\d+\]/g, "[]");
-
-    if (this.currentFile === "faq.json" && normalizedPath.endsWith("categories[].items")) {
-      return { question: "", answer: "" };
-    }
-
-    if (normalizedPath.endsWith("tabs[].items")) {
-      return { title: "", desc: "" };
-    }
-
-    if (normalizedPath.endsWith(".items")) {
-      const parentPath = String(path).replace(/\.items$/, "");
-      const parent = this.getNestedValue(this.currentData, parentPath);
-      if (parent && parent.type === "itemsGrid") {
-        if (parent.mediaType === "icon") {
-          return { title: "", description: "", icon: "monitor" };
-        }
-        if (parent.mediaType === "image") {
-          return { title: "", description: "", image: "/images/sponsor-placeholder.svg" };
-        }
-        if (parent.mediaType === "number") {
-          return { number: "", title: "", description: "" };
-        }
-        return { title: "", description: "" };
-      }
-    }
-
-    return "";
-  },
-
-  isCollapsibleArray(path) {
-    return path === "components" || path.endsWith(".components");
-  },
-
-  getArrayItemLabel(obj, idx) {
-    if (obj && typeof obj === "object") {
-      if (obj.type === "faqQuestions") return `#${idx + 1} — FAQ`;
-      if (obj.type === "sponsorsCards") return `#${idx + 1} — Sponsors`;
-      if (obj.type === "blogIndex") return `#${idx + 1} — Blog Index`;
-      if (obj.type === "blogPostUi") return `#${idx + 1} — Blog Post UI`;
-      if (obj.type === "contactInfoCards") return `#${idx + 1} — Contacto Info`;
-      if (obj.type === "contactInternational") return `#${idx + 1} — Contacto Internacional`;
-      if (obj.type === "contactForm") return `#${idx + 1} — Contacto Formulario`;
-      if (obj.type === "contactClassic") return `#${idx + 1} — Contacto Clasico`;
-      if (obj.type === "docentesRegistro") return `#${idx + 1} — Docentes Registro`;
-      if (obj.type === "docentesRequisitos") return `#${idx + 1} — Docentes Requisitos`;
-      if (obj.type === "docentesAlcance") return `#${idx + 1} — Docentes Alcance`;
-      if (obj.type === "teacherInstructionsTabs") return `#${idx + 1} — Docentes Guia`;
-      if (obj.type === "sectionRichText") return `#${idx + 1} — Texto`; 
-      if (obj.type === "itemsGrid") return `#${idx + 1} — Grid de Cards`;
-      if (obj.type === "linksList") return `#${idx + 1} — Lista de Enlaces`;
-      if (obj.type === "featureList") return `#${idx + 1} — Lista de Caracteristicas`;
-      if (obj.type === "statsGrid") return `#${idx + 1} — Grid de Estadisticas`;
-      if (obj.type === "studentsAgeCategories") return `#${idx + 1} — Categorias de Edad`;
-      if (obj.type === "studentsScoringTable") return `#${idx + 1} — Tabla de Puntaje`;
-      if (obj.type === "faqAccordion") return `#${idx + 1} — FAQ Acordeon`;
-      if (obj.type === "tabsGuide") return `#${idx + 1} — Guia en Tabs`;
-      if (obj.type === "formContact") return `#${idx + 1} — Formulario`;
-      if (obj.type === "cta") return `#${idx + 1} — CTA`;
-      if (obj.title) return `#${idx + 1} — ${obj.title}`;
-      if (obj.heading) return `#${idx + 1} — ${obj.heading}`;
-      if (obj.label) return `#${idx + 1} — ${obj.label}`;
-      if (obj.tag) return `#${idx + 1} — ${obj.tag}`;
-      if (obj.type) return `#${idx + 1} — ${obj.type}`;
-    }
-    return `#${idx + 1}`;
-  },
+  // ── Add component modal ────────────────────────────────
 
   async openAddComponentModal(path, currentArr) {
     const options = this.getComponentOptions(path);
@@ -2027,172 +1101,5 @@ const Editor = {
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
     document.body.classList.add("editor-modal-open");
-  },
-
-  getComponentOptions(path) {
-    if (path === "components") {
-      return [
-        {
-          value: "sectionRichText",
-          label: "Seccion de Texto",
-          description: "Titulo, parrafos y tip opcional",
-        },
-        {
-          value: "itemsGridIcon",
-          label: "Grid cards + icono",
-          description: "Cards con icono visual",
-        },
-        {
-          value: "itemsGridImage",
-          label: "Grid cards + imagen",
-          description: "Cards con imagen",
-        },
-        {
-          value: "itemsGridNumber",
-          label: "Grid cards + numero",
-          description: "Cards tipo pasos numerados",
-        },
-        {
-          value: "itemsGridSimple",
-          label: "Grid cards simple",
-          description: "Cards sin icono ni imagen",
-        },
-        {
-          value: "linksList",
-          label: "Lista de Enlaces",
-          description: "Listado de recursos o enlaces externos",
-        },
-        {
-          value: "featureList",
-          label: "Lista de Caracteristicas",
-          description: "Lista con checks y texto introductorio",
-        },
-        {
-          value: "statsGrid",
-          label: "Grid de Estadisticas",
-          description: "Metricas en tarjetas con texto inferior",
-        },
-        {
-          value: "studentsAgeCategories",
-          label: "Categorias de Edad",
-          description: "Categorias completas y editables",
-        },
-        {
-          value: "studentsScoringTable",
-          label: "Tabla de Puntaje",
-          description: "Tabla completa y editable",
-        },
-        {
-          value: "faqAccordion",
-          label: "FAQ Acordeon",
-          description: "Preguntas y respuestas en acordeon",
-        },
-        {
-          value: "tabsGuide",
-          label: "Guia en Tabs",
-          description: "Contenido por pestanas",
-        },
-        {
-          value: "formContact",
-          label: "Formulario",
-          description: "Formulario de contacto editable",
-        },
-        {
-          value: "blogIndex",
-          label: "Blog Index",
-          description: "Estado vacio y texto Leer mas",
-        },
-        {
-          value: "blogPostUi",
-          label: "Blog Post UI",
-          description: "Textos de volver y CTA del post",
-        },
-        {
-          value: "contactClassic",
-          label: "Contacto Clasico",
-          description: "Bloque completo como diseno anterior",
-        },
-        {
-          value: "cta",
-          label: "CTA",
-          description: "Bloque de titulo, texto y boton",
-        },
-      ];
-    }
-    return [];
-  },
-
-  generateUniqueSlug(base) {
-    const pages = Array.isArray(this.currentData?.pages) ? this.currentData.pages : [];
-    const used = new Set(pages.map((p) => p.slug));
-    if (!used.has(base)) return base;
-    let i = 2;
-    while (used.has(`${base}-${i}`)) i++;
-    return `${base}-${i}`;
-  },
-
-  toHexColor(str) {
-    // Try to interpret as a valid color for the color picker
-    if (/^#[0-9a-fA-F]{6}$/.test(str)) return str;
-    if (/^#[0-9a-fA-F]{3}$/.test(str)) {
-      return "#" + str[1] + str[1] + str[2] + str[2] + str[3] + str[3];
-    }
-    // Fallback: try parsing named colors via a canvas
-    try {
-      const ctx = document.createElement("canvas").getContext("2d");
-      ctx.fillStyle = str;
-      return ctx.fillStyle;
-    } catch {
-      return "#000000";
-    }
-  },
-
-  // ── Deep get/set by path ────────────────────────────────
-  // Supports dot notation and bracket notation: "foo.bar[0].baz"
-
-  escapeForPre(str) {
-    if (!str) return "";
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  },
-
-  parsePath(path) {
-    const parts = [];
-    const regex = /([^.\[\]]+)|\[(\d+)\]/g;
-    let match;
-    while ((match = regex.exec(path)) !== null) {
-      if (match[1] !== undefined) {
-        parts.push(match[1]);
-      } else if (match[2] !== undefined) {
-        parts.push(parseInt(match[2], 10));
-      }
-    }
-    return parts;
-  },
-
-  getNestedValue(obj, path) {
-    const parts = this.parsePath(path);
-    let current = obj;
-    for (const part of parts) {
-      if (current === null || current === undefined) return undefined;
-      current = current[part];
-    }
-    return current;
-  },
-
-  setNestedValue(obj, path, value) {
-    const parts = this.parsePath(path);
-    let current = obj;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (current[part] === undefined || current[part] === null) {
-        // Auto-create intermediate objects/arrays
-        current[part] = typeof parts[i + 1] === "number" ? [] : {};
-      }
-      current = current[part];
-    }
-    current[parts[parts.length - 1]] = value;
   },
 };

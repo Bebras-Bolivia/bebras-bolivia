@@ -540,6 +540,7 @@ const App = {
   },
 };
 
+window.CMSEditorLib = window.CMSEditorLib || null;
 window.CMSDashboard = window.CMSDashboard || null;
 window.CMSBlog = window.CMSBlog || null;
 window.CMSSnapshots = window.CMSSnapshots || null;
