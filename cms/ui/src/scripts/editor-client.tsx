@@ -33,6 +33,8 @@ type PrimitivesPayload = {
   getArrayActionTargets?: () => Array<{
     id: string;
     options: Array<{ value: string; label: string }>;
+    mode?: "select" | "button";
+    buttonLabel?: string;
   }>;
   onAddArrayItem?: (id: string, selectedType: string | null) => void;
 };
@@ -92,6 +94,8 @@ function EditorPrimitivesView({
         root.render(
           <ArrayActionsView
             options={target.options}
+            showSelect={target.mode !== "button"}
+            buttonLabel={target.buttonLabel}
             onAdd={(selectedType) => {
               onAddArrayItem(target.id, selectedType);
             }}

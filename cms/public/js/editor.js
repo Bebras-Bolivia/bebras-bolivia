@@ -391,14 +391,30 @@ const Editor = {
 
     // Special: component picker modal for shared components arrays
     if (path === "components") {
-      const addBtn = document.createElement("button");
-      addBtn.className = "add-item-btn component-add-btn";
-      addBtn.type = "button";
-      addBtn.textContent = "Agregar nuevo componente";
-      addBtn.addEventListener("click", () => {
-        this.openAddComponentModal(path, arr);
-      });
-      section.appendChild(addBtn);
+      if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+        const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        this._arrayActionTargets.push({
+          id: actionId,
+          path,
+          currentArr: arr,
+          options: [],
+          mode: "button",
+          buttonLabel: "Agregar nuevo componente",
+          action: "component-modal",
+        });
+        const placeholder = document.createElement("div");
+        placeholder.setAttribute("data-array-action-placeholder", actionId);
+        section.appendChild(placeholder);
+      } else {
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-item-btn component-add-btn";
+        addBtn.type = "button";
+        addBtn.textContent = "Agregar nuevo componente";
+        addBtn.addEventListener("click", () => {
+          this.openAddComponentModal(path, arr);
+        });
+        section.appendChild(addBtn);
+      }
       container.appendChild(section);
       return;
     }
@@ -408,7 +424,7 @@ const Editor = {
     if (addOptions && addOptions.length > 0) {
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
         const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        this._arrayActionTargets.push({ id: actionId, path, currentArr: arr, options: addOptions });
+        this._arrayActionTargets.push({ id: actionId, path, currentArr: arr, options: addOptions, mode: "select", action: "direct" });
         const placeholder = document.createElement("div");
         placeholder.setAttribute("data-array-action-placeholder", actionId);
         section.appendChild(placeholder);
@@ -440,7 +456,7 @@ const Editor = {
     } else {
       if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
         const actionId = `arr-action-${path}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        this._arrayActionTargets.push({ id: actionId, path, currentArr: arr, options: [] });
+        this._arrayActionTargets.push({ id: actionId, path, currentArr: arr, options: [], mode: "button", buttonLabel: "Agregar", action: "direct" });
         const placeholder = document.createElement("div");
         placeholder.setAttribute("data-array-action-placeholder", actionId);
         section.appendChild(placeholder);
@@ -1067,6 +1083,10 @@ const Editor = {
       onAddArrayItem: (id, selectedType) => {
         const target = this._arrayActionTargets.find((x) => x.id === id);
         if (!target) return;
+        if (target.action === "component-modal") {
+          this.openAddComponentModal(target.path, target.currentArr);
+          return;
+        }
         this.addArrayItem(target.path, target.currentArr, selectedType || null);
       },
     });

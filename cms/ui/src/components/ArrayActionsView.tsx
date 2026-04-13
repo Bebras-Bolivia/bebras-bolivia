@@ -8,12 +8,19 @@ type Option = {
 interface Props {
   options: Option[];
   onAdd: (selectedType: string | null) => void;
+  showSelect?: boolean;
+  buttonLabel?: string;
 }
 
-export default function ArrayActionsView({ options, onAdd }: Props) {
+export default function ArrayActionsView({
+  options,
+  onAdd,
+  showSelect = options.length > 0,
+  buttonLabel,
+}: Props) {
   const [selected, setSelected] = useState(options[0]?.value || "");
 
-  if (options.length > 0) {
+  if (showSelect && options.length > 0) {
     return (
       <div className="editor-block-picker">
         <select className="form-select type-select" value={selected} onChange={(e) => setSelected(e.target.value)}>
@@ -24,7 +31,7 @@ export default function ArrayActionsView({ options, onAdd }: Props) {
           ))}
         </select>
         <button className="add-item-btn" type="button" onClick={() => onAdd(selected)}>
-          Agregar bloque
+          {buttonLabel || "Agregar bloque"}
         </button>
       </div>
     );
@@ -32,7 +39,7 @@ export default function ArrayActionsView({ options, onAdd }: Props) {
 
   return (
     <button className="add-item-btn" type="button" onClick={() => onAdd(null)}>
-      Agregar
+      {buttonLabel || "Agregar"}
     </button>
   );
 }
