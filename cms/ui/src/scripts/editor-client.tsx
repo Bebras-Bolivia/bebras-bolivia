@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import EditorShellView from "../components/EditorShellView";
 import ArrayActionsView from "../components/ArrayActionsView";
+import ArrayItemActionsView from "../components/ArrayItemActionsView";
 
 type Payload = {
   title: string;
@@ -37,6 +38,8 @@ type PrimitivesPayload = {
     buttonLabel?: string;
   }>;
   onAddArrayItem?: (id: string, selectedType: string | null) => void;
+  getArrayItemActionTargets?: () => Array<{ id: string; inline?: boolean }>;
+  onRemoveArrayItem?: (id: string) => void;
 };
 
 const roots = new WeakMap<Element, Root>();
@@ -72,6 +75,8 @@ function EditorPrimitivesView({
   onInitComplex,
   getArrayActionTargets,
   onAddArrayItem,
+  getArrayItemActionTargets,
+  onRemoveArrayItem,
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -99,6 +104,26 @@ function EditorPrimitivesView({
             onAdd={(selectedType) => {
               onAddArrayItem(target.id, selectedType);
             }}
+          />
+        );
+      });
+    }
+
+    if (complexRef.current && onRemoveArrayItem && getArrayItemActionTargets) {
+      const targets = getArrayItemActionTargets();
+      targets.forEach((target) => {
+        const slot = complexRef.current?.querySelector(`[data-array-item-action-placeholder="${target.id}"]`);
+        if (!slot) return;
+        let root = roots.get(slot);
+        if (!root) {
+          root = createRoot(slot);
+          roots.set(slot, root);
+        }
+        root.render(
+          <ArrayItemActionsView
+            trashIcon={icons.trash || ""}
+            inline={Boolean(target.inline)}
+            onRemove={() => onRemoveArrayItem(target.id)}
           />
         );
       });

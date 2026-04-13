@@ -508,13 +508,21 @@ const Editor = {
       item.appendChild(input);
 
       const removeBtn = document.createElement("button");
-      removeBtn.className = "remove-btn";
-      removeBtn.innerHTML = App.icon("trash");
-      removeBtn.title = "Eliminar";
-      removeBtn.addEventListener("click", () => {
-        this.removeArrayItem(path, idx);
-      });
-      item.appendChild(removeBtn);
+      if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+        const actionId = `arr-item-${itemPath}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        this._arrayItemActionTargets.push({ id: actionId, path, idx, inline: false });
+        const placeholder = document.createElement("div");
+        placeholder.setAttribute("data-array-item-action-placeholder", actionId);
+        item.appendChild(placeholder);
+      } else {
+        removeBtn.className = "remove-btn";
+        removeBtn.innerHTML = App.icon("trash");
+        removeBtn.title = "Eliminar";
+        removeBtn.addEventListener("click", () => {
+          this.removeArrayItem(path, idx);
+        });
+        item.appendChild(removeBtn);
+      }
 
       // DnD events
       this.attachDragEvents(item, container, path);
@@ -581,8 +589,16 @@ const Editor = {
       });
 
       if (isCollapsible) {
-        removeBtn.classList.add("inline-remove-btn");
-        rightGroup.appendChild(removeBtn);
+        if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+          const actionId = `arr-item-${itemPath}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          this._arrayItemActionTargets.push({ id: actionId, path, idx, inline: true });
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-array-item-action-placeholder", actionId);
+          rightGroup.appendChild(placeholder);
+        } else {
+          removeBtn.classList.add("inline-remove-btn");
+          rightGroup.appendChild(removeBtn);
+        }
       }
 
       header.appendChild(leftGroup);
@@ -626,7 +642,15 @@ const Editor = {
       }
 
       if (!isCollapsible) {
-        item.appendChild(removeBtn);
+        if (window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function") {
+          const actionId = `arr-item-${itemPath}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          this._arrayItemActionTargets.push({ id: actionId, path, idx, inline: false });
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-array-item-action-placeholder", actionId);
+          item.appendChild(placeholder);
+        } else {
+          item.appendChild(removeBtn);
+        }
       }
 
       // DnD events
@@ -705,6 +729,7 @@ const Editor = {
   _dragState: null,
   _dndBoundContainers: new WeakSet(),
   _arrayActionTargets: [],
+  _arrayItemActionTargets: [],
 
   attachDragEvents(item, container, arrayPath) {
     this.bindContainerDnd(container, arrayPath);
@@ -1068,6 +1093,7 @@ const Editor = {
       onInitPreview: () => this.ensureDevServer(),
       onInitComplex: (el) => {
         this._arrayActionTargets = [];
+        this._arrayItemActionTargets = [];
         if (this.hasComplexStructure(this.currentData)) {
           this.renderComplexFields(el, this.currentData, "", 0);
           el.addEventListener("input", () => {
@@ -1088,6 +1114,12 @@ const Editor = {
           return;
         }
         this.addArrayItem(target.path, target.currentArr, selectedType || null);
+      },
+      getArrayItemActionTargets: () => [...this._arrayItemActionTargets],
+      onRemoveArrayItem: (id) => {
+        const target = this._arrayItemActionTargets.find((x) => x.id === id);
+        if (!target) return;
+        this.removeArrayItem(target.path, target.idx);
       },
     });
 
