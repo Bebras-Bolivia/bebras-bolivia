@@ -407,29 +407,47 @@ const App = {
         })
         .join("");
 
-      main.innerHTML = `
-        ${publishBanner}
-        ${statsHtml}
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Contenido del sitio</div>
-          </div>
-          <div class="content-list">
-            ${contentListHtml}
-          </div>
-        </div>`;
+      if (window.CMSDashboard && typeof window.CMSDashboard.mount === "function") {
+        main.innerHTML = '<div id="react-dashboard-root"></div>';
+        const root = document.getElementById("react-dashboard-root");
+        if (root) {
+          window.CMSDashboard.mount(root, {
+            files,
+            posts,
+            snapshots,
+            publishData,
+            contentTree,
+            contentMeta: this.contentMeta,
+            icons: this.icons,
+            onNavigate: (path) => this.navigate(path),
+            onPublish: () => this.handlePublish(),
+          });
+        }
+      } else {
+        main.innerHTML = `
+          ${publishBanner}
+          ${statsHtml}
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Contenido del sitio</div>
+            </div>
+            <div class="content-list">
+              ${contentListHtml}
+            </div>
+          </div>`;
 
-      // Bind events
-      main.querySelectorAll(".content-item, .content-child").forEach((item) => {
-        item.addEventListener("click", () => {
-          const file = item.getAttribute("data-file");
-          this.navigate(`/editor/${encodeURIComponent(file)}`);
+        // Bind events
+        main.querySelectorAll(".content-item, .content-child").forEach((item) => {
+          item.addEventListener("click", () => {
+            const file = item.getAttribute("data-file");
+            this.navigate(`/editor/${encodeURIComponent(file)}`);
+          });
         });
-      });
 
-      const publishBtn = document.getElementById("publish-btn");
-      if (publishBtn) {
-        publishBtn.addEventListener("click", () => this.handlePublish());
+        const publishBtn = document.getElementById("publish-btn");
+        if (publishBtn) {
+          publishBtn.addEventListener("click", () => this.handlePublish());
+        }
       }
     } catch (err) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(err.message)}</p></div>`;
@@ -494,6 +512,8 @@ const App = {
     return div.innerHTML;
   },
 };
+
+window.CMSDashboard = window.CMSDashboard || null;
 
 // ── Boot ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => App.init());

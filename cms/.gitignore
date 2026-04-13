@@ -1,4 +1,6 @@
 node_modules/
+ui-dist/
+ui/.astro/
 bun.lock
 .env
 server.log

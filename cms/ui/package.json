@@ -1,0 +1,16 @@
+{
+  "name": "bebras-cms-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "astro": "^5.17.1"
+  }
+}

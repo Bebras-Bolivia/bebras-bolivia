@@ -1,0 +1,63 @@
+---
+import LoginView from "../components/LoginView";
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar sesion - Bebras CMS</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="login-page">
+    <LoginView client:load />
+
+    <script>
+      const form = document.getElementById('login-form');
+      const errorEl = document.getElementById('login-error');
+      const btn = document.getElementById('login-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Ingresando...';
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: document.getElementById('email').value,
+              password: document.getElementById('password').value,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || 'Error al iniciar sesion');
+          }
+
+          localStorage.setItem('cms_user', JSON.stringify(data.user));
+          window.location.href = '/';
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Ingresar';
+        }
+      });
+
+      (async () => {
+        try {
+          const res = await fetch('/api/auth/me');
+          if (res.ok) {
+            window.location.href = '/';
+          }
+        } catch {}
+      })();
+    </script>
+  </body>
+</html>
