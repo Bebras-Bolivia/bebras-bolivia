@@ -141,6 +141,55 @@ const Blog = {
     const body = post ? post.body || "" : "";
     const currentSlug = slug || "";
 
+    if (window.CMSBlog && typeof window.CMSBlog.mountEditor === "function") {
+      main.innerHTML = '<div id="react-blog-editor-root"></div>';
+      const root = document.getElementById("react-blog-editor-root");
+      if (root) {
+        window.CMSBlog.mountEditor(root, {
+          isNew,
+          slug: currentSlug,
+          frontmatter: {
+            title: frontmatter.title || "",
+            description: frontmatter.description || "",
+            date: this.formatDate(frontmatter.date),
+            author: frontmatter.author || "Bebras Bolivia",
+            image: frontmatter.image || "",
+          },
+          body,
+          icons: App.icons,
+          onBack: () => App.navigate("/blog"),
+          onSave: async ({ slug: nextSlug, frontmatter: nextFrontmatter, body: nextBody }) => {
+            if (!nextSlug) {
+              Toast.error("El slug es obligatorio");
+              return;
+            }
+            if (!nextFrontmatter.title) {
+              Toast.error("El titulo es obligatorio");
+              return;
+            }
+            if (!nextFrontmatter.description) {
+              Toast.error("La descripcion es obligatoria");
+              return;
+            }
+            if (!nextFrontmatter.date) {
+              Toast.error("La fecha es obligatoria");
+              return;
+            }
+
+            if (isNew) {
+              await API.createBlog(nextSlug, nextFrontmatter, nextBody);
+              Toast.success("Post creado");
+              App.navigate(`/blog/edit/${encodeURIComponent(nextSlug)}`);
+            } else {
+              await API.updateBlog(currentSlug, nextFrontmatter, nextBody);
+              Toast.success("Post guardado");
+            }
+          },
+        });
+        return;
+      }
+    }
+
     main.innerHTML = `
       <div class="editor-toolbar">
         <div>
