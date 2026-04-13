@@ -665,7 +665,9 @@ const Editor = {
         this.setNestedValue(this.currentData, path, [...currentArr, typedTemplate]);
         this.normalizeStructuredArrays();
         this.dirty = true;
-        this.collectFormData();
+        if (!this.isReactEditorActive()) {
+          this.collectFormData();
+        }
         this.rerenderEditorForm();
         return;
       }
@@ -687,12 +689,16 @@ const Editor = {
     this.normalizeStructuredArrays();
     this.dirty = true;
     // Re-render the whole form
-    this.collectFormData();
+    if (!this.isReactEditorActive()) {
+      this.collectFormData();
+    }
     this.rerenderEditorForm();
   },
 
   removeArrayItem(path, idx) {
-    this.collectFormData();
+    if (!this.isReactEditorActive()) {
+      this.collectFormData();
+    }
     const arr = this.getNestedValue(this.currentData, path);
     if (Array.isArray(arr)) {
       arr.splice(idx, 1);
@@ -710,6 +716,10 @@ const Editor = {
   _arrayActionTargets: [],
   _arrayItemActionTargets: [],
   _arrayCollapseTargets: [],
+
+  isReactEditorActive() {
+    return !!(window.CMSEditor && typeof window.CMSEditor.mountPrimitives === "function" && document.getElementById("react-editor-primitives-root"));
+  },
 
   attachDragEvents(item, container, arrayPath) {
     this.bindContainerDnd(container, arrayPath);
@@ -799,7 +809,9 @@ const Editor = {
   },
 
   moveArrayItem(path, fromIdx, toIdx) {
-    this.collectFormData();
+    if (!this.isReactEditorActive()) {
+      this.collectFormData();
+    }
     const arr = this.getNestedValue(this.currentData, path);
     if (!Array.isArray(arr) || fromIdx === toIdx) return;
     if (fromIdx < 0 || fromIdx >= arr.length) return;
