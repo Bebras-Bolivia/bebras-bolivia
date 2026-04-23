@@ -84,10 +84,11 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
 
     <div class="relative z-10 flex flex-col min-h-screen">
       {showHeader && <BebrasHeader currentPath={currentPath} client:load transition:persist />}
+      {showHeader && <div aria-hidden="true" class="h-[5.5rem] sm:h-[6.25rem]"></div>}
       <main id="main-content" class="flex-1">
         <slot />
       </main>
-      {showFooter && <Footer blendWithHero={true} />}
+      {showFooter && <Footer />}
     </div>
 
     <script>

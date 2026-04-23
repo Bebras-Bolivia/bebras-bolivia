@@ -16,7 +16,7 @@ const statusIconStyles: Record<string, string> = {
 };
 ---
 
-<section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+<section class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
   <div class="mx-auto max-w-3xl">
     <div data-animate class="mb-10 text-center sm:text-left">
       <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{sectionTag}</p>
@@ -28,10 +28,10 @@ const statusIconStyles: Record<string, string> = {
       </p>
     </div>
 
-    <div data-animate class="overflow-x-auto rounded-3xl border border-black/5 dark:border-white/5 bg-accent text-card-foreground shadow-sm">
+    <div data-animate class="overflow-x-auto rounded-3xl border border-border/70 bg-accent text-card-foreground shadow-sm">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
+          <tr class="border-b border-border/70 bg-foreground/5">
             {tableHeaders.map((header, i) => (
               <th class:list={[
                 "px-6 py-5 font-bold uppercase tracking-wider text-xs",
@@ -48,8 +48,8 @@ const statusIconStyles: Record<string, string> = {
             const iconStyle = statusIconStyles[row.status];
             return (
               <tr class:list={[
-                "hover:bg-black/5 dark:hover:bg-white/5 transition-colors",
-                rowIdx < rows.length - 1 ? "border-b border-black/5 dark:border-white/5" : "",
+                "hover:bg-foreground/5 transition-colors",
+                rowIdx < rows.length - 1 ? "border-b border-border/70" : "",
               ]}>
                 <td class="px-6 py-5 text-foreground font-medium flex items-center gap-3">
                   <span class:list={["size-6 rounded-full inline-flex items-center justify-center text-xs font-bold shrink-0", iconStyle]} set:html={styles.icon} />
@@ -69,7 +69,7 @@ const statusIconStyles: Record<string, string> = {
 
     <div data-animate class="mt-8 grid grid-cols-2 gap-6">
       {summaryCards.map((card) => (
-        <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-6 text-center shadow-sm hover:-translate-y-1 transition-transform duration-300">
+        <div class="rounded-3xl border border-border/70 bg-accent p-6 text-center shadow-sm hover:-translate-y-1 transition-transform duration-300">
           <p class="font-mono text-4xl sm:text-5xl font-extrabold text-primary mb-2">{card.value}</p>
           <p class="text-xs sm:text-sm text-muted-foreground uppercase tracking-widest font-bold">{card.label}</p>
         </div>

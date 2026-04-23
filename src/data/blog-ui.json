@@ -1,11 +1,11 @@
 {
   "index": {
-    "pageTitle": "Blog",
+    "pageTitle": "Noticias",
     "pageDescription": "Noticias, recursos y novedades del Desafío Bebras Bolivia.",
     "header": {
       "tag": "Publicaciones",
-      "heading": "Blog & Noticias",
-      "headingHighlight": "Blog",
+      "heading": "Noticias",
+      "headingHighlight": "Noticias",
       "subtitle": "Novedades, recursos y consejos para estudiantes y docentes."
     },
     "emptyState": {
@@ -15,7 +15,7 @@
     "readMoreLabel": "Leer más"
   },
   "post": {
-    "backLabel": "Volver al blog",
+    "backLabel": "Volver a noticias",
     "ctaLabel": "Inscribirse al desafío",
     "ctaHref": "/registro"
   }

@@ -44,7 +44,7 @@
   },
   "form": {
     "tag": "Formulario",
-    "heading": "Envíanos un Mensaje",
+    "heading": "Envíanos un mensaje",
     "fields": {
       "name": { "label": "Nombre completo", "placeholder": "Tu nombre" },
       "email": { "label": "Email", "placeholder": "tu@email.com" },

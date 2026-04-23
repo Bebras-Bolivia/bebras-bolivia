@@ -121,7 +121,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
               style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
             >
               <nav
-                className={`overflow-hidden rounded-xl border border-black/10 bg-white transition-all duration-300 ${
+                className={`overflow-hidden rounded-xl border border-border/70 bg-card transition-all duration-300 ${
                   visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
                 }`}
                 style={{
@@ -147,7 +147,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                       className={`flex min-h-14 items-center rounded-lg px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
                         isActive
                           ? "text-primary"
-                          : "text-foreground hover:bg-black/5"
+                          : "text-foreground hover:bg-foreground/5"
                       } ${
                         visible
                           ? "opacity-100 translate-y-0"
@@ -191,10 +191,10 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`block rounded-xl border border-black/10 bg-white px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
+                    className={`block rounded-xl border border-border/70 bg-card px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
                       isActive
                         ? "text-primary"
-                        : "text-foreground hover:bg-black/5"
+                        : "text-foreground hover:bg-foreground/5"
                     } ${
                       visible
                         ? "opacity-100 translate-y-0"

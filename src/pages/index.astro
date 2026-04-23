@@ -1,6 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
+import { BadgeCheck, Brain, School, Sparkles } from "lucide-react";
+
+const ageGroups = [
+	{ name: "Kits",      range: "6 a 8 años",   color: "rose"    },
+	{ name: "Castors",   range: "8 a 10 años",  color: "amber"   },
+	{ name: "Benjamins", range: "10 a 12 años", color: "emerald" },
+	{ name: "Cadets",    range: "12 a 14 años", color: "sky"     },
+	{ name: "Juniors",   range: "14 a 16 años", color: "violet"  },
+	{ name: "Seniors",   range: "16 a 18 años", color: "indigo"  },
+];
+
+const dotColor: Record<string, string> = {
+	rose:    "bg-rose-500",
+	amber:   "bg-amber-500",
+	emerald: "bg-emerald-500",
+	sky:     "bg-sky-500",
+	violet:  "bg-violet-500",
+	indigo:  "bg-indigo-500",
+};
 ---
 
 <Layout
@@ -8,4 +27,199 @@ import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
 	description="Sitio oficial de Bebras Bolivia. Competencia de pensamiento computacional para estudiantes de primaria y secundaria."
 >
 	<BebrasBoliviaHome client:load />
+
+	<main class="relative z-10 w-full bg-cream dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-24 pt-14 lg:pt-20 grain-paper">
+
+					<!-- Editorial ornament -->
+					<div class="mx-auto max-w-5xl px-4 sm:px-6 mb-16">
+						<div class="editorial-rule text-foreground/40">
+							<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
+						</div>
+					</div>
+
+					<!-- Section 01: Sobre el desafío — asymmetric magazine layout -->
+					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+						<div class="grid grid-cols-12 gap-6 lg:gap-10">
+							<!-- Numeral + label — sticky column on wide screens -->
+							<aside class="col-span-12 lg:col-span-4">
+								<div class="lg:sticky lg:top-28">
+									<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">01</span>
+									<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">Capítulo uno</p>
+									<div class="mt-4 h-px w-16 bg-foreground/20"></div>
+									<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">
+										Una iniciativa de <span class="text-ochre font-semibold">60+ países</span> que llega a Bolivia.
+									</p>
+								</div>
+							</aside>
+
+							<!-- Heading + body -->
+							<div class="col-span-12 lg:col-span-8">
+								<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">
+									Sobre el <em class="italic text-primary">desafío</em>.
+								</h2>
+								<div class="space-y-6 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
+									<p class="first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:text-primary first-letter:font-normal">
+										Bebras es una competencia internacional de pensamiento computacional para estudiantes de 6 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.
+									</p>
+									<p>
+										La competencia es <mark class="bg-ochre/30 text-foreground px-2 py-0.5 rounded font-semibold decoration-clone">gratuita</mark> y se realiza en tu propia unidad educativa. Cada estudiante cuenta con <span class="font-mono text-base font-semibold text-foreground bg-foreground/5 px-2 py-0.5 rounded">45 minutos</span> para resolver las tareas de su categoría.
+									</p>
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<!-- Section 02: Categorías — color-coded editorial list -->
+					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+						<div class="grid grid-cols-12 gap-6 lg:gap-10">
+							<aside class="col-span-12 lg:col-span-4">
+								<div class="lg:sticky lg:top-28">
+									<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">02</span>
+									<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">Seis niveles</p>
+									<div class="mt-4 h-px w-16 bg-foreground/20"></div>
+									<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">
+										Cada nivel tiene tareas diseñadas para su grupo de edad.
+									</p>
+								</div>
+							</aside>
+
+							<div class="col-span-12 lg:col-span-8">
+								<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">
+									Categorías por <em class="italic text-primary">edad</em>.
+								</h2>
+
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-0">
+									{ageGroups.map((g, i) => (
+										<div class="group flex items-center gap-4 py-4 border-b border-foreground/10 hover:border-primary/30 transition-colors">
+											<span class="font-mono text-xs text-muted-foreground shrink-0 w-6 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+											<span class:list={["size-2 rounded-full shrink-0 transition-transform group-hover:scale-150", dotColor[g.color]]} aria-hidden="true"></span>
+											<span class="serif-display italic text-2xl sm:text-3xl text-foreground flex-1">{g.name}</span>
+											<span class="font-mono text-xs text-muted-foreground tabular-nums">{g.range}</span>
+										</div>
+									))}
+								</div>
+
+								<div class="mt-10">
+									<a href="/estudiantes" class="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary">
+										Ver información detallada para estudiantes
+										<span aria-hidden="true">→</span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<!-- Section 03: Call to action — dual path -->
+					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+						<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+							<a
+								href="/registro"
+								class="group md:col-span-3 relative overflow-hidden rounded-[1.75rem] bg-primary text-primary-foreground p-8 sm:p-10 lift-on-hover"
+							>
+								<div class="flex items-start justify-between gap-4 mb-20">
+									<p class="font-mono text-[10px] uppercase tracking-[0.3em] opacity-70">Docentes / Coordinadores</p>
+									<School className="size-11 opacity-35" strokeWidth={1.8} aria-hidden="true" />
+								</div>
+								<p class="serif-display text-3xl sm:text-4xl leading-[1.05]">
+									Inscribe tu <em class="italic">unidad</em><br/>educativa.
+								</p>
+								<div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-primary-foreground/50 pb-0.5 group-hover:border-primary-foreground transition-colors">
+									Comenzar registro
+									<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+								</div>
+							</a>
+
+							<a
+								href="/estudiantes"
+								class="group md:col-span-2 relative overflow-hidden rounded-[1.75rem] bg-card dark:bg-card text-foreground p-8 sm:p-10 lift-on-hover ring-1 ring-border/70"
+							>
+								<div class="flex items-start justify-between gap-4 mb-20">
+									<p class="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Estudiantes</p>
+									<Brain className="size-11 text-ochre" strokeWidth={1.8} aria-hidden="true" />
+								</div>
+								<p class="serif-display text-3xl sm:text-4xl leading-[1.05]">
+									¿Qué es el <em class="italic text-primary">desafío</em>?
+								</p>
+								<div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-foreground/30 pb-0.5 group-hover:border-primary transition-colors">
+									Conocer más
+									<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+								</div>
+							</a>
+						</div>
+					</section>
+
+					<!-- Editorial ornament -->
+					<div class="mx-auto max-w-5xl px-4 sm:px-6 mb-16">
+						<div class="editorial-rule text-foreground/40">
+							<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
+						</div>
+					</div>
+
+					<!-- Section 04: Sobre Bebras -->
+					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6">
+						<div class="grid grid-cols-12 gap-6 lg:gap-10">
+							<aside class="col-span-12 lg:col-span-4">
+								<div class="lg:sticky lg:top-28">
+									<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">03</span>
+									<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">Iniciativa internacional</p>
+									<div class="mt-4 h-px w-16 bg-foreground/20"></div>
+									<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">
+										Presente en más de <span class="text-ochre font-semibold">60 países</span> alrededor del mundo.
+									</p>
+								</div>
+							</aside>
+
+							<div class="col-span-12 lg:col-span-8">
+								<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">
+									Sobre <em class="italic text-primary">Bebras</em><BadgeCheck className="inline-block size-6 align-top text-primary/80" strokeWidth={1.8} aria-hidden="true" />.
+								</h2>
+
+								<div class="max-w-3xl space-y-5 text-lg text-foreground/80 leading-[1.65]">
+										<p>El Desafío Bebras<BadgeCheck className="mx-0.5 inline-block size-3.5 align-text-top text-primary/80" strokeWidth={1.8} aria-hidden="true" /> introduce el pensamiento computacional a los estudiantes.</p>
+										<p>Se organiza en más de <span class="font-mono font-semibold text-foreground">60 países</span> y está diseñado para entusiasmar a estudiantes de todo el mundo con la informática.</p>
+										<p>Cada participante tiene 45 minutos para resolver <span class="font-mono font-semibold text-foreground">15 preguntas</span> de opción múltiple centradas en pensamiento computacional y lógico.</p>
+										<p>Se realiza en línea desde tu propia escuela y muestra a estudiantes y docentes qué tan desarrolladas están sus habilidades.</p>
+								</div>
+							</div>
+						</div>
+					</section>
+
+	</main>
 </Layout>
+
+<script>
+	function initHomeReveal() {
+		const elements = document.querySelectorAll<HTMLElement>("[data-reveal]:not(.is-revealed)");
+		if (elements.length === 0) return;
+
+		elements.forEach((el) => {
+			el.style.opacity = "0";
+			el.style.transform = "translateY(32px)";
+			el.style.transition = "opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)";
+		});
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						const el = entry.target as HTMLElement;
+						el.style.opacity = "1";
+						el.style.transform = "translateY(0)";
+						el.classList.add("is-revealed");
+						observer.unobserve(el);
+					}
+				});
+			},
+			{ threshold: 0.12, rootMargin: "0px 0px -50px 0px" }
+		);
+
+		elements.forEach((el) => observer.observe(el));
+	}
+
+	function initHomeExperience() {
+		initHomeReveal();
+	}
+
+	document.addEventListener("astro:page-load", initHomeExperience);
+	initHomeExperience();
+</script>

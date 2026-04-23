@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import castorCircle from "@/assets/castor-circle.png";
 import navData from "@/data/navigation.json";
 import MobileMenu from "./MobileMenu";
@@ -11,6 +12,7 @@ interface Props {
 export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) {
   const [currentPath, setCurrentPath] = useState(initialPath);
   const castorRef = useRef<HTMLImageElement>(null);
+  const headerShellRef = useRef<HTMLElement>(null);
 
   // Update currentPath on Astro client-side navigation
   useEffect(() => {
@@ -68,14 +70,51 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
     };
   }, []);
 
+  useEffect(() => {
+    const headerShell = headerShellRef.current;
+    if (!headerShell) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      const showAnim = gsap
+        .from(headerShell, {
+          yPercent: -140,
+          paused: true,
+          duration: 0.24,
+          ease: "power2.out",
+        })
+        .progress(1);
+
+      ScrollTrigger.create({
+        start: "top top",
+        end: "max",
+        onUpdate: (self) => {
+          if (self.scroll() < 12) {
+            showAnim.progress(1);
+            return;
+          }
+
+          if (self.direction === -1) {
+            showAnim.play();
+          } else {
+            showAnim.reverse();
+          }
+        },
+      });
+    }, headerShell);
+
+    return () => ctx.revert();
+  }, []);
+
   const isActive = (href: string) => {
     if (href === "/") return currentPath === "/";
     return currentPath === href || currentPath.startsWith(href + "/");
   };
 
   return (
-    <header className="sticky top-0 z-50">
-      <div className="mx-auto flex w-full items-center justify-between px-4 pt-4 md:max-w-9/12 md:px-6">
+    <header ref={headerShellRef} className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
+      <div className="mx-auto flex w-full items-center justify-between md:max-w-9/12">
         <div className="flex flex-1 items-center justify-between rounded-xl bg-card px-3 py-2.5 sm:px-4 sm:py-3">
           {/* Logo */}
           <a className="flex min-w-0 items-center gap-2.5 sm:gap-3" href="/">

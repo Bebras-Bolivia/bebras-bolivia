@@ -1,18 +1,18 @@
 {
   "pageTitle": "Docentes",
-  "pageDescription": "Informacion para docentes y coordinadores escolares sobre como inscribir estudiantes en el Desafio Bebras Bolivia.",
+  "pageDescription": "Información para docentes y coordinadores escolares sobre cómo inscribir estudiantes en el Desafío Bebras Bolivia.",
   "header": {
     "tag": "Para docentes",
-    "heading": "Informacion para Docentes",
+    "heading": "Información para Docentes",
     "headingHighlight": "Docentes",
-    "subtitle": "Guia completa para coordinadores escolares que desean inscribir a sus estudiantes en el Desafio Bebras."
+    "subtitle": "Guía completa para coordinadores escolares que desean inscribir a sus estudiantes en el Desafío Bebras."
   },
   "sections": [
     {
       "id": "registro",
       "tag": "Registro",
-      "heading": "Como inscriben a sus estudiantes?",
-      "intro": "El proceso de inscripcion es simple y gratuito. Un docente o representante de la escuela actua como coordinador y se encarga de registrar a los estudiantes.",
+      "heading": "¿Cómo inscribir a sus estudiantes?",
+      "intro": "El proceso de inscripción es simple y gratuito. Un docente o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
       "steps": [
         {
           "num": "1",
@@ -21,20 +21,20 @@
         },
         {
           "num": "2",
-          "title": "Inscripcion de estudiantes",
-          "desc": "Agregar a los estudiantes organizados por categorias de edad (Kits a Seniors)."
+          "title": "Inscripción de estudiantes",
+          "desc": "Agregar a los estudiantes organizados por categorías de edad, de Kits a Seniors."
         },
         {
           "num": "3",
-          "title": "Dia del desafio",
-          "desc": "Supervisar la sesion en la escuela durante los 45 minutos del desafio."
+          "title": "Día del desafío",
+          "desc": "Supervisar la sesión en la escuela durante los 45 minutos del desafío."
         }
       ]
     },
     {
       "id": "requisitos",
       "tag": "Requisitos",
-      "heading": "Que necesita la escuela?",
+      "heading": "¿Qué necesita la escuela?",
       "requirements": [
         {
           "icon": "monitor",
@@ -43,7 +43,7 @@
         },
         {
           "icon": "wifi",
-          "title": "Conexion a internet",
+          "title": "Conexión a internet",
           "desc": "Estable durante los 45 minutos del desafio."
         },
         {
@@ -61,21 +61,21 @@
     {
       "id": "alcance",
       "tag": "Alcance",
-      "heading": "Quien deberia participar?",
+      "heading": "¿Quién debería participar?",
       "content": [
-        "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel academico. El desafio esta disenado para ser accesible y no requiere conocimientos previos de informatica o programacion.",
-        "La participacion masiva tiene ventajas: permite comparar resultados a nivel escolar y motivar a mas estudiantes a desarrollar habilidades de pensamiento computacional."
+        "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel académico. El desafío está diseñado para ser accesible y no requiere conocimientos previos de informática o programación.",
+        "La participación amplia tiene ventajas: permite comparar resultados a nivel escolar y motivar a más estudiantes a desarrollar habilidades de pensamiento computacional."
       ],
-      "tip": "Tip: No se necesita una clase de informatica dedicada. El desafio puede realizarse en cualquier hora de clase con acceso a computadoras."
+      "tip": "Sugerencia: No se necesita una clase de informática dedicada. El desafío puede realizarse en cualquier hora de clase con acceso a computadoras."
     },
     {
       "id": "cta",
-      "heading": "Listo para inscribir a tu escuela?",
+      "heading": "¿Listo para inscribir a tu escuela?",
       "content": [
-        "El registro es rapido, gratuito y te permite inscribir a todos los estudiantes que desees."
+        "El registro es rápido, gratuito y te permite inscribir a todos los estudiantes que desees."
       ],
       "cta": {
-        "label": "Registrarse como Coordinador",
+        "label": "Registrarse como coordinador",
         "href": "/registro"
       }
     }

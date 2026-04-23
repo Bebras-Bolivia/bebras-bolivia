@@ -12,33 +12,30 @@ const cta = data.cta;
 <Layout title={data.pageTitle} description={data.pageDescription}>
   <div class="relative w-full">
     
-    <!-- Hero Header (Fijo al fondo) -->
-    <div class="sticky top-0 w-full min-h-[70vh] flex flex-col justify-center items-center z-0 pt-20 pb-32">
+    <!-- Hero Header (compacto) -->
+    <div class="relative w-full flex flex-col justify-center items-center pt-10 pb-16 sm:pt-14 sm:pb-20">
       <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
-        <p class="text-xs uppercase tracking-[0.25em] font-bold text-white mb-4">{header.tag}</p>
-        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-sm mb-4">
-          Nuestros <span class="text-white sm:inline block mt-2 sm:mt-0">{header.headingHighlight}</span>
+        <p class="text-xs uppercase tracking-[0.25em] font-bold text-white/80 mb-3">{header.tag}</p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-sm">
+          Nuestros <span class="text-white">{header.headingHighlight}</span>
         </h1>
-        <p class="mt-6 text-xl text-white font-medium max-w-2xl mx-auto drop-shadow-sm leading-relaxed">
-          {header.subtitle}
-        </p>
       </div>
     </div>
 
     <!-- Contenedor Principal (Crema deslizante) -->
-    <main class="relative z-10 w-full min-h-screen bg-[#F4F4F1] dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] -mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-16 lg:pt-24">
+    <main class="relative z-10 w-full min-h-screen bg-cream dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-14 lg:pt-20">
       
       <!-- Main sponsor / anchor institution -->
       <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
           <div class="mx-auto max-w-3xl">
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4 text-center">{anchor.tag}</p>
             <div class="rule-line mx-auto max-w-xs mb-10"></div>
             
             <div class="flex justify-center">
-              <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-10 text-left transition-transform hover:-translate-y-2 duration-300 max-w-2xl w-full">
+              <div class="rounded-3xl border border-border/70 bg-accent p-10 text-left transition-transform hover:-translate-y-2 duration-300 max-w-2xl w-full">
                 <div class="flex items-start gap-8">
-                  <div class="flex items-center justify-center size-20 shrink-0 rounded-2xl bg-white shadow-md">
+                  <div class="flex items-center justify-center size-20 shrink-0 rounded-2xl bg-card shadow-md">
                     <img
                       src="/images/sponsors/sponsor-placeholder.svg"
                       alt={anchor.name}
@@ -61,16 +58,16 @@ const cta = data.cta;
 
       <!-- Other sponsors -->
       <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
           <div class="mx-auto max-w-5xl">
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4 text-center">{sponsorsSection.tag}</p>
             <div class="rule-line mx-auto max-w-xs mb-10"></div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sponsors.map((sponsor, i) => (
-                <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
+                <div class="rounded-3xl border border-border/70 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
                   <div class="flex items-center gap-4 mb-6">
-                    <div class="flex items-center justify-center size-14 shrink-0 rounded-xl bg-white shadow-sm">
+                    <div class="flex items-center justify-center size-14 shrink-0 rounded-xl bg-card shadow-sm">
                       <img
                         src="/images/sponsors/sponsor-placeholder.svg"
                         alt={sponsor.name}
@@ -92,7 +89,7 @@ const cta = data.cta;
 
       <!-- Become a sponsor CTA -->
       <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6">
-        <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-2xl border border-black/5 dark:border-white/5 text-center">
+        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-2xl border border-border/70 text-center">
           <div class="mx-auto max-w-3xl">
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{cta.tag}</p>
             <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">

@@ -12,7 +12,7 @@
   "notification": {
     "tag": "Notificaciones",
     "text": "¿Quieres ser notificado?",
-    "instruction": "Envíanos un email a",
+    "instruction": "Envíanos un correo a",
     "email": "info@bebras.bo",
     "suffix": "y te avisaremos cuando las inscripciones estén abiertas."
   }
