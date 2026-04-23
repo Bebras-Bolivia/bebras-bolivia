@@ -43,7 +43,6 @@
     { "label": "Email", "href": "mailto:info@bebras.bo", "icon": "email" }
   ],
   "internationalLinks": [
-    { "label": "Bebras Internacional", "href": "https://www.bebras.org/" },
-    { "label": "Bebras USA", "href": "https://www.bebraschallenge.org/" }
+    { "label": "Bebras Internacional", "href": "https://www.bebras.org/" }
   ]
 }

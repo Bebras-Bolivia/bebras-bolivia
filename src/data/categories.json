@@ -1,13 +1,13 @@
 {
   "sectionTag": "Niveles",
-  "heading": "Categorías por Edad",
-  "subtitle": "Seis niveles diseñados para desafiar a cada grupo de edad",
+  "heading": "Categorías por edad",
+  "subtitle": "Seis niveles diseñados para desafiar a cada grupo de edad.",
   "categories": [
-    { "name": "Kits", "age": "6-8 años", "emoji": "🧩", "color": "rose", "desc": "Primeros pasos en el pensamiento lógico" },
-    { "name": "Castors", "age": "8-10 años", "emoji": "🦫", "color": "amber", "desc": "Descubriendo patrones y secuencias" },
-    { "name": "Benjamins", "age": "10-12 años", "emoji": "🔍", "color": "emerald", "desc": "Resolviendo problemas con creatividad" },
-    { "name": "Cadets", "age": "12-14 años", "emoji": "⚙️", "color": "sky", "desc": "Algoritmos y pensamiento estructurado" },
-    { "name": "Juniors", "age": "14-16 años", "emoji": "📊", "color": "violet", "desc": "Abstracción y análisis de datos" },
-    { "name": "Seniors", "age": "16-18 años", "emoji": "🚀", "color": "indigo", "desc": "Desafíos avanzados de informática" }
+    { "name": "Kits", "age": "6-8 años", "emoji": "🧩", "color": "rose", "desc": "Primeros pasos en el pensamiento lógico." },
+    { "name": "Castors", "age": "8-10 años", "emoji": "🦫", "color": "amber", "desc": "Descubriendo patrones y secuencias." },
+    { "name": "Benjamins", "age": "10-12 años", "emoji": "🔍", "color": "emerald", "desc": "Resolviendo problemas con creatividad." },
+    { "name": "Cadets", "age": "12-14 años", "emoji": "⚙️", "color": "sky", "desc": "Algoritmos y pensamiento estructurado." },
+    { "name": "Juniors", "age": "14-16 años", "emoji": "📊", "color": "violet", "desc": "Abstracción y análisis de datos." },
+    { "name": "Seniors", "age": "16-18 años", "emoji": "🚀", "color": "indigo", "desc": "Desafíos avanzados de informática." }
   ]
 }

@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import DynamicBlocks from "@/components/DynamicBlocks.astro";
+import customPagesData from "@/data/custom-pages.json";
+
+export async function getStaticPaths() {
+  return (customPagesData.pages || []).map((page) => ({
+    params: { customPage: page.slug },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<Layout title={page.title} description={page.description}>
+  <div class="relative w-full">
+    <div class="sticky top-0 w-full min-h-[56vh] flex flex-col justify-center items-center z-0 pt-20 pb-24">
+      <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-sm mb-4">
+          {page.title}
+        </h1>
+        <p class="mt-6 text-xl text-white font-medium max-w-2xl mx-auto drop-shadow-sm leading-relaxed">
+          {page.description}
+        </p>
+      </div>
+    </div>
+
+    <main class="relative z-10 w-full min-h-screen bg-[#F4F4F1] dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] -mt-20 shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-16 lg:pt-24">
+      <div class="w-full mx-auto max-w-6xl px-4 sm:px-6">
+        <DynamicBlocks blocks={(page.blocks || []) as any} />
+      </div>
+    </main>
+  </div>
+</Layout>

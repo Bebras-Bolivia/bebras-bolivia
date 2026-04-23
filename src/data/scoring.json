@@ -1,6 +1,6 @@
 {
   "sectionTag": "Puntuación",
-  "heading": "Sistema de Puntuación",
+  "heading": "Sistema de puntuación",
   "subtitle": "Cada tarea pertenece a una categoría de dificultad. Inicias con 45 puntos.",
   "tableHeaders": ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
   "rows": [
@@ -11,5 +11,6 @@
   "summaryCards": [
     { "value": "45", "label": "Puntaje inicial" },
     { "value": "180", "label": "Puntaje máximo" }
-  ]
+  ],
+  "summaryColumns": 2
 }

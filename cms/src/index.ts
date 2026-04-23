@@ -1,6 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { resolve } from "path";
+import { mkdir } from "fs/promises";
+import { existsSync } from "fs";
 import { config } from "./config.js";
 import { getDb } from "./db/index.js";
 import { authRouter } from "./auth/routes.js";
@@ -14,6 +16,20 @@ import { previewRouter } from "./preview/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
 
 const app = express();
+
+async function ensureRuntimeDirectories() {
+  const uploadsDir = resolve(config.landingPublicDir, "images", "uploads");
+  await Promise.all([
+    mkdir(config.contentDir, { recursive: true }),
+    mkdir(config.currentDataDir, { recursive: true }),
+    mkdir(config.currentBlogDir, { recursive: true }),
+    mkdir(config.snapshotsDir, { recursive: true }),
+    mkdir(config.mediaDir, { recursive: true }),
+    mkdir(config.landingDataDir, { recursive: true }),
+    mkdir(config.landingBlogDir, { recursive: true }),
+    mkdir(uploadsDir, { recursive: true }),
+  ]);
+}
 
 // ── Middleware ──────────────────────────────────────────────
 app.use(express.json({ limit: "2mb" }));
@@ -40,10 +56,7 @@ app.post("/api/preview/start", (req, res, next) => {
   console.log(`[DEBUG] Direct /api/preview/start matched! method=${req.method}`);
   next();
 });
-app.use("/api/preview", (req, _res, next) => {
-  console.log(`[DEBUG] Preview router hit: ${req.method} ${req.path} ${req.originalUrl}`);
-  next();
-}, requireAuth, previewRouter);
+app.use("/api/preview", requireAuth, previewRouter);
 
 // ── Health check ───────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
@@ -155,17 +168,35 @@ app.get("/favicon.svg", (_req, res) => {
   res.sendFile(resolve(landingDistDir, "favicon.svg"));
 });
 
-// ── Static files (CMS SPA) ────────────────────────────────
-const publicDir = resolve(import.meta.dir, "..", "public");
-app.use(express.static(publicDir));
+// ── Static files (CMS UI) ─────────────────────────────────
+const uiDistDir = resolve(import.meta.dir, "..", "ui-dist");
+const legacyPublicDir = resolve(import.meta.dir, "..", "public");
+const uiIndexFile = resolve(uiDistDir, "index.html");
+const uiLoginFile = resolve(uiDistDir, "login", "index.html");
+
+function hasUiBuild(): boolean {
+  return existsSync(uiIndexFile);
+}
+
+app.use(express.static(uiDistDir));
+app.use(express.static(legacyPublicDir));
+
+app.get("/login.html", (_req, res) => {
+  if (hasUiBuild() && existsSync(uiLoginFile)) {
+    res.sendFile(uiLoginFile);
+    return;
+  }
+  res.sendFile(resolve(legacyPublicDir, "login.html"));
+});
 
 // SPA fallback — serve index.html for all non-API, non-preview, non-asset routes
 app.get(/^\/(?!api\/|preview-site\/|_astro\/|@vite\/|@fs\/|node_modules\/|images\/|favicon\.svg).*/, (_req, res) => {
-  res.sendFile(resolve(publicDir, "index.html"));
+  if (hasUiBuild()) {
+    res.sendFile(uiIndexFile);
+    return;
+  }
+  res.sendFile(resolve(legacyPublicDir, "index.html"));
 });
-
-// ── Initialize database ────────────────────────────────────
-getDb();
 
 // ── Auto-seed on first run ─────────────────────────────────
 async function autoSeed() {
@@ -195,19 +226,21 @@ function cleanup() {
 process.on("SIGINT", cleanup);
 process.on("SIGTERM", cleanup);
 
-// ── Start server ───────────────────────────────────────────
-autoSeed()
-  .then(() => {
-    app.listen(config.port, config.host, () => {
-      console.log(`\nBebras CMS running at http://${config.host}:${config.port}`);
-      console.log(`Environment: ${config.nodeEnv}`);
-      console.log(`Content dir: ${config.contentDir}`);
-      console.log(`Landing dir: ${config.landingDir}\n`);
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to start CMS:", err);
-    process.exit(1);
+async function boot() {
+  await ensureRuntimeDirectories();
+  getDb();
+  await autoSeed();
+  app.listen(config.port, config.host, () => {
+    console.log(`\nBebras CMS running at http://${config.host}:${config.port}`);
+    console.log(`Environment: ${config.nodeEnv}`);
+    console.log(`Content dir: ${config.contentDir}`);
+    console.log(`Landing dir: ${config.landingDir}\n`);
   });
+}
+
+boot().catch((err) => {
+  console.error("Failed to start CMS:", err);
+  process.exit(1);
+});
 
 export default app;

@@ -1,7 +1,41 @@
 ---
 import scoringData from "@/data/scoring.json";
 
-const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards } = scoringData;
+interface ScoringRow {
+  label: string;
+  values: string[];
+  status: string;
+}
+
+interface ScoringStat {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  data?: {
+    sectionTag: string;
+    heading: string;
+    subtitle: string;
+    tableHeaders: string[];
+    rows: ScoringRow[];
+    summaryCards: ScoringStat[];
+    summaryColumns?: number;
+  };
+}
+
+const props = Astro.props as Props;
+const source = props.data || scoringData;
+const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards, summaryColumns = 2 } = source;
+
+function getSummaryColsClass(columns: number) {
+  if (columns <= 1) return "grid-cols-1";
+  if (columns === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (columns === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+}
+
+const summaryColsClass = getSummaryColsClass(summaryColumns);
 
 const statusStyles: Record<string, { icon: string; cellClass: string }> = {
   positive: { icon: "&#10003;", cellClass: "font-bold text-emerald-600" },
@@ -67,7 +101,7 @@ const statusIconStyles: Record<string, string> = {
       </table>
     </div>
 
-    <div data-animate class="mt-8 grid grid-cols-2 gap-6">
+    <div data-animate class:list={["mt-8 grid gap-6", summaryColsClass]}>
       {summaryCards.map((card) => (
         <div class="rounded-3xl border border-border/70 bg-accent p-6 text-center shadow-sm hover:-translate-y-1 transition-transform duration-300">
           <p class="font-mono text-4xl sm:text-5xl font-extrabold text-primary mb-2">{card.value}</p>

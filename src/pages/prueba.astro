@@ -1,22 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import AgeCategories from "@/components/AgeCategories.astro";
-import ScoringTable from "@/components/ScoringTable.astro";
+import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import data from "@/data/estudiantes.json";
 
 const header = data.header;
-const sections = data.sections;
-const participacion = sections.find((s) => s.id === "participacion")!;
-const desafio = sections.find((s) => s.id === "desafio")!;
-const habilidades = sections.find((s) => s.id === "habilidades")!;
-const formato = sections.find((s) => s.id === "formato")!;
-const certificados = sections.find((s) => s.id === "certificados")!;
+const components: any[] = Array.isArray((data as any).components) ? (data as any).components : [];
 ---
 
 <Layout title="Prueba Mmarket - Estudiantes" description={data.pageDescription}>
   <div class="relative w-full">
-    
-    <!-- Hero Header (compacto) -->
     <div class="relative w-full flex flex-col justify-center items-center pt-10 pb-16 sm:pt-14 sm:pb-20">
       <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
         <p class="text-xs uppercase tracking-[0.25em] font-bold text-white/80 mb-3">{header.tag}</p>
@@ -26,135 +18,8 @@ const certificados = sections.find((s) => s.id === "certificados")!;
       </div>
     </div>
 
-    <!-- Contenedor Principal (Crema deslizante) -->
     <main class="relative z-10 w-full min-h-screen bg-cream dark:bg-zinc-950 rounded-t-[3rem] sm:rounded-t-[4rem] shadow-[0_-20px_60px_rgba(0,0,0,0.15)] pb-32 pt-14 lg:pt-20">
-      
-      <!-- Cómo participar -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
-          <div class="mx-auto max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{participacion.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{participacion.heading}</h2>
-            
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              {participacion.content?.map((p: string) => <p>{p}</p>)}
-              {participacion.link && (
-                <p class="mt-8">
-                  <a href={participacion.link.href} class="inline-flex items-center text-primary font-bold group text-xl transition-all">
-                    {participacion.link.label}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                  </a>
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Qué es el desafío -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
-          <div class="mx-auto max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{desafio.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{desafio.heading}</h2>
-            
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              {desafio.content?.map((p: string) => <p>{p}</p>)}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Habilidades Clave -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
-          <div class="mx-auto max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{habilidades.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{habilidades.heading}</h2>
-            
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              <p>{habilidades.intro}</p>
-              <ul class="space-y-6 mt-8">
-                {habilidades.skills?.map((item: { title: string; desc: string }) => (
-                  <li class="flex items-start gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-colors">
-                    <span class="flex items-center justify-center size-8 shrink-0 rounded-full bg-primary/10 text-primary mt-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </span>
-                    <span><strong class="text-foreground text-2xl block mb-2">{item.title}</strong> <span class="text-lg">{item.desc}</span></span>
-                  </li>
-                ))}
-              </ul>
-              <p class="pt-6 font-medium text-foreground/80">{habilidades.outro}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Qué implica (Stats) -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70 overflow-hidden">
-          <div class="mx-auto max-w-3xl relative z-10">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{formato.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{formato.heading}</h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-              {formato.stats?.map((stat: { value: string; label: string }) => (
-                <div class="rounded-3xl border border-border/70 bg-accent p-8 text-center transition-transform hover:-translate-y-2 duration-300">
-                  <p class="font-mono text-5xl font-extrabold text-primary mb-3">{stat.value}</p>
-                  <p class="text-sm text-muted-foreground uppercase tracking-widest font-bold">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-            
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              {formato.content?.map((p: string) => <p>{p}</p>)}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Age Categories / Componentes Normales -->
-      <div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
-         <!-- Aplicamos a un div el reveal-section para que todos bajen uniformes -->
-         <AgeCategories />
-         <div class="mt-16 lg:mt-24">
-            <ScoringTable />
-         </div>
-      </div>
-
-      <!-- Certificados & CTA -->
-      <section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6">
-        <div class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-2xl border border-border/70">
-          <div class="mx-auto max-w-3xl text-center">
-            <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{certificados.tag}</p>
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-10 tracking-tight">{certificados.heading}</h2>
-            
-            <div class="rounded-3xl border border-border/70 bg-accent p-10 text-left mb-12">
-              <div class="flex items-start gap-6">
-                <div class="flex items-center justify-center size-16 rounded-2xl bg-primary text-primary-foreground shrink-0 shadow-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-                </div>
-                <p class="text-xl text-foreground font-medium leading-relaxed">
-                  {certificados.content?.[0]}
-                </p>
-              </div>
-            </div>
-
-            {certificados.cta && (
-              <div class="pt-4">
-                <a
-                  href={certificados.cta.href}
-                  class="group inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                >
-                  {certificados.cta.label}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
+      <PageComponentsRenderer components={components} />
     </main>
   </div>
 </Layout>
@@ -165,37 +30,25 @@ const certificados = sections.find((s) => s.id === "certificados")!;
 
   function initExpandAnimations() {
     gsap.registerPlugin(ScrollTrigger);
-
-    // Animación de aparición con efecto de revelación desde el centro (Scaling pop-up)
     const revealSections = gsap.utils.toArray<HTMLElement>(".reveal-section");
-    
-    // Configurar transform-origin para asegurar que escale desde el centro
     gsap.set(revealSections, { transformOrigin: "center center" });
 
     revealSections.forEach((card) => {
-      // Estado inicial: Centro (escala pequeña), un pelín más abajo e invisible
-      gsap.set(card, { 
-        opacity: 0, 
-        y: 60,
-        scale: 0.85
-      });
-
-      // Animación súper suave al hacer scroll
+      gsap.set(card, { opacity: 0, y: 60, scale: 0.85 });
       gsap.to(card, {
         opacity: 1,
         y: 0,
         scale: 1,
         duration: 1.2,
-        ease: "power3.out", // Easing muy elegante para expansión desde el centro
+        ease: "power3.out",
         scrollTrigger: {
           trigger: card,
-          start: "top 85%", // Empieza a escalar cuando la tarjeta asoma
+          start: "top 85%",
           toggleActions: "play none none reverse",
         }
       });
     });
   }
 
-  // Ejecutar
   document.addEventListener("astro:page-load", initExpandAnimations);
 </script>

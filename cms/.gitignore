@@ -1,4 +1,6 @@
 node_modules/
+ui-dist/
+ui/.astro/
 bun.lock
 .env
 server.log
@@ -8,3 +10,4 @@ content/cms.sqlite-wal
 content/media/*
 !content/media/.gitkeep
 .check-build/
+CMS_REFORMA_PLAN.md

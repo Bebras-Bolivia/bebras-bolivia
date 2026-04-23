@@ -3,81 +3,122 @@
   "pageDescription": "Información para docentes y coordinadores escolares sobre cómo inscribir estudiantes en el Desafío Bebras Bolivia.",
   "header": {
     "tag": "Para docentes",
-    "heading": "Información para Docentes",
-    "headingHighlight": "Docentes",
+    "heading": "Información para docentes",
     "subtitle": "Guía completa para coordinadores escolares que desean inscribir a sus estudiantes en el Desafío Bebras."
   },
-  "sections": [
+  "components": [
     {
-      "id": "registro",
+      "type": "itemsGrid",
       "tag": "Registro",
       "heading": "¿Cómo inscribir a sus estudiantes?",
       "intro": "El proceso de inscripción es simple y gratuito. Un docente o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
-      "steps": [
+      "columns": 3,
+      "mediaType": "number",
+      "items": [
         {
-          "num": "1",
+          "number": "1",
           "title": "Registro del coordinador",
-          "desc": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
+          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
         },
         {
-          "num": "2",
+          "number": "2",
           "title": "Inscripción de estudiantes",
-          "desc": "Agregar a los estudiantes organizados por categorías de edad, de Kits a Seniors."
+          "description": "Agregar a los estudiantes organizados por categorías de edad, de Kits a Seniors."
         },
         {
-          "num": "3",
+          "number": "3",
           "title": "Día del desafío",
-          "desc": "Supervisar la sesión en la escuela durante los 45 minutos del desafío."
+          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío."
         }
       ]
     },
     {
-      "id": "requisitos",
+      "type": "itemsGrid",
       "tag": "Requisitos",
       "heading": "¿Qué necesita la escuela?",
-      "requirements": [
+      "columns": 2,
+      "mediaType": "icon",
+      "items": [
         {
           "icon": "monitor",
           "title": "Computadoras con navegador web",
-          "desc": "Chrome, Firefox, Edge o Safari actualizados."
+          "description": "Chrome, Firefox, Edge o Safari actualizados."
         },
         {
           "icon": "wifi",
           "title": "Conexión a internet",
-          "desc": "Estable durante los 45 minutos del desafio."
+          "description": "Estable durante los 45 minutos del desafío."
         },
         {
           "icon": "user",
           "title": "Un coordinador registrado",
-          "desc": "Docente o representante que supervise la sesion."
+          "description": "Docente o representante que supervise la sesión."
         },
         {
           "icon": "clock",
           "title": "45 minutos de clase",
-          "desc": "Un bloque horario durante la semana del desafio."
+          "description": "Un bloque horario durante la semana del desafío."
         }
       ]
     },
     {
-      "id": "alcance",
+      "type": "sectionRichText",
       "tag": "Alcance",
       "heading": "¿Quién debería participar?",
-      "content": [
+      "paragraphs": [
         "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel académico. El desafío está diseñado para ser accesible y no requiere conocimientos previos de informática o programación.",
         "La participación amplia tiene ventajas: permite comparar resultados a nivel escolar y motivar a más estudiantes a desarrollar habilidades de pensamiento computacional."
       ],
-      "tip": "Sugerencia: No se necesita una clase de informática dedicada. El desafío puede realizarse en cualquier hora de clase con acceso a computadoras."
+      "tip": "Sugerencia: no se necesita una clase de informática dedicada. El desafío puede realizarse en cualquier hora de clase con acceso a computadoras."
     },
     {
-      "id": "cta",
+      "type": "tabsGuide",
+      "sectionTag": "Guía para coordinadores",
+      "heading": "Instrucciones para coordinadores",
+      "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
+      "tabs": [
+        {
+          "id": "antes",
+          "label": "Antes",
+          "heading": "Antes del desafío",
+          "items": [
+            { "title": "Registrarse como coordinador", "desc": "en la plataforma Bebras Bolivia y completar los datos de la escuela." },
+            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Kits, Castors, Benjamins, Cadets, Juniors y Seniors)." },
+            { "title": "Verificar el equipamiento", "desc": "Asegurar que las computadoras tengan navegador actualizado y conexión a internet estable." },
+            { "title": "Preparar a los estudiantes", "desc": "Compartir ejemplos de problemas de años anteriores para que se familiaricen con el formato." }
+          ]
+        },
+        {
+          "id": "durante",
+          "label": "Durante",
+          "heading": "Durante el desafío",
+          "items": [
+            { "title": "Supervisión", "desc": "El coordinador debe estar presente durante toda la sesión para resolver dudas técnicas." },
+            { "title": "Sin ayuda externa", "desc": "Los estudiantes deben resolver los problemas de forma individual, sin consultar a compañeros ni usar recursos externos." },
+            { "title": "Control del tiempo", "desc": "El sistema controla automáticamente los 45 minutos. El coordinador debe asegurar que todos inicien correctamente." },
+            { "title": "Problemas técnicos", "desc": "Si hay problemas de conectividad, contactar al soporte técnico. Se pueden hacer ajustes de tiempo en casos verificables." }
+          ]
+        },
+        {
+          "id": "despues",
+          "label": "Después",
+          "heading": "Después del desafío",
+          "items": [
+            { "title": "Resultados", "desc": "Los resultados estarán disponibles en la plataforma unos días después del desafío." },
+            { "title": "Certificados", "desc": "Todos los participantes reciben certificado digital. Los mejores puntajes reciben reconocimientos adicionales." },
+            { "title": "Discusión en clase", "desc": "Se recomienda revisar los problemas con los estudiantes para reforzar los conceptos de pensamiento computacional." },
+            { "title": "Problemas archivados", "desc": "Los problemas del desafío quedan disponibles como material didáctico para usar durante el año escolar." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "tag": "",
       "heading": "¿Listo para inscribir a tu escuela?",
-      "content": [
-        "El registro es rápido, gratuito y te permite inscribir a todos los estudiantes que desees."
-      ],
-      "cta": {
-        "label": "Registrarse como coordinador",
-        "href": "/registro"
-      }
+      "text": "El registro es rápido, gratuito y te permite inscribir a todos los estudiantes que desees.",
+      "buttonLabel": "Registrarse como coordinador",
+      "buttonHref": "/registro"
     }
   ]
 }

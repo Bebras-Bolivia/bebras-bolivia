@@ -3,39 +3,36 @@
   "pageDescription": "Información para estudiantes sobre el Desafío Bebras Bolivia: cómo participar, categorías por edad y sistema de puntuación.",
   "header": {
     "tag": "Para estudiantes",
-    "heading": "Información para Estudiantes",
-    "headingHighlight": "Estudiantes",
+    "heading": "Información para estudiantes",
     "subtitle": "Todo lo que necesitas saber para participar en el Desafío Bebras Bolivia."
   },
-  "sections": [
+  "components": [
     {
-      "id": "participacion",
+      "type": "sectionRichText",
       "tag": "Participación",
       "heading": "¿Cómo participar?",
-      "content": [
-        "Para participar en el Desafío Bebras, tu docente o coordinador de la escuela debe registrarse en la plataforma. Una vez registrado, el coordinador inscribe a los estudiantes por categoría de edad. El día del desafío accedes a la plataforma desde una computadora con navegador web.",
+      "paragraphs": [
+        "Para participar en el Desafío Bebras, tu docente o coordinador de la escuela debe registrarse en la plataforma. Una vez registrado, el coordinador inscribe a los estudiantes por categoría de edad. El día del desafío, accedes a la plataforma desde una computadora con navegador web.",
         "Si tu escuela aún no está inscrita, pide a tu profesor que visite la página para docentes para más información sobre el proceso de registro."
       ],
-      "link": {
-        "label": "Página para docentes",
-        "href": "/docentes"
-      }
+      "linkLabel": "Página para docentes",
+      "linkHref": "/docentes"
     },
     {
-      "id": "desafio",
+      "type": "sectionRichText",
       "tag": "El desafío",
       "heading": "¿Qué es el Desafío Bebras?",
-      "content": [
+      "paragraphs": [
         "Bebras es una competencia internacional de pensamiento computacional que se realiza en más de 60 países. No es una competencia de programación: los problemas son acertijos lógicos y situaciones que requieren pensar de forma estructurada.",
         "No necesitas saber programar ni tener conocimientos previos de informática. Los desafíos están diseñados para ser accesibles, divertidos y estimulantes."
       ]
     },
     {
-      "id": "habilidades",
+      "type": "featureList",
       "tag": "Habilidades clave",
       "heading": "¿Qué es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
-      "skills": [
+      "items": [
         {
           "title": "Descomposición:",
           "desc": "dividir un problema grande en partes más pequeñas."
@@ -56,39 +53,58 @@
       "outro": "Estas habilidades son útiles en la vida cotidiana, no solo en la informática."
     },
     {
-      "id": "formato",
+      "type": "statsGrid",
       "tag": "El formato",
       "heading": "¿Qué involucra el desafío?",
+      "columns": 3,
       "stats": [
-        {
-          "value": "15",
-          "label": "Preguntas"
-        },
-        {
-          "value": "45",
-          "label": "Minutos"
-        },
-        {
-          "value": "100%",
-          "label": "En línea"
-        }
+        { "value": "15", "label": "Preguntas" },
+        { "value": "45", "label": "Minutos" },
+        { "value": "100%", "label": "En línea" }
       ],
-      "content": [
+      "paragraphs": [
         "El desafío consiste en 15 preguntas que debes resolver en 45 minutos. Las preguntas tienen tres niveles de dificultad y cada nivel otorga un puntaje diferente.",
         "Puedes responder las preguntas en cualquier orden y cambiar tus respuestas antes de que termine el tiempo."
       ]
     },
     {
-      "id": "certificados",
+      "type": "studentsScoringTable",
+      "sectionTag": "Puntuación",
+      "heading": "Sistema de puntuación",
+      "subtitle": "Cada tarea pertenece a una categoría de dificultad. Inicias con 45 puntos.",
+      "tableHeaders": ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
+      "rows": [
+        { "label": "Correcta", "values": ["+6", "+9", "+12"], "status": "positive" },
+        { "label": "Sin respuesta", "values": ["0", "0", "0"], "status": "neutral" },
+        { "label": "Incorrecta", "values": ["-2", "-3", "-4"], "status": "negative" }
+      ],
+      "summaryCards": [
+        { "value": "45", "label": "Puntaje inicial" },
+        { "value": "180", "label": "Puntaje máximo" }
+      ],
+      "summaryColumns": 2
+    },
+    {
+      "type": "studentsAgeCategories",
+      "sectionTag": "Niveles",
+      "heading": "Categorías por edad",
+      "subtitle": "Seis niveles diseñados para desafiar a cada grupo de edad.",
+      "categories": [
+        { "name": "Kits", "age": "6-8 años", "emoji": "🧩", "color": "rose", "desc": "Primeros pasos en el pensamiento lógico." },
+        { "name": "Castors", "age": "8-10 años", "emoji": "🦫", "color": "amber", "desc": "Descubriendo patrones y secuencias." },
+        { "name": "Benjamins", "age": "10-12 años", "emoji": "🔍", "color": "emerald", "desc": "Resolviendo problemas con creatividad." },
+        { "name": "Cadets", "age": "12-14 años", "emoji": "⚙️", "color": "sky", "desc": "Algoritmos y pensamiento estructurado." },
+        { "name": "Juniors", "age": "14-16 años", "emoji": "📊", "color": "violet", "desc": "Abstracción y análisis de datos." },
+        { "name": "Seniors", "age": "16-18 años", "emoji": "🚀", "color": "indigo", "desc": "Desafíos avanzados de informática." }
+      ]
+    },
+    {
+      "type": "cta",
       "tag": "Reconocimiento",
       "heading": "Certificados",
-      "content": [
-        "Todos los participantes reciben un certificado digital de participación. Los estudiantes con los mejores puntajes de cada categoría reciben reconocimientos especiales."
-      ],
-      "cta": {
-        "label": "Inscribirse al desafío",
-        "href": "/registro"
-      }
+      "text": "Todos los participantes reciben un certificado digital de participación. Los estudiantes con los mejores puntajes de cada categoría reciben reconocimientos especiales.",
+      "buttonLabel": "Inscribirse al desafío",
+      "buttonHref": "/registro"
     }
   ]
 }

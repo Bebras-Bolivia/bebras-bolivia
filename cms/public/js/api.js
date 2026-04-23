@@ -196,6 +196,10 @@ const API = {
     return this.post("/api/preview/sync");
   },
 
+  syncPreviewDraft(filename, data) {
+    return this.post("/api/preview/draft", { filename, data });
+  },
+
   // ── Media ───────────────────────────────────────────────
 
   listMedia() {

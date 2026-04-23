@@ -53,6 +53,21 @@ const Blog = {
           <div class="blog-list">${listHtml}</div>`;
       }
 
+      if (window.CMSBlog && typeof window.CMSBlog.mountList === "function") {
+        main.innerHTML = '<div id="react-blog-list-root"></div>';
+        const blogRoot = document.getElementById("react-blog-list-root");
+        if (blogRoot) {
+          window.CMSBlog.mountList(blogRoot, {
+            posts,
+            icons: App.icons,
+            onNew: () => App.navigate("/blog/new"),
+            onEdit: (slug) => App.navigate(`/blog/edit/${encodeURIComponent(slug)}`),
+            onDelete: (slug) => this.handleDelete(slug),
+          });
+          return;
+        }
+      }
+
       // Bind events
       const newBtn = document.getElementById("blog-new-btn");
       if (newBtn) {
@@ -125,6 +140,55 @@ const Blog = {
       : { title: "", description: "", date: new Date().toISOString().split("T")[0], author: "Bebras Bolivia", image: "" };
     const body = post ? post.body || "" : "";
     const currentSlug = slug || "";
+
+    if (window.CMSBlog && typeof window.CMSBlog.mountEditor === "function") {
+      main.innerHTML = '<div id="react-blog-editor-root"></div>';
+      const root = document.getElementById("react-blog-editor-root");
+      if (root) {
+        window.CMSBlog.mountEditor(root, {
+          isNew,
+          slug: currentSlug,
+          frontmatter: {
+            title: frontmatter.title || "",
+            description: frontmatter.description || "",
+            date: this.formatDate(frontmatter.date),
+            author: frontmatter.author || "Bebras Bolivia",
+            image: frontmatter.image || "",
+          },
+          body,
+          icons: App.icons,
+          onBack: () => App.navigate("/blog"),
+          onSave: async ({ slug: nextSlug, frontmatter: nextFrontmatter, body: nextBody }) => {
+            if (!nextSlug) {
+              Toast.error("El slug es obligatorio");
+              return;
+            }
+            if (!nextFrontmatter.title) {
+              Toast.error("El titulo es obligatorio");
+              return;
+            }
+            if (!nextFrontmatter.description) {
+              Toast.error("La descripcion es obligatoria");
+              return;
+            }
+            if (!nextFrontmatter.date) {
+              Toast.error("La fecha es obligatoria");
+              return;
+            }
+
+            if (isNew) {
+              await API.createBlog(nextSlug, nextFrontmatter, nextBody);
+              Toast.success("Post creado");
+              App.navigate(`/blog/edit/${encodeURIComponent(nextSlug)}`);
+            } else {
+              await API.updateBlog(currentSlug, nextFrontmatter, nextBody);
+              Toast.success("Post guardado");
+            }
+          },
+        });
+        return;
+      }
+    }
 
     main.innerHTML = `
       <div class="editor-toolbar">
