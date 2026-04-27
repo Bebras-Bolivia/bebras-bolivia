@@ -109,6 +109,7 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
         });
       }
       document.addEventListener("astro:page-load", initScrollReveal);
+      initScrollReveal();
     </script>
   </body>
 </html>

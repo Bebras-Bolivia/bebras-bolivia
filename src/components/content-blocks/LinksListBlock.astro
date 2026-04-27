@@ -14,14 +14,14 @@ interface Props {
 const { tag, heading, links = [] } = Astro.props;
 ---
 
-<section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-  <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="editorial-section">
     <div class="mx-auto max-w-3xl">
       {tag && <p class="text-sm uppercase tracking-[0.15em] font-bold text-muted-foreground mb-6">{tag}</p>}
       {heading && <h2 class="text-3xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       <ul class="space-y-4">
         {links.map((link) => (
-          <li class="rounded-2xl border border-black/5 dark:border-white/5 bg-accent px-5 py-4 hover:border-primary/20 transition-colors">
+          <li class="content-card px-5 py-4 transition-colors">
             <a href={link.href} target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-4 text-base text-foreground font-medium hover:text-primary transition-colors">
               <span>{link.label}</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

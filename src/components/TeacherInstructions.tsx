@@ -22,7 +22,7 @@ interface Props {
 
 export default function TeacherInstructions({ sectionTag, heading, subtitle, tabs }: Props) {
   return (
-    <section className="bg-card py-16 lg:py-20 mx-4 sm:mx-6 lg:mx-auto max-w-5xl rounded-[2.5rem] shadow-xl border border-border/70">
+    <section className="editorial-section mx-4 max-w-5xl sm:mx-6 lg:mx-auto">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <p className="text-xs uppercase tracking-[0.25em] font-semibold text-primary mb-3 text-center">
           {sectionTag}
@@ -43,14 +43,14 @@ export default function TeacherInstructions({ sectionTag, heading, subtitle, tab
 
           {tabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id}>
-              <div className="card-accent-left rounded-xl border border-border bg-card p-7 shadow-sm">
+              <div className="editorial-callout p-7">
                 <h3 className="text-lg font-bold text-foreground mb-5">
                   {tab.heading}
                 </h3>
                 <ul className="space-y-5 text-muted-foreground">
                   {tab.items.map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
-                      <span className="flex items-center justify-center size-7 shrink-0 rounded-lg bg-primary/10 text-primary text-xs font-bold mt-0.5 font-mono">
+                      <span className="flex items-center justify-center size-7 shrink-0 rounded-2xl bg-primary/10 text-primary text-xs font-bold mt-0.5 font-mono">
                         {i + 1}
                       </span>
                       <span>

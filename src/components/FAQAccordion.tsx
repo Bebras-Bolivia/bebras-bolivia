@@ -25,7 +25,7 @@ export default function FAQAccordion({ categories }: Props) {
       {categories.map((category, catIdx) => (
         <div key={catIdx} className={catIdx > 0 ? "mt-14" : ""}>
           <div className="flex items-center gap-3 mb-5">
-            <span className="inline-flex items-center justify-center size-9 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center justify-center size-9 rounded-2xl bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
               {String(catIdx + 1).padStart(2, "0")}
             </span>
             <h2 className="text-lg font-bold text-foreground tracking-tight">

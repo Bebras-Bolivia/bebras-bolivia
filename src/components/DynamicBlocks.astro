@@ -55,7 +55,7 @@ function getCardsColumnsClass(columns: number) {
   {blocks.map((block) => {
     if (block.type === "text") {
       return (
-        <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+        <section class="editorial-section">
           <div class="mx-auto max-w-3xl">
             {block.sectionTag && (
               <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
@@ -72,7 +72,7 @@ function getCardsColumnsClass(columns: number) {
     if (block.type === "cardsGrid") {
       const colsClass = getCardsColumnsClass(block.columns);
       return (
-        <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+        <section class="editorial-section">
           <div class="mx-auto max-w-5xl">
             {block.sectionTag && (
               <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
@@ -80,7 +80,7 @@ function getCardsColumnsClass(columns: number) {
             <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{block.heading}</h2>
             <div class:list={["grid gap-6", colsClass]}>
               {block.cards.map((card) => (
-                <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8">
+                <div class="content-card p-6">
                   <p class="text-xl font-bold text-foreground mb-3">{card.title}</p>
                   <p class="text-base text-muted-foreground leading-relaxed">{card.description}</p>
                 </div>
@@ -93,7 +93,7 @@ function getCardsColumnsClass(columns: number) {
 
     if (block.type === "tip") {
       return (
-        <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+        <section class="editorial-section">
           <div class="mx-auto max-w-3xl">
             {block.sectionTag && (
               <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
@@ -101,7 +101,7 @@ function getCardsColumnsClass(columns: number) {
             {block.heading && (
               <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
             )}
-            <div class="rounded-3xl border border-primary/20 bg-primary/5 p-8">
+            <div class="editorial-callout px-6 py-5">
               <p class="text-lg text-foreground font-medium italic leading-relaxed">{block.text}</p>
             </div>
           </div>
@@ -110,7 +110,7 @@ function getCardsColumnsClass(columns: number) {
     }
 
     return (
-      <section class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5 text-center">
+      <section class="editorial-section text-center">
         <div class="mx-auto max-w-3xl">
           {block.sectionTag && (
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
@@ -122,7 +122,7 @@ function getCardsColumnsClass(columns: number) {
           {block.variant === "button" ? (
             <a
               href={block.action.href}
-              class="inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              class="inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.03] hover:bg-primary/90"
             >
               {block.action.label}
             </a>

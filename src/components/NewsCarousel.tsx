@@ -46,9 +46,9 @@ export default function NewsCarousel({ slides }: Props) {
   }, [api]);
 
   return (
-    <section className="relative border-y border-border bg-card shadow-sm">
+    <section className="relative border-y border-primary-foreground/25 bg-primary text-primary-foreground">
       {/* Accent top line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-foreground/50 to-transparent" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <Carousel
@@ -62,21 +62,21 @@ export default function NewsCarousel({ slides }: Props) {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold text-primary">
+                      <span className="inline-flex items-center rounded-2xl bg-primary-foreground/15 px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold text-primary-foreground">
                         {slide.tag}
                       </span>
-                      <span className="h-px flex-1 bg-border max-w-16" />
+                      <span className="h-px flex-1 bg-primary-foreground/25 max-w-16" />
                     </div>
-                    <h3 className="text-base font-bold text-foreground">
+                    <h3 className="text-base font-bold text-primary-foreground">
                       {slide.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-1.5 max-w-xl leading-relaxed">
+                    <p className="text-sm text-primary-foreground/75 mt-1.5 max-w-xl leading-relaxed">
                       {slide.description}
                     </p>
                   </div>
                   <a
                     href={slide.link}
-                    className="group inline-flex shrink-0 items-center justify-center rounded-lg border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-accent hover:border-primary/20 transition-all duration-200"
+                    className="group inline-flex shrink-0 items-center justify-center rounded-2xl border border-primary-foreground/25 bg-primary-foreground px-5 py-2.5 text-sm font-semibold text-primary transition-all duration-200 hover:bg-primary-foreground/90"
                   >
                     {slide.linkText}
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2 transition-transform group-hover:translate-x-0.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -95,8 +95,8 @@ export default function NewsCarousel({ slides }: Props) {
                 aria-label={`Ir a noticia ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   current === i
-                    ? "bg-primary w-6"
-                    : "w-1.5 bg-muted-foreground/25 hover:bg-muted-foreground/40"
+                    ? "bg-primary-foreground w-6"
+                    : "w-1.5 bg-primary-foreground/30 hover:bg-primary-foreground/45"
                 }`}
               />
             ))}

@@ -68,7 +68,7 @@ export default function BebrasBoliviaHome() {
             </p>
             <div className="pt-2">
               <Button
-                className="h-14 w-full max-w-xs rounded-2xl border border-black/10 bg-card px-6 text-base font-extrabold text-card-foreground transition hover:!bg-card focus-visible:!bg-card active:!bg-card lg:mx-0"
+                className="h-14 w-full max-w-xs rounded-2xl border border-primary-foreground/30 bg-primary-foreground px-6 text-base font-extrabold text-primary transition hover:!bg-primary-foreground/90 focus-visible:!bg-primary-foreground active:!bg-primary-foreground lg:mx-0"
                 asChild
               >
                 <a
@@ -84,7 +84,7 @@ export default function BebrasBoliviaHome() {
         </section>
 
         <section data-hero-item className="mx-auto mt-6 w-full max-w-5xl pb-6 sm:mt-8 sm:pb-8">
-          <div className="relative flex items-center gap-5 rounded-[1.75rem] bg-card/95 px-6 py-5 text-foreground shadow-[0_2px_0_rgba(0,0,0,0.04),0_20px_40px_-25px_rgba(0,0,0,0.2)] ring-1 ring-border/70 backdrop-blur-sm sm:px-8 sm:py-6">
+          <div className="relative flex items-center gap-5 rounded-2xl bg-card/95 px-6 py-5 text-foreground shadow-[0_2px_0_rgba(0,0,0,0.04),0_20px_40px_-25px_rgba(0,0,0,0.2)] ring-1 ring-border/70 backdrop-blur-sm sm:px-8 sm:py-6">
             <span className="relative flex shrink-0 items-center justify-center">
               <span className="absolute inline-flex size-4 rounded-full bg-primary opacity-75 animate-ping"></span>
               <span className="relative inline-flex size-2.5 rounded-full bg-primary"></span>
@@ -99,7 +99,7 @@ export default function BebrasBoliviaHome() {
             </div>
             <a
               href="/registro"
-              className="hidden shrink-0 items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-xs font-bold tracking-wide text-background transition-colors duration-300 hover:bg-primary sm:inline-flex"
+              className="hidden shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-xs font-bold tracking-wide text-primary-foreground transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
             >
               Inscribir
               <span aria-hidden="true">→</span>

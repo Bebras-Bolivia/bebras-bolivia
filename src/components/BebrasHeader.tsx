@@ -120,11 +120,11 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
   const allLinks = [...navData.links, ...customHeaderLinks];
 
   return (
-    <header ref={headerShellRef} className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
+    <header ref={headerShellRef} className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4 md:px-6">
       <div className="mx-auto flex w-full items-center justify-between md:max-w-9/12">
-        <div className="flex flex-1 items-center justify-between rounded-xl bg-card px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-2xl bg-card px-3 py-2.5 sm:px-4 sm:py-3">
           {/* Logo */}
-          <a className="flex min-w-0 items-center gap-2.5 sm:gap-3" href="/">
+          <a className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3 lg:flex-none" href="/">
             <img
               ref={castorRef}
               src={castorCircle.src}
@@ -133,7 +133,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
             />
             <div className="min-w-0">
               <p
-                className="text-[2rem] leading-[0.9] text-primary sm:text-4xl sm:leading-tight"
+                className="truncate text-[clamp(1.65rem,8vw,2.25rem)] leading-[0.95] text-primary sm:leading-tight"
                 style={{ fontFamily: "'Pacifico', cursive" }}
               >
                 {navData.brand.name} {navData.brand.suffix}
@@ -159,7 +159,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
             {navData.cta && (
               <a
                 href={navData.cta.href}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/10 transition-all duration-200"
+                className="rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/10 transition-all duration-200"
               >
                 {navData.cta.label}
               </a>
@@ -169,7 +169,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           {navData.cta && (
             <a
               href={navData.cta.href}
-              className="mr-2 hidden rounded-lg bg-secondary px-3 py-2 text-sm font-semibold text-foreground transition-all duration-200 hover:bg-secondary/80 min-[560px]:inline-flex lg:hidden"
+              className="mr-2 hidden rounded-2xl bg-secondary px-3 py-2 text-sm font-semibold text-foreground transition-all duration-200 hover:bg-secondary/80 min-[560px]:inline-flex lg:hidden"
             >
               {navData.cta.label}
             </a>

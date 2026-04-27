@@ -168,7 +168,7 @@ export function BebrasBeaverShowcase() {
                       <DialogClose asChild>
                         <button
                           type="button"
-                          className="absolute right-3 top-3 inline-flex items-center justify-center rounded-full bg-black/60 p-2 text-white transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                          className="absolute right-3 top-3 inline-flex items-center justify-center rounded-2xl bg-black/60 p-2 text-white transition hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                           aria-label="Cerrar modal"
                         >
                           <X className="size-4" />
@@ -193,7 +193,7 @@ export function BebrasBeaverShowcase() {
                         href={item.fuente}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+                        className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
                       >
                         <span>{item.textoFuente}</span>
                         <ExternalLink className="size-4" />

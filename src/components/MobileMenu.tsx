@@ -83,7 +83,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
       <button
         onClick={toggleMenu}
         aria-label={open ? "Cerrar menu" : "Abrir menu"}
-        className="relative inline-flex size-10 items-center justify-center overflow-hidden rounded-full bg-primary/20 text-primary transition-all duration-200 hover:bg-primary/25 lg:hidden"
+        className="relative inline-flex size-10 items-center justify-center overflow-hidden rounded-2xl bg-primary/20 text-primary transition-all duration-200 hover:bg-primary/25 lg:hidden"
       >
         <Menu
           className={`size-5 absolute transition-all duration-300 ${
@@ -107,7 +107,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className={`fixed inset-0 top-20 z-40 overflow-y-auto px-4 pb-6 pt-1 transition-all duration-300 lg:hidden ${
+            className={`fixed inset-x-0 bottom-0 top-[5.75rem] z-40 overflow-hidden px-3 pb-4 pt-1 transition-all duration-300 sm:top-[6.5rem] sm:px-4 lg:hidden ${
               visible
                 ? "bg-transparent opacity-100"
                 : "bg-transparent opacity-0"
@@ -115,13 +115,13 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
             style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
           >
             <div
-              className={`mx-auto flex w-full max-w-[420px] flex-col gap-2 transition-transform duration-300 ${
+              className={`mx-auto flex h-full w-full max-w-2xl flex-col transition-transform duration-300 ${
                 visible ? "translate-y-0" : "-translate-y-4"
               }`}
               style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
             >
               <nav
-                className={`overflow-hidden rounded-xl border border-border/70 bg-card transition-all duration-300 ${
+                className={`max-h-full overflow-y-auto rounded-2xl border border-border/70 bg-card shadow-[0_10px_26px_rgba(35,31,32,0.12)] transition-all duration-300 ${
                   visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
                 }`}
                 style={{
@@ -129,13 +129,8 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                   transitionDelay: visible ? "40ms" : "0ms",
                 }}
               >
-                <div className="flex flex-col gap-2 p-3">
+                <div className="flex flex-col gap-1.5 p-3">
                 {links.map((link, i) => {
-                  const isContact =
-                    link.href === "/contacto" ||
-                    link.label.toLowerCase().includes("contact");
-                  if (isContact) return null;
-
                   const isActive =
                     currentPath === link.href ||
                     (link.href !== "/" && currentPath.startsWith(link.href));
@@ -144,7 +139,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                     <a
                       key={link.href}
                       href={link.href}
-                      className={`flex min-h-14 items-center rounded-lg px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
+                      className={`flex min-h-11 items-center rounded-2xl px-4 py-2.5 text-[clamp(1.25rem,6vw,1.85rem)] font-medium leading-none transition-all duration-300 sm:min-h-12 ${
                         isActive
                           ? "text-primary"
                           : "text-foreground hover:bg-foreground/5"
@@ -165,10 +160,10 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                 })}
                 </div>
                 {cta && (
-                  <div className="p-3">
+                  <div className="border-t border-border/70 p-3">
                     <a
                       href={cta.href}
-                      className="flex min-h-14 items-center justify-center rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/10 transition-all duration-200 hover:bg-primary/90"
+                      className="flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/10 transition-all duration-200 hover:bg-primary/90"
                       onClick={closeMenu}
                     >
                       {cta.label}
@@ -176,40 +171,6 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                   </div>
                 )}
               </nav>
-
-              {links
-                .filter(
-                  (link) =>
-                    link.href === "/contacto" ||
-                    link.label.toLowerCase().includes("contact")
-                )
-                .map((link, i) => {
-                const isActive =
-                  currentPath === link.href ||
-                  (link.href !== "/" && currentPath.startsWith(link.href));
-                return (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    className={`block rounded-xl border border-border/70 bg-card px-4 py-3 text-[1.9rem] font-medium leading-none transition-all duration-300 sm:text-[2rem] ${
-                      isActive
-                        ? "text-primary"
-                        : "text-foreground hover:bg-foreground/5"
-                    } ${
-                      visible
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-3"
-                    }`}
-                    style={{
-                      transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                      transitionDelay: visible ? `${90 + (links.length + i) * 35}ms` : "0ms",
-                    }}
-                    onClick={closeMenu}
-                  >
-                    {link.label}
-                  </a>
-                );
-              })}
             </div>
           </div>,
           document.body

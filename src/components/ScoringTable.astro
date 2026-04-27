@@ -50,7 +50,7 @@ const statusIconStyles: Record<string, string> = {
 };
 ---
 
-<section class="bg-card dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-border/70">
+<section class="editorial-section">
   <div class="mx-auto max-w-3xl">
     <div data-animate class="mb-10 text-center sm:text-left">
       <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{sectionTag}</p>
@@ -62,7 +62,7 @@ const statusIconStyles: Record<string, string> = {
       </p>
     </div>
 
-    <div data-animate class="overflow-x-auto rounded-3xl border border-border/70 bg-accent text-card-foreground shadow-sm">
+    <div data-animate class="overflow-x-auto border-y border-border/70 text-card-foreground">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-border/70 bg-foreground/5">
@@ -86,7 +86,7 @@ const statusIconStyles: Record<string, string> = {
                 rowIdx < rows.length - 1 ? "border-b border-border/70" : "",
               ]}>
                 <td class="px-6 py-5 text-foreground font-medium flex items-center gap-3">
-                  <span class:list={["size-6 rounded-full inline-flex items-center justify-center text-xs font-bold shrink-0", iconStyle]} set:html={styles.icon} />
+                  <span class:list={["size-6 rounded-2xl inline-flex items-center justify-center text-xs font-bold shrink-0", iconStyle]} set:html={styles.icon} />
                   {row.label}
                 </td>
                 {row.values.map((val) => (
@@ -103,7 +103,7 @@ const statusIconStyles: Record<string, string> = {
 
     <div data-animate class:list={["mt-8 grid gap-6", summaryColsClass]}>
       {summaryCards.map((card) => (
-        <div class="rounded-3xl border border-border/70 bg-accent p-6 text-center shadow-sm hover:-translate-y-1 transition-transform duration-300">
+        <div class="content-card p-6 text-center">
           <p class="font-mono text-4xl sm:text-5xl font-extrabold text-primary mb-2">{card.value}</p>
           <p class="text-xs sm:text-sm text-muted-foreground uppercase tracking-widest font-bold">{card.label}</p>
         </div>

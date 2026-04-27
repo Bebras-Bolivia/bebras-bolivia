@@ -44,27 +44,27 @@ function getColsClass(cols: number) {
 }
 ---
 
-<section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-  <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="editorial-section">
     <div class="mx-auto max-w-5xl">
       {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       {intro && <p class="text-xl text-muted-foreground leading-relaxed mb-10">{intro}</p>}
       <div class:list={["grid gap-6", getColsClass(columns)]}>
         {items.map((item, i) => (
-          <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-left transition-transform hover:-translate-y-2 duration-300">
+          <div class="content-card p-6 text-left">
             {effectiveMediaType !== "none" && (
               <div class="mb-6">
                 {effectiveMediaType === "number" && (
-                  <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground font-mono shadow-md">
+                  <div class="flex items-center justify-center size-12 rounded-2xl bg-primary text-primary-foreground font-mono">
                     <span class="text-xl font-bold">{item.number || String(i + 1)}</span>
                   </div>
                 )}
                 {effectiveMediaType === "icon" && (
-                  <div class="flex items-center justify-center size-14 rounded-2xl bg-primary text-primary-foreground shadow-md" set:html={iconMap[item.icon || ""] || ""}></div>
+                  <div class="flex items-center justify-center size-12 rounded-2xl bg-primary text-primary-foreground" set:html={iconMap[item.icon || ""] || ""}></div>
                 )}
                 {effectiveMediaType === "image" && (
-                  <div class="flex items-center justify-center size-14 rounded-xl bg-white shadow-sm">
+                  <div class="flex items-center justify-center size-12 rounded-2xl bg-white">
                     <img src={item.image || "/images/sponsors/sponsor-placeholder.svg"} alt={item.title || "Imagen"} class="h-8 w-auto opacity-80" />
                   </div>
                 )}

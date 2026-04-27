@@ -23,6 +23,6 @@ interface Props {
 const { sectionTag, heading, subtitle, tabs = [] } = Astro.props;
 ---
 
-<div class="reveal-section opacity-0 w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+<div class="reveal-section w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
   <TeacherInstructions sectionTag={sectionTag} heading={heading} subtitle={subtitle} tabs={tabs} client:visible />
 </div>

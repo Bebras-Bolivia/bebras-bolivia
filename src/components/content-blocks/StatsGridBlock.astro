@@ -22,14 +22,14 @@ function getColsClass(cols: number) {
 }
 ---
 
-<section class="reveal-section opacity-0 w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
-  <div class="bg-white dark:bg-card rounded-[2.5rem] p-10 lg:p-16 shadow-xl border border-black/5 dark:border-white/5 overflow-hidden">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="editorial-section overflow-hidden">
     <div class="mx-auto max-w-3xl relative z-10">
       {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{heading}</h2>}
       <div class:list={["grid gap-6 mb-12", getColsClass(columns)]}>
         {stats.map((stat) => (
-          <div class="rounded-3xl border border-black/5 dark:border-white/5 bg-accent p-8 text-center transition-transform hover:-translate-y-2 duration-300">
+          <div class="content-card px-4 py-8 text-center">
             <p class="font-mono text-5xl font-extrabold text-primary mb-3">{stat.value}</p>
             <p class="text-sm text-muted-foreground uppercase tracking-widest font-bold">{stat.label}</p>
           </div>

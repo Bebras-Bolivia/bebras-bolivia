@@ -11,7 +11,7 @@ const iconMap: Record<string, string> = {
 };
 ---
 
-<section class="relative bg-muted py-20 lg:py-28">
+<section class="relative bg-cream py-20 lg:py-28 grain-paper dark:bg-zinc-950">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <!-- Section header — editorial style -->
     <div data-animate class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
@@ -32,9 +32,9 @@ const iconMap: Record<string, string> = {
     <!-- Three columns — editorial cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       {cards.map((card) => (
-        <div data-animate class="card-accent-left rounded-xl border border-border bg-card p-7 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+        <div data-animate class="content-card p-7 transition-all duration-300">
           <div class="flex items-center gap-3 mb-5">
-            <span class="inline-flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary">
+            <span class="inline-flex items-center justify-center size-10 rounded-2xl bg-primary/10 text-primary">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={iconMap[card.icon] || ""} />
             </span>
             <span class="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{card.number}</span>
