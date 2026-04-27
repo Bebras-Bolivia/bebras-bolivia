@@ -16,7 +16,7 @@ const { tag, heading, paragraphs = [], tip, linkLabel, linkHref } = Astro.props;
     <div class="mx-auto max-w-6xl">
       {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
-      <div class="max-w-4xl space-y-6 text-xl text-muted-foreground leading-relaxed">
+      <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
         {paragraphs.map((p) => <p>{p}</p>)}
         {tip && (
           <div class="editorial-callout px-6 py-5 mt-10">
