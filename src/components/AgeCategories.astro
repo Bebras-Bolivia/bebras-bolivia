@@ -13,6 +13,8 @@ interface Category {
   color: string;
   desc: string;
   image?: string;
+  author?: string;
+  authorUrl?: string;
 }
 
 interface Props {
@@ -47,6 +49,24 @@ const categoryImages: Record<string, string> = {
   yaguarete: yaguareteImage.src,
 };
 
+const categoryAuthors: Record<string, string> = {
+  guacamayo: "Borochirebelde",
+  capibara: "Ludwinsiles",
+  titi: "Kozue Kawakami",
+  jucumari: "Jonathan Candil Mendez",
+  jukumari: "Jonathan Candil Mendez",
+  yaguarete: "MauMirror",
+};
+
+const categoryAuthorUrls: Record<string, string> = {
+  guacamayo: "https://commons.wikimedia.org/wiki/File:Ara_ararauna_en_los_llanos_de_Moxos.jpg",
+  capibara: "https://commons.wikimedia.org/wiki/File:Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg",
+  titi: "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg",
+  jucumari: "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg",
+  jukumari: "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg",
+  yaguarete: "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg",
+};
+
 function slugifyName(name: string) {
   return name
     .toLowerCase()
@@ -57,6 +77,14 @@ function slugifyName(name: string) {
 
 function getCategoryImage(cat: Category) {
   return cat.image || categoryImages[slugifyName(cat.name)] || guacamayoImage.src;
+}
+
+function getCategoryAuthor(cat: Category) {
+  return cat.author || categoryAuthors[slugifyName(cat.name)] || "";
+}
+
+function getCategoryAuthorUrl(cat: Category) {
+  return cat.authorUrl || categoryAuthorUrls[slugifyName(cat.name)] || "";
 }
 ---
 
@@ -80,13 +108,25 @@ function getCategoryImage(cat: Category) {
     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       {categories.map((cat, i) => (
           <div data-animate class="group content-card overflow-hidden">
-            <div class="aspect-[4/3] overflow-hidden bg-muted">
+            <div class="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
                 src={getCategoryImage(cat)}
                 alt={cat.name}
                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
               />
+              {getCategoryAuthor(cat) && getCategoryAuthorUrl(cat) && (
+                <div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                  <a
+                    href={getCategoryAuthorUrl(cat)}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground"
+                  >
+                    Autor: {getCategoryAuthor(cat)}
+                  </a>
+                </div>
+              )}
             </div>
             <div class="p-5">
               <div class="mb-3 flex items-center gap-3">

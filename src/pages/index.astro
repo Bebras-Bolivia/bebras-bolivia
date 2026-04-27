@@ -9,11 +9,11 @@ import jukumariImage from "@/assets/jukumari.jpg";
 import yaguareteImage from "@/assets/yaguarete.jpg";
 
 const ageGroups = [
-	{ name: "Guacamayo", range: "5 a 8 años",   color: "rose",    image: guacamayoImage.src },
-	{ name: "Capibara",  range: "8 a 10 años",  color: "amber",   image: capibaraImage.src },
-	{ name: "Titi",      range: "10 a 12 años", color: "emerald", image: titiImage.src },
-	{ name: "Jucumari",  range: "12 a 14 años", color: "sky",     image: jukumariImage.src },
-	{ name: "Yaguarete", range: "14 a 18 años", color: "indigo",  image: yaguareteImage.src },
+	{ name: "Guacamayo", range: "5 a 8 años",   color: "rose",    image: guacamayoImage.src, author: "Borochirebelde", authorUrl: "https://commons.wikimedia.org/wiki/File:Ara_ararauna_en_los_llanos_de_Moxos.jpg" },
+	{ name: "Capibara",  range: "8 a 10 años",  color: "amber",   image: capibaraImage.src, author: "Ludwinsiles", authorUrl: "https://commons.wikimedia.org/wiki/File:Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg" },
+	{ name: "Titi",      range: "10 a 12 años", color: "emerald", image: titiImage.src, author: "Kozue Kawakami", authorUrl: "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg" },
+	{ name: "Jucumari",  range: "12 a 14 años", color: "sky",     image: jukumariImage.src, author: "Jonathan Candil Mendez", authorUrl: "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg" },
+	{ name: "Yaguarete", range: "14 a 18 años", color: "indigo",  image: yaguareteImage.src, author: "MauMirror", authorUrl: "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg" },
 ];
 
 const dotColor: Record<string, string> = {
@@ -95,13 +95,23 @@ const dotColor: Record<string, string> = {
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 									{ageGroups.map((g, i) => (
 										<div class="group content-card overflow-hidden">
-											<div class="aspect-[4/3] overflow-hidden bg-muted">
+											<div class="relative aspect-[4/3] overflow-hidden bg-muted">
 												<img
 													src={g.image}
 													alt={g.name}
 													class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 													loading="lazy"
 												/>
+												<div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+													<a
+														href={g.authorUrl}
+														target="_blank"
+														rel="noreferrer noopener"
+														class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground"
+													>
+														Autor: {g.author}
+													</a>
+												</div>
 											</div>
 											<div class="p-5">
 												<div class="flex items-center gap-3 mb-3">
