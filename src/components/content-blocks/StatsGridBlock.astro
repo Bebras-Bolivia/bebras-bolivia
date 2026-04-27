@@ -29,7 +29,7 @@ function getColsClass(cols: number) {
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{heading}</h2>}
       <div class:list={["grid gap-6 mb-12", getColsClass(columns)]}>
         {stats.map((stat) => (
-          <div class="content-card px-4 py-8 text-center">
+          <div class="content-card p-8 text-center">
             <p class="font-mono text-5xl font-extrabold text-primary mb-3">{stat.value}</p>
             <p class="text-sm text-muted-foreground uppercase tracking-widest font-bold">{stat.label}</p>
           </div>
