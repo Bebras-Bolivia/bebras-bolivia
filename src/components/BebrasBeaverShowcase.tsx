@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { CalendarDays, Camera, ExternalLink, X } from "lucide-react";
+import { Camera, ExternalLink, X } from "lucide-react";
 import castorImage from "@/assets/castor.png";
 import yaguareteImage from "@/assets/yaguarete.jpg";
 import jukumariImage from "@/assets/jukumari.jpg";
@@ -184,10 +184,6 @@ export function BebrasBeaverShowcase() {
                       <p className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Camera className="size-4 shrink-0" />
                         <span>{item.credito}</span>
-                      </p>
-                      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <CalendarDays className="size-4 shrink-0" />
-                        <span>{item.fecha}</span>
                       </p>
                       <a
                         href={item.fuente}

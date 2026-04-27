@@ -21,14 +21,14 @@ interface Props {
 
 export default function FAQAccordion({ categories }: Props) {
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+    <div className="mx-auto w-full max-w-6xl py-10 lg:py-14">
       {categories.map((category, catIdx) => (
-        <div key={catIdx} className={catIdx > 0 ? "mt-14" : ""}>
-          <div className="flex items-center gap-3 mb-5">
-            <span className="inline-flex items-center justify-center size-9 rounded-2xl bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+        <div key={catIdx} className={catIdx > 0 ? "mt-16 lg:mt-20" : ""}>
+          <div className="mb-7 flex items-center gap-4">
+            <span className="inline-flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-sm font-bold uppercase tracking-wider text-primary">
               {String(catIdx + 1).padStart(2, "0")}
             </span>
-            <h2 className="text-lg font-bold text-foreground tracking-tight">
+            <h2 className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
               {category.title}
             </h2>
             <span className="h-px flex-1 bg-border" />
@@ -36,11 +36,11 @@ export default function FAQAccordion({ categories }: Props) {
           <Accordion type="multiple">
             {category.items.map((item, itemIdx) => (
               <AccordionItem key={itemIdx} value={`cat${catIdx}-item${itemIdx}`} className="border-b border-border">
-                <AccordionTrigger className="py-4 text-left text-foreground hover:no-underline font-medium">
+                <AccordionTrigger className="py-5 text-left text-lg font-bold text-foreground hover:no-underline sm:text-xl">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-muted-foreground leading-relaxed pb-4">
+                  <p className="max-w-3xl pb-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
                     {item.answer}
                   </p>
                 </AccordionContent>
