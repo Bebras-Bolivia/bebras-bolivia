@@ -5,6 +5,7 @@ import ContactFormBlock from "@/components/content-blocks/ContactFormBlock.astro
 import TeacherInstructionsTabsBlock from "@/components/content-blocks/TeacherInstructionsTabsBlock.astro";
 import ContactClassicBlock from "@/components/content-blocks/ContactClassicBlock.astro";
 import ItemsGridBlock from "@/components/content-blocks/ItemsGridBlock.astro";
+import OrganizerInstitutionBlock from "@/components/content-blocks/OrganizerInstitutionBlock.astro";
 import LinksListBlock from "@/components/content-blocks/LinksListBlock.astro";
 import SectionRichTextBlock from "@/components/content-blocks/SectionRichTextBlock.astro";
 import FeatureListBlock from "@/components/content-blocks/FeatureListBlock.astro";
@@ -130,6 +131,22 @@ function mapLegacyToUnified(component: any) {
         columns={component.columns}
         mediaType={component.mediaType}
         items={component.items}
+      />
+    );
+  }
+
+  if (component.type === "organizerInstitution") {
+    return (
+      <OrganizerInstitutionBlock
+        tag={component.tag}
+        name={component.name}
+        acronym={component.acronym}
+        location={component.location}
+        role={component.role}
+        description={component.description}
+        image={component.image}
+        linkLabel={component.linkLabel}
+        linkHref={component.linkHref}
       />
     );
   }

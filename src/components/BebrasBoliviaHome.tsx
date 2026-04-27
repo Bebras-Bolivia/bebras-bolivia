@@ -30,7 +30,7 @@ export default function BebrasBoliviaHome() {
 
   return (
     <div className="relative text-primary-foreground pt-4 pb-4 sm:pt-6 sm:pb-6">
-      <main className="mx-auto w-full px-4 md:max-w-9/12 md:px-6">
+      <main className="mx-auto w-full max-w-6xl px-4 md:px-6">
         <section
           id="inicio"
           ref={heroSectionRef}
@@ -83,7 +83,7 @@ export default function BebrasBoliviaHome() {
           </div>
         </section>
 
-        <section data-hero-item className="mx-auto mt-6 w-full max-w-5xl pb-6 sm:mt-8 sm:pb-8">
+        <section data-hero-item className="mx-auto mt-6 w-full max-w-6xl pb-6 sm:mt-8 sm:pb-8">
           <div className="relative flex items-center gap-5 rounded-2xl bg-card/95 px-6 py-5 text-foreground shadow-[0_2px_0_rgba(0,0,0,0.04),0_20px_40px_-25px_rgba(0,0,0,0.2)] ring-1 ring-border/70 backdrop-blur-sm sm:px-8 sm:py-6">
             <span className="relative flex shrink-0 items-center justify-center">
               <span className="absolute inline-flex size-4 rounded-full bg-primary opacity-75 animate-ping"></span>

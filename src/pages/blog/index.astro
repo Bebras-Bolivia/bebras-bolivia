@@ -20,7 +20,7 @@ const indexUi = components.find((c) => c.type === "blogIndex") || {
 <Layout title={header.pageTitle || "Noticias"} description={header.pageDescription || "Noticias y recursos"}>
   <div class="relative w-full">
     <div class="relative w-full flex flex-col justify-center items-center pt-10 pb-16 sm:pt-14 sm:pb-20">
-      <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
+      <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
         <p class="text-xs uppercase tracking-[0.25em] font-bold text-white/80 mb-3">{header.tag}</p>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-sm">
           <span class="text-white">{header.heading || "Noticias"}</span>
@@ -31,7 +31,7 @@ const indexUi = components.find((c) => c.type === "blogIndex") || {
     <main class="relative z-10 w-full min-h-screen bg-cream dark:bg-zinc-950 pb-32 pt-14 lg:pt-20 grain-paper">
       <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
         <div class="editorial-section">
-          <div class="mx-auto max-w-5xl">
+          <div class="mx-auto max-w-6xl">
             {posts.length === 0 ? (
               <div class="text-center py-16">
                 <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{indexUi.emptyState.tag}</p>

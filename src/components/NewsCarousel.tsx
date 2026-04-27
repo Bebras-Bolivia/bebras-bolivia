@@ -50,7 +50,7 @@ export default function NewsCarousel({ slides }: Props) {
       {/* Accent top line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-foreground/50 to-transparent" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
         <Carousel
           setApi={setApi}
           opts={{ loop: true, align: "start" }}

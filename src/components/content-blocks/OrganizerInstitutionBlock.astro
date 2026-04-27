@@ -1,0 +1,81 @@
+---
+interface Props {
+  tag?: string;
+  name: string;
+  acronym?: string;
+  location?: string;
+  role?: string;
+  description?: string;
+  image?: string;
+  linkLabel?: string;
+  linkHref?: string;
+}
+
+const {
+  tag,
+  name,
+  acronym,
+  location,
+  role,
+  description,
+  image,
+  linkLabel = "Visitar sitio",
+  linkHref,
+} = Astro.props;
+---
+
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-14 lg:mb-20">
+  <div class="editorial-section">
+    <div class="mx-auto max-w-6xl">
+      {tag && <p class="mb-4 text-sm font-bold uppercase tracking-[0.25em] text-primary">{tag}</p>}
+
+      <article class="content-card overflow-hidden p-0 text-left shadow-[0_18px_48px_rgba(35,31,32,0.10)]">
+        <div class="grid items-stretch gap-0 md:grid-cols-[0.82fr_1.18fr]">
+          <div class="flex min-h-56 items-center justify-center bg-white px-8 py-10 sm:px-10 md:min-h-full">
+            {image ? (
+              <img src={image} alt={`Logo ${name}`} class="max-h-32 w-auto max-w-full object-contain sm:max-h-36" />
+            ) : (
+              <span class="text-4xl font-black tracking-tight text-primary">{acronym || name}</span>
+            )}
+          </div>
+
+          <div class="flex flex-col justify-center px-6 py-8 sm:px-8 sm:py-10 lg:px-10">
+            <div class="mb-5 flex flex-wrap items-center gap-3">
+              {acronym && (
+                <span class="rounded-2xl bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground">
+                  {acronym}
+                </span>
+              )}
+              {location && (
+                <span class="rounded-2xl bg-secondary px-3 py-1.5 text-sm font-semibold text-foreground/80">
+                  {location}
+                </span>
+              )}
+            </div>
+
+            <h2 class="mb-4 text-3xl font-black leading-tight tracking-tight text-foreground sm:text-4xl">
+              {name}
+            </h2>
+
+            {role && <p class="mb-4 text-lg font-bold leading-snug text-primary">{role}</p>}
+            {description && <p class="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">{description}</p>}
+
+            {linkHref && (
+              <div class="mt-7">
+                <a
+                  href={linkHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-bold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                >
+                  {linkLabel}
+                  <span class="ml-2" aria-hidden="true">-&gt;</span>
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
