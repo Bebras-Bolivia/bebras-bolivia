@@ -863,40 +863,28 @@ const Editor = {
         }
       },
       complexNodes: this.buildComplexNodes(this.currentData, ""),
-      onArrayMount: (path, el) => {
-        const value = this.getNestedValue(this.currentData, path);
-        if (!Array.isArray(value)) return;
-        this.renderArray(el, value, path, 0);
-      },
-      getArrayActionTargets: () => [...this._arrayActionTargets],
-      onAddArrayItem: (id, selectedType) => {
-        const target = this._arrayActionTargets.find((x) => x.id === id);
-        if (!target) return;
-        if (target.action === "component-modal") {
-          this.openAddComponentModal(target.path, target.currentArr);
+      onAddArrayItem: (path, selectedType, componentPicker) => {
+        const currentArr = this.getNestedValue(this.currentData, path);
+        if (!Array.isArray(currentArr)) return;
+        if (componentPicker) {
+          this.openAddComponentModal(path, currentArr);
           return;
         }
-        this.addArrayItem(target.path, target.currentArr, selectedType || null);
+        this.addArrayItem(path, currentArr, selectedType || null);
       },
-      getArrayItemActionTargets: () => [...this._arrayItemActionTargets],
-      onRemoveArrayItem: (id) => {
-        const target = this._arrayItemActionTargets.find((x) => x.id === id);
-        if (!target) return;
-        this.removeArrayItem(target.path, target.idx);
+      onRemoveArrayItem: (path, idx) => {
+        this.removeArrayItem(path, idx);
       },
-      getArrayCollapseTargets: () => [...this._arrayCollapseTargets],
-      onToggleArrayCollapse: (id) => {
-        const target = this._arrayCollapseTargets.find((x) => x.id === id);
-        if (!target) return;
-        const nextExpanded = !target.expanded;
-        this.itemExpandedState.set(target.itemPath, nextExpanded);
+      onToggleArrayCollapse: (itemPath, nextExpanded) => {
+        this.itemExpandedState.set(itemPath, nextExpanded);
         if (nextExpanded) {
-          this.collapsedItems.delete(target.itemPath);
+          this.collapsedItems.delete(itemPath);
         } else {
-          this.collapsedItems.add(target.itemPath);
+          this.collapsedItems.add(itemPath);
         }
         this.rerenderEditorForm();
       },
+      onMoveArrayItem: (path, fromIdx, toIdx) => this.moveArrayItem(path, fromIdx, toIdx),
     });
 
     return true;
@@ -912,7 +900,7 @@ const Editor = {
       if (value === null || value === undefined) return;
 
       if (Array.isArray(value)) {
-        nodes.push({ kind: "array", path: fieldPath, label: this.formatLabel(key) });
+        nodes.push(this.buildArrayNode(value, fieldPath, key));
         return;
       }
 
@@ -925,6 +913,52 @@ const Editor = {
     });
 
     return nodes;
+  },
+
+  buildArrayNode(arr, path, key) {
+    return {
+      kind: "array",
+      path,
+      label: this.formatLabel(key),
+      addOptions: this.getAddTypeOptions(path, arr) || [],
+      componentPicker: path === "components",
+      items: arr.map((item, idx) => {
+        const itemPath = `${path}[${idx}]`;
+        const itemIsObject = item && typeof item === "object" && !Array.isArray(item);
+        const collapsible = this.isCollapsibleArray(path);
+        if (collapsible && !this.itemExpandedState.has(itemPath)) {
+          this.itemExpandedState.set(itemPath, false);
+        }
+        const expanded = collapsible ? this.itemExpandedState.get(itemPath) === true : true;
+
+        return {
+          idx,
+          itemPath,
+          label: itemIsObject ? this.getArrayItemLabel(item, idx) : `#${idx + 1}`,
+          collapsible,
+          expanded,
+          fields: itemIsObject
+            ? this.extractPrimitiveFields(item, itemPath)
+            : [this.toPrimitiveField(itemPath, key, item)],
+          children: itemIsObject ? this.buildComplexNodes(item, itemPath) : [],
+        };
+      }),
+    };
+  },
+
+  toPrimitiveField(path, key, value) {
+    const type = this.getFieldType(key, value);
+    const editorType = type === "textarea" || type === "boolean" || type === "number" || type === "url" || type === "select"
+      ? type
+      : "text";
+    return {
+      path,
+      label: this.formatLabel(key),
+      type: editorType,
+      value,
+      options: editorType === "select" ? this.selectOptions[key] || [] : undefined,
+      readOnly: editorType === "number" && this.isAutoNumberField(path),
+    };
   },
 
   extractPrimitiveFields(obj, path = "") {
