@@ -823,65 +823,11 @@ const Editor = {
   // ── Preview ────────────────────────────────────────────
 
   async ensureDevServer() {
-    const overlay = document.getElementById("preview-overlay");
-    const overlayText = document.getElementById("preview-overlay-text");
-    const iframe = document.getElementById("preview-frame");
-
-    try {
-      const status = await API.previewStatus();
-      if (status.running) {
-        this.devServerReady = true;
-        this.devServerPort = status.port;
-        this.loadPreviewIframe();
-        return;
-      }
-    } catch {
-      // Ignore — will try to start
-    }
-
-    if (overlay) overlay.style.display = "flex";
-    if (overlayText) overlayText.textContent = "Iniciando servidor de vista previa...";
-    this.devServerStarting = true;
-
-    try {
-      const result = await API.startPreview();
-      this.devServerReady = true;
-      this.devServerStarting = false;
-      this.devServerPort = result.port;
-
-      await new Promise((r) => setTimeout(r, 500));
-
-      this.loadPreviewIframe();
-      Toast.success("Vista previa lista — los cambios se actualizan al guardar");
-    } catch (err) {
-      this.devServerStarting = false;
-      Toast.error(`Error al iniciar vista previa: ${err.message}`);
-
-      if (iframe) {
-        iframe.srcdoc = `<html><body style="font-family:system-ui;padding:2rem;background:#1a1a2e;color:#e2e8f0;">
-          <h3 style="color:#ef4444;">Error al iniciar el servidor de vista previa</h3>
-          <pre style="white-space:pre-wrap;font-size:0.8rem;background:#0f0f23;padding:1rem;border-radius:6px;overflow:auto;color:#94a3b8;">${this.escapeForPre(err.message)}</pre>
-          <p style="color:#94a3b8;margin-top:1rem;">Podes guardar contenido normalmente. La vista previa se actualizara cuando el servidor este listo.</p>
-        </body></html>`;
-      }
-    } finally {
-      if (overlay) overlay.style.display = "none";
-    }
+    return window.CMSEditorPreview.ensure(this);
   },
 
   loadPreviewIframe(forceReload = false) {
-    const iframe = document.getElementById("preview-frame");
-    if (!iframe) return;
-
-    const pagePath = this.fileToPage[this.currentFile] || "/";
-
-    if (this.devServerReady && this.devServerPort) {
-      const base = `http://localhost:${this.devServerPort}${pagePath}`;
-      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
-    } else {
-      const base = `/preview-site${pagePath}`;
-      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
-    }
+    return window.CMSEditorPreview.load(this, forceReload);
   },
 
   // ── React primitives mount ─────────────────────────────
