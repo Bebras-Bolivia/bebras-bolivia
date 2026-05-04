@@ -1,4 +1,6 @@
 ---
+import { formatInlineRichText } from "@/lib/rich-text";
+
 interface Item {
   title: string;
   desc: string;
@@ -21,7 +23,7 @@ const { tag, heading, intro, items = [], outro } = Astro.props;
       {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       <div class="max-w-5xl space-y-6 text-xl text-muted-foreground leading-relaxed">
-        {intro && <p>{intro}</p>}
+        {intro && <p set:html={formatInlineRichText(intro)} />}
         <ul class="mt-8 grid gap-5 lg:grid-cols-2">
           {items.map((item) => (
             <li class="content-card flex items-start gap-4 p-5 transition-colors">
@@ -32,7 +34,7 @@ const { tag, heading, intro, items = [], outro } = Astro.props;
             </li>
           ))}
         </ul>
-        {outro && <p class="pt-6 font-medium text-foreground/80">{outro}</p>}
+        {outro && <p class="pt-6 font-medium text-foreground/80" set:html={formatInlineRichText(outro)} />}
       </div>
     </div>
   </div>

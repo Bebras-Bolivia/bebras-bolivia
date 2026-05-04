@@ -59,6 +59,18 @@ const StatSchema = z.object({
 
 const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
+    type: z.literal("organizerInstitution"),
+    tag: z.string(),
+    name: z.string(),
+    acronym: z.string(),
+    location: z.string(),
+    role: z.string(),
+    description: z.string(),
+    image: z.string(),
+    linkLabel: z.string(),
+    linkHref: z.string(),
+  }),
+  z.object({
     type: z.literal("sectionRichText"),
     tag: z.string().optional(),
     heading: z.string().optional(),
@@ -482,6 +494,94 @@ export const heroSchema = z.object({
   stats: z.array(StatSchema),
 });
 
+// ── Home page ─────────────────────────────────────────────
+
+const HomeEditorialSectionSchema = z.object({
+  type: z.literal("introEditorial"),
+  number: z.string(),
+  kicker: z.string(),
+  asideText: z.string(),
+  headingPrefix: z.string(),
+  headingEmphasis: z.string(),
+  paragraphs: z.array(z.string()),
+});
+
+const HomeAgeCategoriesSectionSchema = z.object({
+  type: z.literal("homeAgeCategories"),
+  number: z.string(),
+  kicker: z.string(),
+  asideText: z.string(),
+  headingPrefix: z.string(),
+  headingEmphasis: z.string(),
+  linkLabel: z.string(),
+  linkHref: z.string(),
+  items: z.array(
+    z.object({
+      name: z.string(),
+      range: z.string(),
+      color: z.string(),
+      imageKey: z.string(),
+      author: z.string(),
+      authorUrl: z.string(),
+    })
+  ),
+});
+
+const HomeDualCtaSectionSchema = z.object({
+  type: z.literal("homeDualCta"),
+  cards: z.array(
+    z.object({
+      audience: z.string(),
+      style: z.enum(["primary", "secondary"]),
+      icon: z.string(),
+      headingPrefix: z.string(),
+      headingEmphasis: z.string(),
+      headingSuffix: z.string(),
+      linkLabel: z.string(),
+      href: z.string(),
+    })
+  ),
+});
+
+const HomeAboutSectionSchema = z.object({
+  type: z.literal("aboutBebrasEditorial"),
+  number: z.string(),
+  kicker: z.string(),
+  asideText: z.string(),
+  headingPrefix: z.string(),
+  headingEmphasis: z.string(),
+  paragraphs: z.array(z.string()),
+});
+
+const HomeSectionSchema = z.discriminatedUnion("type", [
+  HomeEditorialSectionSchema,
+  HomeAgeCategoriesSectionSchema,
+  HomeDualCtaSectionSchema,
+  HomeAboutSectionSchema,
+]);
+
+export const homeSchema = z.object({
+  seo: z.object({
+    pageTitle: z.string(),
+    pageDescription: z.string(),
+  }),
+  hero: z.object({
+    eyebrow: z.string(),
+    welcomeText: z.string(),
+    title: z.string(),
+    subtitlePrimary: z.string(),
+    subtitleSecondary: z.string(),
+    buttonLabel: z.string(),
+    buttonHref: z.string(),
+    noticeEyebrow: z.string(),
+    noticeText: z.string(),
+    noticeButtonLabel: z.string(),
+    noticeButtonHref: z.string(),
+  }),
+  sections: z.array(HomeSectionSchema),
+  components: z.array(SharedPageComponentSchema).optional(),
+});
+
 // ── 4. about.json ────────────────────────────────────────
 
 export const aboutSchema = z.object({
@@ -614,6 +714,7 @@ export const registroSchema = z.object({
     email: z.string(),
     suffix: z.string(),
   }),
+  components: z.array(SharedPageComponentSchema).optional(),
 });
 
 // ── 13. estudiantes.json ─────────────────────────────────
@@ -743,6 +844,7 @@ export const pageCompositionSchema = z.object({
 // ── Schema registry (filename → schema) ──────────────────
 
 export const contentSchemas: Record<string, z.ZodType> = {
+  "home.json": homeSchema,
   "site.json": siteSchema,
   "navigation.json": navigationSchema,
   "hero.json": heroSchema,

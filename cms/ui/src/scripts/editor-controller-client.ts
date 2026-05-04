@@ -82,7 +82,6 @@ const Editor = {
         this.itemExpandedState.set(itemPath, expanded);
         if (expanded) this.collapsedItems.delete(itemPath);
         else this.collapsedItems.add(itemPath);
-        this.rerenderEditorForm();
       },
       onMoveArrayItem: (path: string, fromIdx: number, toIdx: number) => this.moveArrayItem(path, fromIdx, toIdx),
     });

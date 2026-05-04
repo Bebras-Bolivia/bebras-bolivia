@@ -1,10 +1,11 @@
-import { readdir, cp, mkdir } from "fs/promises";
+import { readdir, cp, mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { exec } from "child_process";
 import { config } from "../config.js";
 import { getDb, type PublishLogRow } from "../db/index.js";
 import { createSnapshot } from "../snapshots/service.js";
 import { isDevServerRunning, stopDevServer, startDevServer } from "../preview/service.js";
+import { preserveDiacritics } from "../content/preserve-text.js";
 
 // Publish lock — reject concurrent publishes
 let isPublishing = false;
@@ -68,7 +69,7 @@ export async function publish(author: string): Promise<PublishLogRow> {
     const dataFiles = await readdir(config.currentDataDir);
     for (const file of dataFiles) {
       if (file.endsWith(".json")) {
-        await cp(
+        await copyJsonPreservingDiacritics(
           join(config.currentDataDir, file),
           join(config.landingDataDir, file)
         );
@@ -136,6 +137,19 @@ export async function publish(author: string): Promise<PublishLogRow> {
       });
     }
   }
+}
+
+async function copyJsonPreservingDiacritics(sourcePath: string, targetPath: string): Promise<void> {
+  const data = JSON.parse(await readFile(sourcePath, "utf-8"));
+  let referenceData: unknown = null;
+
+  try {
+    referenceData = JSON.parse(await readFile(targetPath, "utf-8"));
+  } catch {
+    // No target yet; write source as-is.
+  }
+
+  await writeFile(targetPath, JSON.stringify(preserveDiacritics(data, referenceData), null, 2) + "\n", "utf-8");
 }
 
 /**

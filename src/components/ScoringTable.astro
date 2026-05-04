@@ -50,8 +50,9 @@ const statusIconStyles: Record<string, string> = {
 };
 ---
 
-<section class="editorial-section">
-  <div class="mx-auto max-w-3xl">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+  <div class="editorial-section">
+    <div class="mx-auto max-w-6xl">
     <div data-animate class="mb-10 text-center sm:text-left">
       <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{sectionTag}</p>
       <h2 class="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
@@ -108,6 +109,7 @@ const statusIconStyles: Record<string, string> = {
           <p class="text-xs sm:text-sm text-muted-foreground uppercase tracking-widest font-bold">{card.label}</p>
         </div>
       ))}
+    </div>
     </div>
   </div>
 </section>

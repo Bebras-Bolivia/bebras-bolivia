@@ -12,8 +12,9 @@ declare global {
 }
 
 const contentMeta: Record<string, { label: string; desc: string; icon: string }> = {
-  "site.json": { label: "Sitio", desc: "Nombre, URL, meta tags globales", icon: "globe" },
-  "navigation.json": { label: "Navegacion", desc: "Navbar, footer, links sociales", icon: "menu" },
+  "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
+  "site.json": { label: "Configuracion global", desc: "SEO, datos globales y metadatos", icon: "globe" },
+  "navigation.json": { label: "Navegacion y footer", desc: "Navbar, footer, links sociales", icon: "menu" },
   "hero.json": { label: "Hero", desc: "Banner principal, CTAs, estadisticas", icon: "zap" },
   "about.json": { label: "Acerca de", desc: "Seccion que es Bebras, tarjetas", icon: "info" },
   "categories.json": { label: "Categorias", desc: "Grupos de edad y descripcion", icon: "layers" },
@@ -31,16 +32,27 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
 };
 
+const hiddenContentFiles = new Set([
+  "hero.json",
+  "about.json",
+  "categories.json",
+  "news.json",
+  "scoring.json",
+  "teacher-instructions.json",
+  "page-composition.json",
+]);
+
 const contentHierarchy = [
-  { label: "Inicio", parent: "site.json", children: ["navigation.json", "hero.json", "about.json", "categories.json", "news.json"] },
-  { label: "Estudiantes", parent: "estudiantes.json", children: ["scoring.json"] },
-  { label: "Docentes", parent: "docentes.json", children: ["teacher-instructions.json"] },
+  { label: "Inicio", parent: "home.json", children: [] },
+  { label: "Estudiantes", parent: "estudiantes.json", children: [] },
+  { label: "Docentes", parent: "docentes.json", children: [] },
   { label: "FAQ", parent: "faq.json", children: [] },
   { label: "Blog", parent: "blog-ui.json", children: [] },
   { label: "Sponsors", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
-  { label: "Paginas personalizadas", parent: "custom-pages.json", children: ["page-composition.json"] },
+  { label: "Paginas personalizadas", parent: "custom-pages.json", children: [] },
+  { label: "Configuracion global", parent: "site.json", children: ["navigation.json"] },
 ];
 
 const icons: Record<string, string> = {
@@ -214,7 +226,7 @@ const App = {
   },
 
   getContentTree(files: string[]) {
-    const existing = new Set(files);
+    const existing = new Set(files.filter((file) => !hiddenContentFiles.has(file)));
     const seen = new Set<string>();
     const nodes = contentHierarchy.filter((entry) => existing.has(entry.parent)).map((entry) => {
       seen.add(entry.parent);
@@ -222,7 +234,7 @@ const App = {
       children.forEach((child) => seen.add(child));
       return { parent: entry.parent, children };
     });
-    files.filter((file) => !seen.has(file)).forEach((file) => nodes.push({ parent: file, children: [] }));
+    files.filter((file) => !hiddenContentFiles.has(file) && !seen.has(file)).forEach((file) => nodes.push({ parent: file, children: [] }));
     return nodes;
   },
 

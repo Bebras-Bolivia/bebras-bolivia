@@ -15,5 +15,6 @@
     "instruction": "Envíanos un correo a",
     "email": "info@bebras.bo",
     "suffix": "y te avisaremos cuando las inscripciones estén abiertas."
-  }
+  },
+  "components": []
 }

@@ -1,4 +1,6 @@
 ---
+import { formatInlineRichText } from "@/lib/rich-text";
+
 type Link = {
   label: string;
   href: string;
@@ -62,7 +64,7 @@ function getCardsColumnsClass(columns: number) {
             )}
             <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
             <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-              {block.paragraphs.map((p) => <p>{p}</p>)}
+              {block.paragraphs.map((p) => <p set:html={formatInlineRichText(p)} />)}
             </div>
           </div>
         </section>
@@ -82,7 +84,7 @@ function getCardsColumnsClass(columns: number) {
               {block.cards.map((card) => (
                 <div class="content-card p-6">
                   <p class="text-xl font-bold text-foreground mb-3">{card.title}</p>
-                  <p class="text-base text-muted-foreground leading-relaxed">{card.description}</p>
+                  <p class="text-base text-muted-foreground leading-relaxed" set:html={formatInlineRichText(card.description)} />
                 </div>
               ))}
             </div>
@@ -102,7 +104,7 @@ function getCardsColumnsClass(columns: number) {
               <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
             )}
             <div class="editorial-callout px-6 py-5">
-              <p class="text-lg text-foreground font-medium italic leading-relaxed">{block.text}</p>
+              <p class="text-lg text-foreground font-medium italic leading-relaxed" set:html={formatInlineRichText(block.text)} />
             </div>
           </div>
         </section>
@@ -117,7 +119,7 @@ function getCardsColumnsClass(columns: number) {
           )}
           <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{block.heading}</h2>
           {block.text && (
-            <p class="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">{block.text}</p>
+            <p class="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" set:html={formatInlineRichText(block.text)} />
           )}
           {block.variant === "button" ? (
             <a

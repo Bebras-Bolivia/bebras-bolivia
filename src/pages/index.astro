@@ -2,19 +2,63 @@
 import Layout from '../layouts/Layout.astro';
 import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
 import { BadgeCheck, Brain, School, Sparkles } from "lucide-react";
+import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
+import homeData from "@/data/home.json";
+import { formatInlineRichText } from "@/lib/rich-text";
 import guacamayoImage from "@/assets/guacamayo.jpg";
 import capibaraImage from "@/assets/capibara.jpg";
 import titiImage from "@/assets/titi.jpg";
 import jukumariImage from "@/assets/jukumari.jpg";
 import yaguareteImage from "@/assets/yaguarete.jpg";
 
-const ageGroups = [
-	{ name: "Guacamayo", range: "5 a 8 años",   color: "rose",    image: guacamayoImage.src, author: "Borochirebelde", authorUrl: "https://commons.wikimedia.org/wiki/File:Ara_ararauna_en_los_llanos_de_Moxos.jpg" },
-	{ name: "Capibara",  range: "8 a 10 años",  color: "amber",   image: capibaraImage.src, author: "Ludwinsiles", authorUrl: "https://commons.wikimedia.org/wiki/File:Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg" },
-	{ name: "Titi",      range: "10 a 12 años", color: "emerald", image: titiImage.src, author: "Kozue Kawakami", authorUrl: "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg" },
-	{ name: "Jucumari",  range: "12 a 14 años", color: "sky",     image: jukumariImage.src, author: "Jonathan Candil Mendez", authorUrl: "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg" },
-	{ name: "Yaguarete", range: "14 a 18 años", color: "indigo",  image: yaguareteImage.src, author: "MauMirror", authorUrl: "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg" },
-];
+const imageMap: Record<string, string> = {
+ 	guacamayo: guacamayoImage.src,
+ 	capibara: capibaraImage.src,
+ 	titi: titiImage.src,
+ 	jucumari: jukumariImage.src,
+ 	yaguarete: yaguareteImage.src,
+};
+
+const sections: any[] = Array.isArray((homeData as any).sections) ? (homeData as any).sections : [];
+const components: any[] = Array.isArray((homeData as any).components) ? (homeData as any).components : [];
+
+function getIntroParagraphs(introSection: any) {
+	return Array.isArray(introSection?.paragraphs) && introSection.paragraphs.length > 0
+		? introSection.paragraphs
+		: [
+			"Bebras es una competencia internacional de pensamiento computacional para estudiantes de 6 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.",
+			"La competencia es gratuita y se realiza en tu propia unidad educativa. Cada estudiante cuenta con 45 minutos para resolver las tareas de su categoría.",
+		];
+}
+
+function getAgeGroups(ageSection: any) {
+	return (Array.isArray(ageSection?.items) ? ageSection.items : []).map((item: any) => ({
+		...item,
+		image: imageMap[item.imageKey] || imageMap.guacamayo,
+	}));
+}
+
+function getHomeCtaCardClasses(style?: string) {
+	if (style === "secondary") {
+		return {
+			wrapper: "group md:col-span-2 content-card relative overflow-hidden text-foreground p-8 sm:p-10",
+			audience: "font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground",
+			link: "mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-foreground/30 pb-0.5 group-hover:border-primary transition-colors",
+			iconClass: "size-11 text-ochre",
+			emphasisClass: "italic text-primary",
+			breakLine: false,
+		};
+	}
+
+	return {
+		wrapper: "group md:col-span-3 relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-8 sm:p-10 lift-on-hover",
+		audience: "font-mono text-[10px] uppercase tracking-[0.3em] opacity-70",
+		link: "mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-primary-foreground/50 pb-0.5 group-hover:border-primary-foreground transition-colors",
+		iconClass: "size-11 opacity-35",
+		emphasisClass: "italic",
+		breakLine: true,
+	};
+}
 
 const dotColor: Record<string, string> = {
 	rose:    "bg-rose-500",
@@ -27,189 +71,125 @@ const dotColor: Record<string, string> = {
 ---
 
 <Layout
-	title="Inicio"
-	description="Sitio oficial de Bebras Bolivia. Competencia de pensamiento computacional para estudiantes de primaria y secundaria."
+	title={(homeData as any).seo?.pageTitle || "Inicio"}
+	description={(homeData as any).seo?.pageDescription || "Sitio oficial de Bebras Bolivia. Competencia de pensamiento computacional para estudiantes de primaria y secundaria."}
 >
-	<BebrasBoliviaHome client:load />
+	<BebrasBoliviaHome hero={(homeData as any).hero} client:load />
 
 	<main class="relative z-10 w-full bg-cream dark:bg-zinc-950 pb-24 pt-14 lg:pt-20 grain-paper">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-16">
+			<div class="editorial-rule text-foreground/40">
+				<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
+			</div>
+		</div>
 
-					<!-- Editorial ornament -->
-					<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-16">
-						<div class="editorial-rule text-foreground/40">
-							<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
-						</div>
-					</div>
+					{sections.map((section: any, idx: number) => {
+						let content = null;
 
-					<!-- Section 01: Sobre el desafío — asymmetric magazine layout -->
-					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
-						<div class="grid grid-cols-12 gap-6 lg:gap-10">
-							<!-- Numeral + label — sticky column on wide screens -->
-							<aside class="col-span-12 lg:col-span-4">
-								<div class="lg:sticky lg:top-28">
-									<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">01</span>
-									<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">Capítulo uno</p>
-									<div class="mt-4 h-px w-16 bg-foreground/20"></div>
-									<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">
-										Una iniciativa de <span class="text-ochre font-semibold">60+ países</span> que llega a Bolivia.
-									</p>
-								</div>
-							</aside>
-
-							<!-- Heading + body -->
-							<div class="col-span-12 lg:col-span-8">
-								<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">
-									Sobre el <em class="italic text-primary">desafío</em>
-								</h2>
-								<div class="space-y-6 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
-									<p class="first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:text-primary first-letter:font-normal">
-										Bebras es una competencia internacional de pensamiento computacional para estudiantes de 6 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.
-									</p>
-									<p>
-										La competencia es <mark class="bg-ochre/30 text-foreground px-2 py-0.5 rounded font-semibold decoration-clone">gratuita</mark> y se realiza en tu propia unidad educativa. Cada estudiante cuenta con <span class="font-mono text-base font-semibold text-foreground bg-foreground/5 px-2 py-0.5 rounded">45 minutos</span> para resolver las tareas de su categoría.
-									</p>
-								</div>
-							</div>
-						</div>
-					</section>
-
-					<!-- Section 02: Categorías — color-coded editorial list -->
-					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
-						<div class="grid grid-cols-12 gap-6 lg:gap-10">
-							<aside class="col-span-12 lg:col-span-4">
-								<div class="lg:sticky lg:top-28">
-									<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">02</span>
-									<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">Cinco niveles</p>
-									<div class="mt-4 h-px w-16 bg-foreground/20"></div>
-									<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">
-										Cada nivel tiene tareas diseñadas para su grupo de edad.
-									</p>
-								</div>
-							</aside>
-
-							<div class="col-span-12 lg:col-span-8">
-								<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">
-									Categorías por <em class="italic text-primary">edad</em>
-								</h2>
-
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-									{ageGroups.map((g, i) => (
-										<div class="group content-card overflow-hidden">
-											<div class="relative aspect-[4/3] overflow-hidden bg-muted">
-												<img
-													src={g.image}
-													alt={g.name}
-													class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-													loading="lazy"
-												/>
-												<div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-													<a
-														href={g.authorUrl}
-														target="_blank"
-														rel="noreferrer noopener"
-														class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground"
-													>
-														Autor: {g.author}
-													</a>
-												</div>
+						if (section.type === "introEditorial") {
+							const introParagraphs = getIntroParagraphs(section);
+							content = (
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+									<div class="grid grid-cols-12 gap-6 lg:gap-10">
+										<aside class="col-span-12 lg:col-span-4">
+											<div class="lg:sticky lg:top-28">
+												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "01"}</span>
+												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Capítulo uno"}</p>
+												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
+												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Una iniciativa de 60+ países que llega a Bolivia."}</p>
 											</div>
-											<div class="p-5">
-												<div class="flex items-center gap-3 mb-3">
-													<span class="font-mono text-xs text-muted-foreground shrink-0 w-6 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-													<span class:list={["size-2 rounded-full shrink-0 transition-transform group-hover:scale-150", dotColor[g.color]]} aria-hidden="true"></span>
-													<span class="serif-display italic text-2xl sm:text-3xl text-foreground flex-1">{g.name}</span>
-												</div>
-												<p class="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{g.range}</p>
+										</aside>
+										<div class="col-span-12 lg:col-span-8">
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">{section.headingPrefix || "Sobre el"} <em class="italic text-primary">{section.headingEmphasis || "desafío"}</em></h2>
+											<div class="space-y-6 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
+												{introParagraphs.map((paragraph: string, pidx: number) => <p class:list={pidx === 0 ? ["first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:text-primary first-letter:font-normal"] : []} set:html={formatInlineRichText(paragraph)} />)}
 											</div>
 										</div>
-									))}
-								</div>
+									</div>
+								</section>
+							);
+						} else if (section.type === "homeAgeCategories") {
+							const ageGroups = getAgeGroups(section);
+							content = (
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+									<div class="grid grid-cols-12 gap-6 lg:gap-10">
+										<aside class="col-span-12 lg:col-span-4">
+											<div class="lg:sticky lg:top-28">
+												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "02"}</span>
+												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Cinco niveles"}</p>
+												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
+												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Cada nivel tiene tareas diseñadas para su grupo de edad."}</p>
+											</div>
+										</aside>
+										<div class="col-span-12 lg:col-span-8">
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class="italic text-primary">{section.headingEmphasis || "edad"}</em></h2>
+											<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+												{ageGroups.map((g, i) => (
+													<div class="group content-card overflow-hidden">
+														<div class="relative aspect-[4/3] overflow-hidden bg-muted">
+															<img src={g.image} alt={g.name} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+															<div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+																<a href={g.authorUrl} target="_blank" rel="noreferrer noopener" class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground">Autor: {g.author}</a>
+															</div>
+														</div>
+														<div class="p-5">
+															<div class="flex items-center gap-3 mb-3">
+																<span class="font-mono text-xs text-muted-foreground shrink-0 w-6 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+																<span class:list={["size-2 rounded-full shrink-0 transition-transform group-hover:scale-150", dotColor[g.color]]} aria-hidden="true"></span>
+																<span class="serif-display italic text-2xl sm:text-3xl text-foreground flex-1">{g.name}</span>
+															</div>
+															<p class="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{g.range}</p>
+														</div>
+													</div>
+												))}
+											</div>
+											<div class="mt-10"><a href={section.linkHref || "/estudiantes"} class="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary">{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
+										</div>
+									</div>
+								</section>
+							);
+						} else if (section.type === "homeDualCta") {
+							content = (
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+									<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+										{(section.cards || []).map((card: any) => {
+											const ui = getHomeCtaCardClasses(card.style);
+											const Icon = card.icon === "school" ? School : Brain;
+											return <a href={card.href || "/"} class={ui.wrapper}><div class="flex items-start justify-between gap-4 mb-20"><p class={ui.audience}>{card.audience || "Seccion"}</p><Icon className={ui.iconClass} strokeWidth={1.8} aria-hidden="true" /></div><p class="serif-display text-3xl sm:text-4xl leading-[1.05]">{card.headingPrefix || "Titulo"} <em class={ui.emphasisClass}>{card.headingEmphasis || "destacado"}</em>{ui.breakLine ? <br /> : null}{card.headingSuffix || ""}</p><div class={ui.link}>{card.linkLabel || "Ver mas"}<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span></div></a>;
+										})}
+									</div>
+								</section>
+							);
+						} else if (section.type === "aboutBebrasEditorial") {
+							content = (
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6">
+									<div class="grid grid-cols-12 gap-6 lg:gap-10">
+										<aside class="col-span-12 lg:col-span-4">
+											<div class="lg:sticky lg:top-28">
+												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "03"}</span>
+												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Iniciativa internacional"}</p>
+												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
+												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Presente en más de 60 países alrededor del mundo."}</p>
+											</div>
+										</aside>
+										<div class="col-span-12 lg:col-span-8">
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">{section.headingPrefix || "Sobre"} <em class="italic text-primary">{section.headingEmphasis || "Bebras"}</em><BadgeCheck className="inline-block size-6 align-top text-primary/80" strokeWidth={1.8} aria-hidden="true" /></h2>
+											<div class="max-w-3xl space-y-5 text-lg text-foreground/80 leading-[1.65]">{(section.paragraphs || []).map((paragraph: string) => <p set:html={formatInlineRichText(paragraph)} />)}</div>
+										</div>
+									</div>
+								</section>
+							);
+						}
 
-								<div class="mt-10">
-									<a href="/estudiantes" class="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary">
-										Ver información detallada para estudiantes
-										<span aria-hidden="true">→</span>
-									</a>
-								</div>
-							</div>
-						</div>
-					</section>
+						if (!content) return null;
 
-					<!-- Section 03: Call to action — dual path -->
-					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
-						<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-							<a
-								href="/registro"
-								class="group md:col-span-3 relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-8 sm:p-10 lift-on-hover"
-							>
-								<div class="flex items-start justify-between gap-4 mb-20">
-									<p class="font-mono text-[10px] uppercase tracking-[0.3em] opacity-70">Docentes / Coordinadores</p>
-									<School className="size-11 opacity-35" strokeWidth={1.8} aria-hidden="true" />
-								</div>
-								<p class="serif-display text-3xl sm:text-4xl leading-[1.05]">
-									Inscribe tu <em class="italic">unidad</em><br/>educativa
-								</p>
-								<div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-primary-foreground/50 pb-0.5 group-hover:border-primary-foreground transition-colors">
-									Comenzar registro
-									<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
-								</div>
-							</a>
+						return <>
+							{content}
+							{idx < sections.length - 1 ? <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-16"><div class="editorial-rule text-foreground/40"><Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" /></div></div> : null}
+						</>;
+					})}
 
-							<a
-								href="/estudiantes"
-								class="group md:col-span-2 content-card relative overflow-hidden text-foreground p-8 sm:p-10"
-							>
-								<div class="flex items-start justify-between gap-4 mb-20">
-									<p class="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Estudiantes</p>
-									<Brain className="size-11 text-ochre" strokeWidth={1.8} aria-hidden="true" />
-								</div>
-								<p class="serif-display text-3xl sm:text-4xl leading-[1.05]">
-									¿Qué es el <em class="italic text-primary">desafío</em>?
-								</p>
-								<div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-foreground/30 pb-0.5 group-hover:border-primary transition-colors">
-									Conocer más
-									<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
-								</div>
-							</a>
-						</div>
-					</section>
-
-					<!-- Editorial ornament -->
-					<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-16">
-						<div class="editorial-rule text-foreground/40">
-							<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
-						</div>
-					</div>
-
-					<!-- Section 04: Sobre Bebras -->
-					<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6">
-						<div class="grid grid-cols-12 gap-6 lg:gap-10">
-							<aside class="col-span-12 lg:col-span-4">
-								<div class="lg:sticky lg:top-28">
-									<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">03</span>
-									<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">Iniciativa internacional</p>
-									<div class="mt-4 h-px w-16 bg-foreground/20"></div>
-									<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">
-										Presente en más de <span class="text-ochre font-semibold">60 países</span> alrededor del mundo.
-									</p>
-								</div>
-							</aside>
-
-							<div class="col-span-12 lg:col-span-8">
-								<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">
-									Sobre <em class="italic text-primary">Bebras</em><BadgeCheck className="inline-block size-6 align-top text-primary/80" strokeWidth={1.8} aria-hidden="true" />
-								</h2>
-
-								<div class="max-w-3xl space-y-5 text-lg text-foreground/80 leading-[1.65]">
-										<p>El Desafío Bebras<BadgeCheck className="mx-0.5 inline-block size-3.5 align-text-top text-primary/80" strokeWidth={1.8} aria-hidden="true" /> introduce el pensamiento computacional a los estudiantes.</p>
-										<p>Se organiza en más de <span class="font-mono font-semibold text-foreground">60 países</span> y está diseñado para entusiasmar a estudiantes de todo el mundo con la informática.</p>
-										<p>Cada participante tiene 45 minutos para resolver <span class="font-mono font-semibold text-foreground">15 preguntas</span> de opción múltiple centradas en pensamiento computacional y lógico.</p>
-										<p>Se realiza en línea desde tu propia escuela y muestra a estudiantes y docentes qué tan desarrolladas están sus habilidades.</p>
-								</div>
-							</div>
-						</div>
-					</section>
-
+		{components.length > 0 && <PageComponentsRenderer components={components} />}
 	</main>
 </Layout>
 

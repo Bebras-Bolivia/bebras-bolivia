@@ -79,6 +79,13 @@ export function toHexColor(str: string): string {
  */
 export function formatLabel(key: string): string {
   if (!key) return "";
+  const specialLabels: Record<string, string> = {
+    seo: "SEO",
+    imageKey: "Imagen",
+    authorUrl: "URL del autor",
+    style: "Estilo visual",
+  };
+  if (specialLabels[key]) return specialLabels[key];
   return key
     .replace(/[-_]/g, " ")
     .replace(/([a-z])([A-Z])/g, "$1 $2")

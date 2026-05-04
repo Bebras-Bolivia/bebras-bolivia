@@ -882,7 +882,6 @@ const Editor = {
         } else {
           this.collapsedItems.add(itemPath);
         }
-        this.rerenderEditorForm();
       },
       onMoveArrayItem: (path, fromIdx, toIdx) => this.moveArrayItem(path, fromIdx, toIdx),
     });

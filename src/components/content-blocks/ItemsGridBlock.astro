@@ -1,4 +1,6 @@
 ---
+import { formatInlineRichText } from "@/lib/rich-text";
+
 interface GridItem {
   title?: string;
   description?: string;
@@ -49,7 +51,7 @@ function getColsClass(cols: number) {
     <div class="mx-auto max-w-6xl">
       {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
-      {intro && <p class="text-xl text-muted-foreground leading-relaxed mb-10">{intro}</p>}
+      {intro && <p class="text-xl text-muted-foreground leading-relaxed mb-10" set:html={formatInlineRichText(intro)} />}
       <div class:list={["grid gap-6", getColsClass(columns)]}>
         {items.map((item, i) => (
           <div class="content-card p-6 text-left">
@@ -71,7 +73,7 @@ function getColsClass(cols: number) {
               </div>
             )}
             {item.title && <p class="text-xl font-bold text-foreground mb-3">{item.title}</p>}
-            {item.description && <p class="text-base text-muted-foreground leading-relaxed">{item.description}</p>}
+            {item.description && <p class="text-base text-muted-foreground leading-relaxed" set:html={formatInlineRichText(item.description)} />}
             {item.linkLabel && item.linkHref && (
               <a href={item.linkHref} class="inline-flex mt-4 text-sm font-semibold text-primary hover:underline">{item.linkLabel}</a>
             )}

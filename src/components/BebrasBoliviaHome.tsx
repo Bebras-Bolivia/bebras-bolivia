@@ -5,7 +5,21 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BebrasBeaverShowcase } from "@/components/BebrasBeaverShowcase";
 
-export default function BebrasBoliviaHome() {
+type HomeHeroData = {
+  eyebrow?: string;
+  welcomeText?: string;
+  title?: string;
+  subtitlePrimary?: string;
+  subtitleSecondary?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+  noticeEyebrow?: string;
+  noticeText?: string;
+  noticeButtonLabel?: string;
+  noticeButtonHref?: string;
+};
+
+export default function BebrasBoliviaHome({ hero = {} }: { hero?: HomeHeroData }) {
   const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -39,19 +53,19 @@ export default function BebrasBoliviaHome() {
           <div data-hero-item className="order-1 space-y-3 text-center lg:text-left lg:col-start-1 lg:row-start-1">
             <div className="flex items-center justify-center lg:justify-start gap-3">
               <span className="h-px w-10 bg-primary-foreground/50"></span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary-foreground/80">Edición 2026</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary-foreground/80">{hero.eyebrow || "Edición 2026"}</span>
             </div>
             <p
               className="text-[clamp(1.5rem,6vw,2.25rem)] italic text-primary-foreground/90 sm:text-4xl"
               style={{ fontFamily: "'Pacifico', cursive" }}
             >
-              Bienvenido a
+              {hero.welcomeText || "Bienvenido a"}
             </p>
             <h1
               className="text-[clamp(2.5rem,11vw,4rem)] leading-[0.95] text-primary-foreground sm:text-7xl"
               style={{ fontFamily: "'Pacifico', cursive" }}
             >
-              Bebras Bolivia 2026
+              {hero.title || "Bebras Bolivia 2026"}
             </h1>
           </div>
 
@@ -61,10 +75,10 @@ export default function BebrasBoliviaHome() {
 
           <div data-hero-item className="order-3 space-y-4 text-center lg:text-left lg:col-start-1 lg:row-start-2">
             <p className="mx-auto max-w-[28ch] text-balance text-lg leading-snug text-primary-foreground sm:text-2xl lg:mx-0 pt-4">
-              El desafío internacional de pensamiento computacional para estudiantes de todo el país.
+              {hero.subtitlePrimary || "El desafío internacional de pensamiento computacional para estudiantes de todo el país."}
             </p>
             <p className="mx-auto max-w-[28ch] text-balance text-lg leading-snug text-primary-foreground/80 sm:text-2xl lg:mx-0">
-              Inscribe a tu unidad educativa y participa junto a más de 70 países.
+              {hero.subtitleSecondary || "Inscribe a tu unidad educativa y participa junto a más de 70 países."}
             </p>
             <div className="pt-2">
               <Button
@@ -72,10 +86,10 @@ export default function BebrasBoliviaHome() {
                 asChild
               >
                 <a
-                  href="/registro"
+                  href={hero.buttonHref || "/registro"}
                   className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap leading-none"
                 >
-                  <span>Regístrate aquí</span>
+                  <span>{hero.buttonLabel || "Regístrate aquí"}</span>
                   <ArrowRight className="size-5" />
                 </a>
               </Button>
@@ -91,17 +105,17 @@ export default function BebrasBoliviaHome() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="mb-1 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-ochre">
-                Edición 2026 - Inscripciones abiertas
+                {hero.noticeEyebrow || "Edición 2026 - Inscripciones abiertas"}
               </p>
               <p className="text-base font-semibold leading-snug text-foreground sm:text-lg">
-                El desafío vuelve en noviembre. Prepara tu unidad educativa.
+                {hero.noticeText || "El desafío vuelve en noviembre. Prepara tu unidad educativa."}
               </p>
             </div>
             <a
-              href="/registro"
+              href={hero.noticeButtonHref || "/registro"}
               className="hidden shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-xs font-bold tracking-wide text-primary-foreground transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
             >
-              Inscribir
+              {hero.noticeButtonLabel || "Inscribir"}
               <span aria-hidden="true">→</span>
             </a>
           </div>

@@ -46,6 +46,11 @@ interface Props {
   onMoveArrayItem: (path: string, fromIdx: number, toIdx: number) => void;
 }
 
+type RendererProps = Props & {
+  expandedItems: Map<string, boolean>;
+  setExpandedItems: React.Dispatch<React.SetStateAction<Map<string, boolean>>>;
+};
+
 function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChange: Props["onFieldChange"] }) {
   const [value, setValue] = React.useState(field.value);
 
@@ -133,7 +138,7 @@ function FieldGroup({ field, onFieldChange }: { field: EditorField; onFieldChang
   );
 }
 
-function NodeRenderer(props: Props & { node: ComplexNode }) {
+function NodeRenderer(props: RendererProps & { node: ComplexNode }) {
   const { node } = props;
 
   if (node.kind === "object") {
@@ -150,8 +155,23 @@ function NodeRenderer(props: Props & { node: ComplexNode }) {
   return <ArrayNode {...props} node={node} />;
 }
 
-function ArrayNode(props: Props & { node: Extract<ComplexNode, { kind: "array" }> }) {
-  const { node, icons, onAddArrayItem, onRemoveArrayItem, onToggleArrayCollapse, onMoveArrayItem } = props;
+function collectExpandedState(nodes: ComplexNode[], state = new Map<string, boolean>()) {
+  nodes.forEach((node) => {
+    if (node.kind === "object") {
+      collectExpandedState(node.children, state);
+      return;
+    }
+
+    node.items.forEach((item) => {
+      if (item.collapsible) state.set(item.itemPath, item.expanded);
+      collectExpandedState(item.children, state);
+    });
+  });
+  return state;
+}
+
+function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "array" }> }) {
+  const { node, icons, onAddArrayItem, onRemoveArrayItem, onToggleArrayCollapse, onMoveArrayItem, expandedItems, setExpandedItems } = props;
   const [dragFrom, setDragFrom] = React.useState<number | null>(null);
 
   return (
@@ -161,7 +181,8 @@ function ArrayNode(props: Props & { node: Extract<ComplexNode, { kind: "array" }
       </div>
       <div className="array-field" data-array-path={node.path}>
         {node.items.map((item) => {
-          const bodyVisible = !item.collapsible || item.expanded;
+          const itemExpanded = expandedItems.get(item.itemPath) ?? item.expanded;
+          const bodyVisible = !item.collapsible || itemExpanded;
           return (
             <div
               className="array-item"
@@ -188,8 +209,12 @@ function ArrayNode(props: Props & { node: Extract<ComplexNode, { kind: "array" }
                   {item.collapsible ? (
                     <ArrayCollapseToggleView
                       arrowIcon={icons.arrow || ""}
-                      expanded={item.expanded}
-                      onToggle={() => onToggleArrayCollapse(item.itemPath, !item.expanded)}
+                      expanded={itemExpanded}
+                      onToggle={() => {
+                        const nextExpanded = !itemExpanded;
+                        setExpandedItems((prev) => new Map(prev).set(item.itemPath, nextExpanded));
+                        onToggleArrayCollapse(item.itemPath, nextExpanded);
+                      }}
                     />
                   ) : null}
                 </span>
@@ -229,10 +254,23 @@ function ArrayNode(props: Props & { node: Extract<ComplexNode, { kind: "array" }
 }
 
 export default function ComplexNodesView(props: Props) {
+  const [expandedItems, setExpandedItems] = React.useState(() => collectExpandedState(props.nodes));
+
+  React.useEffect(() => {
+    const latest = collectExpandedState(props.nodes);
+    setExpandedItems((prev) => {
+      const next = new Map<string, boolean>();
+      latest.forEach((expanded, itemPath) => {
+        next.set(itemPath, prev.get(itemPath) ?? expanded);
+      });
+      return next;
+    });
+  }, [props.nodes]);
+
   return (
     <>
       {props.nodes.map((node) => (
-        <NodeRenderer key={`${node.kind}:${node.path}`} {...props} node={node} />
+        <NodeRenderer key={`${node.kind}:${node.path}`} {...props} expandedItems={expandedItems} setExpandedItems={setExpandedItems} node={node} />
       ))}
     </>
   );
