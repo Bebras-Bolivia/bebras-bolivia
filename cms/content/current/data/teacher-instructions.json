@@ -1,47 +1,47 @@
 {
   "header": {
-    "sectionTag": "Guia para coordinadores",
-    "heading": "Instrucciones para Coordinadores",
-    "subtitle": "Guia paso a paso para antes, durante y despues del desafio."
+    "sectionTag": "Guía para coordinadores",
+    "heading": "Instrucciones para coordinadores",
+    "subtitle": "Guía paso a paso para antes, durante y después del desafío."
   },
   "components": [
     {
       "type": "tabsGuide",
-      "sectionTag": "Guia para coordinadores",
-      "heading": "Instrucciones para Coordinadores",
-      "subtitle": "Guia paso a paso para antes, durante y despues del desafio.",
+      "sectionTag": "Guía para coordinadores",
+      "heading": "Instrucciones para coordinadores",
+      "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
       "tabs": [
         {
           "id": "antes",
           "label": "Antes",
-          "heading": "Antes del Desafio",
+          "heading": "Antes del desafío",
           "items": [
             { "title": "Registrarse como coordinador", "desc": "en la plataforma Bebras Bolivia y completar los datos de la escuela." },
-            { "title": "Inscribir a los estudiantes", "desc": "organizandolos por categoria de edad (Kits, Castors, Benjamins, Cadets, Juniors, Seniors)." },
-            { "title": "Verificar el equipamiento", "desc": "Asegurar que las computadoras tengan navegador actualizado y conexion a internet estable." },
-            { "title": "Preparar a los estudiantes", "desc": "Compartir ejemplos de problemas de anos anteriores para que se familiaricen con el formato." }
+            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Kits, Castors, Benjamins, Cadets, Juniors y Seniors)." },
+            { "title": "Verificar el equipamiento", "desc": "Asegurar que las computadoras tengan navegador actualizado y conexión a internet estable." },
+            { "title": "Preparar a los estudiantes", "desc": "Compartir ejemplos de problemas de años anteriores para que se familiaricen con el formato." }
           ]
         },
         {
           "id": "durante",
           "label": "Durante",
-          "heading": "Durante el Desafio",
+          "heading": "Durante el desafío",
           "items": [
-            { "title": "Supervision", "desc": "El coordinador debe estar presente durante toda la sesion para resolver dudas tecnicas." },
-            { "title": "Sin ayuda externa", "desc": "Los estudiantes deben resolver los problemas de forma individual, sin consultar a companeros ni usar recursos externos." },
-            { "title": "Control del tiempo", "desc": "El sistema controla automaticamente los 45 minutos. El coordinador debe asegurar que todos inicien correctamente." },
-            { "title": "Problemas tecnicos", "desc": "Si hay problemas de conectividad, contactar al soporte tecnico. Se pueden hacer ajustes de tiempo en casos verificables." }
+            { "title": "Supervisión", "desc": "El coordinador debe estar presente durante toda la sesión para resolver dudas técnicas." },
+            { "title": "Sin ayuda externa", "desc": "Los estudiantes deben resolver los problemas de forma individual, sin consultar a compañeros ni usar recursos externos." },
+            { "title": "Control del tiempo", "desc": "El sistema controla automáticamente los 45 minutos. El coordinador debe asegurar que todos inicien correctamente." },
+            { "title": "Problemas técnicos", "desc": "Si hay problemas de conectividad, contactar al soporte técnico. Se pueden hacer ajustes de tiempo en casos verificables." }
           ]
         },
         {
           "id": "despues",
-          "label": "Despues",
-          "heading": "Despues del Desafio",
+          "label": "Después",
+          "heading": "Después del desafío",
           "items": [
-            { "title": "Resultados", "desc": "Los resultados estaran disponibles en la plataforma unos dias despues del desafio." },
+            { "title": "Resultados", "desc": "Los resultados estarán disponibles en la plataforma unos días después del desafío." },
             { "title": "Certificados", "desc": "Todos los participantes reciben certificado digital. Los mejores puntajes reciben reconocimientos adicionales." },
-            { "title": "Discusion en clase", "desc": "Se recomienda revisar los problemas con los estudiantes para reforzar los conceptos de pensamiento computacional." },
-            { "title": "Problemas archivados", "desc": "Los problemas del desafio quedan disponibles como material didactico para usar durante el ano escolar." }
+            { "title": "Discusión en clase", "desc": "Se recomienda revisar los problemas con los estudiantes para reforzar los conceptos de pensamiento computacional." },
+            { "title": "Problemas archivados", "desc": "Los problemas del desafío quedan disponibles como material didáctico para usar durante el año escolar." }
           ]
         }
       ]

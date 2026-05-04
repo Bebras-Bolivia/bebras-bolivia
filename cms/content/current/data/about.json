@@ -1,28 +1,28 @@
 {
   "sectionTag": "Sobre la iniciativa",
-  "heading": "Que es Bebras?",
+  "heading": "¿Qué es Bebras?",
   "headingHighlight": "Bebras",
-  "subtitle": "Una iniciativa internacional que promueve la informatica y el pensamiento computacional entre estudiantes de todas las edades.",
+  "subtitle": "Una iniciativa internacional que promueve la informática y el pensamiento computacional entre estudiantes de todas las edades.",
   "cards": [
     {
       "number": "01",
       "title": "La Iniciativa",
-      "body": "Bebras es una competencia internacional de pensamiento computacional presente en mas de 60 paises. Los participantes resuelven problemas cortos y logicos que no requieren conocimientos previos de informatica, supervisados por sus docentes en sus propias escuelas.",
+      "body": "Bebras es una competencia internacional de pensamiento computacional presente en más de 60 países. Los participantes resuelven problemas cortos y lógicos que no requieren conocimientos previos de informática, supervisados por sus docentes en sus propias escuelas.",
       "icon": "book"
     },
     {
       "number": "02",
       "title": "Pensamiento Computacional",
-      "body": "Involucra habilidades de resolucion de problemas que usan los ingenieros de software: reconocimiento de patrones, diseno de algoritmos, descomposicion de tareas complejas y abstraccion. Habilidades utiles mucho mas alla de la programacion.",
+      "body": "Involucra habilidades de resolución de problemas que usan los ingenieros de software: reconocimiento de patrones, diseño de algoritmos, descomposición de tareas complejas y abstracción. Habilidades útiles mucho más allá de la programación.",
       "icon": "brain"
     },
     {
       "number": "03",
       "title": "Fechas",
-      "body": "La segunda semana de noviembre es la semana mundial Bebras para resolver tareas. Algunos paises extienden el periodo a dos semanas. Durante todo el ano se realizan actividades como talleres para docentes, premiaciones y eventos de divulgacion.",
+      "body": "La segunda semana de noviembre es la semana mundial Bebras para resolver tareas. Algunos países extienden el período a dos semanas. Durante todo el año se realizan actividades como talleres para docentes, premiaciones y eventos de divulgación.",
       "icon": "calendar",
       "link": {
-        "label": "Leer mas",
+        "label": "Leer más",
         "href": "/estudiantes"
       }
     }

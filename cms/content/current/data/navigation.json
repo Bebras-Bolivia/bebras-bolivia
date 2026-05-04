@@ -8,9 +8,9 @@
     { "label": "Inicio", "href": "/" },
     { "label": "Estudiantes", "href": "/estudiantes" },
     { "label": "Docentes", "href": "/docentes" },
-    { "label": "FAQ", "href": "/faq" },
-    { "label": "Blog", "href": "/blog" },
-    { "label": "Sponsors", "href": "/sponsors" },
+    { "label": "Preguntas", "href": "/faq" },
+    { "label": "Noticias", "href": "/blog" },
+    { "label": "Patrocinadores", "href": "/sponsors" },
     { "label": "Contacto", "href": "/contacto" }
   ],
   "cta": {
@@ -19,19 +19,19 @@
   },
   "footerColumns": [
     {
-      "title": "Navegacion",
+      "title": "Navegación",
       "links": [
         { "label": "Inicio", "href": "/" },
         { "label": "Estudiantes", "href": "/estudiantes" },
         { "label": "Docentes", "href": "/docentes" },
-        { "label": "FAQ", "href": "/faq" }
+        { "label": "Preguntas", "href": "/faq" }
       ]
     },
     {
       "title": "Recursos",
       "links": [
-        { "label": "Blog", "href": "/blog" },
-        { "label": "Sponsors", "href": "/sponsors" },
+        { "label": "Noticias", "href": "/blog" },
+        { "label": "Patrocinadores", "href": "/sponsors" },
         { "label": "Contacto", "href": "/contacto" },
         { "label": "Inscribirse", "href": "/registro" }
       ]

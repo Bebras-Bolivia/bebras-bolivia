@@ -1,36 +1,36 @@
 {
   "header": {
     "pageTitle": "Contacto",
-    "pageDescription": "Contactanos para mas informacion sobre el Desafio Bebras Bolivia.",
-    "tag": "Comunicate",
+    "pageDescription": "Contáctanos para más información sobre el Desafío Bebras Bolivia.",
+    "tag": "Comunícate",
     "heading": "Contacto",
-    "subtitle": "Tienes preguntas? Estamos aqui para ayudarte."
+    "subtitle": "¿Tienes preguntas? Estamos aquí para ayudarte."
   },
   "components": [
     {
       "type": "contactClassic",
       "info": {
-        "tag": "Informacion",
-        "heading": "Informacion de Contacto",
+        "tag": "Información",
+        "heading": "Información de contacto",
         "cards": [
           {
             "icon": "email",
             "title": "Email",
-            "description": "Escribenos para cualquier consulta",
+            "description": "Escríbenos para cualquier consulta.",
             "linkLabel": "info@bebras.bo",
             "linkHref": "mailto:info@bebras.bo"
           },
           {
             "icon": "clipboard",
             "title": "Registro",
-            "description": "Inscribe a tu escuela en el desafio",
-            "linkLabel": "Inscribirse al desafio ->",
+            "description": "Inscribe a tu escuela en el desafío.",
+            "linkLabel": "Inscribirse al desafío →",
             "linkHref": "/registro"
           },
           {
             "icon": "share",
-            "title": "Redes Sociales",
-            "description": "Siguenos para novedades",
+            "title": "Redes sociales",
+            "description": "Síguenos para novedades.",
             "socialLinks": [
               { "label": "Facebook", "href": "https://facebook.com/bebrasbolivia" },
               { "label": "Instagram", "href": "https://instagram.com/bebrasbolivia" }
@@ -39,83 +39,31 @@
         ]
       },
       "international": {
-        "tag": "Comunidad Internacional",
+        "tag": "Comunidad internacional",
         "links": [
-          { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" }
+          {
+            "label": "Bebras Internacional →",
+            "href": "https://www.bebras.org/",
+            "description": "Sitio oficial de la iniciativa mundial Bebras."
+          }
         ]
       },
       "form": {
         "tag": "Formulario",
-        "heading": "Envianos un Mensaje",
+        "heading": "Envíanos un mensaje",
         "fields": {
           "name": { "label": "Nombre completo", "placeholder": "Tu nombre" },
           "email": { "label": "Email", "placeholder": "tu@email.com" },
           "role": {
             "label": "Rol",
             "placeholder": "Seleccionar...",
-            "options": ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"]
+            "options": ["Estudiante", "Docente / Coordinador", "Institución", "Otro"]
           },
           "message": { "label": "Mensaje", "placeholder": "Escribe tu mensaje..." }
         },
         "submitLabel": "Enviar mensaje",
-        "disclaimer": "Este formulario es solo una vista previa. La funcionalidad de envio se habilitara proximamente."
+        "disclaimer": "Este formulario es una vista previa. La funcionalidad de envío se habilitará próximamente."
       }
-    },
-    {
-      "type": "itemsGrid",
-      "tag": "Informacion",
-      "heading": "Informacion de Contacto",
-      "columns": 1,
-      "mediaType": "icon",
-      "items": [
-        {
-          "icon": "email",
-          "title": "Email",
-          "description": "Escribenos para cualquier consulta",
-          "linkLabel": "info@bebras.bo",
-          "linkHref": "mailto:info@bebras.bo"
-        },
-        {
-          "icon": "clipboard",
-          "title": "Registro",
-          "description": "Inscribe a tu escuela en el desafio",
-          "linkLabel": "Inscribirse al desafio ->",
-          "linkHref": "/registro"
-        },
-        {
-          "icon": "share",
-          "title": "Redes Sociales",
-          "description": "Siguenos para novedades",
-          "socialLinks": [
-            { "label": "Facebook", "href": "https://facebook.com/bebrasbolivia" },
-            { "label": "Instagram", "href": "https://instagram.com/bebrasbolivia" }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "linksList",
-      "tag": "Comunidad Internacional",
-      "links": [
-        { "label": "Bebras Internacional ->", "href": "https://www.bebras.org/", "description": "Sitio oficial de la iniciativa mundial Bebras" }
-      ]
-    },
-    {
-      "type": "formContact",
-      "tag": "Formulario",
-      "heading": "Envianos un Mensaje",
-      "fields": {
-        "name": { "label": "Nombre completo", "placeholder": "Tu nombre" },
-        "email": { "label": "Email", "placeholder": "tu@email.com" },
-        "role": {
-          "label": "Rol",
-          "placeholder": "Seleccionar...",
-          "options": ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"]
-        },
-        "message": { "label": "Mensaje", "placeholder": "Escribe tu mensaje..." }
-      },
-      "submitLabel": "Enviar mensaje",
-      "disclaimer": "Este formulario es solo una vista previa. La funcionalidad de envio se habilitara proximamente."
     }
   ]
 }
