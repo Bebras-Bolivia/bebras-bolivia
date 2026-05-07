@@ -874,14 +874,9 @@ const Editor = {
     if (!iframe) return;
 
     const pagePath = this.fileToPage[this.currentFile] || "/";
+    const base = App.appUrl(`/preview-site${pagePath}`);
 
-    if (this.devServerReady && this.devServerPort) {
-      const base = `http://localhost:${this.devServerPort}${pagePath}`;
-      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
-    } else {
-      const base = `/preview-site${pagePath}`;
-      iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
-    }
+    iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
   },
 
   // ── React primitives mount ─────────────────────────────

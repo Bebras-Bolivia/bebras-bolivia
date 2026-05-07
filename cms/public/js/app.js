@@ -4,6 +4,20 @@
 const App = {
   currentPage: null,
   user: null,
+  basePath: (window.CMS_BASE_PATH || "").replace(/\/$/, ""),
+
+  appUrl(path) {
+    if (!path.startsWith("/")) return path;
+    return `${this.basePath}${path}`;
+  },
+
+  appPathname() {
+    const pathname = window.location.pathname;
+    if (this.basePath && pathname.startsWith(this.basePath)) {
+      return pathname.slice(this.basePath.length) || "/";
+    }
+    return pathname;
+  },
 
   // ── Content file metadata for display ───────────────────
   contentMeta: {
@@ -105,7 +119,7 @@ const App = {
     // Check authentication
     this.user = await API.checkAuth();
     if (!this.user) {
-      window.location.href = "/login.html";
+      window.location.href = this.appUrl("/login.html");
       return;
     }
 
@@ -224,8 +238,8 @@ const App = {
   },
 
   navigate(path) {
-    if (window.location.pathname === path) return;
-    history.pushState(null, "", path);
+    if (this.appPathname() === path) return;
+    history.pushState(null, "", this.appUrl(path));
     this.route();
   },
 
@@ -305,7 +319,7 @@ const App = {
 
   // ── Router ──────────────────────────────────────────────
   route() {
-    const path = window.location.pathname;
+    const path = this.appPathname();
 
     // Update active sidebar link
     document.querySelectorAll("[data-nav]").forEach((el) => {

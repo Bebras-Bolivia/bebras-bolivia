@@ -2,6 +2,13 @@
 // Thin wrapper around fetch with auth error handling.
 
 const API = {
+  basePath: (window.CMS_BASE_PATH || "").replace(/\/$/, ""),
+
+  url(path) {
+    if (!path.startsWith("/")) return path;
+    return `${this.basePath}${path}`;
+  },
+
   /**
    * Generic fetch wrapper. Automatically:
    * - Adds Content-Type: application/json for non-FormData bodies
@@ -11,6 +18,7 @@ const API = {
    */
   async request(url, options = {}) {
     const opts = { ...options };
+    const requestUrl = this.url(url);
 
     // Set JSON headers unless sending FormData
     if (opts.body && !(opts.body instanceof FormData)) {
@@ -25,7 +33,7 @@ const API = {
 
     let res;
     try {
-      res = await fetch(url, opts);
+      res = await fetch(requestUrl, opts);
     } catch (networkErr) {
       // Network-level errors (connection refused, DNS, offline, etc.)
       throw new Error(
@@ -38,7 +46,7 @@ const API = {
     // Auth expired or invalid — redirect to login
     if (res.status === 401) {
       localStorage.removeItem("cms_user");
-      window.location.href = "/login.html";
+      window.location.href = this.url("/login.html");
       throw new Error("Sesion expirada — redirigiendo al login");
     }
 
@@ -104,7 +112,7 @@ const API = {
       // ignore
     }
     localStorage.removeItem("cms_user");
-    window.location.href = "/login.html";
+    window.location.href = this.url("/login.html");
   },
 
   // ── Content ─────────────────────────────────────────────

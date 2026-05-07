@@ -1,5 +1,7 @@
 ---
 import LoginView from "../components/LoginView";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <!DOCTYPE html>
@@ -8,15 +10,16 @@ import LoginView from "../components/LoginView";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar sesion - Bebras CMS</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href={`${basePath}/css/styles.css`} />
   </head>
   <body class="login-page">
     <LoginView client:load />
 
-    <script>
+    <script define:vars={{ basePath }}>
       const form = document.getElementById('login-form');
       const errorEl = document.getElementById('login-error');
       const btn = document.getElementById('login-btn');
+      const cmsPath = (path) => `${basePath}${path}`;
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -25,7 +28,7 @@ import LoginView from "../components/LoginView";
         btn.textContent = 'Ingresando...';
 
         try {
-          const res = await fetch('/api/auth/login', {
+          const res = await fetch(cmsPath('/api/auth/login'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -41,7 +44,7 @@ import LoginView from "../components/LoginView";
           }
 
           localStorage.setItem('cms_user', JSON.stringify(data.user));
-          window.location.href = '/';
+          window.location.href = cmsPath('/');
         } catch (err) {
           errorEl.textContent = err.message;
           errorEl.style.display = 'block';
@@ -52,9 +55,9 @@ import LoginView from "../components/LoginView";
 
       (async () => {
         try {
-          const res = await fetch('/api/auth/me');
+          const res = await fetch(cmsPath('/api/auth/me'));
           if (res.ok) {
-            window.location.href = '/';
+            window.location.href = cmsPath('/');
           }
         } catch {}
       })();

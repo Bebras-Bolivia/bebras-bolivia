@@ -1,6 +1,8 @@
 ---
 import CmsShell from "../components/CmsShell";
 import DashboardMount from "../components/DashboardMount.astro";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <!DOCTYPE html>
@@ -9,16 +11,19 @@ import DashboardMount from "../components/DashboardMount.astro";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bebras Bolivia - CMS</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href={`${basePath}/css/styles.css`} />
   </head>
   <body>
     <CmsShell client:load />
 
-    <script is:inline src="/js/api.js"></script>
-    <script is:inline src="/js/editor.js"></script>
-    <script is:inline src="/js/blog.js"></script>
-    <script is:inline src="/js/snapshots.js"></script>
+    <script is:inline define:vars={{ basePath }}>
+      window.CMS_BASE_PATH = basePath;
+    </script>
+    <script is:inline src={`${basePath}/js/api.js`}></script>
+    <script is:inline src={`${basePath}/js/editor.js`}></script>
+    <script is:inline src={`${basePath}/js/blog.js`}></script>
+    <script is:inline src={`${basePath}/js/snapshots.js`}></script>
     <DashboardMount />
-    <script is:inline src="/js/app.js"></script>
+    <script is:inline src={`${basePath}/js/app.js`}></script>
   </body>
 </html>

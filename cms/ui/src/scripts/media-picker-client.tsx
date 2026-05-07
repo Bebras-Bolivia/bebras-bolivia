@@ -9,10 +9,16 @@ type MediaFile = {
 
 declare global {
   interface Window {
+    CMS_BASE_PATH?: string;
     CMSMediaPicker?: {
       open: () => Promise<string | null>;
     };
   }
+}
+
+function cmsUrl(path: string): string {
+  const basePath = (window.CMS_BASE_PATH || "").replace(/\/$/, "");
+  return `${basePath}${path}`;
 }
 
 function formatSize(bytes: number): string {
@@ -31,7 +37,7 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/media");
+      const res = await fetch(cmsUrl("/api/media"));
       if (!res.ok) throw new Error("No se pudo cargar la galeria");
       const data = await res.json();
       setFiles(Array.isArray(data.files) ? data.files : []);
@@ -61,11 +67,11 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/media/upload", { method: "POST", body: fd });
+      const res = await fetch(cmsUrl("/api/media/upload"), { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "No se pudo subir el archivo");
       await loadFiles();
-      onClose(data.url || `/api/media/file/${data.filename}`);
+      onClose(data.url || cmsUrl(`/api/media/file/${data.filename}`));
     } catch (err: any) {
       setError(err.message || "No se pudo subir el archivo");
     } finally {

@@ -41,7 +41,7 @@ export async function listMedia(): Promise<MediaFile[]> {
       media.push({
         filename: file,
         size: info.size,
-        url: `/api/media/file/${file}`,
+        url: `/images/uploads/${file}`,
       });
     } catch {
       continue;

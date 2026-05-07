@@ -58,7 +58,7 @@ mediaRouter.post(
       res.status(201).json({
         filename: file.filename,
         size: file.size,
-        url: `/api/media/file/${file.filename}`,
+        url: `/images/uploads/${file.filename}`,
       });
     } catch (err) {
       if (err instanceof MediaError) {
