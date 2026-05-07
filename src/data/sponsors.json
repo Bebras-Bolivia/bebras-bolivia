@@ -10,11 +10,23 @@
     {
       "type": "organizerInstitution",
       "tag": "Institución organizadora",
+      "name": "Olimpiada Boliviana de Informática",
+      "acronym": "OBI",
+      "location": "Bolivia",
+      "role": "Institución organizadora del Desafío Bebras Bolivia",
+      "description": "Coordina la organización del desafío y articula iniciativas de pensamiento computacional e informática competitiva en Bolivia.",
+      "image": "/images/sponsors/obi-logo.png",
+      "linkLabel": "Facebook OBI",
+      "linkHref": "https://www.facebook.com/olimpiadabolivianadeinformatica/"
+    },
+    {
+      "type": "organizerInstitution",
+      "tag": "Institución aliada",
       "name": "Universidad Mayor de San Simón",
       "acronym": "UMSS",
       "location": "Cochabamba, Bolivia",
-      "role": "Institución anfitriona del Desafío Bebras Bolivia",
-      "description": "Coordina la organización local del desafío y aporta infraestructura, docentes y voluntarios.",
+      "role": "Institución aliada del Desafío Bebras Bolivia",
+      "description": "Acompaña el desarrollo local del desafío y aporta apoyo institucional para su realización en Bolivia.",
       "image": "/images/sponsors/marcaHorizontal_umss.png",
       "linkLabel": "umss.edu.bo",
       "linkHref": "https://www.umss.edu.bo"

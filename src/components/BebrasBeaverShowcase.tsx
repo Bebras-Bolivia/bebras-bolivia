@@ -117,8 +117,8 @@ const orbitImages = [
 export function BebrasBeaverShowcase() {
   return (
     <>
-      <div className="mx-auto flex w-full max-w-xl justify-center lg:justify-end ">
-        <div className="relative beaver-entry w-[180px] sm:w-[260px] lg:w-[330px]">
+      <div className="mx-auto flex w-full max-w-xl justify-center lg:justify-center xl:justify-end">
+        <div className="relative beaver-entry w-[180px] sm:w-[260px] lg:w-[clamp(250px,24vw,320px)] xl:w-[330px]">
           <div className="beaver-idle">
             <img
               src={castorImage.src}
@@ -126,7 +126,7 @@ export function BebrasBeaverShowcase() {
               className="h-auto w-full object-contain drop-shadow-xl transition duration-500 ease-out hover:scale-[1.03] hover:rotate-[1.2deg] hover:[filter:drop-shadow(0_18px_35px_hsl(var(--primary)/0.35))]"
             />
           </div>
-          <div className="absolute inset-0 block origin-center translate-y-2 sm:translate-y-0 [perspective:900px] scale-[0.54] sm:scale-[0.8] lg:translate-y-0 lg:scale-100">
+          <div className="absolute inset-0 block origin-center translate-y-2 sm:translate-y-0 [perspective:900px] scale-[0.54] sm:scale-[0.72] lg:translate-y-0 lg:scale-[0.74] xl:scale-[0.88] 2xl:scale-100">
             {orbitImages.map((item) => (
               <div
                 key={item.id}
