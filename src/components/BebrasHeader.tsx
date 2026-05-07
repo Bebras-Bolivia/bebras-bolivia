@@ -142,11 +142,11 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-6 font-medium text lg:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-end gap-3 font-medium text min-[1180px]:gap-5 lg:flex xl:gap-6">
             {allLinks.map((link) => (
               <a
                 key={link.href}
-                className={`relative transition-colors py-1 ${
+                className={`relative shrink-0 py-1 text-[clamp(0.82rem,1.15vw,1rem)] transition-colors ${
                   isActive(link.href)
                     ? "text-primary font-medium after:absolute after:-bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1.5 after:w-1.5 after:rounded-full after:bg-primary"
                     : "text-foreground/75 hover:text-primary after:absolute after:-bottom-1 after:left-1/2 after:h-[2px] after:w-0 after:-translate-x-1/2 after:rounded-full after:bg-primary/50 after:transition-all after:duration-300 hover:after:w-full"
@@ -159,7 +159,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
             {navData.cta && (
               <a
                 href={navData.cta.href}
-                className="rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-sm shadow-primary/10 transition-all duration-200"
+                className="shrink-0 rounded-2xl bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/10 transition-all duration-200 hover:bg-primary/90 min-[1180px]:px-4"
               >
                 {navData.cta.label}
               </a>

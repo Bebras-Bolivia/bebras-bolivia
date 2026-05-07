@@ -48,7 +48,7 @@ export default function BebrasBoliviaHome({ hero = {} }: { hero?: HomeHeroData }
         <section
           id="inicio"
           ref={heroSectionRef}
-          className="grid items-center gap-6 py-6 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4"
+          className="grid items-center gap-6 overflow-hidden py-6 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 xl:overflow-visible"
         >
           <div data-hero-item className="order-1 space-y-3 text-center lg:text-left lg:col-start-1 lg:row-start-1">
             <div className="flex items-center justify-center lg:justify-start gap-3">
