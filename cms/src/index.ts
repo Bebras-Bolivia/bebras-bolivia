@@ -229,7 +229,6 @@ function hasUiBuild(): boolean {
 }
 
 app.use(express.static(uiDistDir));
-app.use(express.static(legacyPublicDir));
 
 app.get("/login.html", (_req, res) => {
   if (hasUiBuild() && existsSync(uiLoginFile)) {
@@ -238,6 +237,16 @@ app.get("/login.html", (_req, res) => {
   }
   res.sendFile(resolve(legacyPublicDir, "login.html"));
 });
+
+app.get("/login", (_req, res) => {
+  if (hasUiBuild() && existsSync(uiLoginFile)) {
+    res.sendFile(uiLoginFile);
+    return;
+  }
+  res.sendFile(resolve(legacyPublicDir, "login.html"));
+});
+
+app.use(express.static(legacyPublicDir));
 
 // SPA fallback — serve index.html for all non-API, non-preview, non-asset routes
 app.get(/^\/(?!api\/|preview-site\/|_astro\/|@vite\/|@fs\/|node_modules\/|images\/|favicon\.svg).*/, (_req, res) => {
