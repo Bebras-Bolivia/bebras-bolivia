@@ -19,11 +19,6 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
     <script is:inline define:vars={{ basePath }}>
       window.CMS_BASE_PATH = basePath;
     </script>
-    <script is:inline src={`${basePath}/js/api.js`}></script>
-    <script is:inline src={`${basePath}/js/editor.js`}></script>
-    <script is:inline src={`${basePath}/js/blog.js`}></script>
-    <script is:inline src={`${basePath}/js/snapshots.js`}></script>
     <DashboardMount />
-    <script is:inline src={`${basePath}/js/app.js`}></script>
   </body>
 </html>

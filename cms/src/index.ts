@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { resolve } from "path";
-import { mkdir } from "fs/promises";
+import { mkdir, cp, readdir, stat } from "fs/promises";
 import { existsSync } from "fs";
 import { config } from "./config.js";
 import { getDb } from "./db/index.js";
@@ -14,6 +14,7 @@ import { snapshotRouter } from "./snapshots/routes.js";
 import { publishRouter } from "./publish/routes.js";
 import { previewRouter } from "./preview/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
+import { CONTENT_FILES } from "./content/schemas.js";
 
 const app = express();
 
@@ -29,6 +30,55 @@ async function ensureRuntimeDirectories() {
     mkdir(config.landingBlogDir, { recursive: true }),
     mkdir(uploadsDir, { recursive: true }),
   ]);
+}
+
+async function copyIfSourceIsNewer(sourcePath: string, targetPath: string): Promise<boolean> {
+  try {
+    const sourceStat = await stat(sourcePath);
+    try {
+      const targetStat = await stat(targetPath);
+      if (targetStat.mtimeMs >= sourceStat.mtimeMs) {
+        return false;
+      }
+    } catch {
+      // Target missing; copy below.
+    }
+
+    await cp(sourcePath, targetPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function syncWorkingCopiesFromLanding() {
+  let syncedContent = 0;
+  let syncedBlog = 0;
+
+  for (const filename of CONTENT_FILES) {
+    const updated = await copyIfSourceIsNewer(
+      resolve(config.landingDataDir, filename),
+      resolve(config.currentDataDir, filename)
+    );
+    if (updated) syncedContent++;
+  }
+
+  try {
+    const blogFiles = (await readdir(config.landingBlogDir)).filter((file) => file.endsWith(".md"));
+    for (const filename of blogFiles) {
+      const updated = await copyIfSourceIsNewer(
+        resolve(config.landingBlogDir, filename),
+        resolve(config.currentBlogDir, filename)
+      );
+      if (updated) syncedBlog++;
+    }
+  } catch {
+    // No landing blog directory yet.
+  }
+
+  if (syncedContent > 0 || syncedBlog > 0) {
+    console.log(`[Boot] Synced ${syncedContent} content file(s) and ${syncedBlog} blog file(s) from landing source.`);
+  }
 }
 
 // ── Middleware ──────────────────────────────────────────────
@@ -228,6 +278,7 @@ process.on("SIGTERM", cleanup);
 
 async function boot() {
   await ensureRuntimeDirectories();
+  await syncWorkingCopiesFromLanding();
   getDb();
   await autoSeed();
   app.listen(config.port, config.host, () => {

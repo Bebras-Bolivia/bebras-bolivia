@@ -1,9 +1,10 @@
-import { readdir, cp, mkdir, writeFile } from "fs/promises";
+import { readdir, cp, mkdir, writeFile, readFile } from "fs/promises";
 import { join } from "path";
 import { spawn, type ChildProcess } from "child_process";
 import { config } from "../config.js";
 import { createServer } from "net";
 import { contentSchemas, CONTENT_FILES } from "../content/schemas.js";
+import { preserveDiacritics } from "../content/preserve-text.js";
 
 // ── Dev Server State ──────────────────────────────────────
 let devProcess: ChildProcess | null = null;
@@ -265,7 +266,9 @@ export async function syncFileToLanding(filename: string): Promise<void> {
   await mkdir(config.landingDataDir, { recursive: true });
   const src = join(config.currentDataDir, filename);
   const dest = join(config.landingDataDir, filename);
-  await cp(src, dest);
+  const data = JSON.parse(await readFile(src, "utf-8"));
+  const referenceData = await readJsonIfExists(dest);
+  await writeFile(dest, JSON.stringify(preserveDiacritics(data, referenceData), null, 2) + "\n", "utf-8");
 }
 
 /**
@@ -280,8 +283,10 @@ export async function syncDraftToLanding(
     throw new PreviewError(`Unknown content file: ${filename}`, 404);
   }
 
+  const dest = join(config.landingDataDir, filename);
+  const referenceData = await readJsonIfExists(dest);
   const schema = contentSchemas[filename];
-  const result = schema.safeParse(data);
+  const result = schema.safeParse(preserveDiacritics(data, referenceData));
   if (!result.success) {
     const details = result.error.issues
       .map((i) => `${i.path.join(".")}: ${i.message}`)
@@ -290,8 +295,15 @@ export async function syncDraftToLanding(
   }
 
   await mkdir(config.landingDataDir, { recursive: true });
-  const dest = join(config.landingDataDir, filename);
   await writeFile(dest, JSON.stringify(result.data, null, 2) + "\n", "utf-8");
+}
+
+async function readJsonIfExists(filePath: string): Promise<unknown> {
+  try {
+    return JSON.parse(await readFile(filePath, "utf-8"));
+  } catch {
+    return null;
+  }
 }
 
 /**

@@ -5,13 +5,34 @@
     "href": "/"
   },
   "links": [
-    { "label": "Inicio", "href": "/" },
-    { "label": "Estudiantes", "href": "/estudiantes" },
-    { "label": "Docentes", "href": "/docentes" },
-    { "label": "Preguntas", "href": "/faq" },
-    { "label": "Noticias", "href": "/blog" },
-    { "label": "Patrocinadores", "href": "/sponsors" },
-    { "label": "Contacto", "href": "/contacto" }
+    {
+      "label": "Inicio",
+      "href": "/"
+    },
+    {
+      "label": "Estudiantes",
+      "href": "/estudiantes"
+    },
+    {
+      "label": "Docentes",
+      "href": "/docentes"
+    },
+    {
+      "label": "Preguntas",
+      "href": "/faq"
+    },
+    {
+      "label": "Noticias",
+      "href": "/blog"
+    },
+    {
+      "label": "Patrocinadores",
+      "href": "/sponsors"
+    },
+    {
+      "label": "Contacto",
+      "href": "/contacto"
+    }
   ],
   "cta": {
     "label": "Inscribirse",
@@ -21,28 +42,71 @@
     {
       "title": "Navegación",
       "links": [
-        { "label": "Inicio", "href": "/" },
-        { "label": "Estudiantes", "href": "/estudiantes" },
-        { "label": "Docentes", "href": "/docentes" },
-        { "label": "Preguntas", "href": "/faq" }
+        {
+          "label": "Inicio",
+          "href": "/"
+        },
+        {
+          "label": "Estudiantes",
+          "href": "/estudiantes"
+        },
+        {
+          "label": "Docentes",
+          "href": "/docentes"
+        },
+        {
+          "label": "Preguntas",
+          "href": "/faq"
+        }
       ]
     },
     {
       "title": "Recursos",
       "links": [
-        { "label": "Noticias", "href": "/blog" },
-        { "label": "Patrocinadores", "href": "/sponsors" },
-        { "label": "Contacto", "href": "/contacto" },
-        { "label": "Inscribirse", "href": "/registro" }
+        {
+          "label": "Noticias",
+          "href": "/blog"
+        },
+        {
+          "label": "Patrocinadores",
+          "href": "/sponsors"
+        },
+        {
+          "label": "Contacto",
+          "href": "/contacto"
+        },
+        {
+          "label": "Inscribirse",
+          "href": "/registro"
+        }
       ]
     }
   ],
   "socialLinks": [
-    { "label": "Facebook", "href": "https://facebook.com/bebrasbolivia", "icon": "facebook" },
-    { "label": "Instagram", "href": "https://instagram.com/bebrasbolivia", "icon": "instagram" },
-    { "label": "Email", "href": "mailto:info@bebras.bo", "icon": "email" }
+    {
+      "label": "Facebook",
+      "href": "https://facebook.com/bebrasbolivia",
+      "icon": "facebook"
+    },
+    {
+      "label": "Instagram",
+      "href": "https://instagram.com/bebrasbolivia",
+      "icon": "instagram"
+    },
+    {
+      "label": "Email",
+      "href": "mailto:info@bebras.bo",
+      "icon": "email"
+    }
   ],
   "internationalLinks": [
-    { "label": "Bebras Internacional", "href": "https://www.bebras.org/" }
+    {
+      "label": "Bebras Internacional",
+      "href": "https://www.bebras.org/"
+    },
+    {
+      "label": "Bebras Internacional",
+      "href": "https://www.bebras.org/"
+    }
   ]
 }

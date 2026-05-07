@@ -2,6 +2,7 @@ import { readFile, writeFile, readdir } from "fs/promises";
 import { join } from "path";
 import { config } from "../config.js";
 import { contentSchemas, CONTENT_FILES } from "./schemas.js";
+import { preserveDiacritics } from "./preserve-text.js";
 
 /**
  * List all content file names.
@@ -50,8 +51,9 @@ export async function writeContentFile(
     throw new ContentError(`Unknown content file: ${filename}`, 404);
   }
 
+  const referenceData = await readReferenceContentFile(filename);
   const schema = contentSchemas[filename];
-  const result = schema.safeParse(data);
+  const result = schema.safeParse(preserveDiacritics(data, referenceData));
 
   if (!result.success) {
     const details = result.error.issues
@@ -67,6 +69,18 @@ export async function writeContentFile(
   await writeFile(filePath, JSON.stringify(result.data, null, 2) + "\n", "utf-8");
 
   return { ok: true };
+}
+
+async function readReferenceContentFile(filename: string): Promise<unknown> {
+  for (const dir of [config.landingDataDir, config.currentDataDir]) {
+    try {
+      return JSON.parse(await readFile(join(dir, filename), "utf-8"));
+    } catch {
+      // Missing or invalid reference data should not block saving.
+    }
+  }
+
+  return null;
 }
 
 /**

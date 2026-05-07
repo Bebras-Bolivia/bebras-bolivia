@@ -2,21 +2,21 @@
   "slides": [
     {
       "title": "Inscripciones abiertas para 2026",
-      "description": "El Desafio Bebras Bolivia esta abierto para inscripciones. Docentes y coordinadores pueden registrar a sus estudiantes.",
+      "description": "El Desafío Bebras Bolivia está abierto para inscripciones. Docentes y coordinadores ya pueden registrar a sus estudiantes.",
       "link": "/registro",
       "linkText": "Inscribirse",
       "tag": "Registro"
     },
     {
       "title": "Semana mundial Bebras — Noviembre 2026",
-      "description": "La segunda semana de noviembre es la semana mundial Bebras. Preparate para resolver desafios de pensamiento computacional.",
+      "description": "La segunda semana de noviembre es la semana mundial Bebras. Prepárate para resolver desafíos de pensamiento computacional.",
       "link": "/estudiantes",
-      "linkText": "Mas informacion",
+      "linkText": "Más información",
       "tag": "Evento"
     },
     {
       "title": "Nuevo: Blog de Bebras Bolivia",
-      "description": "Mantente al dia con noticias, recursos y consejos para estudiantes y docentes en nuestro nuevo blog.",
+      "description": "Mantente al día con noticias, recursos y consejos para estudiantes y docentes en nuestro blog.",
       "link": "/blog",
       "linkText": "Leer blog",
       "tag": "Blog"

@@ -1,4 +1,6 @@
 ---
+import { formatInlineRichText } from "@/lib/rich-text";
+
 interface Stat {
   value: string;
   label: string;
@@ -24,7 +26,7 @@ function getColsClass(cols: number) {
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
   <div class="editorial-section overflow-hidden">
-    <div class="mx-auto max-w-3xl relative z-10">
+    <div class="mx-auto max-w-6xl relative z-10">
       {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{heading}</h2>}
       <div class:list={["grid gap-6 mb-12", getColsClass(columns)]}>
@@ -37,7 +39,7 @@ function getColsClass(cols: number) {
       </div>
       {paragraphs.length > 0 && (
         <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
-          {paragraphs.map((p) => <p>{p}</p>)}
+          {paragraphs.map((p) => <p set:html={formatInlineRichText(p)} />)}
         </div>
       )}
     </div>

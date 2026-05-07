@@ -1,8 +1,5 @@
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
-import ArrayActionsView from "../components/ArrayActionsView";
-import ArrayItemActionsView from "../components/ArrayItemActionsView";
-import ArrayCollapseToggleView from "../components/ArrayCollapseToggleView";
 import ComplexNodesView, { type ComplexNode } from "../components/ComplexNodesView";
 
 type PrimitivesPayload = {
@@ -22,19 +19,11 @@ type PrimitivesPayload = {
   onFieldChange: (path: string, value: string | number | boolean) => void;
   onInitPreview: () => void;
   onInitComplex: (el: HTMLElement) => void;
-  getArrayActionTargets?: () => Array<{
-    id: string;
-    options: Array<{ value: string; label: string }>;
-    mode?: "select" | "button";
-    buttonLabel?: string;
-  }>;
-  onAddArrayItem?: (id: string, selectedType: string | null) => void;
-  getArrayItemActionTargets?: () => Array<{ id: string; inline?: boolean }>;
-  onRemoveArrayItem?: (id: string) => void;
-  getArrayCollapseTargets?: () => Array<{ id: string; expanded: boolean }>;
-  onToggleArrayCollapse?: (id: string) => void;
+  onAddArrayItem?: (path: string, selectedType: string | null, componentPicker?: boolean) => void;
+  onRemoveArrayItem?: (path: string, idx: number) => void;
+  onToggleArrayCollapse?: (itemPath: string, expanded: boolean) => void;
+  onMoveArrayItem?: (path: string, fromIdx: number, toIdx: number) => void;
   complexNodes?: ComplexNode[];
-  onArrayMount?: (path: string, el: HTMLElement) => void;
 };
 
 const roots = new WeakMap<Element, Root>();
@@ -146,14 +135,11 @@ function EditorPrimitivesView({
   onFieldChange,
   onInitPreview,
   onInitComplex,
-  getArrayActionTargets,
   onAddArrayItem,
-  getArrayItemActionTargets,
   onRemoveArrayItem,
-  getArrayCollapseTargets,
   onToggleArrayCollapse,
+  onMoveArrayItem,
   complexNodes = [],
-  onArrayMount,
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
   const [saving, setSaving] = React.useState(false);
@@ -163,90 +149,7 @@ function EditorPrimitivesView({
     if (complexRef.current) {
       onInitComplex(complexRef.current);
     }
-
-    if (complexRef.current && onAddArrayItem && getArrayActionTargets) {
-      const targets = getArrayActionTargets();
-      targets.forEach((target) => {
-        const slot = complexRef.current?.querySelector(`[data-array-action-placeholder="${target.id}"]`);
-        if (!slot) return;
-        let root = roots.get(slot);
-        if (!root) {
-          root = createRoot(slot);
-          roots.set(slot, root);
-        }
-        root.render(
-          <ArrayActionsView
-            options={target.options}
-            showSelect={target.mode !== "button"}
-            buttonLabel={target.buttonLabel}
-            onAdd={(selectedType) => {
-              onAddArrayItem(target.id, selectedType);
-            }}
-          />
-        );
-      });
-    }
-
-    if (complexRef.current && onArrayMount) {
-      complexNodes.forEach((node) => {
-        if (node.kind !== "array") return;
-        const slot = complexRef.current?.querySelector(`[data-complex-array-path="${node.path}"]`);
-        if (!slot) return;
-        onArrayMount(node.path, slot as HTMLElement);
-      });
-    }
-
-    if (complexRef.current && onRemoveArrayItem && getArrayItemActionTargets) {
-      const targets = getArrayItemActionTargets();
-      targets.forEach((target) => {
-        const slot = complexRef.current?.querySelector(`[data-array-item-action-placeholder="${target.id}"]`);
-        if (!slot) return;
-        let root = roots.get(slot);
-        if (!root) {
-          root = createRoot(slot);
-          roots.set(slot, root);
-        }
-        root.render(
-          <ArrayItemActionsView
-            trashIcon={icons.trash || ""}
-            inline={Boolean(target.inline)}
-            onRemove={() => onRemoveArrayItem(target.id)}
-          />
-        );
-      });
-    }
-
-    if (complexRef.current && onToggleArrayCollapse && getArrayCollapseTargets) {
-      const targets = getArrayCollapseTargets();
-      targets.forEach((target) => {
-        const slot = complexRef.current?.querySelector(`[data-array-collapse-placeholder="${target.id}"]`);
-        if (!slot) return;
-        let root = roots.get(slot);
-        if (!root) {
-          root = createRoot(slot);
-          roots.set(slot, root);
-        }
-        root.render(
-          <ArrayCollapseToggleView
-            arrowIcon={icons.arrow || ""}
-            expanded={target.expanded}
-            onToggle={() => onToggleArrayCollapse(target.id)}
-          />
-        );
-      });
-    }
-  }, [
-    onInitPreview,
-    onInitComplex,
-    onAddArrayItem,
-    getArrayActionTargets,
-    onRemoveArrayItem,
-    getArrayItemActionTargets,
-    onToggleArrayCollapse,
-    getArrayCollapseTargets,
-    complexNodes,
-    onArrayMount,
-  ]);
+  }, [onInitPreview, onInitComplex]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -293,7 +196,15 @@ function EditorPrimitivesView({
           ))}
           <div ref={complexRef}>
             {complexNodes.length > 0 ? (
-              <ComplexNodesView nodes={complexNodes} />
+              <ComplexNodesView
+                nodes={complexNodes}
+                icons={icons}
+                onFieldChange={onFieldChange}
+                onAddArrayItem={onAddArrayItem || (() => {})}
+                onRemoveArrayItem={onRemoveArrayItem || (() => {})}
+                onToggleArrayCollapse={onToggleArrayCollapse || (() => {})}
+                onMoveArrayItem={onMoveArrayItem || (() => {})}
+              />
             ) : null}
           </div>
         </div>

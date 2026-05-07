@@ -1,17 +1,17 @@
 {
   "badge": "Inscripciones abiertas 2026",
   "headline": {
-    "line1": "Desafio",
+    "line1": "Desafío",
     "line2": "Bebras",
     "line3": "Bolivia"
   },
-  "subtitle": "Promovemos el pensamiento computacional entre estudiantes de 6 a 18 anos a traves de desafios divertidos, logicos y accesibles para todos.",
+  "subtitle": "Promovemos el pensamiento computacional entre estudiantes de 6 a 18 años a través de desafíos divertidos, lógicos y accesibles para todos.",
   "ctaPrimary": {
     "label": "Participa ahora",
     "href": "/registro"
   },
   "ctaSecondary": {
-    "label": "Conoce mas",
+    "label": "Conoce más",
     "href": "/estudiantes"
   },
   "mascot": {
@@ -21,11 +21,11 @@
   "stats": [
     {
       "value": "60+",
-      "label": "Paises"
+      "label": "Países"
     },
     {
       "value": "6",
-      "label": "Categorias"
+      "label": "Categorías"
     },
     {
       "value": "45",

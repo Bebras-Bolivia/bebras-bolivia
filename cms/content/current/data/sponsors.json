@@ -1,54 +1,30 @@
 {
   "header": {
-    "pageTitle": "Sponsors",
-    "pageDescription": "Patrocinadores y organizaciones que apoyan el Desafio Bebras Bolivia.",
+    "pageTitle": "Patrocinadores",
+    "pageDescription": "Patrocinadores y organizaciones que apoyan el Desafío Bebras Bolivia.",
     "tag": "Aliados",
-    "heading": "Nuestros Patrocinadores",
-    "subtitle": "Bebras Bolivia es posible gracias al apoyo de instituciones comprometidas con la educacion."
+    "heading": "Nuestros patrocinadores",
+    "subtitle": "Bebras Bolivia es posible gracias al apoyo de instituciones comprometidas con la educación."
   },
   "components": [
     {
-      "type": "itemsGrid",
-      "tag": "Institucion Organizadora",
-      "columns": 1,
-      "mediaType": "image",
-      "items": [
-        {
-          "title": "Universidad Placeholder",
-          "description": "Institucion ancla que coordina y organiza el Desafio Bebras en Bolivia, proporcionando infraestructura academica y soporte tecnico para todas las actividades.",
-          "image": "/images/university-placeholder.svg"
-        }
-      ]
-    },
-    {
-      "type": "itemsGrid",
-      "tag": "Patrocinadores y Aliados",
-      "columns": 3,
-      "mediaType": "image",
-      "items": [
-        {
-          "title": "Sponsor 1",
-          "description": "Descripcion breve del patrocinador y su relacion con la educacion.",
-          "image": "/images/sponsor-placeholder.svg"
-        },
-        {
-          "title": "Sponsor 2",
-          "description": "Descripcion breve del patrocinador y su contribucion al proyecto.",
-          "image": "/images/sponsor-placeholder.svg"
-        },
-        {
-          "title": "Sponsor 3",
-          "description": "Descripcion breve del patrocinador y como apoya la iniciativa.",
-          "image": "/images/sponsor-placeholder.svg"
-        }
-      ]
+      "type": "organizerInstitution",
+      "tag": "Institución organizadora",
+      "name": "Universidad Mayor de San Simón",
+      "acronym": "UMSS",
+      "location": "Cochabamba, Bolivia",
+      "role": "Institución anfitriona del Desafío Bebras Bolivia",
+      "description": "Coordina la organización local del desafío y aporta infraestructura, docentes y voluntarios.",
+      "image": "/images/sponsors/marcaHorizontal_umss.png",
+      "linkLabel": "umss.edu.bo",
+      "linkHref": "https://www.umss.edu.bo"
     },
     {
       "type": "cta",
       "tag": "Colabora",
-      "heading": "Te interesa patrocinar Bebras Bolivia?",
-      "text": "Unete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",
-      "buttonLabel": "Contactanos",
+      "heading": "¿Te interesa patrocinar Bebras Bolivia?",
+      "text": "Únete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",
+      "buttonLabel": "Contáctanos",
       "buttonHref": "/contacto"
     }
   ]

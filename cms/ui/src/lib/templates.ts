@@ -6,6 +6,7 @@ import { getNestedValue, generateUniqueSlug } from "./path-helpers";
 
 // ── Route mapping ────────────────────────────────────────
 export const fileToPage: Record<string, string> = {
+  "home.json": "/",
   "site.json": "/",
   "navigation.json": "/",
   "hero.json": "/",
@@ -59,13 +60,15 @@ export const fieldHints: Record<string, string> = {
 // ── Select field options ─────────────────────────────────
 export const selectOptions: Record<string, string[]> = {
   variant: ["button", "link"],
+  style: ["primary", "secondary"],
   status: ["positive", "neutral", "negative"],
-  icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share"],
-  color: ["emerald", "amber", "sky", "violet", "rose", "orange", "indigo"],
+  icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share", "school", "brain"],
+  color: ["emerald", "amber", "sky", "violet", "rose", "indigo"],
+  imageKey: ["guacamayo", "capibara", "titi", "jucumari", "yaguarete"],
 };
 
 // ── Hidden fields ────────────────────────────────────────
-export const hiddenFields = new Set(["id", "pageTitle", "pageDescription"]);
+export const hiddenFields = new Set(["id"]);
 
 // ── Component option type ────────────────────────────────
 export type ComponentOption = {
@@ -77,6 +80,7 @@ export type ComponentOption = {
 // ── Component options for "add component" modal ──────────
 const componentOptionsList: ComponentOption[] = [
   { value: "sectionRichText", label: "Seccion de Texto", description: "Titulo, parrafos y tip opcional" },
+  { value: "organizerInstitution", label: "Institucion organizadora", description: "Bloque destacado de institucion o sponsor" },
   { value: "itemsGridIcon", label: "Grid cards + icono", description: "Cards con icono visual" },
   { value: "itemsGridImage", label: "Grid cards + imagen", description: "Cards con imagen" },
   { value: "itemsGridNumber", label: "Grid cards + numero", description: "Cards tipo pasos numerados" },
@@ -131,7 +135,21 @@ export function isAutoNumberField(path: string, currentData: unknown): boolean {
 }
 
 export function isCollapsibleArray(path: string): boolean {
-  return path === "components" || path.endsWith(".components");
+  return ["components", "sections", "pages", "blocks", "links", "footerColumns", "socialLinks", "internationalLinks"].includes(path)
+    || path.endsWith(".components")
+    || path.endsWith(".sections")
+    || path.endsWith(".pages")
+    || path.endsWith(".blocks")
+    || path.endsWith(".links")
+    || path.endsWith(".items")
+    || path.endsWith(".cards")
+    || path.endsWith(".stats")
+    || path.endsWith(".categories")
+    || path.endsWith(".rows")
+    || path.endsWith(".summaryCards")
+    || path.endsWith(".slides")
+    || path.endsWith(".tabs")
+    || path.endsWith(".paragraphs");
 }
 
 // ── Array item labels ────────────────────────────────────
@@ -145,6 +163,11 @@ const typeLabelMap: Record<string, string> = {
   contactInternational: "Contacto Internacional",
   contactForm: "Contacto Formulario",
   contactClassic: "Contacto Clasico",
+  organizerInstitution: "Institucion Organizadora",
+  introEditorial: "Inicio: Texto editorial",
+  homeAgeCategories: "Inicio: Categorias",
+  homeDualCta: "Inicio: CTA doble",
+  aboutBebrasEditorial: "Inicio: Sobre Bebras",
   docentesRegistro: "Docentes Registro",
   docentesRequisitos: "Docentes Requisitos",
   docentesAlcance: "Docentes Alcance",
@@ -194,6 +217,15 @@ export function getAddTypeOptions(
       { value: "cardsGrid", label: "Grid de cards" },
       { value: "tip", label: "Tip / cita" },
       { value: "cta", label: "CTA (boton o enlace)" },
+    ];
+  }
+
+  if (currentFile === "home.json" && path === "sections") {
+    return [
+      { value: "introEditorial", label: "Inicio: Texto editorial" },
+      { value: "homeAgeCategories", label: "Inicio: Categorias" },
+      { value: "homeDualCta", label: "Inicio: CTA doble" },
+      { value: "aboutBebrasEditorial", label: "Inicio: Sobre Bebras" },
     ];
   }
 
@@ -341,6 +373,10 @@ export function createTypedArrayItem(
     return _customPageBlock(selectedType);
   }
 
+  if (currentFile === "home.json" && path === "sections") {
+    return _homeSection(selectedType);
+  }
+
   // ── Shared page components ──
   if (path === "components") {
     return _componentTemplate(selectedType);
@@ -425,6 +461,52 @@ function _customPageBlock(type: string): unknown | null {
   return null;
 }
 
+function _homeSection(type: string): unknown | null {
+  const map: Record<string, () => unknown> = {
+    introEditorial: () => ({
+      type: "introEditorial",
+      number: "01",
+      kicker: "Capitulo",
+      asideText: "Texto lateral de la seccion.",
+      headingPrefix: "Titulo",
+      headingEmphasis: "destacado",
+      paragraphs: ["Parrafo principal.", "Parrafo secundario."],
+    }),
+    homeAgeCategories: () => ({
+      type: "homeAgeCategories",
+      number: "02",
+      kicker: "Categorias",
+      asideText: "Descripcion lateral.",
+      headingPrefix: "Categorias por",
+      headingEmphasis: "edad",
+      linkLabel: "Ver mas",
+      linkHref: "/estudiantes",
+      items: [
+        { name: "Guacamayo", range: "5 a 8 anos", color: "rose", imageKey: "guacamayo", author: "Autor", authorUrl: "https://example.com" },
+      ],
+    }),
+    homeDualCta: () => ({
+      type: "homeDualCta",
+      cards: [
+        { audience: "Docentes", style: "primary", icon: "school", headingPrefix: "Titulo", headingEmphasis: "destacado", headingSuffix: "final", linkLabel: "Ver mas", href: "/registro" },
+        { audience: "Estudiantes", style: "secondary", icon: "brain", headingPrefix: "Titulo", headingEmphasis: "destacado", headingSuffix: "?", linkLabel: "Ver mas", href: "/estudiantes" },
+      ],
+    }),
+    aboutBebrasEditorial: () => ({
+      type: "aboutBebrasEditorial",
+      number: "03",
+      kicker: "Iniciativa internacional",
+      asideText: "Texto lateral.",
+      headingPrefix: "Sobre",
+      headingEmphasis: "Bebras",
+      paragraphs: ["Parrafo de contenido."],
+    }),
+  };
+
+  const factory = map[type];
+  return factory ? factory() : null;
+}
+
 // ── Private: shared component templates ──────────────────
 
 function _componentTemplate(type: string): unknown | null {
@@ -440,6 +522,18 @@ function _componentTemplate(type: string): unknown | null {
     sectionRichText: () => ({
       type: "sectionRichText", tag: "Seccion", heading: "Titulo de seccion",
       paragraphs: ["Parrafo de ejemplo"], tip: "Tip opcional", linkLabel: "", linkHref: "",
+    }),
+    organizerInstitution: () => ({
+      type: "organizerInstitution",
+      tag: "Institucion organizadora",
+      name: "Nombre de la institucion",
+      acronym: "SIGLA",
+      location: "Bolivia",
+      role: "Rol dentro de Bebras Bolivia",
+      description: "Descripcion de la institucion y su aporte.",
+      image: "/images/sponsor-placeholder.svg",
+      linkLabel: "sitio-web.org",
+      linkHref: "https://example.com",
     }),
     itemsGrid: () => ({
       type: "itemsGrid", tag: "Cards", heading: "Titulo de cards", intro: "Texto introductorio opcional",

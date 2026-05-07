@@ -1,19 +1,31 @@
 <script>
+  import { registerApiClient } from "../scripts/api-client";
   import { registerEditorLib } from "../scripts/editor-lib-client";
+  import { registerEditorPreview } from "../scripts/editor-preview-client";
+  import { registerEditorController } from "../scripts/editor-controller-client";
   import { registerDashboardRenderer } from "../scripts/dashboard-client";
   import { registerBlogRenderer } from "../scripts/blog-client";
+  import { registerBlogController } from "../scripts/blog-controller-client";
   import { registerSnapshotsRenderer } from "../scripts/snapshots-client";
+  import { registerSnapshotsController } from "../scripts/snapshots-controller-client";
   import { registerEditorRenderer } from "../scripts/editor-client";
   import { registerSidebarRenderer } from "../scripts/sidebar-client";
   import { registerModalRenderer } from "../scripts/modal-client";
   import { registerMediaPickerRenderer } from "../scripts/media-picker-client";
+  import { registerAppController } from "../scripts/app-controller-client";
 
+  registerApiClient();
   registerEditorLib();
+  registerEditorPreview();
+  registerEditorController();
   registerDashboardRenderer();
   registerBlogRenderer();
+  registerBlogController();
   registerSnapshotsRenderer();
+  registerSnapshotsController();
   registerEditorRenderer();
   registerSidebarRenderer();
   registerModalRenderer();
   registerMediaPickerRenderer();
+  registerAppController();
 </script>
