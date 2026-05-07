@@ -118,7 +118,7 @@ export function BebrasBeaverShowcase() {
   return (
     <>
       <div className="mx-auto flex w-full max-w-xl justify-center lg:justify-end ">
-        <div className="relative beaver-entry w-[240px] sm:w-[320px] lg:w-[420px]">
+        <div className="relative beaver-entry w-[180px] sm:w-[260px] lg:w-[330px]">
           <div className="beaver-idle">
             <img
               src={castorImage.src}
