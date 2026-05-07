@@ -7,6 +7,9 @@ export default defineConfig({
   integrations: [react()],
   output: "static",
   base,
+  build: {
+    assets: "cms-assets",
+  },
   outDir: "../ui-dist",
   publicDir: "../public",
   vite: {
