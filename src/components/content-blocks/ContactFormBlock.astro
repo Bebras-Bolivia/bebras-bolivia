@@ -24,13 +24,13 @@ interface Props {
 const { data } = Astro.props;
 ---
 
-<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section">
     <div class="mx-auto max-w-3xl">
-      <div class="editorial-callout px-6 py-8 lg:px-10 lg:py-10 h-full">
+      <div class="editorial-callout px-6 py-6 lg:px-8 lg:py-8 h-full">
         <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{data.tag}</p>
         <h2 class="text-3xl font-bold text-foreground mb-8 tracking-tight">{data.heading}</h2>
-        <form class="space-y-6" onsubmit="event.preventDefault()">
+        <form class="space-y-4" onsubmit="event.preventDefault()">
           <div>
             <label for="name" class="block text-xs uppercase tracking-[0.15em] font-bold text-muted-foreground mb-3">{data.fields.name.label}</label>
             <input type="text" id="name" name="name" placeholder={data.fields.name.placeholder} class="w-full rounded-2xl border border-border bg-white px-5 py-4 text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-medium" />

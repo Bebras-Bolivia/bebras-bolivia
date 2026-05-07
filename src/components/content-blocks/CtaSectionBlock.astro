@@ -10,13 +10,13 @@ interface Props {
 const { tag, heading, text, buttonLabel, buttonHref } = Astro.props;
 ---
 
-<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section text-center">
     <div class="mx-auto max-w-6xl">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
-      <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{heading}</h2>
-      <p class="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">{text}</p>
-      <a href={buttonHref} class="group inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.03] hover:bg-primary/90">
+      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{tag}</p>}
+      <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-4 tracking-tight">{heading}</h2>
+      <p class="text-xl text-muted-foreground mb-7 max-w-2xl mx-auto leading-relaxed">{text}</p>
+      <a href={buttonHref} class="group inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.03] hover:bg-primary/90">
         {buttonLabel}
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>

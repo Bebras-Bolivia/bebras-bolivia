@@ -76,8 +76,8 @@ const dotColor: Record<string, string> = {
 >
 	<BebrasBoliviaHome hero={(homeData as any).hero} client:load />
 
-	<main class="relative z-10 w-full bg-cream dark:bg-zinc-950 pb-24 pt-14 lg:pt-20 grain-paper">
-		<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-16">
+	<main class="relative z-10 w-full bg-cream dark:bg-zinc-950 pb-16 pt-10 lg:pt-14 grain-paper">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-12">
 			<div class="editorial-rule text-foreground/40">
 				<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
 			</div>
@@ -89,8 +89,8 @@ const dotColor: Record<string, string> = {
 						if (section.type === "introEditorial") {
 							const introParagraphs = getIntroParagraphs(section);
 							content = (
-								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
-									<div class="grid grid-cols-12 gap-6 lg:gap-10">
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
+									<div class="grid grid-cols-12 gap-6 lg:gap-8">
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
 												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "01"}</span>
@@ -100,8 +100,8 @@ const dotColor: Record<string, string> = {
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">{section.headingPrefix || "Sobre el"} <em class="italic text-primary">{section.headingEmphasis || "desafío"}</em></h2>
-											<div class="space-y-6 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre el"} <em class="italic text-primary">{section.headingEmphasis || "desafío"}</em></h2>
+											<div class="space-y-4 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
 												{introParagraphs.map((paragraph: string, pidx: number) => <p class:list={pidx === 0 ? ["first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:text-primary first-letter:font-normal"] : []} set:html={formatInlineRichText(paragraph)} />)}
 											</div>
 										</div>
@@ -111,8 +111,8 @@ const dotColor: Record<string, string> = {
 						} else if (section.type === "homeAgeCategories") {
 							const ageGroups = getAgeGroups(section);
 							content = (
-								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
-									<div class="grid grid-cols-12 gap-6 lg:gap-10">
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
+									<div class="grid grid-cols-12 gap-6 lg:gap-8">
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
 												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "02"}</span>
@@ -122,7 +122,7 @@ const dotColor: Record<string, string> = {
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class="italic text-primary">{section.headingEmphasis || "edad"}</em></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class="italic text-primary">{section.headingEmphasis || "edad"}</em></h2>
 											<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 												{ageGroups.map((g, i) => (
 													<div class="group content-card overflow-hidden">
@@ -143,19 +143,19 @@ const dotColor: Record<string, string> = {
 													</div>
 												))}
 											</div>
-											<div class="mt-10"><a href={section.linkHref || "/estudiantes"} class="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary">{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
+											<div class="mt-6"><a href={section.linkHref || "/estudiantes"} class="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary">{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
 										</div>
 									</div>
 								</section>
 							);
 						} else if (section.type === "homeDualCta") {
 							content = (
-								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-28 lg:mb-36">
+								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
 									<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
 										{(section.cards || []).map((card: any) => {
 											const ui = getHomeCtaCardClasses(card.style);
 											const Icon = card.icon === "school" ? School : Brain;
-											return <a href={card.href || "/"} class={ui.wrapper}><div class="flex items-start justify-between gap-4 mb-20"><p class={ui.audience}>{card.audience || "Seccion"}</p><Icon className={ui.iconClass} strokeWidth={1.8} aria-hidden="true" /></div><p class="serif-display text-3xl sm:text-4xl leading-[1.05]">{card.headingPrefix || "Titulo"} <em class={ui.emphasisClass}>{card.headingEmphasis || "destacado"}</em>{ui.breakLine ? <br /> : null}{card.headingSuffix || ""}</p><div class={ui.link}>{card.linkLabel || "Ver mas"}<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span></div></a>;
+											return <a href={card.href || "/"} class={ui.wrapper}><div class="flex items-start justify-between gap-4 mb-10"><p class={ui.audience}>{card.audience || "Seccion"}</p><Icon className={ui.iconClass} strokeWidth={1.8} aria-hidden="true" /></div><p class="serif-display text-3xl sm:text-4xl leading-[1.05]">{card.headingPrefix || "Titulo"} <em class={ui.emphasisClass}>{card.headingEmphasis || "destacado"}</em>{ui.breakLine ? <br /> : null}{card.headingSuffix || ""}</p><div class={ui.link}>{card.linkLabel || "Ver mas"}<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span></div></a>;
 										})}
 									</div>
 								</section>
@@ -163,7 +163,7 @@ const dotColor: Record<string, string> = {
 						} else if (section.type === "aboutBebrasEditorial") {
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6">
-									<div class="grid grid-cols-12 gap-6 lg:gap-10">
+									<div class="grid grid-cols-12 gap-6 lg:gap-8">
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
 												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "03"}</span>
@@ -173,8 +173,8 @@ const dotColor: Record<string, string> = {
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-10 leading-[0.95]">{section.headingPrefix || "Sobre"} <em class="italic text-primary">{section.headingEmphasis || "Bebras"}</em><BadgeCheck className="inline-block size-6 align-top text-primary/80" strokeWidth={1.8} aria-hidden="true" /></h2>
-											<div class="max-w-3xl space-y-5 text-lg text-foreground/80 leading-[1.65]">{(section.paragraphs || []).map((paragraph: string) => <p set:html={formatInlineRichText(paragraph)} />)}</div>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre"} <em class="italic text-primary">{section.headingEmphasis || "Bebras"}</em><BadgeCheck className="inline-block size-6 align-top text-primary/80" strokeWidth={1.8} aria-hidden="true" /></h2>
+											<div class="max-w-3xl space-y-4 text-lg text-foreground/80 leading-[1.65]">{(section.paragraphs || []).map((paragraph: string) => <p set:html={formatInlineRichText(paragraph)} />)}</div>
 										</div>
 									</div>
 								</section>
@@ -185,7 +185,7 @@ const dotColor: Record<string, string> = {
 
 						return <>
 							{content}
-							{idx < sections.length - 1 ? <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-16"><div class="editorial-rule text-foreground/40"><Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" /></div></div> : null}
+							{idx < sections.length - 1 ? <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10"><div class="editorial-rule text-foreground/40"><Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" /></div></div> : null}
 						</>;
 					})}
 

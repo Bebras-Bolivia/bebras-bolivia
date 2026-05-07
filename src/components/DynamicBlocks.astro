@@ -53,7 +53,7 @@ function getCardsColumnsClass(columns: number) {
 }
 ---
 
-<div class="space-y-16 lg:space-y-20">
+<div class="space-y-10 lg:space-y-14">
   {blocks.map((block) => {
     if (block.type === "text") {
       return (
@@ -62,8 +62,8 @@ function getCardsColumnsClass(columns: number) {
             {block.sectionTag && (
               <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
             )}
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
-            <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
+            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-5 tracking-tight">{block.heading}</h2>
+            <div class="space-y-4 text-xl text-muted-foreground leading-relaxed">
               {block.paragraphs.map((p) => <p set:html={formatInlineRichText(p)} />)}
             </div>
           </div>
@@ -79,8 +79,8 @@ function getCardsColumnsClass(columns: number) {
             {block.sectionTag && (
               <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
             )}
-            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-12 tracking-tight">{block.heading}</h2>
-            <div class:list={["grid gap-6", colsClass]}>
+            <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{block.heading}</h2>
+            <div class:list={["grid gap-5", colsClass]}>
               {block.cards.map((card) => (
                 <div class="content-card p-6">
                   <p class="text-xl font-bold text-foreground mb-3">{card.title}</p>
@@ -101,7 +101,7 @@ function getCardsColumnsClass(columns: number) {
               <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
             )}
             {block.heading && (
-              <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{block.heading}</h2>
+              <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-5 tracking-tight">{block.heading}</h2>
             )}
             <div class="editorial-callout px-6 py-5">
               <p class="text-lg text-foreground font-medium italic leading-relaxed" set:html={formatInlineRichText(block.text)} />
@@ -117,14 +117,14 @@ function getCardsColumnsClass(columns: number) {
           {block.sectionTag && (
             <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{block.sectionTag}</p>
           )}
-          <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{block.heading}</h2>
+          <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-4 tracking-tight">{block.heading}</h2>
           {block.text && (
-            <p class="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" set:html={formatInlineRichText(block.text)} />
+            <p class="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto leading-relaxed" set:html={formatInlineRichText(block.text)} />
           )}
           {block.variant === "button" ? (
             <a
               href={block.action.href}
-              class="inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-6 text-xl font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.03] hover:bg-primary/90"
+              class="inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.03] hover:bg-primary/90"
             >
               {block.action.label}
             </a>

@@ -13,20 +13,20 @@ interface Props {
 const { tag, heading, paragraphs = [], tip, linkLabel, linkHref } = Astro.props;
 ---
 
-<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-16 lg:mb-24">
+<section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section">
     <div class="mx-auto max-w-6xl">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
-      {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
-      <div class="space-y-6 text-xl text-muted-foreground leading-relaxed">
+      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{tag}</p>}
+      {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-5 tracking-tight">{heading}</h2>}
+      <div class="space-y-4 text-xl text-muted-foreground leading-relaxed">
         {paragraphs.map((p) => <p set:html={formatInlineRichText(p)} />)}
         {tip && (
-          <div class="editorial-callout px-6 py-5 mt-10">
+          <div class="editorial-callout px-6 py-5 mt-6">
             <p class="text-lg text-foreground font-medium italic leading-relaxed" set:html={formatInlineRichText(tip)} />
           </div>
         )}
         {linkLabel && linkHref && (
-          <p class="mt-8">
+          <p class="mt-6">
             <a href={linkHref} class="inline-flex items-center text-primary font-bold group text-xl transition-all">
               {linkLabel}
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

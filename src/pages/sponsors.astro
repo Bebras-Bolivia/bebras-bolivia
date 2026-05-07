@@ -10,7 +10,7 @@ const components: any[] = Array.isArray(sponsorsData.components) ? sponsorsData.
 
 <Layout title={header.pageTitle || "Patrocinadores"} description={header.pageDescription || "Patrocinadores y aliados de Bebras Bolivia."}>
   <div class="relative w-full">
-    <div class="relative w-full flex flex-col justify-center items-center pt-10 pb-16 sm:pt-14 sm:pb-20">
+    <div class="relative w-full flex flex-col justify-center items-center pt-8 pb-10 sm:pt-10 sm:pb-14">
       <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
         <p class="text-xs uppercase tracking-[0.25em] font-bold text-white/80 mb-3">{header.tag}</p>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-sm">
@@ -19,7 +19,7 @@ const components: any[] = Array.isArray(sponsorsData.components) ? sponsorsData.
       </div>
     </div>
 
-    <main class="relative z-10 w-full min-h-screen bg-cream dark:bg-zinc-950 pb-32 pt-14 lg:pt-20 grain-paper">
+    <main class="relative z-10 w-full min-h-screen bg-cream dark:bg-zinc-950 pb-20 pt-10 lg:pt-14 grain-paper">
       <PageComponentsRenderer components={components} />
     </main>
   </div>

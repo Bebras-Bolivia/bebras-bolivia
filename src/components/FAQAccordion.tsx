@@ -21,10 +21,10 @@ interface Props {
 
 export default function FAQAccordion({ categories }: Props) {
   return (
-    <div className="mx-auto w-full max-w-6xl py-10 lg:py-14">
+    <div className="mx-auto w-full max-w-6xl py-6 lg:py-8">
       {categories.map((category, catIdx) => (
-        <div key={catIdx} className={catIdx > 0 ? "mt-16 lg:mt-20" : ""}>
-          <div className="mb-7 flex items-center gap-4">
+        <div key={catIdx} className={catIdx > 0 ? "mt-10 lg:mt-12" : ""}>
+          <div className="mb-5 flex items-center gap-4">
             <span className="inline-flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-sm font-bold uppercase tracking-wider text-primary">
               {String(catIdx + 1).padStart(2, "0")}
             </span>
@@ -36,11 +36,11 @@ export default function FAQAccordion({ categories }: Props) {
           <Accordion type="multiple">
             {category.items.map((item, itemIdx) => (
               <AccordionItem key={itemIdx} value={`cat${catIdx}-item${itemIdx}`} className="border-b border-border">
-                <AccordionTrigger className="py-5 text-left text-lg font-bold text-foreground hover:no-underline sm:text-xl">
+                <AccordionTrigger className="py-4 text-left text-lg font-bold text-foreground hover:no-underline sm:text-xl">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="max-w-3xl pb-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  <p className="max-w-3xl pb-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
                     {item.answer}
                   </p>
                 </AccordionContent>

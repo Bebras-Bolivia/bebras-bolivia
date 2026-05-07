@@ -30,12 +30,12 @@ export default function TeacherInstructions({ sectionTag, heading, subtitle, tab
         <h2 className="text-3xl font-bold text-foreground mb-2 text-center tracking-tight">
           {heading}
         </h2>
-        <p className="text-center text-muted-foreground mb-10">
+        <p className="text-center text-muted-foreground mb-6">
           {subtitle}
         </p>
 
         <Tabs defaultValue={tabs[0]?.id}>
-          <TabsList className="w-full grid grid-cols-3 mb-8">
+          <TabsList className="w-full grid grid-cols-3 mb-6">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.id} value={tab.id}>{tab.label}</TabsTrigger>
             ))}
@@ -44,10 +44,10 @@ export default function TeacherInstructions({ sectionTag, heading, subtitle, tab
           {tabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id}>
               <div className="editorial-callout p-7">
-                <h3 className="text-lg font-bold text-foreground mb-5">
+                <h3 className="text-lg font-bold text-foreground mb-4">
                   {tab.heading}
                 </h3>
-                <ul className="space-y-5 text-muted-foreground">
+                <ul className="space-y-4 text-muted-foreground">
                   {tab.items.map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
                       <span className="flex items-center justify-center size-7 shrink-0 rounded-2xl bg-primary/10 text-primary text-xs font-bold mt-0.5 font-mono">

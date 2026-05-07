@@ -179,7 +179,7 @@ function mapLegacyToUnified(component: any) {
       categories: Array.isArray(component?.categories) ? component.categories : categoriesData.categories,
     };
     return (
-      <div class="reveal-section w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+      <div class="reveal-section w-full mx-auto max-w-6xl mb-8 lg:mb-10 px-4 sm:px-6">
         <AgeCategories data={categoryPayload} />
       </div>
     );
@@ -194,7 +194,7 @@ function mapLegacyToUnified(component: any) {
       summaryCards: Array.isArray(component?.summaryCards) ? component.summaryCards : scoringData.summaryCards,
     };
     return (
-      <div class="reveal-section w-full mx-auto max-w-6xl mb-16 lg:mb-24 px-4 sm:px-6">
+      <div class="reveal-section w-full mx-auto max-w-6xl mb-8 lg:mb-10 px-4 sm:px-6">
         <ScoringTable data={scoringPayload} />
       </div>
     );

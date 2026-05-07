@@ -177,7 +177,7 @@
 
   .editorial-section {
     position: relative;
-    padding-block: clamp(3.5rem, 8vw, 6.5rem);
+    padding-block: clamp(1.75rem, 3.5vw, 3rem);
     border-top: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
   }
 
