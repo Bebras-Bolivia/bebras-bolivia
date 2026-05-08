@@ -92,6 +92,13 @@ export async function startDevServer(): Promise<StartPreviewResult> {
   // First, sync content to landing so the dev server has current data
   await syncContentToLanding();
 
+  if (!config.isDev) {
+    devServerStarting = false;
+    devServerReady = false;
+    devServerError = null;
+    return { ok: true, port: null, mode: "static" };
+  }
+
   const cmd = getAstroCommand();
   if (!cmd) {
     console.warn("[Preview] Astro executable not found; using static preview fallback.");
