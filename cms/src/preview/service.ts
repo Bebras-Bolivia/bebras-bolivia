@@ -31,7 +31,7 @@ export function getPreviewStatus(): PreviewStatus {
     starting: devServerStarting,
     port: devServerPort,
     error: devServerError,
-    mode: config.isDev && devServerReady ? "dev" : "static",
+    mode: devServerReady ? "dev" : "static",
   };
 }
 
