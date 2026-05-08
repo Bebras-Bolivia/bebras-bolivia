@@ -1,5 +1,6 @@
 import { readdir, cp, mkdir, readFile, writeFile } from "fs/promises";
-import { join } from "path";
+import { existsSync } from "fs";
+import { join, resolve as resolvePath } from "path";
 import { execFile } from "child_process";
 import { config } from "../config.js";
 import { getDb, type PublishLogRow } from "../db/index.js";
@@ -155,18 +156,40 @@ async function copyJsonPreservingDiacritics(sourcePath: string, targetPath: stri
 }
 
 /**
- * Run `npm run build` in the landing directory.
+ * Run Astro directly. `bun run build` may invoke Astro through the system Node,
+ * which can be too old on production servers.
  * Returns the combined stdout+stderr output.
  */
 function runBuild(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const buildCmd = process.platform === "win32" ? "npm.cmd" : "npm";
+    const isBun = Boolean((process.versions as Record<string, string | undefined>).bun);
+    const localAstro = resolvePath(
+      config.landingDir,
+      "node_modules",
+      ".bin",
+      process.platform === "win32" ? "astro.cmd" : "astro"
+    );
+    const canRunAstroDirectly = existsSync(localAstro);
+    const buildCmd = canRunAstroDirectly
+      ? process.platform === "win32"
+        ? localAstro
+        : isBun
+          ? process.execPath
+          : localAstro
+      : process.platform === "win32"
+        ? "npm.cmd"
+        : "npm";
+    const args = canRunAstroDirectly
+      ? process.platform === "win32" || !isBun
+        ? ["build"]
+        : [localAstro, "build"]
+      : ["run", "build"];
 
     // execFile (no shell) avoids command-injection if the cwd or args ever
     // become user-controlled in the future.
     execFile(
       buildCmd,
-      ["run", "build"],
+      args,
       {
         cwd: config.landingDir,
         timeout: 120_000,
