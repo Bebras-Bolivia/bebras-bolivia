@@ -67,9 +67,25 @@ function getAstroCommand(): string | null {
 
   if (existsSync(localAstro)) return localAstro;
 
-  if (config.isDev) return process.platform === "win32" ? "npx.cmd" : "npx";
+  const localNpx = resolve(
+    config.landingDir,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "npx.cmd" : "npx"
+  );
 
-  return null;
+  if (existsSync(localNpx)) return localNpx;
+
+  return process.platform === "win32" ? "npx.cmd" : "npx";
+}
+
+function fallbackToStaticPreview(reason: string): StartPreviewResult {
+  console.warn(`[Preview] ${reason}; using static preview fallback.`);
+  devServerReady = false;
+  devServerStarting = false;
+  devServerError = null;
+  devProcess = null;
+  return { ok: true, port: null, mode: "static" };
 }
 
 /**
@@ -94,20 +110,9 @@ export async function startDevServer(): Promise<StartPreviewResult> {
   // First, sync content to landing so the dev server has current data
   await syncContentToLanding();
 
-  if (!config.isDev) {
-    devServerStarting = false;
-    devServerReady = false;
-    devServerError = null;
-    return { ok: true, port: null, mode: "static" };
-  }
-
   const cmd = getAstroCommand();
   if (!cmd) {
-    console.warn("[Preview] Astro executable not found; using static preview fallback.");
-    devServerStarting = false;
-    devServerReady = false;
-    devServerError = null;
-    return { ok: true, port: null, mode: "static" };
+    return fallbackToStaticPreview("Astro executable not found");
   }
 
   // Find a free port so Astro doesn't prompt/hang
@@ -128,9 +133,14 @@ export async function startDevServer(): Promise<StartPreviewResult> {
     let startupOutput = "";
     const timeout = setTimeout(() => {
       if (!devServerReady) {
-        devServerStarting = false;
-        devServerError = `Dev server timed out after 30s. Output:\n${startupOutput}`;
-        reject(new PreviewError(devServerError, 500));
+        const message = `Dev server timed out after 30s. Output:\n${startupOutput}`;
+        if (config.isDev) {
+          devServerStarting = false;
+          devServerError = message;
+          reject(new PreviewError(devServerError, 500));
+          return;
+        }
+        resolve(fallbackToStaticPreview(message));
       }
     }, 30_000);
 
@@ -174,7 +184,11 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       devServerError = err.message;
       devProcess = null;
       console.error("[Preview] Dev server process error:", err.message);
-      reject(new PreviewError(`Failed to start dev server: ${err.message}`, 500));
+      if (config.isDev) {
+        reject(new PreviewError(`Failed to start dev server: ${err.message}`, 500));
+        return;
+      }
+      resolve(fallbackToStaticPreview(`Failed to start dev server: ${err.message}`));
     });
 
     devProcess.on("exit", (code, signal) => {
@@ -185,8 +199,13 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       devProcess = null;
 
       if (!wasReady) {
-        devServerError = `Dev server exited (code ${code}, signal ${signal}) before ready.\n${startupOutput}`;
-        reject(new PreviewError(devServerError, 500));
+        const message = `Dev server exited (code ${code}, signal ${signal}) before ready.\n${startupOutput}`;
+        if (config.isDev) {
+          devServerError = message;
+          reject(new PreviewError(devServerError, 500));
+          return;
+        }
+        resolve(fallbackToStaticPreview(message));
       } else {
         console.log(`[Preview] Dev server exited (code ${code}, signal ${signal})`);
         devServerError = `Dev server exited unexpectedly (code ${code})`;
