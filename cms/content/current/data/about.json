@@ -7,7 +7,7 @@
     {
       "number": "01",
       "title": "La Iniciativa",
-      "body": "Bebras es una competencia internacional de pensamiento computacional presente en más de 60 países. Los participantes resuelven problemas cortos y lógicos que no requieren conocimientos previos de informática, supervisados por sus docentes en sus propias escuelas.",
+      "body": "Bebras es una competencia internacional de pensamiento computacional presente en más de 60 países. Los participantes resuelven problemas cortos y lógicos que no requieren conocimientos previos de informática, supervisados por sus maestros en sus propias escuelas.",
       "icon": "book"
     },
     {
@@ -19,7 +19,7 @@
     {
       "number": "03",
       "title": "Fechas",
-      "body": "La segunda semana de noviembre es la semana mundial Bebras para resolver tareas. Algunos países extienden el período a dos semanas. Durante todo el año se realizan actividades como talleres para docentes, premiaciones y eventos de divulgación.",
+      "body": "La segunda semana de noviembre es la semana mundial Bebras para resolver tareas. Algunos países extienden el período a dos semanas. Durante todo el año se realizan actividades como talleres para maestros, premiaciones y eventos de divulgación.",
       "icon": "calendar",
       "link": {
         "label": "Leer más",

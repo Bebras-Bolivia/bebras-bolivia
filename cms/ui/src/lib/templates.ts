@@ -15,12 +15,12 @@ export const fileToPage: Record<string, string> = {
   "scoring.json": "/",
   "news.json": "/",
   "faq.json": "/faq/",
-  "teacher-instructions.json": "/docentes/",
+  "teacher-instructions.json": "/maestros/",
   "sponsors.json": "/sponsors/",
   "contact.json": "/contacto/",
   "registro.json": "/registro/",
   "estudiantes.json": "/estudiantes/",
-  "docentes.json": "/docentes/",
+  "docentes.json": "/maestros/",
   "blog-ui.json": "/blog/",
 };
 
@@ -168,10 +168,10 @@ const typeLabelMap: Record<string, string> = {
   homeAgeCategories: "Inicio: Categorias",
   homeDualCta: "Inicio: CTA doble",
   aboutBebrasEditorial: "Inicio: Sobre Bebras",
-  docentesRegistro: "Docentes Registro",
-  docentesRequisitos: "Docentes Requisitos",
-  docentesAlcance: "Docentes Alcance",
-  teacherInstructionsTabs: "Docentes Guia",
+  docentesRegistro: "Maestros Registro",
+  docentesRequisitos: "Maestros Requisitos",
+  docentesAlcance: "Maestros Alcance",
+  teacherInstructionsTabs: "Maestros Guia",
   sectionRichText: "Texto",
   itemsGrid: "Grid de Cards",
   linksList: "Lista de Enlaces",
@@ -488,7 +488,7 @@ function _homeSection(type: string): unknown | null {
     homeDualCta: () => ({
       type: "homeDualCta",
       cards: [
-        { audience: "Docentes", style: "primary", icon: "school", headingPrefix: "Titulo", headingEmphasis: "destacado", headingSuffix: "final", linkLabel: "Ver mas", href: "/registro" },
+        { audience: "Maestros", style: "primary", icon: "school", headingPrefix: "Titulo", headingEmphasis: "destacado", headingSuffix: "final", linkLabel: "Ver mas", href: "/registro" },
         { audience: "Estudiantes", style: "secondary", icon: "brain", headingPrefix: "Titulo", headingEmphasis: "destacado", headingSuffix: "?", linkLabel: "Ver mas", href: "/estudiantes" },
       ],
     }),
@@ -623,7 +623,7 @@ function _componentTemplate(type: string): unknown | null {
       fields: {
         name: { label: "Nombre completo", placeholder: "Tu nombre" },
         email: { label: "Email", placeholder: "tu@email.com" },
-        role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Docente", "Institucion", "Otro"] },
+        role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro", "Institucion", "Otro"] },
         message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
       },
       submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
@@ -650,7 +650,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     docentesAlcance: () => ({
       type: "docentesAlcance", tag: "Alcance", heading: "Quien deberia participar?",
-      content: ["Contenido de alcance para docentes."],
+      content: ["Contenido de alcance para maestros."],
       tip: "Tip: El desafio no requiere conocimientos previos de programacion.",
     }),
     teacherInstructionsTabs: () => ({
@@ -691,7 +691,7 @@ function _componentTemplate(type: string): unknown | null {
       fields: {
         name: { label: "Nombre completo", placeholder: "Tu nombre" },
         email: { label: "Email", placeholder: "tu@email.com" },
-        role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"] },
+        role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro / Coordinador", "Institucion", "Otro"] },
         message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
       },
       submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
@@ -714,7 +714,7 @@ function _componentTemplate(type: string): unknown | null {
         fields: {
           name: { label: "Nombre completo", placeholder: "Tu nombre" },
           email: { label: "Email", placeholder: "tu@email.com" },
-          role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Docente / Coordinador", "Institucion", "Otro"] },
+          role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro / Coordinador", "Institucion", "Otro"] },
           message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
         },
         submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
@@ -732,7 +732,7 @@ function _estudiantesSection(type: string): unknown | null {
   const map: Record<string, () => unknown> = {
     participacion: () => ({
       id: "participacion", tag: "Participacion", heading: "Como participar",
-      content: ["Parrafo"], link: { label: "Ver docentes", href: "/docentes" },
+      content: ["Parrafo"], link: { label: "Ver maestros", href: "/maestros" },
     }),
     desafio: () => ({
       id: "desafio", tag: "Desafio", heading: "Que es el desafio", content: ["Parrafo"],

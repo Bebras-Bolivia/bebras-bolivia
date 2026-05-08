@@ -29,12 +29,12 @@ const App = {
     "scoring.json": { label: "Puntaje", desc: "Tabla de puntajes, resumen", icon: "bar-chart" },
     "news.json": { label: "Noticias", desc: "Slides del carrusel de noticias", icon: "newspaper" },
     "faq.json": { label: "FAQ", desc: "Preguntas frecuentes por categoria", icon: "help-circle" },
-    "teacher-instructions.json": { label: "Docentes (guia)", desc: "Instrucciones en tabs", icon: "book-open" },
+    "teacher-instructions.json": { label: "Maestros (guia)", desc: "Instrucciones en tabs", icon: "book-open" },
     "sponsors.json": { label: "Sponsors", desc: "Patrocinadores y anchor", icon: "heart" },
     "contact.json": { label: "Contacto", desc: "Info de contacto, formulario", icon: "mail" },
     "registro.json": { label: "Registro", desc: "Pagina de registro (inscripcion)", icon: "user-plus" },
     "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
-    "docentes.json": { label: "Docentes", desc: "Pagina de docentes (secciones)", icon: "briefcase" },
+    "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
     "blog-ui.json": { label: "Blog UI", desc: "Textos de la interfaz del blog", icon: "file-text" },
     "blog-content": { label: "Publicaciones", desc: "Entradas del blog", icon: "layers" },
     "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
@@ -54,7 +54,7 @@ const App = {
       children: ["scoring.json"],
     },
     {
-      label: "Docentes",
+      label: "Maestros",
       parent: "docentes.json",
       children: ["teacher-instructions.json"],
     },
@@ -285,13 +285,13 @@ const App = {
           const childrenHtml = node.children
             .map((child) => {
               const childMeta = this.contentMeta[child] || { label: child };
-              return `<a class="sidebar-tree-child" data-nav="/editor/${this.escapeHtml(child)}" href="/editor/${this.escapeHtml(child)}">${this.escapeHtml(childMeta.label)}</a>`;
+              return `<a class="sidebar-tree-child" data-nav="${this.editorPathFor(child)}" href="${this.editorPathFor(child)}">${this.escapeHtml(childMeta.label)}</a>`;
             })
             .join("");
 
           return `
             <div class="sidebar-tree-group">
-              <a class="sidebar-tree-parent" data-nav="/editor/${this.escapeHtml(node.parent)}" href="/editor/${this.escapeHtml(node.parent)}">
+              <a class="sidebar-tree-parent" data-nav="${this.editorPathFor(node.parent)}" href="${this.editorPathFor(node.parent)}">
                 ${this.icon(parentMeta.icon || "edit")}
                 <span>${this.escapeHtml(parentMeta.label)}</span>
               </a>
@@ -331,7 +331,7 @@ const App = {
     if (path === "/" || path === "/dashboard") {
       this.showPage("Dashboard", () => this.renderDashboard());
     } else if (path.startsWith("/editor/")) {
-      const filename = decodeURIComponent(path.replace("/editor/", ""));
+      const filename = this.contentFileFromRoute(decodeURIComponent(path.replace("/editor/", "")));
       const meta = this.contentMeta[filename];
       const title = meta ? `Editar: ${meta.label}` : `Editar: ${filename}`;
       this.showPage(title, () => Editor.render(filename));
@@ -481,7 +481,7 @@ const App = {
         main.querySelectorAll(".content-item, .content-child").forEach((item) => {
           item.addEventListener("click", () => {
             const file = item.getAttribute("data-file");
-            this.navigate(`/editor/${encodeURIComponent(file)}`);
+            this.navigate(this.editorPathFor(file));
           });
         });
 
@@ -545,6 +545,14 @@ const App = {
   },
 
   // ── Helpers ─────────────────────────────────────────────
+
+  editorPathFor(file) {
+    return `/editor/${encodeURIComponent(file === "docentes.json" ? "maestros.json" : file)}`;
+  },
+
+  contentFileFromRoute(value) {
+    return value === "maestros.json" ? "docentes.json" : value;
+  },
 
   escapeHtml(str) {
     if (!str) return "";

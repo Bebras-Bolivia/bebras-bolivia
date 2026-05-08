@@ -12,11 +12,11 @@
       "tag": "Participación",
       "heading": "¿Cómo participar?",
       "paragraphs": [
-        "Para participar en el Desafío Bebras, tu docente o coordinador de la escuela debe registrarse en la plataforma. Una vez registrado, el coordinador inscribe a los estudiantes por categoría de edad. El día del desafío, accedes a la plataforma desde una computadora con navegador web.",
-        "Si tu escuela aún no está inscrita, pide a tu profesor que visite la página para docentes para más información sobre el proceso de registro."
+        "Para participar en el Desafío Bebras, tu maestro o coordinador de la escuela debe registrarse en la plataforma. Una vez registrado, el coordinador inscribe a los estudiantes por categoría de edad. El día del desafío, accedes a la plataforma desde una computadora con navegador web.",
+        "Si tu escuela aún no está inscrita, pide a tu profesor que visite la página para maestros para más información sobre el proceso de registro."
       ],
-      "linkLabel": "Página para docentes",
-      "linkHref": "/docentes"
+      "linkLabel": "Página para maestros",
+      "linkHref": "/maestros"
     },
     {
       "type": "sectionRichText",

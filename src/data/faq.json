@@ -38,7 +38,7 @@
             },
             {
               "question": "¿Cómo accedo al desafío?",
-              "answer": "Tu docente o coordinador escolar te proporcionará las credenciales de acceso. El desafío se realiza en línea desde cualquier computadora con navegador web."
+              "answer": "Tu maestro o coordinador escolar te proporcionará las credenciales de acceso. El desafío se realiza en línea desde cualquier computadora con navegador web."
             },
             {
               "question": "¿Recibo un certificado?",
@@ -55,7 +55,7 @@
           ]
         },
         {
-          "title": "Docentes",
+          "title": "Maestros",
           "items": [
             {
               "question": "¿Cómo registro mi escuela?",
@@ -71,7 +71,7 @@
             },
             {
               "question": "¿Necesito capacitación especial?",
-              "answer": "No es obligatorio, pero ofrecemos talleres y materiales de apoyo para docentes que quieran preparar a sus estudiantes."
+              "answer": "No es obligatorio, pero ofrecemos talleres y materiales de apoyo para maestros que quieran preparar a sus estudiantes."
             }
           ]
         },

@@ -22,12 +22,12 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "scoring.json": { label: "Puntaje", desc: "Tabla de puntajes, resumen", icon: "bar-chart" },
   "news.json": { label: "Noticias", desc: "Slides del carrusel de noticias", icon: "newspaper" },
   "faq.json": { label: "FAQ", desc: "Preguntas frecuentes por categoria", icon: "help-circle" },
-  "teacher-instructions.json": { label: "Docentes (guia)", desc: "Instrucciones en tabs", icon: "book-open" },
+  "teacher-instructions.json": { label: "Maestros (guia)", desc: "Instrucciones en tabs", icon: "book-open" },
   "sponsors.json": { label: "Sponsors", desc: "Patrocinadores y anchor", icon: "heart" },
   "contact.json": { label: "Contacto", desc: "Info de contacto, formulario", icon: "mail" },
   "registro.json": { label: "Registro", desc: "Pagina de registro (inscripcion)", icon: "user-plus" },
   "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
-  "docentes.json": { label: "Docentes", desc: "Pagina de docentes (secciones)", icon: "briefcase" },
+  "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
   "blog-ui.json": { label: "Blog UI", desc: "Textos de la interfaz del blog", icon: "file-text" },
   "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
@@ -46,7 +46,7 @@ const hiddenContentFiles = new Set([
 const contentHierarchy = [
   { label: "Inicio", parent: "home.json", children: [] },
   { label: "Estudiantes", parent: "estudiantes.json", children: [] },
-  { label: "Docentes", parent: "docentes.json", children: [] },
+  { label: "Maestros", parent: "docentes.json", children: [] },
   { label: "FAQ", parent: "faq.json", children: [] },
   { label: "Blog", parent: "blog-ui.json", children: [] },
   { label: "Sponsors", parent: "sponsors.json", children: [] },
@@ -55,6 +55,10 @@ const contentHierarchy = [
   { label: "Paginas personalizadas", parent: "custom-pages.json", children: [] },
   { label: "Configuracion global", parent: "site.json", children: ["navigation.json"] },
 ];
+
+function contentFileFromRoute(value: string) {
+  return value === "maestros.json" ? "docentes.json" : value;
+}
 
 const icons: Record<string, string> = {
   dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
@@ -190,7 +194,7 @@ const App = {
 
     if (path === "/" || path === "/dashboard") this.showPage("Dashboard", () => this.renderDashboard());
     else if (path.startsWith("/editor/")) {
-      const filename = decodeURIComponent(path.replace("/editor/", ""));
+      const filename = contentFileFromRoute(decodeURIComponent(path.replace("/editor/", "")));
       const meta = contentMeta[filename];
       this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
     } else if (path === "/blog") this.showPage("Blog", () => window.Blog.renderList());

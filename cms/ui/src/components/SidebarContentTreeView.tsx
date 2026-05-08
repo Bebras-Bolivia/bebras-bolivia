@@ -18,6 +18,10 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
+function editorPathFor(file: string) {
+  return `/editor/${encodeURIComponent(file === "docentes.json" ? "maestros.json" : file)}`;
+}
+
 export default function SidebarContentTreeView({ nodes, icons, onNavigate }: Props) {
   return (
     <>
@@ -25,11 +29,11 @@ export default function SidebarContentTreeView({ nodes, icons, onNavigate }: Pro
         <div className="sidebar-tree-group" key={node.parent}>
           <a
             className="sidebar-tree-parent"
-            data-nav={`/editor/${node.parent}`}
-            href={`/editor/${node.parent}`}
+            data-nav={editorPathFor(node.parent)}
+            href={editorPathFor(node.parent)}
             onClick={(e) => {
               e.preventDefault();
-              onNavigate(`/editor/${encodeURIComponent(node.parent)}`);
+              onNavigate(editorPathFor(node.parent));
             }}
           >
             <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>

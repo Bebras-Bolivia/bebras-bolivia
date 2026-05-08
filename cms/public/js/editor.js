@@ -109,7 +109,7 @@ const Editor = {
         <div class="editor-toolbar">
           <div>
             <h2>${App.escapeHtml(meta.label)}</h2>
-            <span class="text-sm text-muted">${App.escapeHtml(filename)}</span>
+            <span class="text-sm text-muted">${App.escapeHtml(filename === "docentes.json" ? "maestros.json" : filename)}</span>
           </div>
           <div class="flex gap-sm">
             <button class="btn btn-ghost btn-sm" id="editor-reset">${App.icon("refresh")} Resetear</button>
