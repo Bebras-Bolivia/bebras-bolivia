@@ -1,5 +1,6 @@
 import { readdir, cp, mkdir, readFile, writeFile } from "fs/promises";
-import { join } from "path";
+import { existsSync } from "fs";
+import { join, resolve as resolvePath } from "path";
 import { execFile } from "child_process";
 import { config } from "../config.js";
 import { getDb, type PublishLogRow } from "../db/index.js";
@@ -153,14 +154,34 @@ async function copyJsonPreservingDiacritics(sourcePath: string, targetPath: stri
 }
 
 /**
- * Run the landing build with the same runtime as the CMS when possible.
+ * Run Astro directly. `bun run build` may invoke Astro through the system Node,
+ * which can be too old on production servers.
  * Returns the combined stdout+stderr output.
  */
 function runBuild(): Promise<string> {
   return new Promise((resolve, reject) => {
     const isBun = Boolean((process.versions as Record<string, string | undefined>).bun);
-    const buildCmd = isBun ? process.execPath : process.platform === "win32" ? "npm.cmd" : "npm";
-    const args = ["run", "build"];
+    const localAstro = resolvePath(
+      config.landingDir,
+      "node_modules",
+      ".bin",
+      process.platform === "win32" ? "astro.cmd" : "astro"
+    );
+    const canRunAstroDirectly = existsSync(localAstro);
+    const buildCmd = canRunAstroDirectly
+      ? process.platform === "win32"
+        ? localAstro
+        : isBun
+          ? process.execPath
+          : localAstro
+      : process.platform === "win32"
+        ? "npm.cmd"
+        : "npm";
+    const args = canRunAstroDirectly
+      ? process.platform === "win32" || !isBun
+        ? ["build"]
+        : [localAstro, "build"]
+      : ["run", "build"];
 
     execFile(
       buildCmd,
