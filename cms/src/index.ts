@@ -18,6 +18,28 @@ import { CONTENT_FILES } from "./content/schemas.js";
 
 const app = express();
 
+function stripBasePath(req: express.Request, _res: express.Response, next: express.NextFunction) {
+  const { basePath } = config;
+  if (basePath && (req.url === basePath || req.url.startsWith(`${basePath}/`))) {
+    req.url = req.url.slice(basePath.length) || "/";
+    delete (req as any)._parsedUrl;
+    delete (req as any)._parsedOriginalUrl;
+  }
+  next();
+}
+
+function withBasePath(path: string): string {
+  return config.basePath ? `${config.basePath}${path}` : path;
+}
+
+function rewritePreviewHtml(html: string): string {
+  if (!config.basePath) return html;
+
+  return html
+    .replace(/(\s(?:src|href)=['"])(\/(?:_astro\/|@vite\/|@fs\/|node_modules\/|images\/|favicon\.svg))/g, `$1${config.basePath}$2`)
+    .replace(/(url\(['"]?)(\/(?:_astro\/|images\/))/g, `$1${config.basePath}$2`);
+}
+
 async function ensureRuntimeDirectories() {
   const uploadsDir = resolve(config.landingPublicDir, "images", "uploads");
   await Promise.all([
@@ -82,6 +104,7 @@ async function syncWorkingCopiesFromLanding() {
 }
 
 // ── Middleware ──────────────────────────────────────────────
+app.use(stripBasePath);
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -139,14 +162,19 @@ app.use("/preview-site", async (req, res, next) => {
     // Forward status and headers
     res.status(proxyRes.status);
     proxyRes.headers.forEach((value, key) => {
-      // Skip transfer-encoding since Express handles it
-      if (key.toLowerCase() !== "transfer-encoding") {
+      const header = key.toLowerCase();
+      if (header !== "transfer-encoding" && header !== "content-length") {
         res.setHeader(key, value);
       }
     });
 
-    // Pipe the body
+    const contentType = proxyRes.headers.get("content-type") || "";
     const body = await proxyRes.arrayBuffer();
+    if (contentType.includes("text/html")) {
+      res.end(rewritePreviewHtml(Buffer.from(body).toString("utf-8")));
+      return;
+    }
+
     res.end(Buffer.from(body));
   } catch (err) {
     console.error("[Preview proxy] Error:", err);
@@ -290,8 +318,9 @@ async function boot() {
   getDb();
   await autoSeed();
   app.listen(config.port, config.host, () => {
-    console.log(`\nBebras CMS running at http://${config.host}:${config.port}`);
+    console.log(`\nBebras CMS running at http://${config.host}:${config.port}${withBasePath("/")}`);
     console.log(`Environment: ${config.nodeEnv}`);
+    console.log(`Base path: ${config.basePath || "/"}`);
     console.log(`Content dir: ${config.contentDir}`);
     console.log(`Landing dir: ${config.landingDir}\n`);
   });

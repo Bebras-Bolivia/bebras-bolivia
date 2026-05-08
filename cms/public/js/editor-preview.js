@@ -53,9 +53,7 @@ window.CMSEditorPreview = {
     if (!iframe) return;
 
     const pagePath = editor.fileToPage[editor.currentFile] || "/";
-    const base = editor.devServerReady && editor.devServerPort
-      ? `http://localhost:${editor.devServerPort}${pagePath}`
-      : `/preview-site${pagePath}`;
+    const base = window.App.appUrl(`/preview-site${pagePath}`);
 
     iframe.src = forceReload ? `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}` : base;
   },

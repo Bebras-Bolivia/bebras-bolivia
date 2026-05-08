@@ -8,6 +8,21 @@ function env(key: string, fallback?: string): string {
   return value;
 }
 
+function normalizeBasePath(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "/") return "";
+
+  try {
+    const parsed = new URL(trimmed);
+    return normalizeBasePath(parsed.pathname);
+  } catch {
+    const withoutTrailingSlash = trimmed.replace(/\/+$/, "");
+    return withoutTrailingSlash.startsWith("/")
+      ? withoutTrailingSlash
+      : `/${withoutTrailingSlash}`;
+  }
+}
+
 // Resolve all paths relative to the CMS project root (one level up from src/)
 const CMS_ROOT = resolve(import.meta.dir, "..");
 
@@ -16,6 +31,7 @@ export const config = {
   host: env("HOST", "0.0.0.0"),
   nodeEnv: env("NODE_ENV", "development"),
   isDev: env("NODE_ENV", "development") === "development",
+  basePath: normalizeBasePath(env("CMS_BASE_PATH", "")),
 
   // Content directories
   contentDir: resolve(CMS_ROOT, env("CONTENT_DIR", "./content")),
