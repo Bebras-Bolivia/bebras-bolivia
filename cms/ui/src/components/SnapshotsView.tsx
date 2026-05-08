@@ -20,6 +20,21 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
+function formatSnapshotDate(value?: string) {
+  if (!value) return "Sin fecha";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+  return date.toLocaleString("es-BO", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, onDelete }: Props) {
   const ordered = [...(snapshots || [])].sort((a, b) => b.id - a.id);
 
@@ -42,13 +57,7 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
       ) : (
         <div>
           {ordered.map((snap) => {
-            const date = new Date(snap.createdAt || snap.date || Date.now()).toLocaleString("es-BO", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
+            const date = formatSnapshotDate(snap.createdAt || snap.date);
 
             return (
               <div className="snapshot-item" key={snap.id}>

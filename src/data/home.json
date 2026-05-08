@@ -85,7 +85,7 @@
       "type": "homeDualCta",
       "cards": [
         {
-          "audience": "Docentes / Coordinadores",
+          "audience": "Maestros / Coordinadores",
           "style": "primary",
           "icon": "school",
           "headingPrefix": "Inscribe tu",
@@ -117,7 +117,7 @@
         "El Desafío Bebras introduce el pensamiento computacional a los estudiantes.",
         "Se organiza en más de **60 países** y está diseñado para entusiasmar a estudiantes de todo el mundo con la informática.",
         "Cada participante tiene 45 minutos para resolver **15 preguntas** de opción múltiple centradas en pensamiento computacional y lógico.",
-        "Se realiza en línea desde tu propia escuela y muestra a estudiantes y docentes qué tan desarrolladas están sus habilidades."
+        "Se realiza en línea desde tu propia escuela y muestra a estudiantes y maestros qué tan desarrolladas están sus habilidades."
       ]
     }
   ],

@@ -21,6 +21,19 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
+function formatPostDate(value?: string) {
+  if (!value) return "Sin fecha";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+  return date.toLocaleDateString("es-BO", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: Props) {
   const sortedPosts = [...(posts || [])].sort((a, b) => {
     const dateA = new Date(a?.frontmatter?.date || 0).getTime();
@@ -60,11 +73,7 @@ export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: 
           const slug = post.slug;
           const title = post.frontmatter?.title || slug;
           const author = post.frontmatter?.author || "Bebras Bolivia";
-          const date = new Date(post.frontmatter?.date || Date.now()).toLocaleDateString("es-BO", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
+          const date = formatPostDate(post.frontmatter?.date);
 
           return (
             <div className="blog-item" key={slug} style={{ cursor: "pointer" }} onClick={() => onEdit(slug)}>
