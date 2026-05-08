@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
+import { getCollection } from "astro:content";
 import { BadgeCheck, Brain, School, Sparkles } from "lucide-react";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import homeData from "@/data/home.json";
@@ -21,6 +22,23 @@ const imageMap: Record<string, string> = {
 
 const sections: any[] = Array.isArray((homeData as any).sections) ? (homeData as any).sections : [];
 const components: any[] = Array.isArray((homeData as any).components) ? (homeData as any).components : [];
+const latestPost = (await getCollection("blog")).sort(
+	(a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+)[0];
+const latestNews = latestPost
+	? {
+		title: latestPost.data.title,
+		description: latestPost.data.description,
+		author: latestPost.data.author,
+		href: `/blog/${latestPost.id.replace(/\.md$/, "")}`,
+		dateTime: latestPost.data.date.toISOString(),
+		dateLabel: latestPost.data.date.toLocaleDateString("es-BO", {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+		}),
+	}
+	: null;
 
 function getIntroParagraphs(introSection: any) {
 	return Array.isArray(introSection?.paragraphs) && introSection.paragraphs.length > 0
@@ -74,7 +92,7 @@ const dotColor: Record<string, string> = {
 	title={(homeData as any).seo?.pageTitle || "Inicio"}
 	description={(homeData as any).seo?.pageDescription || "Sitio oficial de Bebras Bolivia. Competencia de pensamiento computacional para estudiantes de primaria y secundaria."}
 >
-	<BebrasBoliviaHome hero={(homeData as any).hero} client:load />
+	<BebrasBoliviaHome hero={(homeData as any).hero} latestNews={latestNews} client:load />
 
 	<main class="relative z-10 w-full bg-cream dark:bg-zinc-950 pb-16 pt-10 lg:pt-14 grain-paper">
 		<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-12">

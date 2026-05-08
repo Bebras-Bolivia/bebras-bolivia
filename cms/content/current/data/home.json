@@ -10,11 +10,7 @@
     "subtitlePrimary": "El desafío internacional de pensamiento computacional para estudiantes de todo el país.",
     "subtitleSecondary": "Inscribe a tu unidad educativa y participa junto a más de 70 países.",
     "buttonLabel": "Regístrate aquí",
-    "buttonHref": "/registro",
-    "noticeEyebrow": "Edición 2026 - Inscripciones abiertas",
-    "noticeText": "El desafío vuelve en noviembre. Prepara tu unidad educativa.",
-    "noticeButtonLabel": "Inscribir",
-    "noticeButtonHref": "/registro"
+    "buttonHref": "/registro"
   },
   "sections": [
     {
