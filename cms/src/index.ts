@@ -5,6 +5,7 @@ import { mkdir, cp, readdir, stat } from "fs/promises";
 import { existsSync } from "fs";
 import { config } from "./config.js";
 import { getDb } from "./db/index.js";
+import { syncConfiguredAdmin } from "./db/admin.js";
 import { authRouter } from "./auth/routes.js";
 import { requireAuth } from "./auth/middleware.js";
 import { contentRouter } from "./content/routes.js";
@@ -284,23 +285,10 @@ app.get(/^\/(?!api\/|preview-site\/|_astro\/|@vite\/|@fs\/|node_modules\/|images
   res.sendFile(resolve(legacyPublicDir, "index.html"));
 });
 
-// ── Auto-seed on first run ─────────────────────────────────
-async function autoSeed() {
-  const db = getDb();
-  const { count } = db.query("SELECT COUNT(*) as count FROM users").get() as {
-    count: number;
-  };
-  if (count === 0) {
-    console.log("No users found — running auto-seed...");
-    const { hashPassword } = await import("./auth/passwords.js");
-    const hashed = await hashPassword(config.adminPassword);
-    db.query("INSERT INTO users (email, name, password) VALUES (?, ?, ?)").run(
-      config.adminEmail,
-      config.adminName,
-      hashed
-    );
-    console.log(`Admin user created: ${config.adminEmail}`);
-  }
+// ── Admin sync ──────────────────────────────────────────────
+async function syncAdminFromEnv() {
+  const admin = await syncConfiguredAdmin();
+  console.log(`Configured admin ready: ${admin.email}`);
 }
 
 // ── Cleanup on exit ────────────────────────────────────────
@@ -316,7 +304,7 @@ async function boot() {
   await ensureRuntimeDirectories();
   await syncWorkingCopiesFromLanding();
   getDb();
-  await autoSeed();
+  await syncAdminFromEnv();
   app.listen(config.port, config.host, () => {
     console.log(`\nBebras CMS running at http://${config.host}:${config.port}${withBasePath("/")}`);
     console.log(`Environment: ${config.nodeEnv}`);

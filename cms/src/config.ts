@@ -1,4 +1,21 @@
 import { resolve } from "path";
+import { existsSync, readFileSync } from "fs";
+
+// Bun loads .env automatically, but this keeps config working in other runtimes too.
+const envFile = resolve(import.meta.dir, "..", ".env");
+if (existsSync(envFile)) {
+  for (const line of readFileSync(envFile, "utf-8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separator = trimmed.indexOf("=");
+    if (separator === -1) continue;
+
+    const key = trimmed.slice(0, separator).trim();
+    const value = trimmed.slice(separator + 1).trim().replace(/^['"]|['"]$/g, "");
+    process.env[key] ??= value;
+  }
+}
 
 function env(key: string, fallback?: string): string {
   const value = process.env[key] ?? fallback;
