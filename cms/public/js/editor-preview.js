@@ -11,6 +11,7 @@ window.CMSEditorPreview = {
       if (status.running) {
         editor.devServerReady = true;
         editor.devServerPort = status.port;
+        editor.previewMode = status.mode || "dev";
         this.load(editor);
         return;
       }
@@ -27,11 +28,12 @@ window.CMSEditorPreview = {
       editor.devServerReady = true;
       editor.devServerStarting = false;
       editor.devServerPort = result.port;
+      editor.previewMode = result.mode || "dev";
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       this.load(editor);
-      Toast.success("Vista previa lista — los cambios se actualizan al guardar");
+      Toast.success(result.mode === "static" ? "Vista previa estatica lista" : "Vista previa lista — los cambios se actualizan al guardar");
     } catch (err) {
       editor.devServerStarting = false;
       Toast.error(`Error al iniciar vista previa: ${err.message}`);

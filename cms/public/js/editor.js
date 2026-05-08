@@ -808,6 +808,12 @@ const Editor = {
     this.collectFormData();
 
     try {
+      if (this.previewMode === "static") {
+        this.loadPreviewIframe(true);
+        Toast.info("Vista previa recargada. En produccion, guarda para publicar cambios.");
+        return;
+      }
+
       await API.syncPreviewDraft(this.currentFile, this.currentData);
       this.loadPreviewIframe(true);
       Toast.info("Vista previa actualizada con tus cambios");

@@ -235,6 +235,12 @@ const Editor = {
 
   async reset() {
     try {
+      if (this.previewMode === "static") {
+        this.loadPreviewIframe(true);
+        window.Toast.info("Vista previa recargada. En produccion, guarda para publicar cambios.");
+        return;
+      }
+
       await window.API.syncPreviewDraft(this.currentFile, this.currentData);
       this.loadPreviewIframe(true);
       window.Toast.info("Vista previa actualizada con tus cambios");

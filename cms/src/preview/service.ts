@@ -19,6 +19,7 @@ export interface PreviewStatus {
   starting: boolean;
   port: number;
   error: string | null;
+  mode: "dev" | "static";
 }
 
 type StartPreviewResult = { ok: true; port: number; mode: "dev" } | { ok: true; port: null; mode: "static" };
@@ -29,6 +30,7 @@ export function getPreviewStatus(): PreviewStatus {
     starting: devServerStarting,
     port: devServerPort,
     error: devServerError,
+    mode: config.isDev && devServerReady ? "dev" : "static",
   };
 }
 
