@@ -1,6 +1,6 @@
 import { readdir, cp, mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { config } from "../config.js";
 import { getDb, type PublishLogRow } from "../db/index.js";
 import { createSnapshot } from "../snapshots/service.js";
@@ -153,15 +153,18 @@ async function copyJsonPreservingDiacritics(sourcePath: string, targetPath: stri
 }
 
 /**
- * Run `npm run build` in the landing directory.
+ * Run the landing build with the same runtime as the CMS when possible.
  * Returns the combined stdout+stderr output.
  */
 function runBuild(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const buildCmd = process.platform === "win32" ? "npm.cmd" : "npm";
+    const isBun = Boolean((process.versions as Record<string, string | undefined>).bun);
+    const buildCmd = isBun ? process.execPath : process.platform === "win32" ? "npm.cmd" : "npm";
+    const args = ["run", "build"];
 
-    exec(
-      `${buildCmd} run build`,
+    execFile(
+      buildCmd,
+      args,
       {
         cwd: config.landingDir,
         timeout: 120_000, // 120 second timeout
