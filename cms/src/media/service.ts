@@ -2,11 +2,12 @@ import { readdir, unlink, stat } from "fs/promises";
 import { join } from "path";
 import { config } from "../config.js";
 
+// SVG intentionally excluded: SVG files can contain inline <script> tags that
+// execute when loaded same-origin, enabling stored XSS.
 const ALLOWED_EXTENSIONS = new Set([
   ".jpg",
   ".jpeg",
   ".png",
-  ".svg",
   ".webp",
   ".gif",
 ]);

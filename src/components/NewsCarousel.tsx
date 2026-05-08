@@ -29,10 +29,13 @@ export default function NewsCarousel({ slides }: Props) {
 
   useEffect(() => {
     if (!api) return;
-    setCurrent(api.selectedScrollSnap());
     api.on("select", onSelect);
+    api.on("reInit", onSelect);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing initial slide index from Embla
+    onSelect();
     return () => {
       api.off("select", onSelect);
+      api.off("reInit", onSelect);
     };
   }, [api, onSelect]);
 

@@ -142,7 +142,7 @@ const dotColor: Record<string, string> = {
 										<div class="col-span-12 lg:col-span-8">
 											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class="italic text-primary">{section.headingEmphasis || "edad"}</em></h2>
 											<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-												{ageGroups.map((g, i) => (
+												{ageGroups.map((g: any, i: number) => (
 													<div class="group content-card overflow-hidden">
 														<div class="relative aspect-[4/3] overflow-hidden bg-muted">
 															<img src={g.image} alt={g.name} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />

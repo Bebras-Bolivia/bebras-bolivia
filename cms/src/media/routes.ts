@@ -17,9 +17,25 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_UPLOAD_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
+
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5 MB
+    files: 1,
+    fields: 5,
+  },
+  fileFilter: (_req, file, cb) => {
+    const ext = file.originalname
+      .substring(file.originalname.lastIndexOf("."))
+      .toLowerCase();
+    if (!ALLOWED_UPLOAD_EXTENSIONS.has(ext)) {
+      cb(new Error("File type not allowed"));
+      return;
+    }
+    cb(null, true);
+  },
 });
 
 export const mediaRouter = Router();

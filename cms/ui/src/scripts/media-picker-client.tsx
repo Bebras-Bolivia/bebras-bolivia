@@ -49,6 +49,7 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot fetch on mount
     loadFiles();
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose(null);
@@ -59,6 +60,7 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
       document.removeEventListener("keydown", onEsc);
       document.body.classList.remove("editor-modal-open");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onClose is stable from parent
   }, []);
 
   const uploadFile = async (file: File) => {

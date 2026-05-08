@@ -93,12 +93,14 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
     api.on("reInit", onSelect)
     api.on("select", onSelect)
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing canScrollPrev/Next from Embla
+    onSelect(api)
 
     return () => {
       api?.off("select", onSelect)
+      api?.off("reInit", onSelect)
     }
   }, [api, onSelect])
 

@@ -36,7 +36,7 @@ declare global {
   }
 }
 
-// ── Individual field component with local state ──────────
+// Controlled directly from props — no local state mirror.
 function FieldInput({
   field,
   onFieldChange,
@@ -44,12 +44,7 @@ function FieldInput({
   field: PrimitivesPayload["fields"][number];
   onFieldChange: PrimitivesPayload["onFieldChange"];
 }) {
-  const [value, setValue] = React.useState(field.value);
-
-  // Sync from props when the field identity changes (e.g. after re-render)
-  React.useEffect(() => {
-    setValue(field.value);
-  }, [field.path, field.value]);
+  const value = field.value;
 
   if (field.type === "textarea") {
     return (
@@ -58,10 +53,7 @@ function FieldInput({
         className="form-textarea"
         rows={3}
         value={String(value ?? "")}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onFieldChange(field.path, e.target.value);
-        }}
+        onChange={(e) => onFieldChange(field.path, e.target.value)}
       ></textarea>
     );
   }
@@ -72,10 +64,7 @@ function FieldInput({
         id={`field-${field.path}`}
         type="checkbox"
         checked={Boolean(value)}
-        onChange={(e) => {
-          setValue(e.target.checked);
-          onFieldChange(field.path, e.target.checked);
-        }}
+        onChange={(e) => onFieldChange(field.path, e.target.checked)}
         style={{ width: "16px", height: "16px" }}
       />
     );
@@ -87,10 +76,7 @@ function FieldInput({
         id={`field-${field.path}`}
         className="form-select"
         value={String(value ?? "")}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onFieldChange(field.path, e.target.value);
-        }}
+        onChange={(e) => onFieldChange(field.path, e.target.value)}
       >
         {(field.options || []).map((opt) => (
           <option key={opt} value={opt}>
@@ -113,11 +99,8 @@ function FieldInput({
       onChange={(e) => {
         if (field.type === "number") {
           const n = Number(e.target.value);
-          const parsed = Number.isNaN(n) ? 0 : n;
-          setValue(parsed);
-          onFieldChange(field.path, parsed);
+          onFieldChange(field.path, Number.isNaN(n) ? 0 : n);
         } else {
-          setValue(e.target.value);
           onFieldChange(field.path, e.target.value);
         }
       }}

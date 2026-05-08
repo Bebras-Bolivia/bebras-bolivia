@@ -143,7 +143,7 @@ app.get("/api/health", (_req, res) => {
 // Falls back to landing/dist/ static files when the dev server is off.
 const landingDistDir = resolve(config.landingDir, "dist");
 
-app.use("/preview-site", async (req, res, next) => {
+app.use("/preview-site", requireAuth, async (req, res, next) => {
   if (!isDevServerRunning()) {
     // Fallback: serve from static build (for when dev server is not running)
     return next();
@@ -160,11 +160,17 @@ app.use("/preview-site", async (req, res, next) => {
       },
     });
 
-    // Forward status and headers
+    // Forward status and headers (strip sensitive/hop-by-hop ones)
     res.status(proxyRes.status);
+    const STRIPPED = new Set([
+      "transfer-encoding",
+      "content-length",
+      "set-cookie",
+      "connection",
+      "keep-alive",
+    ]);
     proxyRes.headers.forEach((value, key) => {
-      const header = key.toLowerCase();
-      if (header !== "transfer-encoding" && header !== "content-length") {
+      if (!STRIPPED.has(key.toLowerCase())) {
         res.setHeader(key, value);
       }
     });
@@ -185,11 +191,11 @@ app.use("/preview-site", async (req, res, next) => {
 });
 
 // Static fallback for preview (when dev server is not running)
-app.use("/preview-site", express.static(landingDistDir));
+app.use("/preview-site", requireAuth, express.static(landingDistDir));
 
 // Proxy Astro dev server assets at root level (HMR websocket, /_astro/, etc.)
 // These are needed because the iframe loads pages that reference /_astro/*, @vite/client, etc.
-app.use("/@vite", async (req, res, next) => {
+app.use("/@vite", requireAuth, async (req, res, next) => {
   if (!isDevServerRunning()) return next();
   try {
     const proxyRes = await fetch(`${getDevServerUrl()}/@vite${req.url}`);
@@ -201,7 +207,7 @@ app.use("/@vite", async (req, res, next) => {
   } catch { next(); }
 });
 
-app.use("/@fs", async (req, res, next) => {
+app.use("/@fs", requireAuth, async (req, res, next) => {
   if (!isDevServerRunning()) return next();
   try {
     const proxyRes = await fetch(`${getDevServerUrl()}/@fs${req.url}`);
@@ -213,7 +219,7 @@ app.use("/@fs", async (req, res, next) => {
   } catch { next(); }
 });
 
-app.use("/node_modules", async (req, res, next) => {
+app.use("/node_modules", requireAuth, async (req, res, next) => {
   if (!isDevServerRunning()) return next();
   try {
     const proxyRes = await fetch(`${getDevServerUrl()}/node_modules${req.url}`);

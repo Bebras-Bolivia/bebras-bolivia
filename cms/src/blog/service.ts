@@ -38,6 +38,17 @@ function getLandingBlogDir(): string {
   return config.landingBlogDir;
 }
 
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function assertValidSlug(slug: string): void {
+  if (typeof slug !== "string" || !SLUG_REGEX.test(slug)) {
+    throw new BlogError(
+      "Slug must be lowercase alphanumeric with hyphens only",
+      400
+    );
+  }
+}
+
 /**
  * List all blog posts (frontmatter only, sorted by date desc).
  */
@@ -92,6 +103,7 @@ export async function listPosts(): Promise<BlogPostSummary[]> {
  * Read a single blog post by slug.
  */
 export async function getPost(slug: string): Promise<BlogPost> {
+  assertValidSlug(slug);
   const filename = `${slug}.md`;
   const cmsPath = join(getBlogDir(), filename);
   const landingPath = join(getLandingBlogDir(), filename);
@@ -128,13 +140,7 @@ export async function createPost(
   frontmatter: BlogFrontmatter,
   body: string
 ): Promise<BlogPost> {
-  // Validate slug
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    throw new BlogError(
-      "Slug must be lowercase alphanumeric with hyphens only",
-      400
-    );
-  }
+  assertValidSlug(slug);
 
   const filePath = join(getBlogDir(), `${slug}.md`);
 
@@ -169,6 +175,7 @@ export async function updatePost(
   frontmatter: BlogFrontmatter,
   body: string
 ): Promise<BlogPost> {
+  assertValidSlug(slug);
   const filePath = join(getBlogDir(), `${slug}.md`);
 
   // Check exists (in CMS dir or landing dir)
@@ -196,6 +203,7 @@ export async function updatePost(
  * Delete a blog post.
  */
 export async function deletePost(slug: string): Promise<void> {
+  assertValidSlug(slug);
   const filePath = join(getBlogDir(), `${slug}.md`);
   try {
     await unlink(filePath);

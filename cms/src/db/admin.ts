@@ -4,33 +4,23 @@ import { getDb, type UserRow } from "./index.js";
 
 export async function syncConfiguredAdmin(): Promise<UserRow> {
   const db = getDb();
-  const hashed = await hashPassword(config.adminPassword);
 
   const existingConfiguredAdmin = db
     .query("SELECT * FROM users WHERE email = ?")
     .get(config.adminEmail) as UserRow | null;
 
   if (existingConfiguredAdmin) {
-    db.query("UPDATE users SET name = ?, password = ?, updated_at = datetime('now') WHERE id = ?").run(
-      config.adminName,
-      hashed,
-      existingConfiguredAdmin.id
-    );
-    return db.query("SELECT * FROM users WHERE id = ?").get(existingConfiguredAdmin.id) as UserRow;
+    return existingConfiguredAdmin;
   }
 
-  const firstUser = db.query("SELECT * FROM users ORDER BY id LIMIT 1").get() as UserRow | null;
-
-  if (firstUser) {
-    db.query("UPDATE users SET email = ?, name = ?, password = ?, updated_at = datetime('now') WHERE id = ?").run(
-      config.adminEmail,
-      config.adminName,
-      hashed,
-      firstUser.id
+  const anyUser = db.query("SELECT 1 as v FROM users LIMIT 1").get() as { v: number } | null;
+  if (anyUser) {
+    throw new Error(
+      `Configured admin email "${config.adminEmail}" not found, and other users already exist. Refusing to overwrite an existing account. Create the admin manually via /api/auth/users or update ADMIN_EMAIL to match an existing user.`
     );
-    return db.query("SELECT * FROM users WHERE id = ?").get(firstUser.id) as UserRow;
   }
 
+  const hashed = await hashPassword(config.adminPassword);
   const result = db.query("INSERT INTO users (email, name, password) VALUES (?, ?, ?)").run(
     config.adminEmail,
     config.adminName,

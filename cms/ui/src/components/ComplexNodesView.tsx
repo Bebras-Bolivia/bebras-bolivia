@@ -52,11 +52,8 @@ type RendererProps = Props & {
 };
 
 function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChange: Props["onFieldChange"] }) {
-  const [value, setValue] = React.useState(field.value);
-
-  React.useEffect(() => {
-    setValue(field.value);
-  }, [field.path, field.value]);
+  // Controlled directly from props — no local state, no effect-driven sync.
+  const value = field.value;
 
   if (field.type === "textarea") {
     return (
@@ -65,10 +62,7 @@ function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChang
         className="form-textarea"
         rows={3}
         value={String(value ?? "")}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onFieldChange(field.path, e.target.value);
-        }}
+        onChange={(e) => onFieldChange(field.path, e.target.value)}
       />
     );
   }
@@ -79,10 +73,7 @@ function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChang
         id={`field-${field.path}`}
         type="checkbox"
         checked={Boolean(value)}
-        onChange={(e) => {
-          setValue(e.target.checked);
-          onFieldChange(field.path, e.target.checked);
-        }}
+        onChange={(e) => onFieldChange(field.path, e.target.checked)}
         style={{ width: "16px", height: "16px" }}
       />
     );
@@ -94,10 +85,7 @@ function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChang
         id={`field-${field.path}`}
         className="form-select"
         value={String(value ?? "")}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onFieldChange(field.path, e.target.value);
-        }}
+        onChange={(e) => onFieldChange(field.path, e.target.value)}
       >
         {(field.options || []).map((opt) => (
           <option key={opt} value={opt}>{opt}</option>
@@ -117,12 +105,9 @@ function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChang
       onChange={(e) => {
         if (field.type === "number") {
           const parsed = Number(e.target.value);
-          const next = Number.isNaN(parsed) ? 0 : parsed;
-          setValue(next);
-          onFieldChange(field.path, next);
+          onFieldChange(field.path, Number.isNaN(parsed) ? 0 : parsed);
           return;
         }
-        setValue(e.target.value);
         onFieldChange(field.path, e.target.value);
       }}
     />
@@ -258,6 +243,7 @@ export default function ComplexNodesView(props: Props) {
 
   React.useEffect(() => {
     const latest = collectExpandedState(props.nodes);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- merging external nodes into local UI map
     setExpandedItems((prev) => {
       const next = new Map<string, boolean>();
       latest.forEach((expanded, itemPath) => {

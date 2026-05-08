@@ -25,6 +25,19 @@ function env(key: string, fallback?: string): string {
   return value;
 }
 
+function requiredSecret(key: string, devFallback: string): string {
+  const value = process.env[key];
+  if (value === undefined || value === "") {
+    if ((process.env.NODE_ENV ?? "development") === "development") {
+      return devFallback;
+    }
+    throw new Error(
+      `Missing required secret in production: ${key}. Set it in the environment before booting.`
+    );
+  }
+  return value;
+}
+
 function normalizeBasePath(value: string): string {
   const trimmed = value.trim();
   if (!trimmed || trimmed === "/") return "";
@@ -72,13 +85,13 @@ export const config = {
   landingPublicDir: resolve(CMS_ROOT, env("LANDING_PUBLIC_DIR", "../public")),
 
   // Auth
-  jwtSecret: env("JWT_SECRET", "dev-secret-change-in-production"),
+  jwtSecret: requiredSecret("JWT_SECRET", "dev-secret-change-in-production"),
   jwtExpiry: env("JWT_EXPIRY", "24h"),
   cookieName: env("COOKIE_NAME", "bebras_cms_token"),
 
   // Initial admin
   adminEmail: env("ADMIN_EMAIL", "admin@bebras.bo"),
-  adminPassword: env("ADMIN_PASSWORD", "admin123"),
+  adminPassword: requiredSecret("ADMIN_PASSWORD", "admin123"),
   adminName: env("ADMIN_NAME", "Admin"),
 
   // Database

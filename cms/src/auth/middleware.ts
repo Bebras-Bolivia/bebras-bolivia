@@ -53,20 +53,31 @@ export async function requireAuth(
 
   try {
     const payload = await verifyToken(token);
-    // Attach user info to request
+    const userId = Number.parseInt(payload.sub ?? "", 10);
+    if (!Number.isFinite(userId) || userId <= 0) {
+      res.status(401).json({ error: "Invalid token subject" });
+      return;
+    }
     (req as any).user = {
-      id: parseInt(payload.sub!, 10),
+      id: userId,
       email: payload.email,
       name: payload.name,
     };
 
-    // Refresh the token (sliding expiration)
-    const newToken = await createToken({
-      id: parseInt(payload.sub!, 10),
-      email: payload.email,
-      name: payload.name,
-    });
-    setCookieOnResponse(res, newToken);
+    // Refresh the token only when it is in the last quarter of its lifetime.
+    // Refreshing on every request lets a stolen cookie be extended forever.
+    const exp = typeof payload.exp === "number" ? payload.exp : 0;
+    const iat = typeof payload.iat === "number" ? payload.iat : 0;
+    const lifetime = exp - iat;
+    const remaining = exp - Math.floor(Date.now() / 1000);
+    if (lifetime > 0 && remaining > 0 && remaining < lifetime / 4) {
+      const newToken = await createToken({
+        id: userId,
+        email: payload.email,
+        name: payload.name,
+      });
+      setCookieOnResponse(res, newToken);
+    }
 
     next();
   } catch {

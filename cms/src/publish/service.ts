@@ -1,6 +1,6 @@
 import { readdir, cp, mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { config } from "../config.js";
 import { getDb, type PublishLogRow } from "../db/index.js";
 import { createSnapshot } from "../snapshots/service.js";
@@ -38,11 +38,13 @@ export function getPublishStatus(): PublishStatus {
  * 7. Unlock
  */
 export async function publish(author: string): Promise<PublishLogRow> {
+  // Atomic check-and-set: synchronous, no `await` between the check and the
+  // assignment, so concurrent requests cannot both pass the guard.
   if (isPublishing) {
     throw new PublishError("A publish is already in progress", 409);
   }
-
   isPublishing = true;
+
   const db = getDb();
 
   // Stop the Astro dev server if running — can't run build and dev simultaneously
@@ -160,12 +162,16 @@ function runBuild(): Promise<string> {
   return new Promise((resolve, reject) => {
     const buildCmd = process.platform === "win32" ? "npm.cmd" : "npm";
 
-    exec(
-      `${buildCmd} run build`,
+    // execFile (no shell) avoids command-injection if the cwd or args ever
+    // become user-controlled in the future.
+    execFile(
+      buildCmd,
+      ["run", "build"],
       {
         cwd: config.landingDir,
-        timeout: 120_000, // 120 second timeout
+        timeout: 120_000,
         env: { ...process.env },
+        shell: false,
       },
       (error, stdout, stderr) => {
         const output = `${stdout}\n${stderr}`.trim();
