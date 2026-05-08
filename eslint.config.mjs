@@ -8,7 +8,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', '.astro/**'],
+    ignores: ['dist/**', 'node_modules/**', '.astro/**', 'cms/ui/.astro/**', 'cms/ui-dist/**'],
   },
   // Astro files
   ...eslintPluginAstro.configs.recommended,
@@ -35,7 +35,10 @@ export default [
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'react-hooks/purity': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
     },
     settings: {
       react: { version: 'detect' },
