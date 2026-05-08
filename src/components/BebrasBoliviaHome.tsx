@@ -13,13 +13,18 @@ type HomeHeroData = {
   subtitleSecondary?: string;
   buttonLabel?: string;
   buttonHref?: string;
-  noticeEyebrow?: string;
-  noticeText?: string;
-  noticeButtonLabel?: string;
-  noticeButtonHref?: string;
 };
 
-export default function BebrasBoliviaHome({ hero = {} }: { hero?: HomeHeroData }) {
+type LatestNewsData = {
+  title: string;
+  description?: string;
+  author?: string;
+  href: string;
+  dateTime: string;
+  dateLabel: string;
+};
+
+export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: HomeHeroData; latestNews?: LatestNewsData | null }) {
   const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -97,29 +102,37 @@ export default function BebrasBoliviaHome({ hero = {} }: { hero?: HomeHeroData }
           </div>
         </section>
 
-        <section data-hero-item className="mx-auto mt-6 w-full max-w-6xl pb-6 sm:mt-8 sm:pb-8">
-          <div className="relative flex items-center gap-5 rounded-2xl bg-card/95 px-6 py-5 text-foreground shadow-[0_2px_0_rgba(0,0,0,0.04),0_20px_40px_-25px_rgba(0,0,0,0.2)] ring-1 ring-border/70 backdrop-blur-sm sm:px-8 sm:py-6">
-            <span className="relative flex shrink-0 items-center justify-center">
-              <span className="absolute inline-flex size-4 rounded-full bg-primary opacity-75 animate-ping"></span>
-              <span className="relative inline-flex size-2.5 rounded-full bg-primary"></span>
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="mb-1 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-ochre">
-                {hero.noticeEyebrow || "Edición 2026 - Inscripciones abiertas"}
-              </p>
-              <p className="text-base font-semibold leading-snug text-foreground sm:text-lg">
-                {hero.noticeText || "El desafío vuelve en noviembre. Prepara tu unidad educativa."}
-              </p>
+        {latestNews && (
+          <section data-hero-item className="mx-auto mt-6 w-full max-w-6xl pb-6 sm:mt-8 sm:pb-8">
+            <div className="relative flex items-center gap-5 rounded-2xl bg-card/95 px-6 py-5 text-foreground shadow-[0_2px_0_rgba(0,0,0,0.04),0_20px_40px_-25px_rgba(0,0,0,0.2)] ring-1 ring-border/70 backdrop-blur-sm sm:px-8 sm:py-6">
+              <span className="relative flex shrink-0 items-center justify-center">
+                <span className="absolute inline-flex size-4 rounded-full bg-primary opacity-75 animate-ping"></span>
+                <span className="relative inline-flex size-2.5 rounded-full bg-primary"></span>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="mb-1 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-ochre">
+                  Última noticia
+                  <time dateTime={latestNews.dateTime}> · {latestNews.dateLabel}</time>
+                </p>
+                <p className="text-base font-semibold leading-snug text-foreground sm:text-lg">
+                  {latestNews.title}
+                </p>
+                {latestNews.author && (
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    {latestNews.author}
+                  </p>
+                )}
+              </div>
+              <a
+                href={latestNews.href}
+                className="hidden shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-xs font-bold tracking-wide text-primary-foreground transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
+              >
+                Leer noticia
+                <span aria-hidden="true">→</span>
+              </a>
             </div>
-            <a
-              href={hero.noticeButtonHref || "/registro"}
-              className="hidden shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-xs font-bold tracking-wide text-primary-foreground transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
-            >
-              {hero.noticeButtonLabel || "Inscribir"}
-              <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
     </div>
   );
