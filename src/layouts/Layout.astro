@@ -2,7 +2,6 @@
 import { ClientRouter } from "astro:transitions";
 import castorCircle from "../assets/castor-circle.png";
 import BebrasHeader from "@/components/BebrasHeader";
-import { ParticlesBackground } from "@/components/ParticlesBackground";
 import Footer from "@/components/Footer.astro";
 import "@/styles/global.css";
 import siteData from "@/data/site.json";
@@ -73,8 +72,6 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
     <ClientRouter />
   </head>
   <body class="relative min-h-screen flex flex-col bg-primary text-foreground antialiased overflow-x-hidden">
-    <ParticlesBackground client:load transition:persist />
-
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
