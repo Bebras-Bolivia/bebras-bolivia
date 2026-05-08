@@ -1,5 +1,6 @@
 import { readdir, cp, mkdir, writeFile, readFile } from "fs/promises";
-import { join } from "path";
+import { existsSync } from "fs";
+import { join, resolve } from "path";
 import { spawn, type ChildProcess } from "child_process";
 import { config } from "../config.js";
 import { createServer } from "net";
@@ -19,6 +20,8 @@ export interface PreviewStatus {
   port: number;
   error: string | null;
 }
+
+type StartPreviewResult = { ok: true; port: number; mode: "dev" } | { ok: true; port: null; mode: "static" };
 
 export function getPreviewStatus(): PreviewStatus {
   return {
@@ -50,14 +53,31 @@ async function getFreePort(startPort: number): Promise<number> {
   });
 }
 
+function getAstroCommand(): string | null {
+  if (process.env.ASTRO_BIN) return process.env.ASTRO_BIN;
+
+  const localAstro = resolve(
+    config.landingDir,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "astro.cmd" : "astro"
+  );
+
+  if (existsSync(localAstro)) return localAstro;
+
+  if (config.isDev) return process.platform === "win32" ? "npx.cmd" : "npx";
+
+  return null;
+}
+
 /**
  * Start the Astro dev server as a persistent child process.
  * Returns once the server is ready (detected via stdout).
  */
-export async function startDevServer(): Promise<{ ok: true; port: number }> {
+export async function startDevServer(): Promise<StartPreviewResult> {
   // Already running
   if (devProcess && devServerReady) {
-    return { ok: true, port: devServerPort };
+    return { ok: true, port: devServerPort, mode: "dev" };
   }
 
   // Already starting — wait for it
@@ -72,13 +92,24 @@ export async function startDevServer(): Promise<{ ok: true; port: number }> {
   // First, sync content to landing so the dev server has current data
   await syncContentToLanding();
 
+  const cmd = getAstroCommand();
+  if (!cmd) {
+    console.warn("[Preview] Astro executable not found; using static preview fallback.");
+    devServerStarting = false;
+    devServerReady = false;
+    devServerError = null;
+    return { ok: true, port: null, mode: "static" };
+  }
+
   // Find a free port so Astro doesn't prompt/hang
   devServerPort = await getFreePort(4322);
 
   return new Promise((resolve, reject) => {
-    const cmd = process.platform === "win32" ? "npx.cmd" : "npx";
+    const args = cmd.endsWith("npx") || cmd.endsWith("npx.cmd")
+      ? ["astro", "dev", "--port", String(devServerPort)]
+      : ["dev", "--port", String(devServerPort)];
 
-    devProcess = spawn(cmd, ["astro", "dev", "--port", String(devServerPort)], {
+    devProcess = spawn(cmd, args, {
       cwd: config.landingDir,
       stdio: ["pipe", "pipe", "pipe"],
       env: { ...process.env, NODE_OPTIONS: "" },
@@ -106,7 +137,7 @@ export async function startDevServer(): Promise<{ ok: true; port: number }> {
           devServerError = null;
           clearTimeout(timeout);
           console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
-          resolve({ ok: true, port: devServerPort });
+          resolve({ ok: true, port: devServerPort, mode: "dev" });
         }
       }
     });
@@ -122,7 +153,7 @@ export async function startDevServer(): Promise<{ ok: true; port: number }> {
           devServerError = null;
           clearTimeout(timeout);
           console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
-          resolve({ ok: true, port: devServerPort });
+          resolve({ ok: true, port: devServerPort, mode: "dev" });
         }
       }
     });
@@ -158,7 +189,7 @@ export async function startDevServer(): Promise<{ ok: true; port: number }> {
 /**
  * Wait for an already-starting server to become ready.
  */
-function waitForReady(): Promise<{ ok: true; port: number }> {
+function waitForReady(): Promise<StartPreviewResult> {
   return new Promise((resolve, reject) => {
     const maxWait = 30_000;
     const interval = 200;
@@ -168,7 +199,7 @@ function waitForReady(): Promise<{ ok: true; port: number }> {
       elapsed += interval;
       if (devServerReady) {
         clearInterval(check);
-        resolve({ ok: true, port: devServerPort });
+        resolve({ ok: true, port: devServerPort, mode: "dev" });
       } else if (!devServerStarting || elapsed >= maxWait) {
         clearInterval(check);
         reject(
