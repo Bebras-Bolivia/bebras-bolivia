@@ -23,6 +23,7 @@ export interface PreviewStatus {
 }
 
 type StartPreviewResult = { ok: true; port: number; mode: "dev" } | { ok: true; port: null; mode: "static" };
+type AstroCommand = { cmd: string; argsPrefix: string[] };
 
 export function getPreviewStatus(): PreviewStatus {
   return {
@@ -55,8 +56,8 @@ async function getFreePort(startPort: number): Promise<number> {
   });
 }
 
-function getAstroCommand(): string | null {
-  if (process.env.ASTRO_BIN) return process.env.ASTRO_BIN;
+function getAstroCommand(): AstroCommand | null {
+  if (process.env.ASTRO_BIN) return { cmd: process.env.ASTRO_BIN, argsPrefix: [] };
 
   const localAstro = resolve(
     config.landingDir,
@@ -65,7 +66,11 @@ function getAstroCommand(): string | null {
     process.platform === "win32" ? "astro.cmd" : "astro"
   );
 
-  if (existsSync(localAstro)) return localAstro;
+  if (existsSync(localAstro)) {
+    return process.platform === "win32"
+      ? { cmd: localAstro, argsPrefix: [] }
+      : { cmd: process.execPath, argsPrefix: [localAstro] };
+  }
 
   const localNpx = resolve(
     config.landingDir,
@@ -74,9 +79,9 @@ function getAstroCommand(): string | null {
     process.platform === "win32" ? "npx.cmd" : "npx"
   );
 
-  if (existsSync(localNpx)) return localNpx;
+  if (existsSync(localNpx)) return { cmd: localNpx, argsPrefix: ["astro"] };
 
-  return process.platform === "win32" ? "npx.cmd" : "npx";
+  return { cmd: process.platform === "win32" ? "npx.cmd" : "npx", argsPrefix: ["astro"] };
 }
 
 function fallbackToStaticPreview(reason: string): StartPreviewResult {
@@ -110,8 +115,8 @@ export async function startDevServer(): Promise<StartPreviewResult> {
   // First, sync content to landing so the dev server has current data
   await syncContentToLanding();
 
-  const cmd = getAstroCommand();
-  if (!cmd) {
+  const command = getAstroCommand();
+  if (!command) {
     return fallbackToStaticPreview("Astro executable not found");
   }
 
@@ -119,11 +124,9 @@ export async function startDevServer(): Promise<StartPreviewResult> {
   devServerPort = await getFreePort(4322);
 
   return new Promise((resolve, reject) => {
-    const args = cmd.endsWith("npx") || cmd.endsWith("npx.cmd")
-      ? ["astro", "dev", "--port", String(devServerPort)]
-      : ["dev", "--port", String(devServerPort)];
+    const args = [...command.argsPrefix, "dev", "--port", String(devServerPort)];
 
-    devProcess = spawn(cmd, args, {
+    devProcess = spawn(command.cmd, args, {
       cwd: config.landingDir,
       stdio: ["pipe", "pipe", "pipe"],
       env: { ...process.env, NODE_OPTIONS: "" },
@@ -131,6 +134,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
     });
 
     let startupOutput = "";
+    let resolvedReady = false;
     const timeout = setTimeout(() => {
       if (!devServerReady) {
         const message = `Dev server timed out after 30s. Output:\n${startupOutput}`;
@@ -156,6 +160,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
           devServerError = null;
           clearTimeout(timeout);
           console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
+          resolvedReady = true;
           resolve({ ok: true, port: devServerPort, mode: "dev" });
         }
       }
@@ -172,6 +177,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
           devServerError = null;
           clearTimeout(timeout);
           console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
+          resolvedReady = true;
           resolve({ ok: true, port: devServerPort, mode: "dev" });
         }
       }
@@ -193,7 +199,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
 
     devProcess.on("exit", (code, signal) => {
       clearTimeout(timeout);
-      const wasReady = devServerReady;
+      const wasReady = resolvedReady || devServerReady;
       devServerReady = false;
       devServerStarting = false;
       devProcess = null;
