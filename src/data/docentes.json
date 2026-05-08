@@ -1,9 +1,9 @@
 {
-  "pageTitle": "Docentes",
-  "pageDescription": "Información para docentes y coordinadores escolares sobre cómo inscribir estudiantes en el Desafío Bebras Bolivia.",
+  "pageTitle": "Maestros",
+  "pageDescription": "Información para maestros y coordinadores escolares sobre cómo inscribir estudiantes en el Desafío Bebras Bolivia.",
   "header": {
-    "tag": "Para docentes",
-    "heading": "Información para docentes",
+    "tag": "Para maestros",
+    "heading": "Información para maestros",
     "subtitle": "Guía completa para coordinadores escolares que desean inscribir a sus estudiantes en el Desafío Bebras."
   },
   "components": [
@@ -11,7 +11,7 @@
       "type": "itemsGrid",
       "tag": "Registro",
       "heading": "¿Cómo inscribir a sus estudiantes?",
-      "intro": "El proceso de inscripción es simple y gratuito. Un docente o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
+      "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
       "columns": 3,
       "mediaType": "number",
       "items": [
@@ -52,7 +52,7 @@
         {
           "icon": "user",
           "title": "Un coordinador registrado",
-          "description": "Docente o representante que supervise la sesión."
+          "description": "Maestro o representante que supervise la sesión."
         },
         {
           "icon": "clock",

@@ -57,7 +57,7 @@
           "role": {
             "label": "Rol",
             "placeholder": "Seleccionar...",
-            "options": ["Estudiante", "Docente / Coordinador", "Institución", "Otro"]
+            "options": ["Estudiante", "Maestro / Coordinador", "Institución", "Otro"]
           },
           "message": { "label": "Mensaje", "placeholder": "Escribe tu mensaje..." }
         },

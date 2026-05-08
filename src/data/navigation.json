@@ -14,7 +14,7 @@
       "href": "/estudiantes"
     },
     {
-      "label": "Docentes",
+      "label": "Maestros",
       "href": "/docentes"
     },
     {
@@ -51,7 +51,7 @@
           "href": "/estudiantes"
         },
         {
-          "label": "Docentes",
+          "label": "Maestros",
           "href": "/docentes"
         },
         {
