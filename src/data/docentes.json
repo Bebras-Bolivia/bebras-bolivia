@@ -23,7 +23,7 @@
         {
           "number": "2",
           "title": "Inscripción de estudiantes",
-          "description": "Agregar a los estudiantes organizados por categorías de edad, de Kits a Seniors."
+          "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Yaguarete."
         },
         {
           "number": "3",
@@ -83,7 +83,7 @@
           "heading": "Antes del desafío",
           "items": [
             { "title": "Registrarse como coordinador", "desc": "en la plataforma Bebras Bolivia y completar los datos de la escuela." },
-            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Kits, Castors, Benjamins, Cadets, Juniors y Seniors)." },
+            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Guacamayo, Capibara, Titi, Jucumari y Yaguarete)." },
             { "title": "Verificar el equipamiento", "desc": "Asegurar que las computadoras tengan navegador actualizado y conexión a internet estable." },
             { "title": "Preparar a los estudiantes", "desc": "Compartir ejemplos de problemas de años anteriores para que se familiaricen con el formato." }
           ]

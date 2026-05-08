@@ -590,10 +590,13 @@ function _componentTemplate(type: string): unknown | null {
     }),
     studentsAgeCategories: () => ({
       type: "studentsAgeCategories", sectionTag: "Niveles", heading: "Categorias por Edad",
-      subtitle: "Seis niveles disenados para desafiar a cada grupo de edad",
+      subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
       categories: [
-        { name: "Kits", age: "6-8 anos", emoji: "🧩", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
-        { name: "Castors", age: "8-10 anos", emoji: "🦫", color: "amber", desc: "Descubriendo patrones y secuencias" },
+        { name: "Guacamayo", age: "5-8 anos", emoji: "🦜", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
+        { name: "Capibara", age: "8-10 anos", emoji: "🦫", color: "amber", desc: "Descubriendo patrones y secuencias" },
+        { name: "Titi", age: "10-12 anos", emoji: "🐒", color: "emerald", desc: "Resolviendo problemas con creatividad" },
+        { name: "Jucumari", age: "12-14 anos", emoji: "🐻", color: "sky", desc: "Algoritmos y pensamiento estructurado" },
+        { name: "Yaguarete", age: "14-18 anos", emoji: "🐆", color: "indigo", desc: "Desafios avanzados de informatica" },
       ],
     }),
     studentsScoringTable: () => ({
