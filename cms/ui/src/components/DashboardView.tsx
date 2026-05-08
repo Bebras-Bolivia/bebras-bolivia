@@ -19,6 +19,10 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
+function editorPathFor(file: string) {
+  return `/editor/${encodeURIComponent(file === "docentes.json" ? "maestros.json" : file)}`;
+}
+
 export default function DashboardView(props: DashboardData) {
   const { files, posts, snapshots, publishData, contentTree, contentMeta, icons, onNavigate, onPublish } = props;
 
@@ -71,7 +75,7 @@ export default function DashboardView(props: DashboardData) {
             const parentMeta = contentMeta[node.parent] || { label: node.parent, desc: "" };
             return (
               <div className="content-tree-item" key={node.parent}>
-                <button className="content-item" type="button" onClick={() => onNavigate(`/editor/${encodeURIComponent(node.parent)}`)}>
+                <button className="content-item" type="button" onClick={() => onNavigate(editorPathFor(node.parent))}>
                   <div>
                     <div className="name">{parentMeta.label || node.parent}</div>
                     <div className="desc">{parentMeta.desc || ""}</div>

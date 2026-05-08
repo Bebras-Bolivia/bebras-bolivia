@@ -15,12 +15,12 @@ export const fileToPage: Record<string, string> = {
   "scoring.json": "/",
   "news.json": "/",
   "faq.json": "/faq/",
-  "teacher-instructions.json": "/docentes/",
+  "teacher-instructions.json": "/maestros/",
   "sponsors.json": "/sponsors/",
   "contact.json": "/contacto/",
   "registro.json": "/registro/",
   "estudiantes.json": "/estudiantes/",
-  "docentes.json": "/docentes/",
+  "docentes.json": "/maestros/",
   "blog-ui.json": "/blog/",
 };
 
@@ -732,7 +732,7 @@ function _estudiantesSection(type: string): unknown | null {
   const map: Record<string, () => unknown> = {
     participacion: () => ({
       id: "participacion", tag: "Participacion", heading: "Como participar",
-      content: ["Parrafo"], link: { label: "Ver maestros", href: "/docentes" },
+      content: ["Parrafo"], link: { label: "Ver maestros", href: "/maestros" },
     }),
     desafio: () => ({
       id: "desafio", tag: "Desafio", heading: "Que es el desafio", content: ["Parrafo"],

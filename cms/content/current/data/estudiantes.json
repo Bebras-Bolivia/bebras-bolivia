@@ -16,7 +16,7 @@
         "Si tu escuela aún no está inscrita, pide a tu profesor que visite la página para maestros para más información sobre el proceso de registro."
       ],
       "linkLabel": "Página para maestros",
-      "linkHref": "/docentes"
+      "linkHref": "/maestros"
     },
     {
       "type": "sectionRichText",

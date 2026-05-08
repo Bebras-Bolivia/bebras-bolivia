@@ -285,13 +285,13 @@ const App = {
           const childrenHtml = node.children
             .map((child) => {
               const childMeta = this.contentMeta[child] || { label: child };
-              return `<a class="sidebar-tree-child" data-nav="/editor/${this.escapeHtml(child)}" href="/editor/${this.escapeHtml(child)}">${this.escapeHtml(childMeta.label)}</a>`;
+              return `<a class="sidebar-tree-child" data-nav="${this.editorPathFor(child)}" href="${this.editorPathFor(child)}">${this.escapeHtml(childMeta.label)}</a>`;
             })
             .join("");
 
           return `
             <div class="sidebar-tree-group">
-              <a class="sidebar-tree-parent" data-nav="/editor/${this.escapeHtml(node.parent)}" href="/editor/${this.escapeHtml(node.parent)}">
+              <a class="sidebar-tree-parent" data-nav="${this.editorPathFor(node.parent)}" href="${this.editorPathFor(node.parent)}">
                 ${this.icon(parentMeta.icon || "edit")}
                 <span>${this.escapeHtml(parentMeta.label)}</span>
               </a>
@@ -331,7 +331,7 @@ const App = {
     if (path === "/" || path === "/dashboard") {
       this.showPage("Dashboard", () => this.renderDashboard());
     } else if (path.startsWith("/editor/")) {
-      const filename = decodeURIComponent(path.replace("/editor/", ""));
+      const filename = this.contentFileFromRoute(decodeURIComponent(path.replace("/editor/", "")));
       const meta = this.contentMeta[filename];
       const title = meta ? `Editar: ${meta.label}` : `Editar: ${filename}`;
       this.showPage(title, () => Editor.render(filename));
@@ -481,7 +481,7 @@ const App = {
         main.querySelectorAll(".content-item, .content-child").forEach((item) => {
           item.addEventListener("click", () => {
             const file = item.getAttribute("data-file");
-            this.navigate(`/editor/${encodeURIComponent(file)}`);
+            this.navigate(this.editorPathFor(file));
           });
         });
 
@@ -545,6 +545,14 @@ const App = {
   },
 
   // ── Helpers ─────────────────────────────────────────────
+
+  editorPathFor(file) {
+    return `/editor/${encodeURIComponent(file === "docentes.json" ? "maestros.json" : file)}`;
+  },
+
+  contentFileFromRoute(value) {
+    return value === "maestros.json" ? "docentes.json" : value;
+  },
 
   escapeHtml(str) {
     if (!str) return "";

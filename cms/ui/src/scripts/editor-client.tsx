@@ -143,6 +143,7 @@ function EditorPrimitivesView({
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
   const [saving, setSaving] = React.useState(false);
+  const displayFilename = filename === "docentes.json" ? "maestros.json" : filename;
 
   React.useEffect(() => {
     onInitPreview();
@@ -165,7 +166,7 @@ function EditorPrimitivesView({
       <div className="editor-toolbar">
         <div>
           <h2>{title}</h2>
-          <span className="text-sm text-muted">{filename}</span>
+          <span className="text-sm text-muted">{displayFilename}</span>
         </div>
         <div className="flex gap-sm">
           <button className="btn btn-ghost btn-sm" onClick={onReset}>
