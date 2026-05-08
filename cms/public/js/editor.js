@@ -770,6 +770,10 @@ const Editor = {
     return input.value;
   },
 
+  waitForPreviewUpdate() {
+    return new Promise((resolve) => setTimeout(resolve, 500));
+  },
+
   // ── Save ────────────────────────────────────────────────
 
   async save() {
@@ -815,6 +819,7 @@ const Editor = {
       }
 
       await API.syncPreviewDraft(this.currentFile, this.currentData);
+      await this.waitForPreviewUpdate();
       this.loadPreviewIframe(true);
       Toast.info("Vista previa actualizada con tus cambios");
     } catch (err) {

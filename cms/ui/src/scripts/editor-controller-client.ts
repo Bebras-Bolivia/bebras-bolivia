@@ -34,6 +34,7 @@ const Editor = {
   isCollapsibleArray(path: string) { return this.lib.isCollapsibleArray(path); },
   getArrayItemLabel(obj: any, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
   getAddTypeOptions(path: string) { return this.lib.getAddTypeOptions(path, this.currentFile, this.currentData) || []; },
+  waitForPreviewUpdate() { return new Promise((resolve) => setTimeout(resolve, 500)); },
 
   async render(filename: string) {
     const main = document.getElementById("main-content");
@@ -242,6 +243,7 @@ const Editor = {
       }
 
       await window.API.syncPreviewDraft(this.currentFile, this.currentData);
+      await this.waitForPreviewUpdate();
       this.loadPreviewIframe(true);
       window.Toast.info("Vista previa actualizada con tus cambios");
     } catch (err: any) {
