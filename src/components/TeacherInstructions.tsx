@@ -65,16 +65,16 @@ export default function TeacherInstructions({
         </p>
 
         <Tabs defaultValue={tabs[0]?.id}>
-          <TabsList className="mb-6 grid h-auto w-full grid-cols-1 gap-3 bg-transparent p-0 sm:grid-cols-3">
+          <TabsList className="mb-6 grid h-auto w-full grid-cols-1 gap-2 rounded-3xl bg-bebras-paper p-2 sm:grid-cols-3">
             {tabs.map((tab, index) => {
               const color = palette[index % palette.length] || "green";
               return (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className={`group h-auto min-h-12 rounded-2xl border-2 border-bebras-gray bg-white px-4 py-3 text-sm font-bold text-bebras-ink shadow-sm transition hover:bg-bebras-paper focus-visible:ring-0 focus-visible:outline-none data-active:border-transparent data-active:shadow-lg ${activeTabClass[color]}`}
+                  className={`group h-auto min-h-12 rounded-2xl border-0 bg-transparent px-4 py-3 text-base font-bold text-bebras-ink transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/70 focus-visible:ring-0 focus-visible:outline-none data-active:translate-y-0 data-active:shadow-none ${activeTabClass[color]}`}
                 >
-                  <span className={`mr-2 size-2.5 rounded-full ${dotClass[color]} group-data-active:bg-white`} />
+                  <span className={`mr-2 size-2.5 rounded-full transition-transform duration-200 group-hover:scale-125 ${dotClass[color]} group-data-active:bg-white`} />
                   {tab.label}
                 </TabsTrigger>
               );
@@ -82,15 +82,19 @@ export default function TeacherInstructions({
           </TabsList>
 
           {tabs.map((tab, tabIndex) => (
-            <TabsContent key={tab.id} value={tab.id} className="mt-0">
-              <div className={`${getBrandCardClass(tabIndex, cardPalette)} p-7 sm:p-8`}>
-                <h3 className="mb-5 text-2xl font-bold text-white">
+            <TabsContent
+              key={tab.id}
+              value={tab.id}
+              className="mt-0 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300"
+            >
+              <div className={`${getBrandCardClass(tabIndex, cardPalette)} p-7 sm:p-9`}>
+                <h3 className="mb-6 text-2xl font-bold text-white sm:text-3xl">
                   {tab.heading}
                 </h3>
-                <ul className="grid gap-4 text-white/90">
+                <ul className="grid gap-5 text-base text-white/90 sm:text-lg">
                   {tab.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-4">
-                      <span className="brand-card-icon mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold">
+                    <li key={i} className="flex items-start gap-4 sm:gap-5">
+                      <span className="brand-card-icon mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full text-base font-bold">
                         {i + 1}
                       </span>
                       <span className="leading-relaxed">
