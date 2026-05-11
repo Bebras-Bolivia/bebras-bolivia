@@ -1,24 +1,30 @@
 ---
+import { ArrowRight } from "lucide-react";
+import { normalizeBrandColor } from "@/lib/brand-styles";
+
 interface Props {
   tag?: string;
   heading: string;
   text: string;
   buttonLabel: string;
   buttonHref: string;
+  accent?: string;
 }
 
-const { tag, heading, text, buttonLabel, buttonHref } = Astro.props;
+const { tag, heading, text, buttonLabel, buttonHref, accent = "red" } = Astro.props;
+const accentColor = normalizeBrandColor(accent);
+const cardClass = `brand-card brand-card-${accentColor}`;
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
-  <div class="editorial-section text-center">
-    <div class="mx-auto max-w-6xl">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{tag}</p>}
-      <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-4 tracking-tight">{heading}</h2>
-      <p class="text-xl text-muted-foreground mb-7 max-w-2xl mx-auto leading-relaxed">{text}</p>
-      <a href={buttonHref} class="group inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.03] hover:bg-primary/90">
+  <div class="py-8 lg:py-10 text-center">
+    <div class:list={["mx-auto max-w-5xl px-6 py-10 sm:px-10", cardClass]}>
+      {tag && <p class="brand-card-muted text-sm uppercase tracking-[0.25em] font-bold mb-3">{tag}</p>}
+      <h2 class="text-4xl sm:text-5xl font-bold mb-4 tracking-tight">{heading}</h2>
+      <p class="brand-card-muted text-xl mb-7 max-w-2xl mx-auto leading-relaxed">{text}</p>
+      <a href={buttonHref} class="group inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-lg font-bold !text-bebras-ink transition-all duration-300 hover:scale-[1.03] hover:bg-white/90">
         {buttonLabel}
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        <ArrowRight className="ml-3 size-6 transition-transform group-hover:translate-x-2" strokeWidth={3} aria-hidden="true" />
       </a>
     </div>
   </div>

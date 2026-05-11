@@ -1,5 +1,6 @@
 ---
 import { Clock, Mail, Monitor, Users, Wifi } from "lucide-react";
+import { getBrandCardClass } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
 interface GridItem {
@@ -19,10 +20,11 @@ interface Props {
   intro?: string;
   columns?: number;
   mediaType?: "icon" | "image" | "number" | "none";
+  cardPalette?: string[];
   items: GridItem[];
 }
 
-const { tag, heading, intro, columns = 3, mediaType = "none", items = [] } = Astro.props;
+const { tag, heading, intro, columns = 3, mediaType = "none", cardPalette, items = [] } = Astro.props;
 
 function normalizedMediaType(type: string) {
   if (type === "icon" || type === "image" || type === "number" || type === "none") return type;
@@ -46,10 +48,6 @@ function getColsClass(cols: number) {
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 }
 
-function getBrandCardClass(index: number) {
-  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
-  return `brand-card ${colors[index % colors.length]}`;
-}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -63,7 +61,7 @@ function getBrandCardClass(index: number) {
           const Icon = iconMap[item.icon as keyof typeof iconMap];
 
           return (
-          <div class:list={["p-5 text-left", getBrandCardClass(i)]}>
+          <div class:list={["p-5 text-left", getBrandCardClass(i, cardPalette)]}>
             {effectiveMediaType !== "none" && (
               <div class="mb-4">
                 {effectiveMediaType === "number" && (

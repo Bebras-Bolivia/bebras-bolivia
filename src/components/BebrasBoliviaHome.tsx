@@ -136,22 +136,6 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
               </a>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pt-4 lg:justify-start">
-              <div className="flex items-baseline gap-2">
-                <span className="serif-display text-3xl text-white">70+</span>
-                <span className="text-sm text-white/85">países</span>
-              </div>
-              <div className="h-5 w-px bg-white/40"></div>
-              <div className="flex items-baseline gap-2">
-                <span className="serif-display text-3xl text-white">45<span className="text-lg">min</span></span>
-                <span className="text-sm text-white/85">por desafío</span>
-              </div>
-              <div className="h-5 w-px bg-white/40"></div>
-              <div className="flex items-baseline gap-2">
-                <span className="serif-display text-3xl text-white">5</span>
-                <span className="text-sm text-white/85">categorías</span>
-              </div>
-            </div>
           </div>
 
           <div data-hero-item className="relative order-2 flex items-center justify-center">

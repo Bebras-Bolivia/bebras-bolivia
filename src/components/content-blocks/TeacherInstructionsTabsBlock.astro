@@ -18,11 +18,12 @@ interface Props {
   heading: string;
   subtitle: string;
   tabs: Tab[];
+  cardPalette?: string[];
 }
 
-const { sectionTag, heading, subtitle, tabs = [] } = Astro.props;
+const { sectionTag, heading, subtitle, tabs = [], cardPalette } = Astro.props;
 ---
 
 <div class="reveal-section w-full mx-auto max-w-6xl mb-8 lg:mb-10 px-4 sm:px-6">
-  <TeacherInstructions sectionTag={sectionTag} heading={heading} subtitle={subtitle} tabs={tabs} client:visible />
+  <TeacherInstructions sectionTag={sectionTag} heading={heading} subtitle={subtitle} tabs={tabs} cardPalette={cardPalette} client:visible />
 </div>

@@ -9,6 +9,7 @@
   "components": [
     {
       "type": "sectionRichText",
+      "accent": "blue",
       "tag": "Participación",
       "heading": "¿Cómo participar?",
       "paragraphs": [
@@ -20,6 +21,7 @@
     },
     {
       "type": "sectionRichText",
+      "accent": "green",
       "tag": "El desafío",
       "heading": "¿Qué es el Desafío Bebras?",
       "paragraphs": [
@@ -32,6 +34,7 @@
       "tag": "Habilidades clave",
       "heading": "¿Qué es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
+      "cardPalette": ["blue", "red", "yellow", "green"],
       "items": [
         {
           "title": "Descomposición:",
@@ -57,6 +60,7 @@
       "tag": "El formato",
       "heading": "¿Qué involucra el desafío?",
       "columns": 3,
+      "cardPalette": ["green", "yellow", "red"],
       "stats": [
         { "value": "15", "label": "Preguntas" },
         { "value": "45", "label": "Minutos" },
@@ -82,12 +86,14 @@
         { "value": "45", "label": "Puntaje inicial" },
         { "value": "180", "label": "Puntaje máximo" }
       ],
-      "summaryColumns": 2
+      "summaryColumns": 2,
+      "cardPalette": ["red", "yellow"]
     },
     {
       "type": "studentsAgeCategories",
       "sectionTag": "Niveles",
       "heading": "Categorías por edad",
+      "cardPalette": ["red", "yellow", "green", "blue", "blueDark"],
       "subtitle": "Cinco niveles diseñados para desafiar a cada grupo de edad.",
       "categories": [
         { "name": "Guacamayo", "age": "5-8 años", "emoji": "🦜", "color": "rose", "desc": "Primeros pasos en el pensamiento lógico." },
@@ -99,6 +105,7 @@
     },
     {
       "type": "cta",
+      "accent": "red",
       "tag": "Reconocimiento",
       "heading": "Certificados",
       "text": "Todos los participantes reciben un certificado digital de participación. Los estudiantes con los mejores puntajes de cada categoría reciben reconocimientos especiales.",

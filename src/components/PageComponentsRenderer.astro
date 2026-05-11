@@ -28,6 +28,8 @@ function mapLegacyToUnified(component: any) {
     return {
       type: "itemsGrid",
       tag: component.tag,
+      accent: component.accent,
+      cardPalette: component.cardPalette,
       columns: component.columns,
       mediaType: "image",
       items: (component.cards || []).map((c: any) => ({
@@ -43,6 +45,8 @@ function mapLegacyToUnified(component: any) {
       type: "itemsGrid",
       tag: component.tag,
       heading: component.heading,
+      accent: component.accent,
+      cardPalette: component.cardPalette,
       columns: 1,
       mediaType: "icon",
       items: (component.cards || []).map((c: any) => ({
@@ -60,6 +64,8 @@ function mapLegacyToUnified(component: any) {
     return {
       type: "linksList",
       tag: component.tag,
+      accent: component.accent,
+      cardPalette: component.cardPalette,
       links: component.links || [],
     };
   }
@@ -70,6 +76,8 @@ function mapLegacyToUnified(component: any) {
       tag: component.tag,
       heading: component.heading,
       intro: component.intro,
+      accent: component.accent,
+      cardPalette: component.cardPalette,
       columns: component.columns || 3,
       mediaType: "number",
       items: (component.steps || []).map((s: any) => ({
@@ -85,6 +93,8 @@ function mapLegacyToUnified(component: any) {
       type: "itemsGrid",
       tag: component.tag,
       heading: component.heading,
+      accent: component.accent,
+      cardPalette: component.cardPalette,
       columns: component.columns || 2,
       mediaType: "icon",
       items: (component.requirements || []).map((r: any) => ({
@@ -100,6 +110,7 @@ function mapLegacyToUnified(component: any) {
       type: "sectionRichText",
       tag: component.tag,
       heading: component.heading,
+      accent: component.accent,
       paragraphs: component.content || [],
       tip: component.tip,
     };
@@ -110,6 +121,8 @@ function mapLegacyToUnified(component: any) {
       type: "tabsGuide",
       sectionTag: component.sectionTag,
       heading: component.heading,
+      accent: component.accent,
+      cardPalette: component.cardPalette,
       subtitle: component.subtitle,
       tabs: component.tabs || [],
     };
@@ -130,6 +143,7 @@ function mapLegacyToUnified(component: any) {
         intro={component.intro}
         columns={component.columns}
         mediaType={component.mediaType}
+        cardPalette={component.cardPalette}
         items={component.items}
       />
     );
@@ -147,6 +161,7 @@ function mapLegacyToUnified(component: any) {
         image={component.image}
         linkLabel={component.linkLabel}
         linkHref={component.linkHref}
+        accent={component.accent}
       />
     );
   }
@@ -160,22 +175,24 @@ function mapLegacyToUnified(component: any) {
         tip={component.tip}
         linkLabel={component.linkLabel}
         linkHref={component.linkHref}
+        accent={component.accent}
       />
     );
   }
 
   if (component.type === "featureList") {
-    return <FeatureListBlock tag={component.tag} heading={component.heading} intro={component.intro} items={component.items} outro={component.outro} />;
+    return <FeatureListBlock tag={component.tag} heading={component.heading} intro={component.intro} items={component.items} outro={component.outro} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "statsGrid") {
-    return <StatsGridBlock tag={component.tag} heading={component.heading} columns={component.columns} stats={component.stats} paragraphs={component.paragraphs} />;
+    return <StatsGridBlock tag={component.tag} heading={component.heading} columns={component.columns} stats={component.stats} paragraphs={component.paragraphs} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "studentsAgeCategories") {
     const categoryPayload = {
       ...categoriesData,
       ...(component || {}),
+      cardPalette: component?.cardPalette || (categoriesData as any).cardPalette,
       categories: Array.isArray(component?.categories) ? component.categories : categoriesData.categories,
     };
     return (
@@ -192,6 +209,7 @@ function mapLegacyToUnified(component: any) {
       tableHeaders: Array.isArray(component?.tableHeaders) ? component.tableHeaders : scoringData.tableHeaders,
       rows: Array.isArray(component?.rows) ? component.rows : scoringData.rows,
       summaryCards: Array.isArray(component?.summaryCards) ? component.summaryCards : scoringData.summaryCards,
+      cardPalette: component?.cardPalette || (scoringData as any).cardPalette,
     };
     return (
       <div class="reveal-section w-full mx-auto max-w-6xl mb-8 lg:mb-10 px-4 sm:px-6">
@@ -201,7 +219,7 @@ function mapLegacyToUnified(component: any) {
   }
 
   if (component.type === "linksList") {
-    return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} />;
+    return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "faqQuestions" || component.type === "faqAccordion") {
@@ -209,7 +227,7 @@ function mapLegacyToUnified(component: any) {
   }
 
   if (component.type === "tabsGuide") {
-    return <TeacherInstructionsTabsBlock sectionTag={component.sectionTag} heading={component.heading} subtitle={component.subtitle} tabs={component.tabs} />;
+    return <TeacherInstructionsTabsBlock sectionTag={component.sectionTag} heading={component.heading} subtitle={component.subtitle} tabs={component.tabs} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "formContact") {
@@ -233,6 +251,7 @@ function mapLegacyToUnified(component: any) {
           text={component.text}
           buttonLabel={component.action.label}
           buttonHref={component.action.href}
+          accent={component.accent}
         />
       );
     }
@@ -243,6 +262,7 @@ function mapLegacyToUnified(component: any) {
         text={component.text}
         buttonLabel={component.buttonLabel}
         buttonHref={component.buttonHref}
+        accent={component.accent}
       />
     );
   }

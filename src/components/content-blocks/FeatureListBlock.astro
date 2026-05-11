@@ -1,5 +1,6 @@
 ---
 import { Check } from "lucide-react";
+import { getBrandCardClass } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
 interface Item {
@@ -13,14 +14,10 @@ interface Props {
   intro?: string;
   items: Item[];
   outro?: string;
+  cardPalette?: string[];
 }
 
-const { tag, heading, intro, items = [], outro } = Astro.props;
-
-function getBrandCardClass(index: number) {
-  const colors = ["brand-card-blue", "brand-card-red", "brand-card-yellow", "brand-card-green"];
-  return `brand-card ${colors[index % colors.length]}`;
-}
+const { tag, heading, intro, items = [], outro, cardPalette } = Astro.props;
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -32,7 +29,7 @@ function getBrandCardClass(index: number) {
         {intro && <p set:html={formatInlineRichText(intro)} />}
         <ul class="mt-8 grid gap-5 lg:grid-cols-2">
           {items.map((item, i) => (
-            <li class:list={["flex items-start gap-4 p-5", getBrandCardClass(i)]}>
+            <li class:list={["flex items-start gap-4 p-5", getBrandCardClass(i, cardPalette)]}>
               <span class="brand-card-icon flex items-center justify-center size-8 shrink-0 rounded-2xl mt-1">
                 <Check className="size-4" strokeWidth={2.8} aria-hidden="true" />
               </span>
