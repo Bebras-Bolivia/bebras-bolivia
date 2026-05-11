@@ -176,29 +176,29 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
         </section>
 
         {latestNews && (
-          <section data-hero-item className="mx-auto mt-4 w-full max-w-5xl pb-1 sm:mt-5">
+          <div data-hero-item className="pointer-events-none absolute inset-x-4 bottom-2 z-20 flex justify-center sm:bottom-4 lg:inset-x-auto lg:left-8 lg:justify-start">
             <a
               href={latestNews.href}
-              className="relative flex items-center gap-3 rounded-full bg-white/92 px-4 py-2.5 text-bebras-ink shadow-[0_14px_30px_-24px_rgba(0,0,0,0.45)] ring-1 ring-white/70 backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white sm:px-5"
+              className="pointer-events-auto relative flex max-w-[min(28rem,100%)] items-center gap-2.5 rounded-full bg-white/88 px-3.5 py-2 text-bebras-ink shadow-[0_12px_26px_-22px_rgba(0,0,0,0.45)] ring-1 ring-white/70 backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white"
             >
               <span className="relative flex shrink-0 items-center justify-center" aria-hidden="true">
-                <span className="absolute inline-flex size-3 rounded-full bg-bebras-red opacity-70 animate-ping"></span>
-                <span className="relative inline-flex size-2 rounded-full bg-bebras-red"></span>
+                <span className="absolute inline-flex size-2.5 rounded-full bg-bebras-red opacity-70 animate-ping"></span>
+                <span className="relative inline-flex size-1.5 rounded-full bg-bebras-red"></span>
               </span>
-              <span className="hidden shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-bebras-red sm:inline">
+              <span className="hidden shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-bebras-red sm:inline">
                 Noticia
               </span>
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold sm:text-base">
+              <span className="min-w-0 flex-1 truncate text-xs font-semibold sm:text-sm">
                 {latestNews.title}
               </span>
-              <time className="hidden shrink-0 text-xs font-semibold text-bebras-ink/55 md:inline" dateTime={latestNews.dateTime}>
+              <time className="hidden shrink-0 text-[11px] font-semibold text-bebras-ink/50 md:inline" dateTime={latestNews.dateTime}>
                 {latestNews.dateLabel}
               </time>
-              <span className="shrink-0 text-sm font-bold text-bebras-green">
+              <span className="shrink-0 text-xs font-bold text-bebras-green">
                 <span aria-hidden="true">→</span>
               </span>
             </a>
-          </section>
+          </div>
         )}
       </main>
 
