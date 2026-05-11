@@ -13,9 +13,15 @@ const socialIconMap: Record<string, string> = {
   email:
     '<rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />',
 };
+
+const socialColorMap: Record<string, string> = {
+  facebook: "bg-bebras-green text-white",
+  instagram: "bg-bebras-red text-white",
+  email: "bg-bebras-yellow text-bebras-ink",
+};
 ---
 
-<footer class="relative z-10 w-full bg-cream dark:bg-zinc-950 border-t border-border/70">
+<footer class="relative z-10 w-full bg-bebras-paper dark:bg-zinc-950 border-t border-border/70">
   <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-5">
     <div class="text-center sm:text-left">
       <p class="text-sm font-semibold text-foreground">
@@ -41,7 +47,10 @@ const socialIconMap: Record<string, string> = {
           aria-label={link.label}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center justify-center size-10 rounded-2xl bg-primary text-primary-foreground hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+          class:list={[
+            "inline-flex items-center justify-center size-10 rounded-2xl hover:-translate-y-0.5 hover:shadow-md transition-all duration-200",
+            socialColorMap[link.icon] ?? "bg-bebras-green text-white",
+          ]}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
 import { getCollection } from "astro:content";
-import { BadgeCheck, Brain, School, Sparkles } from "lucide-react";
+import { BadgeCheck, Brain, School } from "lucide-react";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import homeData from "@/data/home.json";
 import { formatInlineRichText } from "@/lib/rich-text";
@@ -61,31 +61,79 @@ function getHomeCtaCardClasses(style?: string) {
 		return {
 			wrapper: "group md:col-span-2 content-card relative overflow-hidden text-foreground p-8 sm:p-10",
 			audience: "font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground",
-			link: "mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-foreground/30 pb-0.5 group-hover:border-primary transition-colors",
-			iconClass: "size-11 text-ochre",
-			emphasisClass: "italic text-primary",
+			link: "mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-foreground/30 pb-0.5 group-hover:border-bebras-blue transition-colors",
+			iconClass: "size-11 text-bebras-blue",
+			emphasisClass: "italic text-bebras-blue",
 			breakLine: false,
 		};
 	}
 
 	return {
-		wrapper: "group md:col-span-3 relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-8 sm:p-10 lift-on-hover",
-		audience: "font-mono text-[10px] uppercase tracking-[0.3em] opacity-70",
-		link: "mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-primary-foreground/50 pb-0.5 group-hover:border-primary-foreground transition-colors",
-		iconClass: "size-11 opacity-35",
-		emphasisClass: "italic",
+		wrapper: "group md:col-span-3 relative overflow-hidden rounded-2xl bg-bebras-red text-white p-8 sm:p-10 lift-on-hover",
+		audience: "font-mono text-[10px] uppercase tracking-[0.3em] opacity-80",
+		link: "mt-6 inline-flex items-center gap-2 text-sm font-semibold border-b border-white/60 pb-0.5 group-hover:border-white transition-colors",
+		iconClass: "size-11 opacity-50",
+		emphasisClass: "italic text-[color:var(--color-bebras-yellow)]",
 		breakLine: true,
 	};
 }
 
 const dotColor: Record<string, string> = {
-	rose:    "bg-rose-500",
-	amber:   "bg-amber-500",
-	emerald: "bg-emerald-500",
-	sky:     "bg-sky-500",
-	violet:  "bg-violet-500",
-	indigo:  "bg-indigo-500",
+	green:    "bg-bebras-green",
+	yellow:   "bg-bebras-yellow",
+	red:      "bg-bebras-red",
+	blue:     "bg-bebras-blue",
+	blueDark: "bg-[color:var(--color-bebras-blue-dark)]",
 };
+
+type AccentKey = "green" | "blue" | "yellow" | "red";
+
+const accentClasses: Record<AccentKey, {
+	numeral: string;
+	emphasis: string;
+	dropCap: string;
+	link: string;
+	ruleIcon: string;
+	badge: string;
+}> = {
+	green: {
+		numeral:  "text-bebras-green",
+		emphasis: "text-bebras-green",
+		dropCap:  "first-letter:text-bebras-green",
+		link:     "text-bebras-green",
+		ruleIcon: "text-bebras-green",
+		badge:    "text-bebras-green",
+	},
+	blue: {
+		numeral:  "text-bebras-blue",
+		emphasis: "text-bebras-blue",
+		dropCap:  "first-letter:text-bebras-blue",
+		link:     "text-bebras-blue",
+		ruleIcon: "text-bebras-blue",
+		badge:    "text-bebras-blue",
+	},
+	yellow: {
+		numeral:  "numeral-yellow-outline",
+		emphasis: "text-yellow-underline",
+		dropCap:  "first-letter:text-bebras-yellow",
+		link:     "text-bebras-yellow",
+		ruleIcon: "text-bebras-yellow",
+		badge:    "text-bebras-yellow",
+	},
+	red: {
+		numeral:  "text-bebras-red",
+		emphasis: "text-bebras-red",
+		dropCap:  "first-letter:text-bebras-red",
+		link:     "text-bebras-red",
+		ruleIcon: "text-bebras-red",
+		badge:    "text-bebras-red",
+	},
+};
+
+function getAccent(section: any): { numeral: string; emphasis: string; dropCap: string; link: string; ruleIcon: string; badge: string } {
+	const key = (section?.accent as AccentKey) || "green";
+	return accentClasses[key] || accentClasses.green;
+}
 ---
 
 <Layout
@@ -94,33 +142,29 @@ const dotColor: Record<string, string> = {
 >
 	<BebrasBoliviaHome hero={(homeData as any).hero} latestNews={latestNews} client:load />
 
-	<main class="relative z-10 w-full bg-cream dark:bg-zinc-950 pb-16 pt-10 lg:pt-14 grain-paper">
-		<div class="mx-auto max-w-6xl px-4 sm:px-6 mb-12">
-			<div class="editorial-rule text-foreground/40">
-				<Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" />
-			</div>
-		</div>
+	<main id="contenido" class="relative z-10 w-full scroll-mt-24 bg-(--color-bebras-paper) dark:bg-zinc-950 pb-16 pt-10 lg:pt-14">
 
-					{sections.map((section: any, idx: number) => {
+					{sections.map((section: any) => {
 						let content = null;
 
 						if (section.type === "introEditorial") {
 							const introParagraphs = getIntroParagraphs(section);
+							const ac = getAccent(section);
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
 									<div class="grid grid-cols-12 gap-6 lg:gap-8">
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
-												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "01"}</span>
+												<span class:list={["block display-numeral text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]", ac.numeral]}>{section.number || "01"}</span>
 												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Capítulo uno"}</p>
 												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
 												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Una iniciativa de 60+ países que llega a Bolivia."}</p>
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre el"} <em class="italic text-primary">{section.headingEmphasis || "desafío"}</em></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre el"} <em class:list={["italic", ac.emphasis]}>{section.headingEmphasis || "desafío"}</em></h2>
 											<div class="space-y-4 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
-												{introParagraphs.map((paragraph: string, pidx: number) => <p class:list={pidx === 0 ? ["first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:text-primary first-letter:font-normal"] : []} set:html={formatInlineRichText(paragraph)} />)}
+												{introParagraphs.map((paragraph: string, pidx: number) => <p class:list={pidx === 0 ? ["first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:font-normal", ac.dropCap] : []} set:html={formatInlineRichText(paragraph)} />)}
 											</div>
 										</div>
 									</div>
@@ -128,19 +172,20 @@ const dotColor: Record<string, string> = {
 							);
 						} else if (section.type === "homeAgeCategories") {
 							const ageGroups = getAgeGroups(section);
+							const ac = getAccent(section);
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
 									<div class="grid grid-cols-12 gap-6 lg:gap-8">
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
-												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "02"}</span>
+												<span class:list={["block display-numeral text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]", ac.numeral]}>{section.number || "02"}</span>
 												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Cinco niveles"}</p>
 												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
 												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Cada nivel tiene tareas diseñadas para su grupo de edad."}</p>
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class="italic text-primary">{section.headingEmphasis || "edad"}</em></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class:list={["italic", ac.emphasis]}>{section.headingEmphasis || "edad"}</em></h2>
 											<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 												{ageGroups.map((g: any, i: number) => (
 													<div class="group content-card overflow-hidden">
@@ -161,7 +206,7 @@ const dotColor: Record<string, string> = {
 													</div>
 												))}
 											</div>
-											<div class="mt-6"><a href={section.linkHref || "/estudiantes"} class="link-underline inline-flex items-center gap-2 text-base font-semibold text-primary">{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
+											<div class="mt-6"><a href={section.linkHref || "/estudiantes"} class:list={["link-underline inline-flex items-center gap-2 text-base font-semibold", ac.link]}>{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
 										</div>
 									</div>
 								</section>
@@ -179,19 +224,20 @@ const dotColor: Record<string, string> = {
 								</section>
 							);
 						} else if (section.type === "aboutBebrasEditorial") {
+							const ac = getAccent(section);
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6">
 									<div class="grid grid-cols-12 gap-6 lg:gap-8">
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
-												<span class="block display-numeral text-primary text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]">{section.number || "03"}</span>
+												<span class:list={["block display-numeral text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]", ac.numeral]}>{section.number || "03"}</span>
 												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Iniciativa internacional"}</p>
 												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
 												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Presente en más de 60 países alrededor del mundo."}</p>
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre"} <em class="italic text-primary">{section.headingEmphasis || "Bebras"}</em><BadgeCheck className="inline-block size-6 align-top text-primary/80" strokeWidth={1.8} aria-hidden="true" /></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre"} <em class:list={["italic", ac.emphasis]}>{section.headingEmphasis || "Bebras"}</em><BadgeCheck className={`inline-block size-6 align-top ${ac.badge} opacity-80`} strokeWidth={1.8} aria-hidden="true" /></h2>
 											<div class="max-w-3xl space-y-4 text-lg text-foreground/80 leading-[1.65]">{(section.paragraphs || []).map((paragraph: string) => <p set:html={formatInlineRichText(paragraph)} />)}</div>
 										</div>
 									</div>
@@ -201,10 +247,7 @@ const dotColor: Record<string, string> = {
 
 						if (!content) return null;
 
-						return <>
-							{content}
-							{idx < sections.length - 1 ? <div class="mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10"><div class="editorial-rule text-foreground/40"><Sparkles className="size-5 text-primary" strokeWidth={1.8} aria-hidden="true" /></div></div> : null}
-						</>;
+						return content;
 					})}
 
 		{components.length > 0 && <PageComponentsRenderer components={components} />}

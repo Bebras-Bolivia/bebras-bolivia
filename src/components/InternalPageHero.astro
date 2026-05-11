@@ -1,0 +1,42 @@
+---
+interface Props {
+  tag?: string;
+  heading: string;
+  description?: string;
+  sticky?: boolean;
+}
+
+const { tag, heading, description, sticky = false } = Astro.props;
+
+const wrapperClass = sticky
+  ? "sticky -mt-[5.5rem] top-0 w-full min-h-[48vh] flex flex-col justify-center items-center z-0 overflow-hidden bg-bebras-yellow pt-[9.5rem] pb-24 sm:-mt-[6.25rem] sm:pt-[10.25rem]"
+  : "relative -mt-[5.5rem] w-full flex flex-col justify-center items-center overflow-hidden bg-bebras-yellow pt-[7.5rem] pb-20 sm:-mt-[6.25rem] sm:pt-[8.75rem] sm:pb-24";
+---
+
+<div class={wrapperClass}>
+  <div class="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8" data-hero-animate>
+    {tag && <p class="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-white/80">{tag}</p>}
+    <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-sm sm:text-5xl lg:text-6xl">
+      {heading}
+    </h1>
+    {
+      description && (
+        <p class="mx-auto mt-6 max-w-2xl text-xl font-medium leading-relaxed text-white drop-shadow-sm">
+          {description}
+        </p>
+      )
+    }
+  </div>
+
+  <svg
+    class="absolute inset-x-0 bottom-[-1px] h-10 w-full text-bebras-paper sm:h-14"
+    viewBox="0 0 1440 90"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M0 50C180 36 360 28 540 36C720 44 900 70 1080 72C1215 74 1335 66 1440 52V90H0V50Z"
+      fill="currentColor"
+    />
+  </svg>
+</div>

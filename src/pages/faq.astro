@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import InternalPageHero from "@/components/InternalPageHero.astro";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import faqData from "@/data/faq.json";
 
@@ -10,16 +11,9 @@ const components: any[] = Array.isArray(faq.components) ? faq.components : [];
 
 <Layout title="Preguntas Frecuentes" description="Preguntas frecuentes sobre el Desafío Bebras Bolivia para estudiantes, maestros y coordinadores.">
   <div class="relative w-full">
-    <div class="relative w-full flex flex-col justify-center items-center pt-8 pb-10 sm:pt-10 sm:pb-14">
-      <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center" data-hero-animate>
-        <p class="text-xs uppercase tracking-[0.25em] font-bold text-white/80 mb-3">{header.tag}</p>
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-sm">
-          {header.heading}
-        </h1>
-      </div>
-    </div>
+    <InternalPageHero tag={header.tag} heading={header.heading} />
 
-    <main class="relative z-10 w-full min-h-screen bg-cream dark:bg-zinc-950 pb-20 pt-10 lg:pt-14 grain-paper">
+    <main class="relative z-10 w-full min-h-screen bg-bebras-paper dark:bg-zinc-950 pb-20 pt-10 lg:pt-14">
       <PageComponentsRenderer components={components} />
     </main>
   </div>

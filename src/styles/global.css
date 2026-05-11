@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Pacifico&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Poppins:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -13,31 +13,37 @@
   --card-foreground: oklch(0.235 0.025 48);
   --popover: oklch(0.992 0.004 78);
   --popover-foreground: oklch(0.235 0.025 48);
-  --primary: oklch(0.645 0.246 16.439);
-  --primary-foreground: oklch(0.969 0.015 12.422);
-  --secondary: oklch(0.955 0.014 72);
-  --secondary-foreground: oklch(0.29 0.024 48);
-  --muted: oklch(0.96 0.012 74);
-  --muted-foreground: oklch(0.52 0.022 56);
-  --accent: oklch(0.948 0.018 66);
-  --accent-foreground: oklch(0.29 0.024 48);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.89 0.018 72);
-  --input: oklch(0.89 0.018 72);
-  --ring: oklch(0.712 0.194 13.428);
-  --chart-1: oklch(0.81 0.117 11.638);
-  --chart-2: oklch(0.645 0.246 16.439);
-  --chart-3: oklch(0.586 0.253 17.585);
-  --chart-4: oklch(0.514 0.222 16.935);
-  --chart-5: oklch(0.455 0.188 13.697);
+  /* Bebras green #1B8F60 — primary */
+  --primary: oklch(0.585 0.125 152);
+  --primary-foreground: oklch(0.985 0.005 120);
+  /* Bebras blue #324C87 — secondary */
+  --secondary: oklch(0.41 0.11 268);
+  --secondary-foreground: oklch(0.985 0.005 120);
+  /* Gray #D9D9D9 */
+  --muted: oklch(0.882 0 0);
+  --muted-foreground: oklch(0.42 0.015 260);
+  /* Bebras yellow #F8AE31 — accent */
+  --accent: oklch(0.795 0.15 75);
+  --accent-foreground: oklch(0.235 0.025 48);
+  /* Bebras red #E83B3B — destructive */
+  --destructive: oklch(0.615 0.22 27);
+  --border: oklch(0.882 0 0);
+  --input: oklch(0.882 0 0);
+  --ring: oklch(0.585 0.125 152);
+  /* Bebras 5-color palette: green → yellow → red → blue → gray */
+  --chart-1: oklch(0.585 0.125 152);
+  --chart-2: oklch(0.795 0.15 75);
+  --chart-3: oklch(0.615 0.22 27);
+  --chart-4: oklch(0.41 0.11 268);
+  --chart-5: oklch(0.882 0 0);
   --sidebar: oklch(0.982 0.008 76);
   --sidebar-foreground: oklch(0.235 0.025 48);
-  --sidebar-primary: oklch(0.586 0.253 17.585);
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
-  --sidebar-accent: oklch(0.955 0.014 72);
-  --sidebar-accent-foreground: oklch(0.29 0.024 48);
-  --sidebar-border: oklch(0.89 0.018 72);
-  --sidebar-ring: oklch(0.712 0.194 13.428);
+  --sidebar-primary: oklch(0.585 0.125 152);
+  --sidebar-primary-foreground: oklch(0.985 0.005 120);
+  --sidebar-accent: oklch(0.41 0.11 268);
+  --sidebar-accent-foreground: oklch(0.985 0.005 120);
+  --sidebar-border: oklch(0.882 0 0);
+  --sidebar-ring: oklch(0.585 0.125 152);
 }
 
 .dark {
@@ -47,31 +53,31 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.645 0.246 16.439);
-  --primary-foreground: oklch(0.969 0.015 12.422);
-  --secondary: oklch(0.274 0.006 286.033);
+  --primary: oklch(0.66 0.135 152);
+  --primary-foreground: oklch(0.985 0.005 120);
+  --secondary: oklch(0.51 0.12 268);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
   --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --accent: oklch(0.795 0.15 75);
+  --accent-foreground: oklch(0.18 0.02 60);
+  --destructive: oklch(0.68 0.215 27);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.41 0.159 10.272);
-  --chart-1: oklch(0.81 0.117 11.638);
-  --chart-2: oklch(0.645 0.246 16.439);
-  --chart-3: oklch(0.586 0.253 17.585);
-  --chart-4: oklch(0.514 0.222 16.935);
-  --chart-5: oklch(0.455 0.188 13.697);
+  --ring: oklch(0.66 0.135 152);
+  --chart-1: oklch(0.66 0.135 152);
+  --chart-2: oklch(0.795 0.15 75);
+  --chart-3: oklch(0.68 0.215 27);
+  --chart-4: oklch(0.51 0.12 268);
+  --chart-5: oklch(0.7 0 0);
   --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.645 0.246 16.439);
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-primary: oklch(0.66 0.135 152);
+  --sidebar-primary-foreground: oklch(0.985 0.005 120);
+  --sidebar-accent: oklch(0.51 0.12 268);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.41 0.159 10.272);
+  --sidebar-ring: oklch(0.66 0.135 152);
 }
 
 
@@ -79,13 +85,27 @@
 
 @theme inline {
     --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
-    --font-serif: 'Pacifico', cursive;
+    --font-serif: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    --color-ochre: oklch(0.78 0.11 75);
-    --color-ochre-dark: oklch(0.55 0.13 65);
+    /* Bebras yellow #F8AE31 */
+    --color-ochre: #F8AE31;
+    --color-ochre-dark: #C8861F;
     --color-cream: #F6F0E6;
     --color-ink: #2B211C;
     --color-taupe: #7B6A5D;
+    /* Bebras brand palette — official 5-color */
+    --color-bebras-green: #1B8F60;
+    --color-bebras-green-dark: #146E48;
+    --color-bebras-yellow: #F8AE31;
+    --color-bebras-yellow-dark: #C8861F;
+    --color-bebras-red: #E83B3B;
+    --color-bebras-red-dark: #B82323;
+    --color-bebras-blue: #324C87;
+    --color-bebras-blue-dark: #233561;
+    --color-bebras-gray: #D9D9D9;
+    --color-bebras-ink: #110000;
+    --color-bebras-paper: #FDFCFB;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -215,42 +235,74 @@
     background: color-mix(in oklch, var(--primary) 8%, transparent);
   }
 
-  /* Numerical display — oversized serif numeral */
+  /* Numerical display — oversized geometric numeral */
   .display-numeral {
-    font-family: 'Pacifico', cursive;
-    font-weight: 400;
-    font-style: italic;
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 900;
     line-height: 0.85;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.05em;
   }
 
-  /* Display serif heading */
+  /* Yellow numeral — solid official #F8AE31 */
+  .numeral-yellow-outline {
+    color: #F8AE31;
+  }
+
+  /* Yellow inline emphasis — thick yellow underline behind text, editorial highlighter feel */
+  .text-yellow-underline {
+    color: inherit;
+    background-image: linear-gradient(transparent 62%, #F8AE31 62%, #F8AE31 96%, transparent 96%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding: 0 0.08em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* Display geometric heading */
   .serif-display {
-    font-family: 'Pacifico', cursive;
-    font-weight: 400;
-    letter-spacing: -0.02em;
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.025em;
     line-height: 1;
   }
 
   /* Pull-quote ornament: oversized opening quote */
   .pull-quote::before {
     content: "\201C";
-    font-family: 'Pacifico', cursive;
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 900;
     font-size: 6rem;
     line-height: 0.8;
     color: hsl(var(--primary) / 0.25);
     float: left;
     margin: -0.2em 0.15em -0.1em -0.1em;
-    font-style: italic;
   }
 
-  /* Ochre accent utilities */
-  .bg-ochre { background-color: oklch(0.78 0.11 75); }
-  .text-ochre { color: oklch(0.55 0.13 65); }
-  .border-ochre { border-color: oklch(0.78 0.11 75); }
+  /* Ochre accent utilities — now mapped to Bebras yellow #F8AE31 */
+  .bg-ochre { background-color: #F8AE31; }
+  .text-ochre { color: #C8861F; }
+  .border-ochre { border-color: #F8AE31; }
   .bg-cream { background-color: #F6F0E6; }
   .text-ink { color: #2B211C; }
   .text-taupe { color: #7B6A5D; }
+
+  /* Bebras brand accent utilities — official 5-color palette */
+  .bg-bebras-green { background-color: #1B8F60; }
+  .text-bebras-green { color: #1B8F60; }
+  .border-bebras-green { border-color: #1B8F60; }
+  .bg-bebras-yellow { background-color: #F8AE31; }
+  .text-bebras-yellow { color: #F8AE31; }
+  .border-bebras-yellow { border-color: #F8AE31; }
+  .bg-bebras-red { background-color: #E83B3B; }
+  .text-bebras-red { color: #E83B3B; }
+  .border-bebras-red { border-color: #E83B3B; }
+  .bg-bebras-blue { background-color: #324C87; }
+  .text-bebras-blue { color: #324C87; }
+  .border-bebras-blue { border-color: #324C87; }
+  .bg-bebras-gray { background-color: #D9D9D9; }
+  .text-bebras-gray { color: #D9D9D9; }
+  .border-bebras-gray { border-color: #D9D9D9; }
 
   /* Tactile hover lift */
   .lift-on-hover {
@@ -290,6 +342,28 @@
   .animate-pulse-soft {
     animation: pulse-soft 2.2s ease-in-out infinite;
   }
+
+  /* Floating shape animations for hero decorations */
+  @keyframes shape-float-slow {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(0, -16px) rotate(6deg); }
+  }
+  @keyframes shape-float-medium {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(8px, -12px) rotate(-8deg); }
+  }
+  @keyframes shape-spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes shape-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .shape-float-slow { animation: shape-float-slow 6s ease-in-out infinite; transform-origin: center; }
+  .shape-float-medium { animation: shape-float-medium 5s ease-in-out infinite; transform-origin: center; }
+  .shape-spin-slow { animation: shape-spin-slow 18s linear infinite; transform-origin: center; transform-box: fill-box; }
+  .shape-bob { animation: shape-bob 3.5s ease-in-out infinite; }
 
   @keyframes beaver-entry {
     from {
