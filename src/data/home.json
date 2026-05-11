@@ -15,6 +15,7 @@
   "sections": [
     {
       "type": "introEditorial",
+      "accent": "blue",
       "number": "01",
       "kicker": "Capítulo uno",
       "asideText": "Una iniciativa de 60+ países que llega a Bolivia.",
@@ -27,6 +28,7 @@
     },
     {
       "type": "homeAgeCategories",
+      "accent": "yellow",
       "number": "02",
       "kicker": "Cinco niveles",
       "asideText": "Cada nivel tiene tareas diseñadas para su grupo de edad.",
@@ -38,7 +40,7 @@
         {
           "name": "Guacamayo",
           "range": "5 a 8 años",
-          "color": "rose",
+          "color": "red",
           "imageKey": "guacamayo",
           "author": "Borochirebelde",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Ara_ararauna_en_los_llanos_de_Moxos.jpg"
@@ -46,7 +48,7 @@
         {
           "name": "Capibara",
           "range": "8 a 10 años",
-          "color": "amber",
+          "color": "yellow",
           "imageKey": "capibara",
           "author": "Ludwinsiles",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg"
@@ -54,7 +56,7 @@
         {
           "name": "Titi",
           "range": "10 a 12 años",
-          "color": "emerald",
+          "color": "green",
           "imageKey": "titi",
           "author": "Kozue Kawakami",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg"
@@ -62,7 +64,7 @@
         {
           "name": "Jucumari",
           "range": "12 a 14 años",
-          "color": "sky",
+          "color": "blue",
           "imageKey": "jucumari",
           "author": "Jonathan Candil Mendez",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg"
@@ -70,7 +72,7 @@
         {
           "name": "Yaguarete",
           "range": "14 a 18 años",
-          "color": "indigo",
+          "color": "blueDark",
           "imageKey": "yaguarete",
           "author": "MauMirror",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg"
@@ -104,6 +106,7 @@
     },
     {
       "type": "aboutBebrasEditorial",
+      "accent": "red",
       "number": "03",
       "kicker": "Iniciativa internacional",
       "asideText": "Presente en más de 60 países alrededor del mundo.",
