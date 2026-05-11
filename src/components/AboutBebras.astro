@@ -9,6 +9,11 @@ const iconMap: Record<string, string> = {
   brain: '<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"></path><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"></path><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"></path>',
   calendar: '<path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path>',
 };
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-blue", "brand-card-yellow", "brand-card-green"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <section class="relative bg-bebras-paper py-20 lg:py-28 dark:bg-zinc-950">
@@ -31,22 +36,22 @@ const iconMap: Record<string, string> = {
 
     <!-- Three columns — editorial cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {cards.map((card) => (
-        <div data-animate class="content-card p-7 transition-all duration-300">
+      {cards.map((card, i) => (
+        <div data-animate class:list={["p-7", getBrandCardClass(i)]}>
           <div class="flex items-center gap-3 mb-5">
-            <span class="inline-flex items-center justify-center size-10 rounded-2xl bg-primary/10 text-primary">
+            <span class="brand-card-icon inline-flex items-center justify-center size-10 rounded-2xl">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={iconMap[card.icon] || ""} />
             </span>
-            <span class="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{card.number}</span>
+            <span class="brand-card-muted font-mono text-[10px] uppercase tracking-wider">{card.number}</span>
           </div>
-          <h3 class="text-lg font-bold text-foreground mb-3">{card.title}</h3>
-          <p class="text-sm text-muted-foreground leading-relaxed">
+          <h3 class="text-lg font-bold mb-3">{card.title}</h3>
+          <p class="brand-card-muted text-sm leading-relaxed">
             {card.body}
           </p>
           {card.link && (
             <a
               href={card.link.href}
-              class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 mt-4 group"
+              class="inline-flex items-center gap-1.5 text-sm font-medium hover:underline mt-4 group"
             >
               {card.link.label}
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

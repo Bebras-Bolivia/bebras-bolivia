@@ -12,6 +12,11 @@ interface Props {
 }
 
 const { tag, heading, links = [] } = Astro.props;
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-blue", "brand-card-red", "brand-card-yellow", "brand-card-green"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -20,13 +25,13 @@ const { tag, heading, links = [] } = Astro.props;
       {tag && <p class="text-sm uppercase tracking-[0.15em] font-bold text-muted-foreground mb-6">{tag}</p>}
       {heading && <h2 class="text-3xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       <ul class="space-y-4">
-        {links.map((link) => (
-          <li class="content-card px-5 py-4 transition-colors">
-            <a href={link.href} target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-4 text-base text-foreground font-medium hover:text-primary transition-colors">
+        {links.map((link, i) => (
+          <li class:list={["px-5 py-4", getBrandCardClass(i)]}>
+            <a href={link.href} target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-4 text-base font-medium">
               <span>{link.label}</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
-            {link.description && <p class="text-sm text-muted-foreground mt-2">{link.description}</p>}
+            {link.description && <p class="brand-card-muted text-sm mt-2">{link.description}</p>}
           </li>
         ))}
       </ul>

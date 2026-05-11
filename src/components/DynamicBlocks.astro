@@ -51,6 +51,11 @@ function getCardsColumnsClass(columns: number) {
   if (columns === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 }
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <div class="space-y-10 lg:space-y-14">
@@ -81,10 +86,10 @@ function getCardsColumnsClass(columns: number) {
             )}
             <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{block.heading}</h2>
             <div class:list={["grid gap-5", colsClass]}>
-              {block.cards.map((card) => (
-                <div class="content-card p-6">
-                  <p class="text-xl font-bold text-foreground mb-3">{card.title}</p>
-                  <p class="text-base text-muted-foreground leading-relaxed" set:html={formatInlineRichText(card.description)} />
+              {block.cards.map((card, i) => (
+                <div class:list={["p-6", getBrandCardClass(i)]}>
+                  <p class="text-xl font-bold mb-3">{card.title}</p>
+                  <p class="brand-card-muted text-base leading-relaxed" set:html={formatInlineRichText(card.description)} />
                 </div>
               ))}
             </div>

@@ -44,6 +44,11 @@ function getColsClass(cols: number) {
   if (cols === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 }
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -54,16 +59,16 @@ function getColsClass(cols: number) {
       {intro && <p class="text-xl text-muted-foreground leading-relaxed mb-6" set:html={formatInlineRichText(intro)} />}
       <div class:list={["grid gap-5", getColsClass(columns)]}>
         {items.map((item, i) => (
-          <div class="content-card p-5 text-left">
+          <div class:list={["p-5 text-left", getBrandCardClass(i)]}>
             {effectiveMediaType !== "none" && (
               <div class="mb-4">
                 {effectiveMediaType === "number" && (
-                  <div class="flex items-center justify-center size-12 rounded-2xl bg-primary text-primary-foreground font-mono">
+                  <div class="brand-card-icon flex items-center justify-center size-12 rounded-2xl font-mono">
                     <span class="text-xl font-bold">{item.number || String(i + 1)}</span>
                   </div>
                 )}
                 {effectiveMediaType === "icon" && (
-                  <div class="flex items-center justify-center size-12 rounded-2xl bg-primary text-primary-foreground" set:html={iconMap[item.icon || ""] || ""}></div>
+                  <div class="brand-card-icon flex items-center justify-center size-12 rounded-2xl" set:html={iconMap[item.icon || ""] || ""}></div>
                 )}
                 {effectiveMediaType === "image" && (
                   <div class="flex items-center justify-center size-12 rounded-2xl bg-white">
@@ -72,15 +77,15 @@ function getColsClass(cols: number) {
                 )}
               </div>
             )}
-            {item.title && <p class="text-xl font-bold text-foreground mb-3">{item.title}</p>}
-            {item.description && <p class="text-base text-muted-foreground leading-relaxed" set:html={formatInlineRichText(item.description)} />}
+            {item.title && <p class="text-xl font-bold mb-3">{item.title}</p>}
+            {item.description && <p class="brand-card-muted text-base leading-relaxed" set:html={formatInlineRichText(item.description)} />}
             {item.linkLabel && item.linkHref && (
-              <a href={item.linkHref} class="inline-flex mt-4 text-sm font-semibold text-primary hover:underline">{item.linkLabel}</a>
+              <a href={item.linkHref} class="inline-flex mt-4 text-sm font-semibold hover:underline">{item.linkLabel}</a>
             )}
             {item.socialLinks && item.socialLinks.length > 0 && (
               <div class="mt-4 flex flex-wrap gap-3">
                 {item.socialLinks.map((social) => (
-                  <a href={social.href} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-primary hover:underline">
+                  <a href={social.href} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold hover:underline">
                     {social.label}
                   </a>
                 ))}

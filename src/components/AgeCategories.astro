@@ -31,13 +31,13 @@ const source = props.data || catData;
 const { sectionTag, heading, subtitle, categories } = source;
 
 const dotColor: Record<string, string> = {
-  rose: "bg-rose-500",
-  amber: "bg-amber-500",
-  emerald: "bg-emerald-500",
-  sky: "bg-sky-500",
-  violet: "bg-violet-500",
-  indigo: "bg-indigo-500",
-  orange: "bg-orange-500",
+  rose: "bg-white",
+  amber: "bg-white",
+  emerald: "bg-white",
+  sky: "bg-white",
+  violet: "bg-white",
+  indigo: "bg-white",
+  orange: "bg-white",
 };
 
 const categoryImages: Record<string, string> = {
@@ -86,6 +86,11 @@ function getCategoryAuthor(cat: Category) {
 function getCategoryAuthorUrl(cat: Category) {
   return cat.authorUrl || categoryAuthorUrls[slugifyName(cat.name)] || "";
 }
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue", "brand-card-blue"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <section class="editorial-section">
@@ -107,7 +112,7 @@ function getCategoryAuthorUrl(cat: Category) {
 
     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       {categories.map((cat, i) => (
-          <div data-animate class="group content-card overflow-hidden">
+          <div data-animate class:list={["group overflow-hidden", getBrandCardClass(i)]}>
             <div class="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
                 src={getCategoryImage(cat)}
@@ -130,12 +135,12 @@ function getCategoryAuthorUrl(cat: Category) {
             </div>
             <div class="p-5">
               <div class="mb-3 flex items-center gap-3">
-                <span class="w-6 shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                <span class="brand-card-muted w-6 shrink-0 font-mono text-xs tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                 <span class:list={["size-2 shrink-0 rounded-full transition-transform group-hover:scale-150", dotColor[cat.color] || dotColor.violet]} aria-hidden="true"></span>
-                <span class="serif-display flex-1 text-2xl italic text-foreground sm:text-3xl">{cat.name}</span>
+                <span class="serif-display flex-1 text-2xl italic sm:text-3xl">{cat.name}</span>
               </div>
-              <p class="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{cat.age}</p>
-              <p class="mt-3 text-sm leading-relaxed text-muted-foreground">{cat.desc}</p>
+              <p class="brand-card-muted font-mono text-xs uppercase tracking-[0.18em]">{cat.age}</p>
+              <p class="brand-card-muted mt-3 text-sm leading-relaxed">{cat.desc}</p>
             </div>
           </div>
         ))}

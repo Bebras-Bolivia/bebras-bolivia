@@ -35,6 +35,11 @@ function getSummaryColsClass(columns: number) {
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 }
 
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
+
 const summaryColsClass = getSummaryColsClass(summaryColumns);
 
 const statusStyles: Record<string, { icon: string; cellClass: string }> = {
@@ -103,10 +108,10 @@ const statusIconStyles: Record<string, string> = {
     </div>
 
     <div data-animate class:list={["mt-6 grid gap-5", summaryColsClass]}>
-      {summaryCards.map((card) => (
-        <div class="content-card p-6 text-center">
-          <p class="font-mono text-4xl sm:text-5xl font-extrabold text-primary mb-2">{card.value}</p>
-          <p class="text-xs sm:text-sm text-muted-foreground uppercase tracking-widest font-bold">{card.label}</p>
+      {summaryCards.map((card, i) => (
+        <div class:list={["p-6 text-center", getBrandCardClass(i)]}>
+          <p class="font-mono text-4xl sm:text-5xl font-extrabold mb-2">{card.value}</p>
+          <p class="brand-card-muted text-xs sm:text-sm uppercase tracking-widest font-bold">{card.label}</p>
         </div>
       ))}
     </div>

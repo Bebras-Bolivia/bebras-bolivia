@@ -102,13 +102,13 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
               </span>
             </div>
 
-            <h1 className="serif-display text-[clamp(2.75rem,7.5vw,5rem)] leading-[0.92] text-white">
-              Pensá.{" "}
+            <h1 className="serif-display max-w-[10ch] text-[clamp(2.75rem,7.5vw,5rem)] leading-[0.92] text-white lg:max-w-[11ch]">
+              Bienvenido a{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">Resolvé.</span>
+                <span className="relative z-10">Bebras</span>
                 <span className="absolute inset-x-0 bottom-1 h-3 bg-bebras-red z-0 sm:bottom-2 sm:h-4"></span>
               </span>{" "}
-              <span className="text-bebras-green">Ganá.</span>
+              <span className="text-bebras-green">Bolivia</span>
             </h1>
 
             <p className="mx-auto max-w-[42ch] text-balance text-lg leading-relaxed text-white/90 sm:text-xl lg:mx-0">
@@ -176,34 +176,28 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
         </section>
 
         {latestNews && (
-          <section data-hero-item className="mx-auto mt-6 w-full max-w-6xl pb-2 sm:mt-8 sm:pb-4">
-            <div className="relative flex items-center gap-5 rounded-2xl bg-card/95 px-6 py-5 text-foreground shadow-[0_2px_0_rgba(0,0,0,0.04),0_20px_40px_-25px_rgba(0,0,0,0.2)] ring-1 ring-border/70 backdrop-blur-sm sm:px-8 sm:py-6">
-              <span className="relative flex shrink-0 items-center justify-center">
-                <span className="absolute inline-flex size-4 rounded-full bg-primary opacity-75 animate-ping"></span>
-                <span className="relative inline-flex size-2.5 rounded-full bg-primary"></span>
+          <section data-hero-item className="mx-auto mt-4 w-full max-w-5xl pb-1 sm:mt-5">
+            <a
+              href={latestNews.href}
+              className="relative flex items-center gap-3 rounded-full bg-white/92 px-4 py-2.5 text-bebras-ink shadow-[0_14px_30px_-24px_rgba(0,0,0,0.45)] ring-1 ring-white/70 backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white sm:px-5"
+            >
+              <span className="relative flex shrink-0 items-center justify-center" aria-hidden="true">
+                <span className="absolute inline-flex size-3 rounded-full bg-bebras-red opacity-70 animate-ping"></span>
+                <span className="relative inline-flex size-2 rounded-full bg-bebras-red"></span>
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="mb-1 font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-ochre">
-                  Última noticia
-                  <time dateTime={latestNews.dateTime}> · {latestNews.dateLabel}</time>
-                </p>
-                <p className="text-base font-semibold leading-snug text-foreground sm:text-lg">
-                  {latestNews.title}
-                </p>
-                {latestNews.author && (
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    {latestNews.author}
-                  </p>
-                )}
-              </div>
-              <a
-                href={latestNews.href}
-                className="hidden shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-xs font-bold tracking-wide text-primary-foreground transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
-              >
-                Leer noticia
+              <span className="hidden shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-bebras-red sm:inline">
+                Noticia
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold sm:text-base">
+                {latestNews.title}
+              </span>
+              <time className="hidden shrink-0 text-xs font-semibold text-bebras-ink/55 md:inline" dateTime={latestNews.dateTime}>
+                {latestNews.dateLabel}
+              </time>
+              <span className="shrink-0 text-sm font-bold text-bebras-green">
                 <span aria-hidden="true">→</span>
-              </a>
-            </div>
+              </span>
+            </a>
           </section>
         )}
       </main>

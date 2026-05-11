@@ -230,6 +230,38 @@
     box-shadow: 0 18px 34px -28px rgba(0, 0, 0, 0.45);
   }
 
+  .brand-card {
+    border: 0;
+    border-radius: 1.5rem;
+    color: #fff;
+    box-shadow: 0 18px 34px -28px rgba(0, 0, 0, 0.45);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, filter 0.28s ease;
+  }
+
+  .brand-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 42px -30px rgba(0, 0, 0, 0.55);
+    filter: saturate(1.04);
+  }
+
+  .brand-card :is(h1, h2, h3, p, span, strong, a) {
+    color: inherit;
+  }
+
+  .brand-card .brand-card-muted {
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .brand-card .brand-card-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .brand-card-red { background-color: var(--color-bebras-red); }
+  .brand-card-yellow { background-color: var(--color-bebras-yellow); }
+  .brand-card-green { background-color: var(--color-bebras-green); }
+  .brand-card-blue { background-color: var(--color-bebras-blue); }
+
   .editorial-callout {
     border-left: 3px solid var(--primary);
     background: color-mix(in oklch, var(--primary) 8%, transparent);

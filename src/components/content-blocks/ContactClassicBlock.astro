@@ -48,6 +48,11 @@ const contactIconMap: Record<string, string> = {
   clipboard: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>`,
   share: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
 };
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -58,21 +63,21 @@ const contactIconMap: Record<string, string> = {
         <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{data.info.heading}</h2>
 
         <div class="space-y-4">
-          {data.info.cards.map((card) => (
-            <div class="content-card p-6">
+          {data.info.cards.map((card, i) => (
+            <div class:list={["p-6", getBrandCardClass(i)]}>
               <div class="flex items-start gap-6">
-                <div class="flex items-center justify-center size-12 shrink-0 rounded-2xl bg-primary/10 text-primary" set:html={contactIconMap[card.icon] || ""}></div>
+                <div class="brand-card-icon flex items-center justify-center size-12 shrink-0 rounded-2xl" set:html={contactIconMap[card.icon] || ""}></div>
                 <div>
-                  <p class="text-sm uppercase tracking-[0.15em] font-bold text-muted-foreground mb-2">{card.title}</p>
+                  <p class="brand-card-muted text-sm uppercase tracking-[0.15em] font-bold mb-2">{card.title}</p>
                   {card.linkHref && card.linkLabel && (
-                    <a href={card.linkHref} class="text-lg text-foreground hover:text-primary transition-colors font-bold tracking-tight">{card.linkLabel}</a>
+                    <a href={card.linkHref} class="text-lg font-bold tracking-tight hover:underline">{card.linkLabel}</a>
                   )}
                   {card.socialLinks && (
                     <div class="flex gap-4 mt-2">
                       {card.socialLinks.map((social, idx) => (
                         <>
-                          {idx > 0 && <span class="text-border">|</span>}
-                          <a href={social.href} class="text-base text-muted-foreground hover:text-primary transition-colors font-bold">{social.label}</a>
+                          {idx > 0 && <span class="brand-card-muted">|</span>}
+                          <a href={social.href} class="brand-card-muted text-base hover:underline font-bold">{social.label}</a>
                         </>
                       ))}
                     </div>

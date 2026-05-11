@@ -15,6 +15,11 @@ interface Props {
 }
 
 const { tag, heading, intro, items = [], outro } = Astro.props;
+
+function getBrandCardClass(index: number) {
+  const colors = ["brand-card-blue", "brand-card-red", "brand-card-yellow", "brand-card-green"];
+  return `brand-card ${colors[index % colors.length]}`;
+}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -25,12 +30,12 @@ const { tag, heading, intro, items = [], outro } = Astro.props;
       <div class="max-w-5xl space-y-4 text-xl text-muted-foreground leading-relaxed">
         {intro && <p set:html={formatInlineRichText(intro)} />}
         <ul class="mt-8 grid gap-5 lg:grid-cols-2">
-          {items.map((item) => (
-            <li class="content-card flex items-start gap-4 p-5 transition-colors">
-              <span class="flex items-center justify-center size-8 shrink-0 rounded-2xl bg-primary/10 text-primary mt-1">
+          {items.map((item, i) => (
+            <li class:list={["flex items-start gap-4 p-5", getBrandCardClass(i)]}>
+              <span class="brand-card-icon flex items-center justify-center size-8 shrink-0 rounded-2xl mt-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
               </span>
-              <span><strong class="text-foreground text-2xl block mb-2">{item.title}</strong> <span class="text-lg">{item.desc}</span></span>
+              <span><strong class="text-2xl block mb-2">{item.title}</strong> <span class="brand-card-muted text-lg">{item.desc}</span></span>
             </li>
           ))}
         </ul>
