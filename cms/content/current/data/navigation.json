@@ -84,11 +84,6 @@
   ],
   "socialLinks": [
     {
-      "label": "Facebook",
-      "href": "https://facebook.com/bebrasbolivia",
-      "icon": "facebook"
-    },
-    {
       "label": "Instagram",
       "href": "https://instagram.com/bebrasbolivia",
       "icon": "instagram"
@@ -97,6 +92,11 @@
       "label": "Email",
       "href": "mailto:info@bebras.bo",
       "icon": "email"
+    },
+    {
+      "label": "Facebook",
+      "href": "https://facebook.com/bebrasbolivia",
+      "icon": "facebook"
     }
   ],
   "internationalLinks": [

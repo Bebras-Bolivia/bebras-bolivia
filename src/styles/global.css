@@ -197,8 +197,8 @@
 
   .editorial-section {
     position: relative;
-    padding-block: clamp(1.75rem, 3.5vw, 3rem);
-    border-top: 1px solid color-mix(in oklch, var(--foreground) 12%, transparent);
+    padding-block: clamp(2rem, 3.5vw, 3.5rem);
+    border-top: 0;
   }
 
   .editorial-section:first-child {
@@ -261,10 +261,12 @@
   .brand-card-yellow { background-color: var(--color-bebras-yellow); }
   .brand-card-green { background-color: var(--color-bebras-green); }
   .brand-card-blue { background-color: var(--color-bebras-blue); }
+  .brand-card-blueDark { background-color: var(--color-bebras-blue-dark); }
 
   .editorial-callout {
-    border-left: 3px solid var(--primary);
-    background: color-mix(in oklch, var(--primary) 8%, transparent);
+    border: 1px solid color-mix(in oklch, var(--primary) 18%, transparent);
+    border-radius: 1.5rem;
+    background: color-mix(in oklch, var(--primary) 7%, var(--color-bebras-paper));
   }
 
   /* Numerical display — oversized geometric numeral */

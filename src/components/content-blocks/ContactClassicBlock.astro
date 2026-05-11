@@ -1,5 +1,6 @@
 ---
 import { ClipboardList, Mail, Share2 } from "lucide-react";
+import { getBrandCardClass } from "@/lib/brand-styles";
 
 interface SocialLink {
   label: string;
@@ -37,6 +38,7 @@ interface ContactClassicData {
     submitLabel: string;
     disclaimer: string;
   };
+  cardPalette?: string[];
 }
 
 interface Props {
@@ -51,10 +53,6 @@ const contactIconMap = {
   share: Share2,
 };
 
-function getBrandCardClass(index: number) {
-  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
-  return `brand-card ${colors[index % colors.length]}`;
-}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -69,7 +67,7 @@ function getBrandCardClass(index: number) {
             const Icon = contactIconMap[card.icon as keyof typeof contactIconMap];
 
             return (
-            <div class:list={["p-6", getBrandCardClass(i)]}>
+            <div class:list={["p-6", getBrandCardClass(i, data.cardPalette)]}>
               <div class="flex items-start gap-6">
                 <div class="brand-card-icon flex items-center justify-center size-12 shrink-0 rounded-2xl">
                   {Icon && <Icon className="size-6" strokeWidth={2.2} aria-hidden="true" />}

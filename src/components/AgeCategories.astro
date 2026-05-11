@@ -1,4 +1,5 @@
 ---
+import { getBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import catData from "@/data/categories.json";
 import guacamayoImage from "@/assets/guacamayo.jpg";
 import capibaraImage from "@/assets/capibara.jpg";
@@ -23,18 +24,24 @@ interface Props {
     heading: string;
     subtitle: string;
     categories: Category[];
+    cardPalette?: string[];
   };
 }
 
 const props = Astro.props as Props;
 const source = props.data || catData;
-const { sectionTag, heading, subtitle, categories } = source;
+const { sectionTag, heading, subtitle, categories, cardPalette } = source;
 
 const dotColor: Record<string, string> = {
+  red: "bg-white",
   rose: "bg-white",
+  yellow: "bg-white",
   amber: "bg-white",
+  green: "bg-white",
   emerald: "bg-white",
+  blue: "bg-white",
   sky: "bg-white",
+  blueDark: "bg-white",
   violet: "bg-white",
   indigo: "bg-white",
   orange: "bg-white",
@@ -87,9 +94,8 @@ function getCategoryAuthorUrl(cat: Category) {
   return cat.authorUrl || categoryAuthorUrls[slugifyName(cat.name)] || "";
 }
 
-function getBrandCardClass(index: number) {
-  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue", "brand-card-blue"];
-  return `brand-card ${colors[index % colors.length]}`;
+function getCategoryCardClass(cat: Category, index: number) {
+  return cat.color ? getBrandCardClass(index, [normalizeBrandColor(cat.color)]) : getBrandCardClass(index, cardPalette);
 }
 ---
 
@@ -112,7 +118,7 @@ function getBrandCardClass(index: number) {
 
     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       {categories.map((cat, i) => (
-          <div data-animate class:list={["group overflow-hidden", getBrandCardClass(i)]}>
+          <div data-animate class:list={["group overflow-hidden", getCategoryCardClass(cat, i)]}>
             <div class="relative aspect-[4/3] overflow-hidden bg-muted">
               <img
                 src={getCategoryImage(cat)}

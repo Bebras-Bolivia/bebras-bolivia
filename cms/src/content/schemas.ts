@@ -7,6 +7,9 @@ const LinkSchema = z.object({
   href: z.string(),
 });
 
+const BrandColorSchema = z.enum(["red", "yellow", "green", "blue", "blueDark", "rose", "amber", "emerald", "sky", "indigo"]);
+const BrandPaletteSchema = z.array(BrandColorSchema).optional();
+
 const GenericTextBlockSchema = z.object({
   type: z.literal("text"),
   sectionTag: z.string().optional(),
@@ -37,6 +40,7 @@ const GenericTipBlockSchema = z.object({
 
 const GenericCtaBlockSchema = z.object({
   type: z.literal("cta"),
+  accent: BrandColorSchema.optional(),
   sectionTag: z.string().optional(),
   heading: z.string(),
   text: z.string().optional(),
@@ -56,10 +60,10 @@ const StatSchema = z.object({
   label: z.string(),
 });
 
-
 const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("organizerInstitution"),
+    accent: BrandColorSchema.optional(),
     tag: z.string(),
     name: z.string(),
     acronym: z.string(),
@@ -72,6 +76,7 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("sectionRichText"),
+    accent: BrandColorSchema.optional(),
     tag: z.string().optional(),
     heading: z.string().optional(),
     paragraphs: z.array(z.string()).optional(),
@@ -81,6 +86,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("itemsGrid"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     tag: z.string().optional(),
     heading: z.string().optional(),
     intro: z.string().optional(),
@@ -108,6 +115,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("linksList"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     tag: z.string().optional(),
     heading: z.string().optional(),
     links: z.array(
@@ -134,6 +143,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("tabsGuide"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema.optional(),
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -153,6 +164,7 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("formContact"),
+    accent: BrandColorSchema.optional(),
     tag: z.string(),
     heading: z.string(),
     fields: z.object({
@@ -170,6 +182,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("featureList"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     tag: z.string().optional(),
     heading: z.string().optional(),
     intro: z.string().optional(),
@@ -183,6 +197,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("statsGrid"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     tag: z.string().optional(),
     heading: z.string().optional(),
     columns: z.number().int().min(1).max(4).optional(),
@@ -196,6 +212,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("studentsAgeCategories"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -211,6 +229,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("studentsScoringTable"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -295,6 +315,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("contactClassic"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema,
     info: z.object({
       tag: z.string(),
       heading: z.string(),
@@ -405,6 +427,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("teacherInstructionsTabs"),
+    accent: BrandColorSchema.optional(),
+    cardPalette: BrandPaletteSchema.optional(),
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -424,6 +448,7 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("cta"),
+    accent: BrandColorSchema.optional(),
     tag: z.string().optional(),
     heading: z.string(),
     text: z.string(),
@@ -498,6 +523,7 @@ export const heroSchema = z.object({
 
 const HomeEditorialSectionSchema = z.object({
   type: z.literal("introEditorial"),
+  accent: BrandColorSchema.optional(),
   number: z.string(),
   kicker: z.string(),
   asideText: z.string(),
@@ -508,6 +534,7 @@ const HomeEditorialSectionSchema = z.object({
 
 const HomeAgeCategoriesSectionSchema = z.object({
   type: z.literal("homeAgeCategories"),
+  accent: BrandColorSchema.optional(),
   number: z.string(),
   kicker: z.string(),
   asideText: z.string(),
@@ -519,7 +546,7 @@ const HomeAgeCategoriesSectionSchema = z.object({
     z.object({
       name: z.string(),
       range: z.string(),
-      color: z.string(),
+      color: BrandColorSchema,
       imageKey: z.string(),
       author: z.string(),
       authorUrl: z.string(),
@@ -545,6 +572,7 @@ const HomeDualCtaSectionSchema = z.object({
 
 const HomeAboutSectionSchema = z.object({
   type: z.literal("aboutBebrasEditorial"),
+  accent: BrandColorSchema.optional(),
   number: z.string(),
   kicker: z.string(),
   asideText: z.string(),

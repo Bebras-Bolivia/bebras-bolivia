@@ -14,6 +14,7 @@
       "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
       "columns": 3,
       "mediaType": "number",
+      "cardPalette": ["red", "yellow", "green"],
       "items": [
         {
           "number": "1",
@@ -38,6 +39,7 @@
       "heading": "¿Qué necesita la escuela?",
       "columns": 2,
       "mediaType": "icon",
+      "cardPalette": ["blue", "red", "yellow", "green"],
       "items": [
         {
           "icon": "monitor",
@@ -64,6 +66,7 @@
     {
       "type": "sectionRichText",
       "tag": "Alcance",
+      "accent": "blue",
       "heading": "¿Quién debería participar?",
       "paragraphs": [
         "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel académico. El desafío está diseñado para ser accesible y no requiere conocimientos previos de informática o programación.",
@@ -76,6 +79,7 @@
       "sectionTag": "Guía para coordinadores",
       "heading": "Instrucciones para coordinadores",
       "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
+      "cardPalette": ["blue", "red", "yellow"],
       "tabs": [
         {
           "id": "antes",
@@ -114,6 +118,7 @@
     },
     {
       "type": "cta",
+      "accent": "red",
       "tag": "",
       "heading": "¿Listo para inscribir a tu escuela?",
       "text": "El registro es rápido, gratuito y te permite inscribir a todos los estudiantes que desees.",

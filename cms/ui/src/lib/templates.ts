@@ -520,11 +520,12 @@ function _componentTemplate(type: string): unknown | null {
       categories: [{ title: "Nueva seccion FAQ", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
     }),
     sectionRichText: () => ({
-      type: "sectionRichText", tag: "Seccion", heading: "Titulo de seccion",
+      type: "sectionRichText", accent: "blue", tag: "Seccion", heading: "Titulo de seccion",
       paragraphs: ["Parrafo de ejemplo"], tip: "Tip opcional", linkLabel: "", linkHref: "",
     }),
     organizerInstitution: () => ({
       type: "organizerInstitution",
+      accent: "blue",
       tag: "Institucion organizadora",
       name: "Nombre de la institucion",
       acronym: "SIGLA",
@@ -537,7 +538,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     itemsGrid: () => ({
       type: "itemsGrid", tag: "Cards", heading: "Titulo de cards", intro: "Texto introductorio opcional",
-      columns: 3, mediaType: "icon",
+      columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
         { title: "Card 1", description: "Descripcion", icon: "monitor" },
         { title: "Card 2", description: "Descripcion", icon: "wifi" },
@@ -545,7 +546,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     itemsGridIcon: () => ({
       type: "itemsGrid", tag: "Cards", heading: "Grid con iconos", intro: "Seccion de cards con iconos.",
-      columns: 3, mediaType: "icon",
+      columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
         { title: "Card 1", description: "Descripcion", icon: "monitor" },
         { title: "Card 2", description: "Descripcion", icon: "wifi" },
@@ -553,7 +554,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     itemsGridImage: () => ({
       type: "itemsGrid", tag: "Cards", heading: "Grid con imagenes", intro: "Seccion de cards con imagen.",
-      columns: 3, mediaType: "image",
+      columns: 3, mediaType: "image", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
         { title: "Card 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
         { title: "Card 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
@@ -561,7 +562,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     itemsGridNumber: () => ({
       type: "itemsGrid", tag: "Pasos", heading: "Grid numerado", intro: "Seccion de pasos numerados.",
-      columns: 3, mediaType: "number",
+      columns: 3, mediaType: "number", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
         { number: "1", title: "Paso 1", description: "Descripcion" },
         { number: "2", title: "Paso 2", description: "Descripcion" },
@@ -569,27 +570,30 @@ function _componentTemplate(type: string): unknown | null {
     }),
     itemsGridSimple: () => ({
       type: "itemsGrid", tag: "Cards", heading: "Grid simple", intro: "Seccion de cards sin media.",
-      columns: 3, mediaType: "none",
+      columns: 3, mediaType: "none", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
         { title: "Card 1", description: "Descripcion" },
         { title: "Card 2", description: "Descripcion" },
       ],
     }),
     linksList: () => ({
-      type: "linksList", tag: "Enlaces", heading: "Recursos",
+      type: "linksList", tag: "Enlaces", heading: "Recursos", cardPalette: ["blue", "red", "yellow", "green"],
       links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
     }),
     featureList: () => ({
       type: "featureList", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio",
+      cardPalette: ["blue", "red", "yellow", "green"],
       items: [{ title: "Punto 1", desc: "Descripcion" }], outro: "Texto de cierre",
     }),
     statsGrid: () => ({
       type: "statsGrid", tag: "Estadisticas", heading: "Titulo de estadisticas", columns: 3,
+      cardPalette: ["green", "yellow", "red", "blue"],
       stats: [{ value: "15", label: "Preguntas" }, { value: "45", label: "Minutos" }],
       paragraphs: ["Descripcion del bloque."],
     }),
     studentsAgeCategories: () => ({
       type: "studentsAgeCategories", sectionTag: "Niveles", heading: "Categorias por Edad",
+      cardPalette: ["red", "yellow", "green", "blue", "blueDark"],
       subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
       categories: [
         { name: "Guacamayo", age: "5-8 anos", emoji: "🦜", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
@@ -602,6 +606,7 @@ function _componentTemplate(type: string): unknown | null {
     studentsScoringTable: () => ({
       type: "studentsScoringTable", sectionTag: "Puntuacion", heading: "Sistema de Puntuacion",
       subtitle: "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
+      cardPalette: ["red", "yellow", "green", "blue"],
       tableHeaders: ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
       rows: [
         { label: "Correcta", values: ["+6", "+9", "+12"], status: "positive" },
@@ -613,6 +618,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     tabsGuide: () => ({
       type: "tabsGuide", sectionTag: "Guia", heading: "Instrucciones", subtitle: "Pasos por etapa",
+      cardPalette: ["blue", "red", "yellow"],
       tabs: [{
         id: "antes", label: "Antes", heading: "Antes del desafio",
         items: [{ title: "Paso", desc: "Descripcion" }],
@@ -657,6 +663,7 @@ function _componentTemplate(type: string): unknown | null {
       type: "teacherInstructionsTabs", sectionTag: "Guia para coordinadores",
       heading: "Instrucciones para Coordinadores",
       subtitle: "Guia paso a paso para antes, durante y despues del desafio.",
+      cardPalette: ["blue", "red", "yellow"],
       tabs: [{
         id: "antes", label: "Antes", heading: "Antes del Desafio",
         items: [{ title: "Registrarse como coordinador", desc: "Completar los datos de la escuela." }],

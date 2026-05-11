@@ -1,4 +1,5 @@
 ---
+import { getBrandCardClass } from "@/lib/brand-styles";
 import scoringData from "@/data/scoring.json";
 
 interface ScoringRow {
@@ -21,23 +22,19 @@ interface Props {
     rows: ScoringRow[];
     summaryCards: ScoringStat[];
     summaryColumns?: number;
+    cardPalette?: string[];
   };
 }
 
 const props = Astro.props as Props;
 const source = props.data || scoringData;
-const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards, summaryColumns = 2 } = source;
+const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards, summaryColumns = 2, cardPalette } = source;
 
 function getSummaryColsClass(columns: number) {
   if (columns <= 1) return "grid-cols-1";
   if (columns === 2) return "grid-cols-1 sm:grid-cols-2";
   if (columns === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
-}
-
-function getBrandCardClass(index: number) {
-  const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue"];
-  return `brand-card ${colors[index % colors.length]}`;
 }
 
 const summaryColsClass = getSummaryColsClass(summaryColumns);
@@ -109,7 +106,7 @@ const statusIconStyles: Record<string, string> = {
 
     <div data-animate class:list={["mt-6 grid gap-5", summaryColsClass]}>
       {summaryCards.map((card, i) => (
-        <div class:list={["p-6 text-center", getBrandCardClass(i)]}>
+        <div class:list={["p-6 text-center", getBrandCardClass(i, cardPalette)]}>
           <p class="font-mono text-4xl sm:text-5xl font-extrabold mb-2">{card.value}</p>
           <p class="brand-card-muted text-xs sm:text-sm uppercase tracking-widest font-bold">{card.label}</p>
         </div>

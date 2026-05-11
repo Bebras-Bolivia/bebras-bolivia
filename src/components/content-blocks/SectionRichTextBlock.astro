@@ -1,4 +1,6 @@
 ---
+import { ArrowRight } from "lucide-react";
+import { normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
 interface Props {
@@ -8,9 +10,12 @@ interface Props {
   tip?: string;
   linkLabel?: string;
   linkHref?: string;
+  accent?: string;
 }
 
-const { tag, heading, paragraphs = [], tip, linkLabel, linkHref } = Astro.props;
+const { tag, heading, paragraphs = [], tip, linkLabel, linkHref, accent = "blue" } = Astro.props;
+const accentColor = normalizeBrandColor(accent);
+const tipCardClass = `brand-card brand-card-${accentColor}`;
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -21,15 +26,15 @@ const { tag, heading, paragraphs = [], tip, linkLabel, linkHref } = Astro.props;
       <div class="space-y-4 text-xl text-muted-foreground leading-relaxed">
         {paragraphs.map((p) => <p set:html={formatInlineRichText(p)} />)}
         {tip && (
-          <div class="editorial-callout px-6 py-5 mt-6">
-            <p class="text-lg text-foreground font-medium italic leading-relaxed" set:html={formatInlineRichText(tip)} />
+          <div class:list={["px-6 py-5 mt-6", tipCardClass]}>
+            <p class="brand-card-muted text-lg font-medium italic leading-relaxed" set:html={formatInlineRichText(tip)} />
           </div>
         )}
         {linkLabel && linkHref && (
           <p class="mt-6">
             <a href={linkHref} class="inline-flex items-center text-primary font-bold group text-xl transition-all">
               {linkLabel}
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <ArrowRight className="ml-2 size-6 transition-transform group-hover:translate-x-1" strokeWidth={2.5} aria-hidden="true" />
             </a>
           </p>
         )}

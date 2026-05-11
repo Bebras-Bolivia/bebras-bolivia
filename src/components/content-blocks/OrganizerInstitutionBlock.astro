@@ -1,4 +1,6 @@
 ---
+import { normalizeBrandColor } from "@/lib/brand-styles";
+
 interface Props {
   tag?: string;
   name: string;
@@ -9,6 +11,7 @@ interface Props {
   image?: string;
   linkLabel?: string;
   linkHref?: string;
+  accent?: string;
 }
 
 const {
@@ -21,9 +24,13 @@ const {
   image,
   linkLabel = "Visitar sitio",
   linkHref,
+  accent,
 } = Astro.props;
 
-const cardColorClass = tag?.toLowerCase().includes("aliada") ? "brand-card-green" : "brand-card-blue";
+const normalizedAccent = accent ? normalizeBrandColor(accent) : undefined;
+const cardColorClass = normalizedAccent
+  ? `brand-card-${normalizedAccent}`
+  : tag?.toLowerCase().includes("aliada") ? "brand-card-green" : "brand-card-blue";
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">

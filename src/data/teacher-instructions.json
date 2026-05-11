@@ -10,6 +10,7 @@
       "sectionTag": "Guía para coordinadores",
       "heading": "Instrucciones para coordinadores",
       "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
+      "cardPalette": ["blue", "red", "yellow"],
       "tabs": [
         {
           "id": "antes",

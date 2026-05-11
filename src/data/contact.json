@@ -9,6 +9,7 @@
   "components": [
     {
       "type": "contactClassic",
+      "cardPalette": ["red", "yellow", "green"],
       "info": {
         "tag": "Información",
         "heading": "Información de contacto",
