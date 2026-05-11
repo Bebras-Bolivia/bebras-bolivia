@@ -117,7 +117,7 @@ const orbitImages = [
 export function BebrasBeaverShowcase() {
   return (
     <>
-      <div className="mx-auto flex w-full max-w-xl justify-center lg:justify-center xl:justify-end">
+      <div className="mx-auto flex w-full max-w-xl justify-center">
         <div className="relative beaver-entry w-[180px] sm:w-[260px] lg:w-[clamp(250px,24vw,320px)] xl:w-[330px]">
           <div className="beaver-idle">
             <img

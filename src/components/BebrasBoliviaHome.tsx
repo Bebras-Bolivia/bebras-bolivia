@@ -102,7 +102,7 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
               </span>
             </div>
 
-            <h1 className="serif-display max-w-[10ch] text-[clamp(2.75rem,7.5vw,5rem)] leading-[0.92] text-white lg:max-w-[11ch]">
+            <h1 className="serif-display mx-auto max-w-[12ch] text-[clamp(2.5rem,8vw,5rem)] leading-[0.92] text-white sm:max-w-[11ch] lg:mx-0 lg:max-w-[11ch]">
               Bienvenido a{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">Bebras</span>
