@@ -54,7 +54,28 @@ export const fieldHints: Record<string, string> = {
   brandDescription: "textarea",
   copyrightText: "textarea",
   trademarkNote: "textarea",
-  color: "color",
+  accent: "brand-color",
+  color: "brand-color",
+  cardPalette: "brand-color",
+};
+
+export const BRAND_COLORS = ["yellow", "red", "green", "blue", "gray"] as const;
+export type BrandColor = (typeof BRAND_COLORS)[number];
+
+export const BRAND_COLOR_HEX: Record<BrandColor, string> = {
+  yellow: "#F8AE31",
+  red: "#E83B3B",
+  green: "#1B8F60",
+  blue: "#324C87",
+  gray: "#D9D9D9",
+};
+
+export const BRAND_COLOR_LABEL: Record<BrandColor, string> = {
+  yellow: "Amarillo",
+  red: "Rojo",
+  green: "Verde",
+  blue: "Azul",
+  gray: "Gris",
 };
 
 // ── Select field options ─────────────────────────────────
@@ -63,7 +84,6 @@ export const selectOptions: Record<string, string[]> = {
   style: ["primary", "secondary"],
   status: ["positive", "neutral", "negative"],
   icon: ["monitor", "wifi", "user", "clock", "email", "clipboard", "share", "school", "brain"],
-  color: ["emerald", "amber", "sky", "violet", "rose", "indigo"],
   imageKey: ["guacamayo", "capibara", "titi", "jucumari", "yaguarete"],
 };
 
@@ -111,7 +131,9 @@ export function shouldHideField(key: string): boolean {
 }
 
 export function getFieldType(keyOrPath: string, value: unknown): string {
-  const key = String(keyOrPath).split(".").pop() || "";
+  const path = String(keyOrPath);
+  if (/(^|\.)cardPalette(\[\d+\])?$/.test(path)) return "brand-color";
+  const key = path.split(".").pop() || "";
   if (typeof value === "boolean") return "boolean";
   if (typeof value === "number") return "number";
   if (selectOptions[key]) return "select";
@@ -417,7 +439,7 @@ export function createTypedArrayItem(
   }
 
   if (selectedType === "ageCategoryItem") {
-    return { name: "Nueva categoria", age: "0-0 anos", emoji: "🧩", color: "violet", desc: "Descripcion" };
+    return { name: "Nueva categoria", age: "0-0 anos", emoji: "🧩", color: "blue", desc: "Descripcion" };
   }
 
   if (selectedType === "scoringRow") {
@@ -482,7 +504,7 @@ function _homeSection(type: string): unknown | null {
       linkLabel: "Ver mas",
       linkHref: "/estudiantes",
       items: [
-        { name: "Guacamayo", range: "5 a 8 anos", color: "rose", imageKey: "guacamayo", author: "Autor", authorUrl: "https://example.com" },
+        { name: "Guacamayo", range: "5 a 8 anos", color: "red", imageKey: "guacamayo", author: "Autor", authorUrl: "https://example.com" },
       ],
     }),
     homeDualCta: () => ({
@@ -593,14 +615,14 @@ function _componentTemplate(type: string): unknown | null {
     }),
     studentsAgeCategories: () => ({
       type: "studentsAgeCategories", sectionTag: "Niveles", heading: "Categorias por Edad",
-      cardPalette: ["red", "yellow", "green", "blue", "blueDark"],
+      cardPalette: ["red", "yellow", "green", "blue", "gray"],
       subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
       categories: [
-        { name: "Guacamayo", age: "5-8 anos", emoji: "🦜", color: "rose", desc: "Primeros pasos en el pensamiento logico" },
-        { name: "Capibara", age: "8-10 anos", emoji: "🦫", color: "amber", desc: "Descubriendo patrones y secuencias" },
-        { name: "Titi", age: "10-12 anos", emoji: "🐒", color: "emerald", desc: "Resolviendo problemas con creatividad" },
-        { name: "Jucumari", age: "12-14 anos", emoji: "🐻", color: "sky", desc: "Algoritmos y pensamiento estructurado" },
-        { name: "Yaguarete", age: "14-18 anos", emoji: "🐆", color: "indigo", desc: "Desafios avanzados de informatica" },
+        { name: "Guacamayo", age: "5-8 anos", emoji: "🦜", color: "red", desc: "Primeros pasos en el pensamiento logico" },
+        { name: "Capibara", age: "8-10 anos", emoji: "🦫", color: "yellow", desc: "Descubriendo patrones y secuencias" },
+        { name: "Titi", age: "10-12 anos", emoji: "🐒", color: "green", desc: "Resolviendo problemas con creatividad" },
+        { name: "Jucumari", age: "12-14 anos", emoji: "🐻", color: "blue", desc: "Algoritmos y pensamiento estructurado" },
+        { name: "Yaguarete", age: "14-18 anos", emoji: "🐆", color: "gray", desc: "Desafios avanzados de informatica" },
       ],
     }),
     studentsScoringTable: () => ({

@@ -2,11 +2,12 @@ import React from "react";
 import ArrayActionsView from "./ArrayActionsView";
 import ArrayCollapseToggleView from "./ArrayCollapseToggleView";
 import ArrayItemActionsView from "./ArrayItemActionsView";
+import BrandColorSwatch from "./BrandColorSwatch";
 
 export type EditorField = {
   path: string;
   label: string;
-  type: "text" | "textarea" | "number" | "boolean" | "url" | "select";
+  type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
   value: string | number | boolean;
   options?: string[];
   readOnly?: boolean;
@@ -91,6 +92,16 @@ function FieldInput({ field, onFieldChange }: { field: EditorField; onFieldChang
           <option key={opt} value={opt}>{opt}</option>
         ))}
       </select>
+    );
+  }
+
+  if (field.type === "brand-color") {
+    return (
+      <BrandColorSwatch
+        id={`field-${field.path}`}
+        value={value}
+        onChange={(next) => onFieldChange(field.path, next)}
+      />
     );
   }
 

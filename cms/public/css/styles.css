@@ -331,6 +331,50 @@ a:hover { text-decoration: underline; }
   color: var(--text-muted);
 }
 
+.brand-color-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+.brand-color-swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.brand-color-swatch:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-focus);
+}
+
+.brand-color-swatch.is-selected {
+  border-color: var(--border-focus);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+
+.brand-color-swatch-chip {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+.brand-color-swatch-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 /* ── Buttons ────────────────────────────────────────────── */
 .btn {
   display: inline-flex;

@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import ComplexNodesView, { type ComplexNode } from "../components/ComplexNodesView";
+import BrandColorSwatch from "../components/BrandColorSwatch";
 
 type PrimitivesPayload = {
   title: string;
@@ -8,7 +9,7 @@ type PrimitivesPayload = {
   fields: Array<{
     path: string;
     label: string;
-    type: "text" | "textarea" | "number" | "boolean" | "url" | "select";
+    type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
     value: string | number | boolean;
     options?: string[];
     readOnly?: boolean;
@@ -84,6 +85,16 @@ function FieldInput({
           </option>
         ))}
       </select>
+    );
+  }
+
+  if (field.type === "brand-color") {
+    return (
+      <BrandColorSwatch
+        id={`field-${field.path}`}
+        value={value}
+        onChange={(next) => onFieldChange(field.path, next)}
+      />
     );
   }
 

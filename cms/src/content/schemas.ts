@@ -7,7 +7,20 @@ const LinkSchema = z.object({
   href: z.string(),
 });
 
-const BrandColorSchema = z.enum(["red", "yellow", "green", "blue", "blueDark", "rose", "amber", "emerald", "sky", "indigo"]);
+const BrandColorSchema = z.enum([
+  "yellow",
+  "red",
+  "green",
+  "blue",
+  "gray",
+  "blueDark",
+  "rose",
+  "amber",
+  "emerald",
+  "sky",
+  "indigo",
+  "violet",
+]);
 const BrandPaletteSchema = z.array(BrandColorSchema).optional();
 
 const GenericTextBlockSchema = z.object({

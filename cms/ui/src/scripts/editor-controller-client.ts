@@ -156,7 +156,7 @@ const Editor = {
 
   toPrimitiveField(path: string, key: string, value: any) {
     const type = this.getFieldType(path, value);
-    const editorType = ["textarea", "boolean", "number", "url", "select"].includes(type) ? type : "text";
+    const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color"].includes(type) ? type : "text";
     return {
       path,
       label: this.formatLabel(key),

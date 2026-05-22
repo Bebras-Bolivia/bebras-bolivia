@@ -38,7 +38,11 @@ screenshots/
 cms/content/cms.sqlite-shm
 cms/content/cms.sqlite-wal
 cms/content/cms.sqlite
+cms/content/current/data/*
+!cms/content/current/data/.gitkeep
 cms/content/current/blog/*
 !cms/content/current/blog/.gitkeep
+src/data/*
+!src/data/.gitkeep
 src/content/blog/*
 !src/content/blog/.gitkeep
