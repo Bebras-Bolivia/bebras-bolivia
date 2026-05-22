@@ -1,5 +1,4 @@
 ---
-import { Check } from "lucide-react";
 import { getBrandCardClass } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
@@ -27,13 +26,16 @@ const { tag, heading, intro, items = [], outro, cardPalette } = Astro.props;
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       <div class="max-w-5xl space-y-4 text-xl text-muted-foreground leading-relaxed">
         {intro && <p set:html={formatInlineRichText(intro)} />}
-        <ul class="mt-8 grid gap-5 lg:grid-cols-2">
+        <ul class="mt-8 grid gap-5 md:grid-cols-2">
           {items.map((item, i) => (
-            <li class:list={["flex items-start gap-4 p-5", getBrandCardClass(i, cardPalette)]}>
-              <span class="brand-card-icon flex items-center justify-center size-8 shrink-0 rounded-2xl mt-1">
-                <Check className="size-4" strokeWidth={2.8} aria-hidden="true" />
+            <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", getBrandCardClass(i, cardPalette)]}>
+              <span class="brand-card-icon mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-2xl font-mono text-base font-bold tabular-nums transition-transform duration-300 group-hover:scale-105">
+                {String(i + 1).padStart(2, "0")}
               </span>
-              <span><strong class="text-2xl block mb-2">{item.title}</strong> <span class="brand-card-muted text-lg">{item.desc}</span></span>
+              <span class="min-w-0 flex-1">
+                <strong class="block text-2xl font-bold leading-tight sm:text-3xl">{item.title}</strong>
+                <span class="brand-card-muted mt-3 block text-base leading-relaxed sm:text-lg">{item.desc}</span>
+              </span>
             </li>
           ))}
         </ul>
