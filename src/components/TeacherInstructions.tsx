@@ -121,7 +121,7 @@ export default function TeacherInstructions({
                     "after:absolute after:inset-x-3 after:-bottom-px after:h-0.75 after:rounded-full after:bg-transparent after:transition-all after:duration-300",
                     "data-active:after:inset-x-2",
                     triggerActiveText[color],
-                    `data-active:${triggerUnderline[color]}`,
+                    triggerUnderline[color],
                   ].join(" ")}
                 >
                   <span
