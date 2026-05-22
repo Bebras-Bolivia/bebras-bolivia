@@ -1,0 +1,20 @@
+{
+  "pageTitle": "Registro",
+  "pageDescription": "Inscríbete al Desafío Bebras Bolivia.",
+  "tag": "Inscripciones",
+  "heading": "Próximamente",
+  "paragraph": "El registro estará disponible próximamente. Estamos preparando todo para que puedas inscribirte en el Desafío Bebras Bolivia 2026.",
+  "disabledButton": "Registro (no disponible aún)",
+  "backButton": {
+    "label": "Volver al inicio",
+    "href": "/"
+  },
+  "notification": {
+    "tag": "Notificaciones",
+    "text": "¿Quieres ser notificado?",
+    "instruction": "Envíanos un correo a",
+    "email": "info@bebras.bo",
+    "suffix": "y te avisaremos cuando las inscripciones estén abiertas."
+  },
+  "components": []
+}
