@@ -1,9 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  getBrandCardClass,
-  normalizePalette,
-  type BrandColor,
-} from "@/lib/brand-styles";
+import { normalizePalette, type BrandColor } from "@/lib/brand-styles";
 
 interface InstructionItem {
   title?: string;
@@ -26,12 +22,20 @@ interface Props {
   cardPalette?: string[];
 }
 
-const activeTabClass: Record<BrandColor, string> = {
-  yellow: "data-active:bg-bebras-yellow data-active:text-white",
-  red: "data-active:bg-bebras-red data-active:text-white",
-  green: "data-active:bg-bebras-green data-active:text-white",
-  blue: "data-active:bg-bebras-blue data-active:text-white",
-  gray: "data-active:bg-bebras-gray data-active:text-bebras-ink",
+const triggerActiveText: Record<BrandColor, string> = {
+  yellow: "data-active:text-bebras-yellow-dark",
+  red: "data-active:text-bebras-red",
+  green: "data-active:text-bebras-green",
+  blue: "data-active:text-bebras-blue",
+  gray: "data-active:text-bebras-ink",
+};
+
+const triggerUnderline: Record<BrandColor, string> = {
+  yellow: "data-active:after:bg-bebras-yellow",
+  red: "data-active:after:bg-bebras-red",
+  green: "data-active:after:bg-bebras-green",
+  blue: "data-active:after:bg-bebras-blue",
+  gray: "data-active:after:bg-bebras-ink/60",
 };
 
 const dotClass: Record<BrandColor, string> = {
@@ -40,6 +44,44 @@ const dotClass: Record<BrandColor, string> = {
   green: "bg-bebras-green",
   blue: "bg-bebras-blue",
   gray: "bg-bebras-gray",
+};
+
+const panelAccent: Record<BrandColor, { ring: string; chip: string; chipText: string; bullet: string; heading: string }> = {
+  yellow: {
+    ring: "border-bebras-yellow/40 shadow-[0_30px_60px_-40px_rgba(248,174,49,0.55)]",
+    chip: "bg-bebras-yellow text-white",
+    chipText: "text-bebras-yellow-dark",
+    bullet: "bg-bebras-yellow",
+    heading: "text-bebras-ink",
+  },
+  red: {
+    ring: "border-bebras-red/40 shadow-[0_30px_60px_-40px_rgba(232,59,59,0.55)]",
+    chip: "bg-bebras-red text-white",
+    chipText: "text-bebras-red",
+    bullet: "bg-bebras-red",
+    heading: "text-bebras-ink",
+  },
+  green: {
+    ring: "border-bebras-green/40 shadow-[0_30px_60px_-40px_rgba(27,143,96,0.55)]",
+    chip: "bg-bebras-green text-white",
+    chipText: "text-bebras-green",
+    bullet: "bg-bebras-green",
+    heading: "text-bebras-ink",
+  },
+  blue: {
+    ring: "border-bebras-blue/40 shadow-[0_30px_60px_-40px_rgba(50,76,135,0.55)]",
+    chip: "bg-bebras-blue text-white",
+    chipText: "text-bebras-blue",
+    bullet: "bg-bebras-blue",
+    heading: "text-bebras-ink",
+  },
+  gray: {
+    ring: "border-bebras-gray shadow-[0_30px_60px_-40px_rgba(17,0,0,0.35)]",
+    chip: "bg-bebras-gray text-bebras-ink",
+    chipText: "text-bebras-ink",
+    bullet: "bg-bebras-ink/60",
+    heading: "text-bebras-ink",
+  },
 };
 
 export default function TeacherInstructions({
@@ -60,55 +102,94 @@ export default function TeacherInstructions({
         <h2 className="text-3xl font-bold text-foreground mb-2 text-center tracking-tight">
           {heading}
         </h2>
-        <p className="text-center text-muted-foreground mb-6">
+        <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
           {subtitle}
         </p>
 
         <Tabs defaultValue={tabs[0]?.id}>
-          <TabsList className="mb-6 grid h-auto w-full grid-cols-1 gap-2 rounded-3xl bg-bebras-paper p-2 sm:grid-cols-3">
+          <TabsList className="mb-6 flex h-auto w-full flex-wrap justify-center gap-1 rounded-none border-b border-border bg-transparent p-0">
             {tabs.map((tab, index) => {
               const color = palette[index % palette.length] || "green";
               return (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className={`group h-auto min-h-12 rounded-2xl border-0 bg-transparent px-4 py-3 text-base font-bold text-bebras-ink transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/70 focus-visible:ring-0 focus-visible:outline-none data-active:translate-y-0 data-active:shadow-none ${activeTabClass[color]}`}
+                  className={[
+                    "group relative inline-flex h-auto items-center gap-2 rounded-none border-0 bg-transparent px-5 py-3",
+                    "text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground",
+                    "transition-colors duration-200 hover:text-bebras-ink focus-visible:ring-0 focus-visible:outline-none",
+                    "after:absolute after:inset-x-3 after:-bottom-px after:h-0.75 after:rounded-full after:bg-transparent after:transition-all after:duration-300",
+                    "data-active:after:inset-x-2",
+                    triggerActiveText[color],
+                    `data-active:${triggerUnderline[color]}`,
+                  ].join(" ")}
                 >
-                  <span className={`mr-2 size-2.5 rounded-full transition-transform duration-200 group-hover:scale-125 ${dotClass[color]} group-data-active:bg-white`} />
+                  <span
+                    className={[
+                      "size-2 rounded-full transition-all duration-200",
+                      dotClass[color],
+                      "opacity-60 group-hover:opacity-100 group-data-active:opacity-100 group-data-active:scale-125",
+                    ].join(" ")}
+                  />
                   {tab.label}
                 </TabsTrigger>
               );
             })}
           </TabsList>
 
-          {tabs.map((tab, tabIndex) => (
-            <TabsContent
-              key={tab.id}
-              value={tab.id}
-              className="mt-0 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300"
-            >
-              <div className={`${getBrandCardClass(tabIndex, cardPalette)} p-7 sm:p-9`}>
-                <h3 className="mb-6 text-2xl font-bold text-white sm:text-3xl">
-                  {tab.heading}
-                </h3>
-                <ul className="grid gap-5 text-base text-white/90 sm:text-lg">
-                  {tab.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-4 sm:gap-5">
-                      <span className="brand-card-icon mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full text-base font-bold">
-                        {i + 1}
-                      </span>
-                      <span className="leading-relaxed">
-                        {item.title && (
-                          <><strong className="text-white">{item.title}</strong>{" "}</>
-                        )}
-                        {item.desc || item.text || ""}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </TabsContent>
-          ))}
+          {tabs.map((tab, tabIndex) => {
+            const color = palette[tabIndex % palette.length] || "green";
+            const accent = panelAccent[color];
+            return (
+              <TabsContent
+                key={tab.id}
+                value={tab.id}
+                className="mt-2 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-1 data-[state=active]:duration-300"
+              >
+                <div
+                  className={[
+                    "rounded-3xl border-2 bg-bebras-paper",
+                    "p-6 sm:p-9",
+                    accent.ring,
+                  ].join(" ")}
+                >
+                  <div className="mb-6 flex items-center gap-3">
+                    <span className={`inline-flex h-1.5 w-10 rounded-full ${accent.bullet}`} aria-hidden />
+                    <h3 className={`text-2xl font-bold sm:text-3xl ${accent.heading}`}>
+                      {tab.heading}
+                    </h3>
+                  </div>
+                  <ol className="grid gap-4 sm:gap-5">
+                    {tab.items.map((item, i) => (
+                      <li
+                        key={i}
+                        className="group/item flex items-start gap-4 rounded-2xl border border-transparent p-3 transition-colors duration-200 hover:border-border hover:bg-white sm:gap-5 sm:p-4"
+                      >
+                        <span
+                          className={[
+                            "mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums",
+                            accent.chip,
+                          ].join(" ")}
+                        >
+                          {i + 1}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          {item.title && (
+                            <p className={`mb-1 font-semibold leading-snug ${accent.chipText}`}>
+                              {item.title}
+                            </p>
+                          )}
+                          <p className="text-base leading-relaxed text-bebras-ink/80 sm:text-[1.0625rem]">
+                            {item.desc || item.text || ""}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </TabsContent>
+            );
+          })}
         </Tabs>
       </div>
     </section>
