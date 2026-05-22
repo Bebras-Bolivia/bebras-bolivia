@@ -27,19 +27,19 @@ interface Props {
 }
 
 const activeTabClass: Record<BrandColor, string> = {
-  red: "data-active:bg-bebras-red data-active:text-white",
   yellow: "data-active:bg-bebras-yellow data-active:text-white",
+  red: "data-active:bg-bebras-red data-active:text-white",
   green: "data-active:bg-bebras-green data-active:text-white",
   blue: "data-active:bg-bebras-blue data-active:text-white",
-  blueDark: "data-active:bg-bebras-blue-dark data-active:text-white",
+  gray: "data-active:bg-bebras-gray data-active:text-bebras-ink",
 };
 
 const dotClass: Record<BrandColor, string> = {
-  red: "bg-bebras-red",
   yellow: "bg-bebras-yellow",
+  red: "bg-bebras-red",
   green: "bg-bebras-green",
   blue: "bg-bebras-blue",
-  blueDark: "bg-bebras-blue-dark",
+  gray: "bg-bebras-gray",
 };
 
 export default function TeacherInstructions({

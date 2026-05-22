@@ -340,6 +340,8 @@ export function createEmptyArrayItem(
 ): unknown {
   const normalizedPath = String(path).replace(/\[\d+\]/g, "[]");
 
+  if (normalizedPath.endsWith("cardPalette")) return "yellow";
+
   if (currentFile === "faq.json" && normalizedPath.endsWith("categories[].items")) {
     return { question: "", answer: "" };
   }

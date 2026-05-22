@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
 
 interface NavLink {
@@ -83,6 +82,8 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
       <button
         onClick={toggleMenu}
         aria-label={open ? "Cerrar menu" : "Abrir menu"}
+        aria-expanded={open}
+        aria-controls="mobile-navigation-menu"
         className="relative inline-flex size-10 items-center justify-center overflow-hidden rounded-2xl bg-primary/20 text-primary transition-all duration-200 hover:bg-primary/25 lg:hidden"
       >
         <Menu
@@ -103,11 +104,18 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
         />
       </button>
 
-      {open &&
-        typeof document !== "undefined" &&
-        createPortal(
+      {open && (
+        <>
           <div
-            className={`fixed inset-x-0 bottom-0 top-[5.75rem] z-40 overflow-hidden px-3 pb-4 pt-1 transition-all duration-300 sm:top-[6.5rem] sm:px-4 lg:hidden ${
+            className={`fixed inset-0 z-[80] bg-black/10 transition-opacity duration-300 lg:hidden ${
+              visible ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={closeMenu}
+            aria-hidden="true"
+          />
+          <div
+            id="mobile-navigation-menu"
+            className={`fixed inset-x-0 bottom-0 top-[5.75rem] z-[90] overflow-hidden px-3 pb-4 pt-1 transition-all duration-300 sm:top-[6.5rem] sm:px-4 lg:hidden ${
               visible
                 ? "bg-transparent opacity-100"
                 : "bg-transparent opacity-0"
@@ -124,6 +132,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                 className={`max-h-full overflow-y-auto rounded-2xl border border-border/70 bg-card shadow-[0_10px_26px_rgba(35,31,32,0.12)] transition-all duration-300 ${
                   visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
                 }`}
+                aria-label="Navegacion movil"
                 style={{
                   transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
                   transitionDelay: visible ? "40ms" : "0ms",
@@ -172,9 +181,9 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                 )}
               </nav>
             </div>
-          </div>,
-          document.body
-        )}
+          </div>
+        </>
+      )}
     </>
   );
 }

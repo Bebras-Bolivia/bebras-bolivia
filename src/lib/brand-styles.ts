@@ -1,19 +1,20 @@
-export type BrandColor = "red" | "yellow" | "green" | "blue" | "blueDark";
+export type BrandColor = "yellow" | "red" | "green" | "blue" | "gray";
 
 const colorAliases: Record<string, BrandColor> = {
-  red: "red",
-  rose: "red",
   yellow: "yellow",
   amber: "yellow",
+  red: "red",
+  rose: "red",
   green: "green",
   emerald: "green",
   blue: "blue",
   sky: "blue",
-  indigo: "blueDark",
-  blueDark: "blueDark",
+  indigo: "blue",
+  blueDark: "blue",
+  gray: "gray",
 };
 
-const defaultPalette: BrandColor[] = ["red", "yellow", "green", "blue"];
+const defaultPalette: BrandColor[] = ["yellow", "red", "green", "blue"];
 
 export function normalizeBrandColor(color?: string): BrandColor {
   return color ? colorAliases[color] || "green" : "green";

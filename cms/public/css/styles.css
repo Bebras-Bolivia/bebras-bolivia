@@ -1524,3 +1524,86 @@ a:hover { text-decoration: underline; }
     padding: 0 1rem;
   }
 }
+
+/* ── Brand color swatch picker ──────────────────────────── */
+.brand-color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.brand-color-swatch {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.625rem 0.4rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  font-family: inherit;
+  color: var(--text-secondary);
+  min-width: 64px;
+}
+
+.brand-color-swatch:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+}
+
+.brand-color-swatch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.brand-color-swatch.is-selected {
+  background: var(--bg-surface);
+  border-color: var(--border-focus);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.brand-color-swatch.is-selected::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-focus);
+}
+
+.brand-color-swatch-chip {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease;
+}
+
+.brand-color-swatch:hover .brand-color-swatch-chip {
+  transform: scale(1.06);
+}
+
+.brand-color-swatch.is-selected .brand-color-swatch-chip {
+  transform: scale(1.08);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 0 0 2px var(--bg-surface),
+    0 0 0 3px var(--border-focus);
+}
+
+.brand-color-swatch-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

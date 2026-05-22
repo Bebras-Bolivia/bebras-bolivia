@@ -34,7 +34,12 @@
       "tag": "Habilidades clave",
       "heading": "¿Qué es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
-      "cardPalette": ["blue", "red", "yellow", "green"],
+      "cardPalette": [
+        "blue",
+        "red",
+        "yellow",
+        "green"
+      ],
       "items": [
         {
           "title": "Descomposición:",
@@ -60,11 +65,24 @@
       "tag": "El formato",
       "heading": "¿Qué involucra el desafío?",
       "columns": 3,
-      "cardPalette": ["green", "yellow", "red"],
+      "cardPalette": [
+        "green",
+        "yellow",
+        "red"
+      ],
       "stats": [
-        { "value": "15", "label": "Preguntas" },
-        { "value": "45", "label": "Minutos" },
-        { "value": "100%", "label": "En línea" }
+        {
+          "value": "15",
+          "label": "Preguntas"
+        },
+        {
+          "value": "45",
+          "label": "Minutos"
+        },
+        {
+          "value": "100%",
+          "label": "En línea"
+        }
       ],
       "paragraphs": [
         "El desafío consiste en 15 preguntas que debes resolver en 45 minutos. Las preguntas tienen tres niveles de dificultad y cada nivel otorga un puntaje diferente.",
@@ -76,31 +94,105 @@
       "sectionTag": "Puntuación",
       "heading": "Sistema de puntuación",
       "subtitle": "Cada tarea pertenece a una categoría de dificultad. Inicias con 45 puntos.",
-      "tableHeaders": ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
+      "tableHeaders": [
+        "Resultado",
+        "Cat. A",
+        "Cat. B",
+        "Cat. C"
+      ],
       "rows": [
-        { "label": "Correcta", "values": ["+6", "+9", "+12"], "status": "positive" },
-        { "label": "Sin respuesta", "values": ["0", "0", "0"], "status": "neutral" },
-        { "label": "Incorrecta", "values": ["-2", "-3", "-4"], "status": "negative" }
+        {
+          "label": "Correcta",
+          "values": [
+            "+6",
+            "+9",
+            "+12"
+          ],
+          "status": "positive"
+        },
+        {
+          "label": "Sin respuesta",
+          "values": [
+            "0",
+            "0",
+            "0"
+          ],
+          "status": "neutral"
+        },
+        {
+          "label": "Incorrecta",
+          "values": [
+            "-2",
+            "-3",
+            "-4"
+          ],
+          "status": "negative"
+        }
       ],
       "summaryCards": [
-        { "value": "45", "label": "Puntaje inicial" },
-        { "value": "180", "label": "Puntaje máximo" }
+        {
+          "value": "45",
+          "label": "Puntaje inicial"
+        },
+        {
+          "value": "180",
+          "label": "Puntaje máximo"
+        }
       ],
       "summaryColumns": 2,
-      "cardPalette": ["red", "yellow"]
+      "cardPalette": [
+        "red",
+        "yellow"
+      ]
     },
     {
       "type": "studentsAgeCategories",
       "sectionTag": "Niveles",
       "heading": "Categorías por edad",
-      "cardPalette": ["red", "yellow", "green", "blue", "blueDark"],
+      "cardPalette": [
+        "red",
+        "yellow",
+        "green",
+        "blue",
+        "blue"
+      ],
       "subtitle": "Cinco niveles diseñados para desafiar a cada grupo de edad.",
       "categories": [
-        { "name": "Guacamayo", "age": "5-8 años", "emoji": "🦜", "color": "rose", "desc": "Primeros pasos en el pensamiento lógico." },
-        { "name": "Capibara", "age": "8-10 años", "emoji": "🦫", "color": "amber", "desc": "Descubriendo patrones y secuencias." },
-        { "name": "Titi", "age": "10-12 años", "emoji": "🐒", "color": "emerald", "desc": "Resolviendo problemas con creatividad." },
-        { "name": "Jucumari", "age": "12-14 años", "emoji": "🐻", "color": "sky", "desc": "Algoritmos y pensamiento estructurado." },
-        { "name": "Yaguarete", "age": "14-18 años", "emoji": "🐆", "color": "indigo", "desc": "Desafíos avanzados de informática." }
+        {
+          "name": "Guacamayo",
+          "age": "5-8 años",
+          "emoji": "🦜",
+          "color": "red",
+          "desc": "Primeros pasos en el pensamiento lógico."
+        },
+        {
+          "name": "Capibara",
+          "age": "8-10 años",
+          "emoji": "🦫",
+          "color": "yellow",
+          "desc": "Descubriendo patrones y secuencias."
+        },
+        {
+          "name": "Titi",
+          "age": "10-12 años",
+          "emoji": "🐒",
+          "color": "green",
+          "desc": "Resolviendo problemas con creatividad."
+        },
+        {
+          "name": "Jucumari",
+          "age": "12-14 años",
+          "emoji": "🐻",
+          "color": "blue",
+          "desc": "Algoritmos y pensamiento estructurado."
+        },
+        {
+          "name": "Yaguarete",
+          "age": "14-18 años",
+          "emoji": "🐆",
+          "color": "blue",
+          "desc": "Desafíos avanzados de informática."
+        }
       ]
     },
     {

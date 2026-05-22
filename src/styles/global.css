@@ -261,6 +261,16 @@
   .brand-card-yellow { background-color: var(--color-bebras-yellow); }
   .brand-card-green { background-color: var(--color-bebras-green); }
   .brand-card-blue { background-color: var(--color-bebras-blue); }
+  .brand-card-gray {
+    background-color: var(--color-bebras-gray);
+    color: var(--color-bebras-ink);
+  }
+  .brand-card-gray .brand-card-muted { color: rgba(17, 0, 0, 0.72); }
+  .brand-card-gray .brand-card-icon {
+    background: rgba(17, 0, 0, 0.08);
+    color: var(--color-bebras-ink);
+  }
+  /* Legacy alias — pre-migration JSONs may still use blueDark */
   .brand-card-blueDark { background-color: var(--color-bebras-blue-dark); }
 
   .editorial-callout {
