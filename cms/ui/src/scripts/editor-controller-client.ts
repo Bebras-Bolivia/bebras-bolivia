@@ -18,6 +18,7 @@ const Editor = {
   devServerReady: false,
   devServerStarting: false,
   devServerPort: null as number | null,
+  previewDraftTimer: null as ReturnType<typeof setTimeout> | null,
   collapsedItems: new Set<string>(),
   itemExpandedState: new Map<string, boolean>(),
 
@@ -65,6 +66,9 @@ const Editor = {
       onFieldChange: (path: string, value: unknown) => {
         this.setNestedValue(this.currentData, path, value);
         this.dirty = true;
+        if (this.getFieldType(path, value) === "brand-color") {
+          this.schedulePreviewDraftUpdate();
+        }
       },
       onInitPreview: () => this.ensureDevServer(),
       onInitComplex: () => {},
@@ -228,10 +232,29 @@ const Editor = {
     try {
       await window.API.saveContent(this.currentFile, this.currentData);
       this.dirty = false;
-      window.Toast.success(this.devServerReady ? "Guardado - la vista previa se actualiza automaticamente" : "Contenido guardado");
+      if (this.devServerReady) {
+        await this.waitForPreviewUpdate();
+        this.loadPreviewIframe(true);
+      }
+      window.Toast.success(this.devServerReady ? "Guardado - vista previa recargada" : "Contenido guardado");
     } catch (err: any) {
       window.Toast.error(err.details ? `Error de validacion: ${err.details}` : `Error al guardar: ${err.message}`);
     }
+  },
+
+  schedulePreviewDraftUpdate() {
+    if (!this.devServerReady || !this.currentFile) return;
+    if (this.previewDraftTimer) clearTimeout(this.previewDraftTimer);
+    this.previewDraftTimer = setTimeout(async () => {
+      this.previewDraftTimer = null;
+      try {
+        await window.API.syncPreviewDraft(this.currentFile, this.currentData);
+        await this.waitForPreviewUpdate();
+        this.loadPreviewIframe(true);
+      } catch (err: any) {
+        window.Toast.error(err?.message ? `No se pudo actualizar la vista previa: ${err.message}` : "No se pudo actualizar la vista previa");
+      }
+    }, 350);
   },
 
   async reset() {

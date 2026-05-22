@@ -11,11 +11,12 @@ const LEGACY_COLOR_ALIASES: Record<string, BrandColor> = {
   violet: "blue",
 };
 
-function normalizeBrandColor(raw: unknown): BrandColor {
+function normalizeBrandColor(raw: unknown): BrandColor | null {
   const value = String(raw ?? "").trim();
+  if (!value) return null;
   if ((BRAND_COLORS as readonly string[]).includes(value)) return value as BrandColor;
   if (LEGACY_COLOR_ALIASES[value]) return LEGACY_COLOR_ALIASES[value];
-  return "yellow";
+  return null;
 }
 
 interface Props {
@@ -26,17 +27,21 @@ interface Props {
 
 export default function BrandColorSwatch({ id, value, onChange }: Props) {
   const current = normalizeBrandColor(value);
-  const stringValue = String(value ?? "");
-  const wasNormalized = stringValue !== current && stringValue !== "";
+  const [selectedColor, setSelectedColor] = React.useState<BrandColor | null>(current);
 
   React.useEffect(() => {
-    if (wasNormalized) onChange(current);
-  }, [current, onChange, wasNormalized]);
+    setSelectedColor(current);
+  }, [current]);
+
+  function selectColor(color: BrandColor) {
+    setSelectedColor(color);
+    onChange(color);
+  }
 
   return (
     <div id={id} className="brand-color-picker" role="radiogroup">
       {BRAND_COLORS.map((color) => {
-        const selected = color === current;
+        const selected = color === selectedColor;
         return (
           <button
             key={color}
@@ -46,7 +51,15 @@ export default function BrandColorSwatch({ id, value, onChange }: Props) {
             title={BRAND_COLOR_LABEL[color]}
             className={`brand-color-swatch${selected ? " is-selected" : ""}`}
             data-color={color}
-            onClick={() => onChange(color)}
+            draggable={false}
+            onPointerDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onDragStart={(e) => e.preventDefault()}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              selectColor(color);
+            }}
           >
             <span
               className="brand-color-swatch-chip"
