@@ -10,7 +10,6 @@ type PrimitivesPayload = {
   fields: Array<{
     path: string;
     label: string;
-    help?: string;
     type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
     value: string | number | boolean;
     options?: string[];
@@ -209,18 +208,19 @@ function EditorPrimitivesView({
       id="editor-save"
       disabled={saving}
       onClick={handleSave}
+      aria-label="Guardar"
     >
       {saving ? (
-        <><div className="spinner" style={{ width: 14, height: 14, display: "inline-block" }}></div> Guardando...</>
+        <><div className="spinner" style={{ width: 14, height: 14, display: "inline-block" }}></div> <span className="btn-text">Guardando...</span></>
       ) : (
-        <><span dangerouslySetInnerHTML={{ __html: icons.save || "" }}></span> Guardar</>
+        <><span dangerouslySetInnerHTML={{ __html: icons.save || "" }}></span> <span className="btn-text">Guardar</span></>
       )}
     </button>
   );
 
   const resetButton = (
-    <button className="btn btn-ghost btn-sm" onClick={onReset} title="Recarga la vista previa con tus cambios actuales">
-      <span dangerouslySetInnerHTML={{ __html: icons.refresh || "" }}></span> Actualizar vista previa
+    <button className="btn btn-ghost btn-sm" onClick={onReset} aria-label="Actualizar vista previa" title="Recarga la vista previa con tus cambios actuales">
+      <span dangerouslySetInnerHTML={{ __html: icons.refresh || "" }}></span> <span className="btn-text">Actualizar vista previa</span>
     </button>
   );
 
@@ -243,7 +243,6 @@ function EditorPrimitivesView({
               {fields.map((field) => (
                 <div className="form-group" key={field.path}>
                   <label htmlFor={`field-${field.path}`}>{field.label}</label>
-                  {field.help ? <p className="form-help">{field.help}</p> : null}
                   <FieldInput field={field} onFieldChange={onFieldChange} />
                 </div>
               ))}

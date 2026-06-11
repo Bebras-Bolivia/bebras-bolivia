@@ -7,6 +7,7 @@ import { getDb, type PublishLogRow } from "../db/index.js";
 import { createSnapshot } from "../snapshots/service.js";
 import { isDevServerRunning, stopDevServer, startDevServer } from "../preview/service.js";
 import { preserveDiacritics } from "../content/preserve-text.js";
+import { CONTENT_FILES } from "../content/schemas.js";
 
 // Publish lock — reject concurrent publishes
 let isPublishing = false;
@@ -69,9 +70,8 @@ export async function publish(author: string): Promise<PublishLogRow> {
 
     // Step 2: Copy JSON files to landing/src/data/
     await mkdir(config.landingDataDir, { recursive: true });
-    const dataFiles = await readdir(config.currentDataDir);
-    for (const file of dataFiles) {
-      if (file.endsWith(".json")) {
+    for (const file of CONTENT_FILES) {
+      if (existsSync(join(config.currentDataDir, file))) {
         await copyJsonPreservingDiacritics(
           join(config.currentDataDir, file),
           join(config.landingDataDir, file)

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
 
 interface NavLink {
@@ -16,7 +17,15 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [currentPath, setCurrentPath] = useState(initialPath);
+  const [mounted, setMounted] = useState(false);
   const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // The header has a CSS transform (GSAP show/hide), which creates a stacking
+  // context that traps a `fixed` child. Portal the overlay+menu to <body> so it
+  // escapes that context and its z-index applies against the viewport.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Update currentPath on client-side navigation (Astro ClientRouter)
   useEffect(() => {
@@ -104,7 +113,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
         />
       </button>
 
-      {open && (
+      {open && mounted && createPortal(
         <>
           <div
             className={`fixed inset-0 z-[80] bg-black/10 transition-opacity duration-300 lg:hidden ${
@@ -182,7 +191,8 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
               </nav>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </>
   );

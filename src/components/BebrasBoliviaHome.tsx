@@ -7,7 +7,6 @@ import { BebrasBeaverShowcase } from "@/components/BebrasBeaverShowcase";
 
 type HomeHeroData = {
   eyebrow?: string;
-  welcomeText?: string;
   title?: string;
   subtitlePrimary?: string;
   subtitleSecondary?: string;
@@ -23,6 +22,31 @@ type LatestNewsData = {
   dateTime: string;
   dateLabel: string;
 };
+
+// Render a plain title string while auto-styling the brand words: "Bebras"
+// gets the red underline highlight and "Bolivia" gets the green accent. This
+// keeps the CMS field a single, simple text input while preserving the design.
+function renderHeroTitle(title: string) {
+  return title.split(/(\s+)/).map((part, i) => {
+    const word = part.trim().replace(/[.,;:!?]+$/, "").toLowerCase();
+    if (word === "bebras") {
+      return (
+        <span key={i} className="relative inline-block">
+          <span className="relative z-10">{part}</span>
+          <span className="absolute inset-x-0 bottom-1 h-3 bg-bebras-red z-0 sm:bottom-2 sm:h-4"></span>
+        </span>
+      );
+    }
+    if (word === "bolivia") {
+      return (
+        <span key={i} className="text-bebras-green">
+          {part}
+        </span>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
 
 export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: HomeHeroData; latestNews?: LatestNewsData | null }) {
   const heroSectionRef = useRef<HTMLElement>(null);
@@ -103,17 +127,18 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
             </div>
 
             <h1 className="serif-display mx-auto max-w-[12ch] text-[clamp(2.5rem,8vw,5rem)] leading-[0.92] text-white sm:max-w-[11ch] lg:mx-0 lg:max-w-[11ch]">
-              Bienvenido a{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">Bebras</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-bebras-red z-0 sm:bottom-2 sm:h-4"></span>
-              </span>{" "}
-              <span className="text-bebras-green">Bolivia</span>
+              {renderHeroTitle(hero.title || "Bienvenido a Bebras Bolivia")}
             </h1>
 
             <p className="mx-auto max-w-[42ch] text-balance text-lg leading-relaxed text-white/90 sm:text-xl lg:mx-0">
               {hero.subtitlePrimary || "El desafío internacional de pensamiento computacional para estudiantes de todo el país."}
             </p>
+
+            {hero.subtitleSecondary ? (
+              <p className="mx-auto max-w-[42ch] text-balance text-base leading-relaxed text-white/75 lg:mx-0">
+                {hero.subtitleSecondary}
+              </p>
+            ) : null}
 
             <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center lg:justify-start">
               <Button

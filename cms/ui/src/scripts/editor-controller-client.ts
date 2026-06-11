@@ -118,8 +118,8 @@ const Editor = {
     if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
     const nodes: any[] = [];
     Object.entries(obj).forEach(([key, value]) => {
-      if (this.lib.shouldHideField(key)) return;
       const fieldPath = path ? `${path}.${key}` : key;
+      if (this.lib.shouldHideField(key)) return;
       if (value === null || value === undefined) return;
       if (Array.isArray(value)) {
         nodes.push(this.buildArrayNode(value, fieldPath, key));
@@ -132,13 +132,32 @@ const Editor = {
     return nodes;
   },
 
+  // Partition a typed item's primitive fields into content vs. design groups.
+  // The leaf key (last path segment) is matched against the type's design set.
+  // Unknown types put everything in `content`, so other pages are unaffected.
+  splitFieldsByGroup(type: string | undefined, fields: any[]) {
+    if (!this.lib.hasFieldGroups(type)) return { content: fields, advanced: [] as any[] };
+    const content: any[] = [];
+    const advanced: any[] = [];
+    for (const field of fields) {
+      const leaf = String(field.path).split(".").pop()?.replace(/\[\d+\]$/, "") || "";
+      if (this.lib.isDesignField(type, leaf)) advanced.push(field);
+      else content.push(field);
+    }
+    return { content, advanced };
+  },
+
   buildArrayNode(arr: any[], path: string, key: string) {
+    const addOptions = this.getAddTypeOptions(path);
+    // Use the rich modal picker (name + description) when adding shared
+    // components, or when the typed options carry descriptions (home sections).
+    const usePicker = path === "components" || addOptions.some((o: any) => o.description);
     return {
       kind: "array",
       path,
       label: this.formatLabel(key),
-      addOptions: this.getAddTypeOptions(path),
-      componentPicker: path === "components",
+      addOptions,
+      componentPicker: usePicker,
       locked: this.isLockedArray(path),
       items: arr.map((item, idx) => {
         const itemPath = `${path}[${idx}]`;
@@ -146,25 +165,46 @@ const Editor = {
         const collapsible = this.isCollapsibleArray(path);
         if (collapsible && !this.itemExpandedState.has(itemPath)) this.itemExpandedState.set(itemPath, false);
         const expanded = collapsible ? this.itemExpandedState.get(itemPath) === true : true;
+        const allFields = itemIsObject
+          ? this.extractPrimitiveFields(item, itemPath, false)
+          : [this.toPrimitiveArrayField(itemPath, key, item, idx)];
+        // Split a typed section's fields into content vs. design. Design fields
+        // (numeral, accent, side labels, etc.) go to a collapsed "advanced"
+        // group so a non-technical editor sees only content by default.
+        const itemType = itemIsObject ? item.type : undefined;
+        const { content, advanced } = this.splitFieldsByGroup(itemType, allFields);
         return {
           idx,
           itemPath,
           label: itemIsObject ? this.getArrayItemLabel(item, idx) : `#${idx + 1}`,
           collapsible,
           expanded,
-          fields: itemIsObject ? this.extractPrimitiveFields(item, itemPath, false) : [this.toPrimitiveField(itemPath, key, item)],
+          fields: content,
+          advancedFields: advanced,
           children: itemIsObject ? this.buildComplexNodes(item, itemPath) : [],
         };
       }),
     };
   },
 
+  toPrimitiveArrayField(path: string, key: string, value: unknown, idx: number) {
+    const field = this.toPrimitiveField(path, key, value);
+    if (key === "paragraphs") {
+      return {
+        ...field,
+        label: `Párrafo ${idx + 1}`,
+        type: "textarea",
+      };
+    }
+    return field;
+  },
+
   extractPrimitiveFields(obj: any, path = "", deep = true) {
     if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
     const out: any[] = [];
     Object.entries(obj).forEach(([key, value]) => {
-      if (this.lib.shouldHideField(key)) return;
       const fieldPath = path ? `${path}.${key}` : key;
+      if (this.lib.shouldHideField(key)) return;
       if (value === null || value === undefined || Array.isArray(value)) return;
       if (typeof value === "object") {
         if (deep) out.push(...this.extractPrimitiveFields(value, fieldPath, true));
@@ -181,7 +221,6 @@ const Editor = {
     return {
       path,
       label: this.getFieldLabel(path, key),
-      help: this.lib.getFieldHelp(key),
       type: editorType,
       value,
       options: editorType === "select" ? this.selectOptions[key] || [] : undefined,
@@ -252,9 +291,16 @@ const Editor = {
   },
 
   async openAddComponentModal(path: string, currentArr: any[]) {
-    const options = this.lib.getComponentOptions(path);
+    // Shared components have their own rich option list; typed arrays (e.g. home
+    // sections) carry their options — with descriptions — via getAddTypeOptions.
+    const componentOptions = this.lib.getComponentOptions(path);
+    const options = componentOptions.length ? componentOptions : this.getAddTypeOptions(path);
     if (!options.length || !window.CMSModal?.openPicker) return;
-    const selected = await window.CMSModal.openPicker({ title: "Agregar componente", subtitle: "Selecciona el componente que deseas agregar.", options });
+    const selected = await window.CMSModal.openPicker({
+      title: path === "components" ? "Agregar componente" : "Agregar sección",
+      subtitle: "Selecciona lo que deseas agregar.",
+      options,
+    });
     if (selected) this.addArrayItem(path, currentArr, selected);
   },
 

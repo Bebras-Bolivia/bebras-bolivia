@@ -3,7 +3,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import castorCircle from "@/assets/castor-circle.png";
 import navData from "@/data/navigation.json";
-import customPagesData from "@/data/custom-pages.json";
 import MobileMenu from "./MobileMenu";
 
 interface Props {
@@ -78,6 +77,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
+      const desktopQuery = window.matchMedia("(min-width: 1024px)");
       const showAnim = gsap
         .from(headerShell, {
           yPercent: -140,
@@ -91,6 +91,11 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
         start: "top top",
         end: "max",
         onUpdate: (self) => {
+          if (!desktopQuery.matches) {
+            showAnim.progress(1);
+            return;
+          }
+
           if (self.scroll() < 12) {
             showAnim.progress(1);
             return;
@@ -113,11 +118,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
     return currentPath === href || currentPath.startsWith(href + "/");
   };
 
-  const customHeaderLinks = (customPagesData.pages || [])
-    .filter((p) => p.showInHeader)
-    .map((p) => ({ label: p.navLabel || p.title, href: `/${p.slug}` }));
-
-  const allLinks = [...navData.links, ...customHeaderLinks];
+  const allLinks = navData.links;
 
   return (
     <header ref={headerShellRef} className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4 md:px-6">

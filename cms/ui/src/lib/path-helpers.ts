@@ -129,10 +129,10 @@ const specialLabels: Record<string, string> = {
   title: "Título",
   heading: "Título",
   headline: "Titular",
-  headingPrefix: "Inicio del título",
-  headingHighlight: "Parte destacada del título",
-  headingEmphasis: "Texto destacado",
-  headingSuffix: "Final del título",
+  headingPrefix: "Título",
+  headingHighlight: "Palabra resaltada",
+  headingEmphasis: "Palabra resaltada",
+  headingSuffix: "Texto final del título",
   subtitle: "Subtítulo",
   subtitlePrimary: "Subtítulo principal",
   subtitleSecondary: "Subtítulo secundario",
@@ -144,7 +144,6 @@ const specialLabels: Record<string, string> = {
   content: "Contenido",
   paragraphs: "Párrafos",
   paragraph: "Párrafo",
-  welcomeText: "Texto de bienvenida",
   message: "Mensaje",
   instruction: "Instrucción",
   tip: "Consejo",
@@ -185,7 +184,6 @@ const specialLabels: Record<string, string> = {
   // ── Navigation ──────────────────────────────────
   slug: "Slug (URL)",
   navLabel: "Texto en el menú",
-  showInHeader: "Mostrar en el menú",
   showInFooter: "Mostrar en el pie",
   enabled: "Activado",
   afterSectionId: "Después de la sección (ID)",
@@ -246,35 +244,6 @@ const specialLabels: Record<string, string> = {
   docentes: "Docentes",
   estudiantes: "Estudiantes",
 };
-
-// Short help texts shown under specific fields whose meaning isn't obvious to
-// a non-technical editor. Keyed by the JSON field name. Missing keys → no help.
-const fieldHelp: Record<string, string> = {
-  headingPrefix: "La primera parte del título, en color normal.",
-  headingEmphasis: "La parte del título que se resalta con color.",
-  headingSuffix: "La parte final del título, después de lo resaltado.",
-  headingHighlight: "La palabra o frase del título que se muestra resaltada.",
-  kicker: "Texto pequeño que aparece al lado de la sección, como una nota.",
-  asideText: "Texto secundario que acompaña la sección en un lateral.",
-  eyebrow: "Texto pequeño que aparece encima del título principal.",
-  tag: "Etiqueta corta que se muestra arriba del título de la sección.",
-  sectionTag: "Etiqueta corta que identifica la sección.",
-  cardPalette: "Colores que se asignan a las tarjetas, en orden.",
-  mediaType: "Define si las tarjetas muestran un icono, una imagen, un número o nada.",
-  imageKey: "Selecciona cuál de las imágenes disponibles se usa.",
-  slug: "Parte final de la dirección web (URL) de la página. Solo minúsculas y guiones.",
-  href: "Dirección a la que lleva el enlace. Puede ser interna (/registro) o externa (https://...).",
-  showInHeader: "Si está activado, la página aparece en el menú superior.",
-  placeholder: "Texto gris de ejemplo que se ve dentro del campo antes de escribir.",
-  columns: "Cuántas columnas ocupan las tarjetas en pantallas grandes.",
-};
-
-/**
- * Optional help text for a field, by its key. Returns "" when none is defined.
- */
-export function getFieldHelp(key: string): string {
-  return fieldHelp[key] || "";
-}
 
 /**
  * Generate a slug that doesn't collide with existing page slugs.

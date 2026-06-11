@@ -10,7 +10,6 @@ import {
   escapeForPre,
   toHexColor,
   formatLabel,
-  getFieldHelp,
   generateUniqueSlug,
   // templates
   fileToPage,
@@ -19,6 +18,8 @@ import {
   hiddenFields,
   getComponentOptions,
   shouldHideField,
+  isDesignField,
+  hasFieldGroups,
   getFieldType,
   isImagePathField,
   isAutoNumberField,
@@ -49,7 +50,6 @@ const lib = {
   escapeForPre,
   toHexColor,
   formatLabel,
-  getFieldHelp,
   generateUniqueSlug,
   // templates & config
   fileToPage,
@@ -58,6 +58,8 @@ const lib = {
   hiddenFields,
   getComponentOptions,
   shouldHideField,
+  isDesignField,
+  hasFieldGroups,
   getFieldType,
   isImagePathField,
   isAutoNumberField,

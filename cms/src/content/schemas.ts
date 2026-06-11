@@ -23,51 +23,6 @@ const BrandColorSchema = z.enum([
 ]);
 const BrandPaletteSchema = z.array(BrandColorSchema).optional();
 
-const GenericTextBlockSchema = z.object({
-  type: z.literal("text"),
-  sectionTag: z.string().optional(),
-  heading: z.string(),
-  paragraphs: z.array(z.string()),
-});
-
-const GenericCardsBlockSchema = z.object({
-  type: z.literal("cardsGrid"),
-  sectionTag: z.string().optional(),
-  heading: z.string(),
-  columns: z.number().int().min(1).max(4),
-  cards: z.array(
-    z.object({
-      title: z.string(),
-      description: z.string(),
-      icon: z.string().optional(),
-    })
-  ),
-});
-
-const GenericTipBlockSchema = z.object({
-  type: z.literal("tip"),
-  sectionTag: z.string().optional(),
-  heading: z.string().optional(),
-  text: z.string(),
-});
-
-const GenericCtaBlockSchema = z.object({
-  type: z.literal("cta"),
-  accent: BrandColorSchema.optional(),
-  sectionTag: z.string().optional(),
-  heading: z.string(),
-  text: z.string().optional(),
-  variant: z.enum(["button", "link"]),
-  action: LinkSchema,
-});
-
-const GenericPageBlockSchema = z.discriminatedUnion("type", [
-  GenericTextBlockSchema,
-  GenericCardsBlockSchema,
-  GenericTipBlockSchema,
-  GenericCtaBlockSchema,
-]);
-
 const StatSchema = z.object({
   value: z.string(),
   label: z.string(),
@@ -470,24 +425,7 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-// ── 1. site.json ──────────────────────────────────────────
-
-export const siteSchema = z.object({
-  siteName: z.string(),
-  siteUrl: z.string(),
-  defaultDescription: z.string(),
-  locale: z.string(),
-  lang: z.string(),
-  skipLinkText: z.string(),
-  copyrightText: z.string(),
-  trademarkNote: z.string(),
-  trademarkUrl: z.string(),
-  email: z.string(),
-  brandDescription: z.string(),
-  defaultAuthor: z.string(),
-});
-
-// ── 2. navigation.json ───────────────────────────────────
+// ── 1. navigation.json ───────────────────────────────────
 
 export const navigationSchema = z.object({
   brand: z.object({
@@ -513,7 +451,7 @@ export const navigationSchema = z.object({
   internationalLinks: z.array(LinkSchema),
 });
 
-// ── 3. hero.json ─────────────────────────────────────────
+// ── 2. hero.json ─────────────────────────────────────────
 
 export const heroSchema = z.object({
   badge: z.string(),
@@ -540,8 +478,7 @@ const HomeEditorialSectionSchema = z.object({
   number: z.string(),
   kicker: z.string(),
   asideText: z.string(),
-  headingPrefix: z.string(),
-  headingEmphasis: z.string(),
+  heading: z.string(),
   paragraphs: z.array(z.string()),
 });
 
@@ -551,8 +488,7 @@ const HomeAgeCategoriesSectionSchema = z.object({
   number: z.string(),
   kicker: z.string(),
   asideText: z.string(),
-  headingPrefix: z.string(),
-  headingEmphasis: z.string(),
+  heading: z.string(),
   linkLabel: z.string(),
   linkHref: z.string(),
   items: z.array(
@@ -589,8 +525,7 @@ const HomeAboutSectionSchema = z.object({
   number: z.string(),
   kicker: z.string(),
   asideText: z.string(),
-  headingPrefix: z.string(),
-  headingEmphasis: z.string(),
+  heading: z.string(),
   paragraphs: z.array(z.string()),
 });
 
@@ -604,7 +539,6 @@ const HomeSectionSchema = z.discriminatedUnion("type", [
 export const homeSchema = z.object({
   hero: z.object({
     eyebrow: z.string(),
-    welcomeText: z.string(),
     title: z.string(),
     subtitlePrimary: z.string(),
     subtitleSecondary: z.string(),
@@ -830,23 +764,7 @@ export const blogUiSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 16. custom-pages.json ─────────────────────────────────
-
-export const customPagesSchema = z.object({
-  pages: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string(),
-      slug: z.string(),
-      description: z.string(),
-      navLabel: z.string(),
-      showInHeader: z.boolean(),
-      blocks: z.array(GenericPageBlockSchema),
-    })
-  ),
-});
-
-// ── 17. page-composition.json ─────────────────────────────
+// ── 16. page-composition.json ─────────────────────────────
 
 const ChildPlacementSchema = z.object({
   enabled: z.boolean(),
@@ -866,7 +784,6 @@ export const pageCompositionSchema = z.object({
 
 export const contentSchemas: Record<string, z.ZodType> = {
   "home.json": homeSchema,
-  "site.json": siteSchema,
   "navigation.json": navigationSchema,
   "hero.json": heroSchema,
   "about.json": aboutSchema,
@@ -881,7 +798,6 @@ export const contentSchemas: Record<string, z.ZodType> = {
   "estudiantes.json": estudiantesSchema,
   "docentes.json": docentesSchema,
   "blog-ui.json": blogUiSchema,
-  "custom-pages.json": customPagesSchema,
   "page-composition.json": pageCompositionSchema,
 };
 

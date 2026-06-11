@@ -14,7 +14,6 @@ declare global {
 
 const contentMeta: Record<string, { label: string; desc: string; icon: string }> = {
   "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
-  "site.json": { label: "Configuracion global", desc: "SEO, datos globales y metadatos", icon: "globe" },
   "navigation.json": { label: "Navegacion y footer", desc: "Navbar, footer, links sociales", icon: "menu" },
   "hero.json": { label: "Portada", desc: "Banner principal, llamados a la accion y estadisticas", icon: "zap" },
   "about.json": { label: "Acerca de", desc: "Seccion que es Bebras, tarjetas", icon: "info" },
@@ -29,7 +28,6 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
   "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
   "blog-ui.json": { label: "Interfaz del blog", desc: "Textos de la interfaz del blog", icon: "file-text" },
-  "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
 };
 
@@ -52,8 +50,7 @@ const contentHierarchy = [
   { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
-  { label: "Paginas personalizadas", parent: "custom-pages.json", children: [] },
-  { label: "Configuracion global", parent: "site.json", children: ["navigation.json"] },
+  { label: "Navegacion y footer", parent: "navigation.json", children: [] },
 ];
 
 function contentFileFromRoute(value: string) {
@@ -65,6 +62,7 @@ const icons: Record<string, string> = {
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   publish: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg>',
+  chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
   save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',

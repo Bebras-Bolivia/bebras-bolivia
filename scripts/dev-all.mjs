@@ -22,6 +22,7 @@ const paths = {
 };
 
 const bunBin = isWindows() ? "bun.exe" : "bun";
+const obsoleteDataFiles = new Set(["custom-pages.json", "site.json"]);
 
 let syncTimer = null;
 let shuttingDown = false;
@@ -87,7 +88,10 @@ async function syncDirectory(sourceDir, targetDir, predicate) {
 
 async function syncCmsToLanding() {
   await Promise.all([
-    syncDirectory(paths.currentDataDir, paths.landingDataDir, (file) => file.endsWith(".json")),
+    syncDirectory(paths.currentDataDir, paths.landingDataDir, (file) => {
+      const name = file.split(/[\\/]/).pop() || "";
+      return file.endsWith(".json") && !obsoleteDataFiles.has(name);
+    }),
     syncDirectory(paths.currentBlogDir, paths.landingBlogDir, (file) => file.endsWith(".md")),
     syncDirectory(paths.mediaDir, paths.landingUploadsDir, () => true),
   ]);

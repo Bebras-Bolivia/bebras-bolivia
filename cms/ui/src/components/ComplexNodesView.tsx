@@ -7,7 +7,6 @@ import BrandColorSwatch from "./BrandColorSwatch";
 export type EditorField = {
   path: string;
   label: string;
-  help?: string;
   type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
   value: string | number | boolean;
   options?: string[];
@@ -41,6 +40,7 @@ export type ComplexNode =
         collapsible: boolean;
         expanded: boolean;
         fields: EditorField[];
+        advancedFields?: EditorField[];
         children: ComplexNode[];
       }>;
     };
@@ -250,7 +250,6 @@ function FieldGroup({
   return (
     <div className="form-group">
       <label htmlFor={`field-${field.path}`}>{field.label}</label>
-      {field.help ? <p className="form-help">{field.help}</p> : null}
       <FieldInput field={field} onFieldChange={onFieldChange} draftValues={draftValues} setDraftValue={setDraftValue} />
     </div>
   );
@@ -317,6 +316,30 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
           const itemExpanded = expandedItems.get(item.itemPath) ?? item.expanded;
           const bodyVisible = !item.collapsible || itemExpanded;
           const primaryField = getPrimaryLabelField(item.fields);
+          const isPrimitiveItem =
+            !item.collapsible &&
+            item.fields.length === 1 &&
+            item.children.length === 0 &&
+            (!item.advancedFields || item.advancedFields.length === 0) &&
+            item.fields[0]?.path === item.itemPath;
+          if (isPrimitiveItem) {
+            return (
+              <div
+                className={locked ? "array-primitive-item array-item-locked" : "array-primitive-item"}
+                key={item.itemPath}
+              >
+                <FieldGroup
+                  field={item.fields[0]}
+                  onFieldChange={props.onFieldChange}
+                  draftValues={props.draftValues}
+                  setDraftValue={props.setDraftValue}
+                />
+                {!locked ? (
+                  <ArrayItemActionsView trashIcon={icons.trash || ""} onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
+                ) : null}
+              </div>
+            );
+          }
           return (
             <div
               className={locked ? "array-item array-item-locked" : "array-item"}
@@ -366,11 +389,26 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                   />
                   {item.collapsible ? (
                     <ArrayCollapseToggleView
-                      arrowIcon={icons.arrow || ""}
+                      arrowIcon={icons.chevron || icons.arrow || ""}
                       expanded={itemExpanded}
                       onToggle={() => {
                         const nextExpanded = !itemExpanded;
-                        setExpandedItems((prev) => new Map(prev).set(item.itemPath, nextExpanded));
+                        const siblings = node.items.map((it) => it.itemPath);
+                        setExpandedItems((prev) => {
+                          const next = new Map(prev);
+                          if (nextExpanded) {
+                            for (const sib of siblings) next.set(sib, false);
+                            next.set(item.itemPath, true);
+                          } else {
+                            next.set(item.itemPath, false);
+                          }
+                          return next;
+                        });
+                        if (nextExpanded) {
+                          for (const sib of siblings) {
+                            if (sib !== item.itemPath) onToggleArrayCollapse(sib, false);
+                          }
+                        }
                         onToggleArrayCollapse(item.itemPath, nextExpanded);
                       }}
                     />
@@ -383,22 +421,40 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                 ) : null}
               </div>
 
-              {bodyVisible ? (
-                <div className="array-item-body">
-                  {item.fields.map((field) => (
-                    <FieldGroup
-                      key={field.path}
-                      field={field}
-                      onFieldChange={props.onFieldChange}
-                      draftValues={props.draftValues}
-                      setDraftValue={props.setDraftValue}
-                    />
-                  ))}
-                  {item.children.map((child) => (
-                    <NodeRenderer key={`${child.kind}:${child.path}`} {...props} node={child} />
-                  ))}
+              <div className={`array-item-collapse${bodyVisible ? " open" : ""}`}>
+                <div className="array-item-collapse-inner">
+                  <div className="array-item-body">
+                    {item.fields.map((field) => (
+                      <FieldGroup
+                        key={field.path}
+                        field={field}
+                        onFieldChange={props.onFieldChange}
+                        draftValues={props.draftValues}
+                        setDraftValue={props.setDraftValue}
+                      />
+                    ))}
+                    {item.children.map((child) => (
+                      <NodeRenderer key={`${child.kind}:${child.path}`} {...props} node={child} />
+                    ))}
+                    {item.advancedFields && item.advancedFields.length > 0 ? (
+                      <details className="array-item-advanced">
+                        <summary>Ajustes de diseño</summary>
+                        <div className="array-item-advanced-body">
+                          {item.advancedFields.map((field) => (
+                            <FieldGroup
+                              key={field.path}
+                              field={field}
+                              onFieldChange={props.onFieldChange}
+                              draftValues={props.draftValues}
+                              setDraftValue={props.setDraftValue}
+                            />
+                          ))}
+                        </div>
+                      </details>
+                    ) : null}
+                  </div>
                 </div>
-              ) : null}
+              </div>
 
               {!item.collapsible && !locked ? (
                 <ArrayItemActionsView trashIcon={icons.trash || ""} onRemove={() => onRemoveArrayItem(node.path, item.idx)} />

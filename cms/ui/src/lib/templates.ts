@@ -2,12 +2,11 @@
 // Contains all static configuration, component option maps, typed item
 // factories, and field-type resolution logic.
 
-import { getNestedValue, generateUniqueSlug } from "./path-helpers";
+import { getNestedValue } from "./path-helpers";
 
 // ── Route mapping ────────────────────────────────────────
 export const fileToPage: Record<string, string> = {
   "home.json": "/",
-  "site.json": "/",
   "navigation.json": "/",
   "hero.json": "/",
   "about.json": "/",
@@ -88,7 +87,9 @@ export const selectOptions: Record<string, string[]> = {
 };
 
 // ── Hidden fields ────────────────────────────────────────
-export const hiddenFields = new Set(["id"]);
+// `type` is the block/section discriminator (introEditorial, itemsGrid, …) —
+// editing it would break the section, so it's never shown. `id` likewise.
+export const hiddenFields = new Set(["id", "type"]);
 
 // ── Component option type ────────────────────────────────
 export type ComponentOption = {
@@ -128,6 +129,34 @@ export function getComponentOptions(path: string): ComponentOption[] {
 
 export function shouldHideField(key: string): boolean {
   return hiddenFields.has(key);
+}
+
+// ── Section presentation: content vs. design ─────────────
+// For each known section/block `type`, list the field keys that are visual
+// "design" rather than content. The editor groups these under a collapsed
+// "Ajustes de diseño" panel so a non-technical editor sees only what they edit.
+// Keyed by the `type` discriminator on the section/card object. Field keys are
+// matched on the leaf name (last path segment), so they apply at any depth
+// (e.g. an item's `color` inside a section of this type).
+const sectionDesignFields: Record<string, Set<string>> = {
+  introEditorial: new Set(["number", "accent", "kicker", "asideText"]),
+  aboutBebrasEditorial: new Set(["number", "accent", "kicker", "asideText"]),
+  homeAgeCategories: new Set(["number", "accent", "kicker", "asideText", "color", "imageKey", "author", "authorUrl"]),
+  homeDualCta: new Set(["style", "icon", "audience"]),
+};
+
+/**
+ * Whether `key` is a design (non-content) field for a section of `type`.
+ * Returns false for unknown types, so other pages are unaffected.
+ */
+export function isDesignField(type: string | undefined, key: string): boolean {
+  if (!type) return false;
+  return sectionDesignFields[type]?.has(key) ?? false;
+}
+
+/** Whether a section/block `type` has a content/design split defined. */
+export function hasFieldGroups(type: string | undefined): boolean {
+  return !!type && type in sectionDesignFields;
 }
 
 export function getFieldType(keyOrPath: string, value: unknown): string {
@@ -170,8 +199,7 @@ export function isCollapsibleArray(path: string): boolean {
     || path.endsWith(".rows")
     || path.endsWith(".summaryCards")
     || path.endsWith(".slides")
-    || path.endsWith(".tabs")
-    || path.endsWith(".paragraphs");
+    || path.endsWith(".tabs");
 }
 
 // ── Array item labels ────────────────────────────────────
@@ -186,10 +214,10 @@ const typeLabelMap: Record<string, string> = {
   contactForm: "Contacto Formulario",
   contactClassic: "Contacto Clasico",
   organizerInstitution: "Institucion Organizadora",
-  introEditorial: "Inicio: Texto editorial",
-  homeAgeCategories: "Inicio: Categorias",
-  homeDualCta: "Inicio: CTA doble",
-  aboutBebrasEditorial: "Inicio: Sobre Bebras",
+  introEditorial: "Texto editorial",
+  homeAgeCategories: "Categorías por edad",
+  homeDualCta: "Doble llamado a la acción",
+  aboutBebrasEditorial: "Sobre Bebras",
   docentesRegistro: "Maestros Registro",
   docentesRequisitos: "Maestros Requisitos",
   docentesAlcance: "Maestros Alcance",
@@ -222,32 +250,19 @@ export function getArrayItemLabel(obj: any, idx: number): string {
 
 // ── Add-type options (for typed array pickers) ───────────
 
-export type AddTypeOption = { value: string; label: string };
+export type AddTypeOption = { value: string; label: string; description?: string };
 
 export function getAddTypeOptions(
   path: string,
   currentFile: string,
   currentData: unknown,
 ): AddTypeOption[] | null {
-  if (currentFile === "custom-pages.json" && path === "pages") {
-    return [{ value: "customPage", label: "Pagina personalizada" }];
-  }
-
-  if (currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
-    return [
-      { value: "text", label: "Bloque de texto" },
-      { value: "cardsGrid", label: "Cuadricula de tarjetas" },
-      { value: "tip", label: "Tip / cita" },
-      { value: "cta", label: "CTA (boton o enlace)" },
-    ];
-  }
-
   if (currentFile === "home.json" && path === "sections") {
     return [
-      { value: "introEditorial", label: "Inicio: Texto editorial" },
-      { value: "homeAgeCategories", label: "Inicio: Categorias" },
-      { value: "homeDualCta", label: "Inicio: CTA doble" },
-      { value: "aboutBebrasEditorial", label: "Inicio: Sobre Bebras" },
+      { value: "introEditorial", label: "Texto editorial", description: "Título grande y párrafos con un texto lateral." },
+      { value: "homeAgeCategories", label: "Categorías por edad", description: "Cuadrícula con las categorías y sus imágenes." },
+      { value: "homeDualCta", label: "Doble llamado a la acción", description: "Dos tarjetas: maestros y estudiantes." },
+      { value: "aboutBebrasEditorial", label: "Sobre Bebras", description: "Bloque editorial con párrafos informativos." },
     ];
   }
 
@@ -399,31 +414,6 @@ export function createTypedArrayItem(
   currentFile: string,
   currentData: unknown,
 ): unknown {
-  // ── Custom pages ──
-  if (currentFile === "custom-pages.json" && path === "pages") {
-    const slugBase = generateUniqueSlug(currentData, "nueva-pagina");
-    return {
-      id: slugBase,
-      title: "Nueva pagina",
-      slug: slugBase,
-      description: "Describe aqui la nueva pagina.",
-      navLabel: "Nueva pagina",
-      showInHeader: false,
-      blocks: [
-        {
-          type: "text",
-          sectionTag: "Seccion",
-          heading: "Titulo",
-          paragraphs: ["Contenido inicial."],
-        },
-      ],
-    };
-  }
-
-  if (currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
-    return _customPageBlock(selectedType);
-  }
-
   if (currentFile === "home.json" && path === "sections") {
     return _homeSection(selectedType);
   }
@@ -481,37 +471,6 @@ export function createTypedArrayItem(
 
   return null;
 }
-
-// ── Private: custom-pages block templates ────────────────
-
-function _customPageBlock(type: string): unknown | null {
-  if (type === "text") {
-    return { type: "text", sectionTag: "Seccion", heading: "Titulo", paragraphs: ["Escribe aqui el contenido."] };
-  }
-  if (type === "cardsGrid") {
-    return {
-      type: "cardsGrid", sectionTag: "Cuadricula", heading: "Titulo de tarjetas", columns: 3,
-      cards: [
-        { title: "Tarjeta 1", description: "Descripcion de la tarjeta." },
-        { title: "Tarjeta 2", description: "Descripcion de la tarjeta." },
-        { title: "Tarjeta 3", description: "Descripcion de la tarjeta." },
-      ],
-    };
-  }
-  if (type === "tip") {
-    return { type: "tip", sectionTag: "Tip", heading: "Nota", text: "Texto destacado tipo cita o recomendacion." };
-  }
-  if (type === "cta") {
-    return {
-      type: "cta", sectionTag: "CTA", heading: "Llamado a la accion",
-      text: "Descripcion opcional del llamado a la accion.",
-      variant: "button",
-      action: { label: "Ver mas", href: "/" },
-    };
-  }
-  return null;
-}
-
 function _homeSection(type: string): unknown | null {
   const map: Record<string, () => unknown> = {
     introEditorial: () => ({
@@ -519,8 +478,7 @@ function _homeSection(type: string): unknown | null {
       number: "01",
       kicker: "Capitulo",
       asideText: "Texto lateral de la seccion.",
-      headingPrefix: "Titulo",
-      headingEmphasis: "destacado",
+      heading: "Titulo destacado",
       paragraphs: ["Parrafo principal.", "Parrafo secundario."],
     }),
     homeAgeCategories: () => ({
@@ -528,8 +486,7 @@ function _homeSection(type: string): unknown | null {
       number: "02",
       kicker: "Categorias",
       asideText: "Descripcion lateral.",
-      headingPrefix: "Categorias por",
-      headingEmphasis: "edad",
+      heading: "Categorias por edad",
       linkLabel: "Ver mas",
       linkHref: "/estudiantes",
       items: [
@@ -548,8 +505,7 @@ function _homeSection(type: string): unknown | null {
       number: "03",
       kicker: "Iniciativa internacional",
       asideText: "Texto lateral.",
-      headingPrefix: "Sobre",
-      headingEmphasis: "Bebras",
+      heading: "Sobre Bebras",
       paragraphs: ["Parrafo de contenido."],
     }),
   };

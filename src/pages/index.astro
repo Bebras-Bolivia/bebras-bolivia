@@ -131,6 +131,24 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 	const key = (section?.accent as AccentKey) || "green";
 	return accentClasses[key] || accentClasses.green;
 }
+
+// Split an editorial heading into a normal prefix and an emphasized last word,
+// so the CMS only needs ONE "Título" field. The last word is auto-styled in the
+// accent color (italic). Falls back to the legacy headingPrefix/headingEmphasis
+// pair when an older section object doesn't have a single `heading`.
+function splitHeading(section: any, fallback: string): { prefix: string; emphasis: string } {
+	const heading = (section?.heading ?? "").trim();
+	if (!heading) {
+		if (section?.headingPrefix || section?.headingEmphasis) {
+			return { prefix: section.headingPrefix || "", emphasis: section.headingEmphasis || "" };
+		}
+		const fb = fallback.trim().split(/\s+/);
+		return { prefix: fb.slice(0, -1).join(" "), emphasis: fb.slice(-1).join(" ") };
+	}
+	const words = heading.split(/\s+/);
+	if (words.length === 1) return { prefix: "", emphasis: words[0] };
+	return { prefix: words.slice(0, -1).join(" "), emphasis: words.slice(-1).join(" ") };
+}
 ---
 
 <Layout
@@ -147,6 +165,7 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 						if (section.type === "introEditorial") {
 							const introParagraphs = getIntroParagraphs(section);
 							const ac = getAccent(section);
+							const h = splitHeading(section, "Sobre el desafío");
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
 									<div class="grid grid-cols-12 gap-6 lg:gap-8">
@@ -159,7 +178,7 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre el"} <em class:list={["italic", ac.emphasis]}>{section.headingEmphasis || "desafío"}</em></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{h.prefix}{h.prefix ? " " : ""}<em class:list={["italic", ac.emphasis]}>{h.emphasis}</em></h2>
 											<div class="space-y-4 text-lg sm:text-xl text-foreground/80 leading-[1.65] max-w-2xl">
 												{introParagraphs.map((paragraph: string, pidx: number) => <p class:list={pidx === 0 ? ["first-letter:font-serif first-letter:text-6xl first-letter:float-left first-letter:mr-3 first-letter:leading-[0.9] first-letter:font-normal", ac.dropCap] : []} set:html={formatInlineRichText(paragraph)} />)}
 											</div>
@@ -170,6 +189,7 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 						} else if (section.type === "homeAgeCategories") {
 							const ageGroups = getAgeGroups(section);
 							const ac = getAccent(section);
+							const h = splitHeading(section, "Categorías por edad");
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6 mb-12 lg:mb-16">
 									<div class="grid grid-cols-12 gap-6 lg:gap-8">
@@ -182,7 +202,7 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Categorías por"} <em class:list={["italic", ac.emphasis]}>{section.headingEmphasis || "edad"}</em></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{h.prefix}{h.prefix ? " " : ""}<em class:list={["italic", ac.emphasis]}>{h.emphasis}</em></h2>
 											<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 												{ageGroups.map((g: any, i: number) => (
 													<div class:list={["group overflow-hidden", getBrandCardClass(i)]}>
@@ -222,6 +242,7 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 							);
 						} else if (section.type === "aboutBebrasEditorial") {
 							const ac = getAccent(section);
+							const h = splitHeading(section, "Sobre Bebras");
 							content = (
 								<section data-reveal class="w-full mx-auto max-w-6xl px-4 sm:px-6">
 									<div class="grid grid-cols-12 gap-6 lg:gap-8">
@@ -234,7 +255,7 @@ function getAccent(section: any): { numeral: string; emphasis: string; dropCap: 
 											</div>
 										</aside>
 										<div class="col-span-12 lg:col-span-8">
-											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{section.headingPrefix || "Sobre"} <em class:list={["italic", ac.emphasis]}>{section.headingEmphasis || "Bebras"}</em><BadgeCheck className={`inline-block size-6 align-top ${ac.badge} opacity-80`} strokeWidth={1.8} aria-hidden="true" /></h2>
+											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{h.prefix}{h.prefix ? " " : ""}<em class:list={["italic", ac.emphasis]}>{h.emphasis}</em><BadgeCheck className={`inline-block size-6 align-top ${ac.badge} opacity-80`} strokeWidth={1.8} aria-hidden="true" /></h2>
 											<div class="max-w-3xl space-y-4 text-lg text-foreground/80 leading-[1.65]">{(section.paragraphs || []).map((paragraph: string) => <p set:html={formatInlineRichText(paragraph)} />)}</div>
 										</div>
 									</div>

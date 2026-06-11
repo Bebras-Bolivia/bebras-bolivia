@@ -2,6 +2,7 @@ import { readdir, mkdir, cp, rm, readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { config } from "../config.js";
 import { getDb, type SnapshotRow } from "../db/index.js";
+import { CONTENT_FILES } from "../content/schemas.js";
 
 export interface SnapshotMeta {
   id: number;
@@ -43,13 +44,14 @@ export async function createSnapshot(
 
   // Copy current data files
   try {
-    const dataFiles = await readdir(config.currentDataDir);
-    for (const file of dataFiles) {
-      if (file.endsWith(".json")) {
+    for (const file of CONTENT_FILES) {
+      try {
         await cp(
           join(config.currentDataDir, file),
           join(snapshotDataDir, file)
         );
+      } catch {
+        // Missing optional working-copy file; skip it.
       }
     }
   } catch {
@@ -175,13 +177,14 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
   } catch {}
 
   try {
-    const dataFiles = await readdir(snapshotDataDir);
-    for (const file of dataFiles) {
-      if (file.endsWith(".json")) {
+    for (const file of CONTENT_FILES) {
+      try {
         await cp(
           join(snapshotDataDir, file),
           join(config.currentDataDir, file)
         );
+      } catch {
+        // Older snapshots may not contain every current content file.
       }
     }
   } catch {}

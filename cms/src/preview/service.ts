@@ -152,15 +152,16 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       }
     }, 30_000);
 
-    // Astro v5 prints a "Local: http://localhost:<port>/" line once the
-    // server is actually listening. Matching that exact URL avoids false
-    // positives from any log line that merely contains the word "Local"
-    // (e.g. "Local plugins compiled", "Loading…") which used to mark the
-    // server ready before the proxy could reach it.
-    const readyPattern = new RegExp(`https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|\\[::1\\]):${devServerPort}\\b`);
+    // Astro v5 prints a "Local: http://127.0.0.1:<port>/" line once the server
+    // is actually listening. We DON'T assume the port we requested: if it was
+    // taken, Astro logs "Port <n> is in use, trying another one..." and binds a
+    // different port. So we read the actual port from the ready URL and update
+    // devServerPort, otherwise the proxy would target the wrong port forever.
+    const readyPattern = /https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)\b/;
 
-    const markReady = () => {
+    const markReady = (actualPort: number) => {
       if (devServerReady) return;
+      devServerPort = actualPort;
       devServerReady = true;
       devServerStarting = false;
       devServerError = null;
@@ -170,16 +171,21 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       resolve({ ok: true, port: devServerPort, mode: "dev" });
     };
 
+    const scanForReady = (text: string) => {
+      const match = readyPattern.exec(text);
+      if (match) markReady(Number(match[1]));
+    };
+
     devProcess.stdout?.on("data", (chunk: Buffer) => {
       const text = chunk.toString();
       startupOutput += text;
-      if (readyPattern.test(text)) markReady();
+      scanForReady(text);
     });
 
     devProcess.stderr?.on("data", (chunk: Buffer) => {
       const text = chunk.toString();
       startupOutput += text;
-      if (readyPattern.test(text)) markReady();
+      scanForReady(text);
     });
 
     devProcess.on("error", (err) => {
@@ -281,9 +287,8 @@ export async function syncContentToLanding(): Promise<void> {
   // Copy JSON files
   await mkdir(config.landingDataDir, { recursive: true });
   try {
-    const dataFiles = await readdir(config.currentDataDir);
-    for (const file of dataFiles) {
-      if (file.endsWith(".json")) {
+    for (const file of CONTENT_FILES) {
+      if (existsSync(join(config.currentDataDir, file))) {
         await cp(
           join(config.currentDataDir, file),
           join(config.landingDataDir, file)
