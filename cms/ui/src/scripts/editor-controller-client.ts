@@ -31,8 +31,25 @@ const Editor = {
   getNestedValue(obj: any, path: string) { return this.lib.getNestedValue(obj, path); },
   setNestedValue(obj: any, path: string, value: unknown) { return this.lib.setNestedValue(obj, path, value); },
   getFieldType(path: string, value: unknown) { return this.lib.getFieldType(path, value); },
+  getFieldLabel(path: string, key: string) {
+    if (path === "header.subtitle") return "Descripcion visible";
+    return this.formatLabel(key);
+  },
   isAutoNumberField(path: string) { return this.lib.isAutoNumberField(path, this.currentData); },
   isCollapsibleArray(path: string) { return this.lib.isCollapsibleArray(path); },
+  isLockedArray(path: string): boolean {
+    // Arrays whose items map to existing site pages or fixed structural slots.
+    // Adding or removing entries here would create dead URLs or break layout —
+    // we let users edit individual entries (labels, hrefs) but not the list shape.
+    if (this.currentFile !== "navigation.json") return false;
+    return (
+      path === "links" ||
+      path === "internationalLinks" ||
+      path === "socialLinks" ||
+      path === "footerColumns" ||
+      /^footerColumns\[\d+\]\.links$/.test(path)
+    );
+  },
   getArrayItemLabel(obj: any, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
   getAddTypeOptions(path: string) { return this.lib.getAddTypeOptions(path, this.currentFile, this.currentData) || []; },
   waitForPreviewUpdate() { return new Promise((resolve) => setTimeout(resolve, 500)); },
@@ -56,19 +73,17 @@ const Editor = {
   },
 
   mountReactPrimitives(root: Element, title: string, filename: string) {
-    window.CMSEditor.mountPrimitives(root, {
+      window.CMSEditor.mountPrimitives(root, {
       title,
       filename,
-      fields: this.extractPrimitiveFields(this.currentData, ""),
+      fields: this.extractPrimitiveFields(this.currentData, "", false),
       icons: window.App.icons,
       onSave: () => this.save(),
       onReset: () => this.reset(),
       onFieldChange: (path: string, value: unknown) => {
         this.setNestedValue(this.currentData, path, value);
         this.dirty = true;
-        if (this.getFieldType(path, value) === "brand-color") {
-          this.schedulePreviewDraftUpdate();
-        }
+        this.schedulePreviewDraftUpdate();
       },
       onInitPreview: () => this.ensureDevServer(),
       onInitComplex: () => {},
@@ -109,8 +124,9 @@ const Editor = {
       if (Array.isArray(value)) {
         nodes.push(this.buildArrayNode(value, fieldPath, key));
       } else if (typeof value === "object") {
+        const fields = this.extractPrimitiveFields(value, fieldPath, false);
         const children = this.buildComplexNodes(value, fieldPath);
-        if (children.length > 0) nodes.push({ kind: "object", path: fieldPath, label: this.formatLabel(key), children });
+        if (fields.length > 0 || children.length > 0) nodes.push({ kind: "object", path: fieldPath, label: this.formatLabel(key), fields, children });
       }
     });
     return nodes;
@@ -123,6 +139,7 @@ const Editor = {
       label: this.formatLabel(key),
       addOptions: this.getAddTypeOptions(path),
       componentPicker: path === "components",
+      locked: this.isLockedArray(path),
       items: arr.map((item, idx) => {
         const itemPath = `${path}[${idx}]`;
         const itemIsObject = item && typeof item === "object" && !Array.isArray(item);
@@ -135,14 +152,14 @@ const Editor = {
           label: itemIsObject ? this.getArrayItemLabel(item, idx) : `#${idx + 1}`,
           collapsible,
           expanded,
-          fields: itemIsObject ? this.extractPrimitiveFields(item, itemPath) : [this.toPrimitiveField(itemPath, key, item)],
+          fields: itemIsObject ? this.extractPrimitiveFields(item, itemPath, false) : [this.toPrimitiveField(itemPath, key, item)],
           children: itemIsObject ? this.buildComplexNodes(item, itemPath) : [],
         };
       }),
     };
   },
 
-  extractPrimitiveFields(obj: any, path = "") {
+  extractPrimitiveFields(obj: any, path = "", deep = true) {
     if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
     const out: any[] = [];
     Object.entries(obj).forEach(([key, value]) => {
@@ -150,7 +167,7 @@ const Editor = {
       const fieldPath = path ? `${path}.${key}` : key;
       if (value === null || value === undefined || Array.isArray(value)) return;
       if (typeof value === "object") {
-        out.push(...this.extractPrimitiveFields(value, fieldPath));
+        if (deep) out.push(...this.extractPrimitiveFields(value, fieldPath, true));
         return;
       }
       out.push(this.toPrimitiveField(fieldPath, key, value));
@@ -163,7 +180,8 @@ const Editor = {
     const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color"].includes(type) ? type : "text";
     return {
       path,
-      label: this.formatLabel(key),
+      label: this.getFieldLabel(path, key),
+      help: this.lib.getFieldHelp(key),
       type: editorType,
       value,
       options: editorType === "select" ? this.selectOptions[key] || [] : undefined,
@@ -172,6 +190,8 @@ const Editor = {
   },
 
   addArrayItem(path: string, currentArr: any[], selectedType: string | null = null) {
+    if (this.isLockedArray(path)) return;
+    const nextIdx = currentArr.length;
     if (selectedType) {
       const typed = this.lib.createTypedArrayItem(path, selectedType, this.currentFile, this.currentData);
       if (typed !== null) this.setNestedValue(this.currentData, path, [...currentArr, typed]);
@@ -181,12 +201,19 @@ const Editor = {
       const template = currentArr[currentArr.length - 1];
       this.setNestedValue(this.currentData, path, [...currentArr, typeof template === "string" ? "" : this.lib.blankClone(template)]);
     }
+    // Auto-expand the newly added item so users see its fields immediately
+    // instead of a collapsed header that looks like nothing happened.
+    if (this.isCollapsibleArray(path)) {
+      this.itemExpandedState.set(`${path}[${nextIdx}]`, true);
+    }
     this.normalizeStructuredArrays();
     this.dirty = true;
     this.rerenderEditorForm();
+    this.schedulePreviewDraftUpdate();
   },
 
   removeArrayItem(path: string, idx: number) {
+    if (this.isLockedArray(path)) return;
     const arr = this.getNestedValue(this.currentData, path);
     if (Array.isArray(arr)) {
       arr.splice(idx, 1);
@@ -195,9 +222,11 @@ const Editor = {
     this.normalizeStructuredArrays();
     this.dirty = true;
     this.rerenderEditorForm();
+    this.schedulePreviewDraftUpdate();
   },
 
   moveArrayItem(path: string, fromIdx: number, toIdx: number) {
+    if (this.isLockedArray(path)) return;
     const arr = this.getNestedValue(this.currentData, path);
     if (!Array.isArray(arr) || fromIdx === toIdx) return;
     if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return;
@@ -207,6 +236,7 @@ const Editor = {
     this.normalizeStructuredArrays();
     this.dirty = true;
     this.rerenderEditorForm();
+    this.schedulePreviewDraftUpdate();
   },
 
   normalizeStructuredArrays() {
@@ -245,16 +275,19 @@ const Editor = {
   schedulePreviewDraftUpdate() {
     if (!this.devServerReady || !this.currentFile) return;
     if (this.previewDraftTimer) clearTimeout(this.previewDraftTimer);
+    // 600ms debounce: long enough to coalesce typing bursts, short enough
+    // that pausing for a beat shows the change in the iframe.
     this.previewDraftTimer = setTimeout(async () => {
       this.previewDraftTimer = null;
       try {
         await window.API.syncPreviewDraft(this.currentFile, this.currentData);
         await this.waitForPreviewUpdate();
         this.loadPreviewIframe(true);
-      } catch (err: any) {
-        window.Toast.error(err?.message ? `No se pudo actualizar la vista previa: ${err.message}` : "No se pudo actualizar la vista previa");
+      } catch {
+        // Stay silent — toasting every failed preview push during typing is noisy.
+        // The user will see issues at save time, where errors are surfaced explicitly.
       }
-    }, 350);
+    }, 600);
   },
 
   async reset() {

@@ -124,7 +124,11 @@ export async function startDevServer(): Promise<StartPreviewResult> {
   devServerPort = await getFreePort(4322);
 
   return new Promise((resolve, reject) => {
-    const args = [...command.argsPrefix, "dev", "--port", String(devServerPort)];
+    // Bind to 127.0.0.1 explicitly. Without --host, Astro may listen only on
+    // IPv6 ([::1]); the proxy fetches http://localhost:<port>, which on Windows
+    // often resolves to IPv4 (127.0.0.1) first and then fails, silently falling
+    // back to the stale static dist/ — making the live preview never update.
+    const args = [...command.argsPrefix, "dev", "--host", "127.0.0.1", "--port", String(devServerPort)];
 
     devProcess = spawn(command.cmd, args, {
       cwd: config.landingDir,
@@ -148,39 +152,34 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       }
     }, 30_000);
 
+    // Astro v5 prints a "Local: http://localhost:<port>/" line once the
+    // server is actually listening. Matching that exact URL avoids false
+    // positives from any log line that merely contains the word "Local"
+    // (e.g. "Local plugins compiled", "Loading…") which used to mark the
+    // server ready before the proxy could reach it.
+    const readyPattern = new RegExp(`https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|\\[::1\\]):${devServerPort}\\b`);
+
+    const markReady = () => {
+      if (devServerReady) return;
+      devServerReady = true;
+      devServerStarting = false;
+      devServerError = null;
+      clearTimeout(timeout);
+      console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
+      resolvedReady = true;
+      resolve({ ok: true, port: devServerPort, mode: "dev" });
+    };
+
     devProcess.stdout?.on("data", (chunk: Buffer) => {
       const text = chunk.toString();
       startupOutput += text;
-
-      // Astro prints "localhost:PORT" when ready
-      if (text.includes(`localhost:${devServerPort}`) || text.includes("Local")) {
-        if (!devServerReady) {
-          devServerReady = true;
-          devServerStarting = false;
-          devServerError = null;
-          clearTimeout(timeout);
-          console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
-          resolvedReady = true;
-          resolve({ ok: true, port: devServerPort, mode: "dev" });
-        }
-      }
+      if (readyPattern.test(text)) markReady();
     });
 
     devProcess.stderr?.on("data", (chunk: Buffer) => {
       const text = chunk.toString();
       startupOutput += text;
-      // Astro dev logs some info to stderr too — check for ready signal
-      if (text.includes(`localhost:${devServerPort}`) || text.includes("Local")) {
-        if (!devServerReady) {
-          devServerReady = true;
-          devServerStarting = false;
-          devServerError = null;
-          clearTimeout(timeout);
-          console.log(`[Preview] Astro dev server ready on port ${devServerPort}`);
-          resolvedReady = true;
-          resolve({ ok: true, port: devServerPort, mode: "dev" });
-        }
-      }
+      if (readyPattern.test(text)) markReady();
     });
 
     devProcess.on("error", (err) => {
@@ -382,7 +381,9 @@ export function isDevServerRunning(): boolean {
  * Get the dev server base URL for proxying.
  */
 export function getDevServerUrl(): string {
-  return `http://localhost:${devServerPort}`;
+  // Use 127.0.0.1 (not "localhost") to match the dev server's --host bind and
+  // avoid IPv4/IPv6 resolution mismatches that break the preview proxy.
+  return `http://127.0.0.1:${devServerPort}`;
 }
 
 export class PreviewError extends Error {

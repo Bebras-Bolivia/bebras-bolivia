@@ -3,15 +3,15 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "dev:all": "node scripts/dev-all.mjs",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "dev": "bunx astro dev",
+    "dev:all": "bun scripts/dev-all.mjs",
+    "build": "bunx astro build",
+    "preview": "bunx astro preview",
+    "astro": "bunx astro",
+    "lint": "bunx eslint .",
+    "lint:fix": "bunx eslint . --fix",
+    "format": "bunx prettier --write .",
+    "format:check": "bunx prettier --check ."
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",

@@ -43,11 +43,11 @@ const Blog = {
   },
 
   async handleDelete(slug: string) {
-    if (!confirm(`Eliminar el post "${slug}"? Esta accion no se puede deshacer.`)) return;
+    if (!confirm(`Eliminar la publicacion "${slug}"? Esta accion no se puede deshacer.`)) return;
 
     try {
       await window.API.deleteBlog(slug);
-      window.Toast.success("Post eliminado");
+      window.Toast.success("Publicacion eliminada");
       this.renderList();
     } catch (err: any) {
       window.Toast.error(`Error al eliminar: ${err.message}`);
@@ -102,11 +102,11 @@ const Blog = {
         try {
           if (isNew) {
             await window.API.createBlog(nextSlug, nextFrontmatter, nextBody);
-            window.Toast.success("Post creado");
+            window.Toast.success("Publicacion creada");
             window.App.navigate(`/blog/edit/${encodeURIComponent(nextSlug)}`);
           } else {
             await window.API.updateBlog(currentSlug, nextFrontmatter, nextBody);
-            window.Toast.success("Post guardado");
+            window.Toast.success("Publicacion guardada");
           }
         } catch (err: any) {
           window.Toast.error(`Error: ${err.message}`);

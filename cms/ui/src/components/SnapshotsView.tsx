@@ -42,17 +42,17 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
     <>
       <div className="flex justify-between items-center mb-lg">
         <span className="text-muted text-sm">
-          {ordered.length} snapshot{ordered.length !== 1 ? "s" : ""}
+          {ordered.length} respaldo{ordered.length !== 1 ? "s" : ""}
         </span>
         <button className="btn btn-primary btn-sm" onClick={onCreate}>
-          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Crear snapshot
+          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Crear respaldo
         </button>
       </div>
 
       {ordered.length === 0 ? (
         <div className="empty-state">
-          <h3>Sin snapshots</h3>
-          <p>Crea un snapshot para guardar el estado actual del contenido.</p>
+          <h3>Sin respaldos</h3>
+          <p>Crea un respaldo para guardar el estado actual del contenido.</p>
         </div>
       ) : (
         <div>
@@ -62,7 +62,7 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
             return (
               <div className="snapshot-item" key={snap.id}>
                 <div className="meta">
-                  <div className="id">Snapshot #{snap.id}</div>
+                  <div className="id">Respaldo #{snap.id}</div>
                   <div className="desc">{snap.description || "Sin descripcion"}</div>
                   <div className="date">
                     {date} &mdash; por {snap.author || "Desconocido"}

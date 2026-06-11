@@ -8,8 +8,8 @@
     "dev:watch": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "seed": "bun src/db/seed.ts",
-    "ui:dev": "npm --prefix ui run dev",
-    "ui:build": "npm --prefix ui run build"
+    "ui:dev": "bun run --cwd ui dev",
+    "ui:build": "bun run --cwd ui build"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

@@ -16,19 +16,19 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
   "site.json": { label: "Configuracion global", desc: "SEO, datos globales y metadatos", icon: "globe" },
   "navigation.json": { label: "Navegacion y footer", desc: "Navbar, footer, links sociales", icon: "menu" },
-  "hero.json": { label: "Hero", desc: "Banner principal, CTAs, estadisticas", icon: "zap" },
+  "hero.json": { label: "Portada", desc: "Banner principal, llamados a la accion y estadisticas", icon: "zap" },
   "about.json": { label: "Acerca de", desc: "Seccion que es Bebras, tarjetas", icon: "info" },
   "categories.json": { label: "Categorias", desc: "Grupos de edad y descripcion", icon: "layers" },
   "scoring.json": { label: "Puntaje", desc: "Tabla de puntajes, resumen", icon: "bar-chart" },
   "news.json": { label: "Noticias", desc: "Slides del carrusel de noticias", icon: "newspaper" },
-  "faq.json": { label: "FAQ", desc: "Preguntas frecuentes por categoria", icon: "help-circle" },
+  "faq.json": { label: "Preguntas frecuentes", desc: "Preguntas frecuentes por categoria", icon: "help-circle" },
   "teacher-instructions.json": { label: "Maestros (guia)", desc: "Instrucciones en tabs", icon: "book-open" },
-  "sponsors.json": { label: "Sponsors", desc: "Patrocinadores y anchor", icon: "heart" },
+  "sponsors.json": { label: "Patrocinadores", desc: "Patrocinadores y ancla de navegacion", icon: "heart" },
   "contact.json": { label: "Contacto", desc: "Info de contacto, formulario", icon: "mail" },
   "registro.json": { label: "Registro", desc: "Pagina de registro (inscripcion)", icon: "user-plus" },
   "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
   "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
-  "blog-ui.json": { label: "Blog UI", desc: "Textos de la interfaz del blog", icon: "file-text" },
+  "blog-ui.json": { label: "Interfaz del blog", desc: "Textos de la interfaz del blog", icon: "file-text" },
   "custom-pages.json": { label: "Paginas personalizadas", desc: "Paginas dinamicas creadas desde CMS", icon: "layers" },
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
 };
@@ -47,9 +47,9 @@ const contentHierarchy = [
   { label: "Inicio", parent: "home.json", children: [] },
   { label: "Estudiantes", parent: "estudiantes.json", children: [] },
   { label: "Maestros", parent: "docentes.json", children: [] },
-  { label: "FAQ", parent: "faq.json", children: [] },
+  { label: "Preguntas frecuentes", parent: "faq.json", children: [] },
   { label: "Blog", parent: "blog-ui.json", children: [] },
-  { label: "Sponsors", parent: "sponsors.json", children: [] },
+  { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
   { label: "Paginas personalizadas", parent: "custom-pages.json", children: [] },
@@ -130,6 +130,7 @@ const App = {
       e.preventDefault();
       window.API.logout();
     });
+    document.getElementById("header-publish-btn")?.addEventListener("click", () => this.handlePublish());
   },
 
   setupMobileSidebar() {
@@ -188,25 +189,41 @@ const App = {
     }
   },
 
+  // The first content page (e.g. Inicio) is the CMS landing screen — a
+  // non-technical editor arrives straight at editable content, not a dashboard.
+  firstContentFile() {
+    return this.contentHierarchy[0]?.parent || "home.json";
+  },
+
   route() {
     const path = this.appPathname();
     document.querySelectorAll("[data-nav]").forEach((el) => el.classList.toggle("active", el.getAttribute("data-nav") === path));
 
-    if (path === "/" || path === "/dashboard") this.showPage("Dashboard", () => this.renderDashboard());
-    else if (path.startsWith("/editor/")) {
+    if (path === "/" || path === "/dashboard") {
+      const filename = this.firstContentFile();
+      const meta = contentMeta[filename];
+      this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
+    } else if (path.startsWith("/editor/")) {
       const filename = contentFileFromRoute(decodeURIComponent(path.replace("/editor/", "")));
       const meta = contentMeta[filename];
       this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
     } else if (path === "/blog") this.showPage("Blog", () => window.Blog.renderList());
-    else if (path === "/blog/new") this.showPage("Nuevo post", () => window.Blog.renderEditor(null));
+    else if (path === "/blog/new") this.showPage("Nueva publicacion", () => window.Blog.renderEditor(null));
     else if (path.startsWith("/blog/edit/")) {
       const slug = decodeURIComponent(path.replace("/blog/edit/", ""));
       this.showPage(`Editar: ${slug}`, () => window.Blog.renderEditor(slug));
-    } else if (path === "/snapshots") this.showPage("Snapshots", () => window.Snapshots.render());
-    else this.showPage("Dashboard", () => this.renderDashboard());
+    } else if (path === "/snapshots") this.showPage("Respaldos", () => window.Snapshots.render());
+    else {
+      const filename = this.firstContentFile();
+      const meta = contentMeta[filename];
+      this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
+    }
   },
 
   showPage(title: string, renderFn: () => void) {
+    // Clear any editor action buttons that were portalled into the header by a
+    // previous editor view, so they don't linger on Blog/Snapshots pages.
+    window.CMSEditor?.unmountPrimitives?.();
     const headerTitle = document.getElementById("header-title");
     if (headerTitle) headerTitle.textContent = title;
     const main = document.getElementById("main-content");
@@ -258,11 +275,10 @@ const App = {
   },
 
   async handlePublish() {
-    if (!confirm("Publicar el sitio? Esto creara un snapshot y reconstruira el sitio.")) return;
+    if (!confirm("Publicar el sitio? Esto creara un respaldo y reconstruira el sitio.")) return;
     try {
       await window.API.publish();
       window.Toast.success("Sitio publicado exitosamente");
-      this.renderDashboard();
     } catch (err: any) {
       const msg = err.message || "Error desconocido";
       window.Toast.error(msg.length > 100 ? `Error al publicar: ${msg.slice(0, 120)}...` : `Error al publicar: ${msg}`);

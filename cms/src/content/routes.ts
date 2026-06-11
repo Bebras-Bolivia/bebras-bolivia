@@ -6,7 +6,7 @@ import {
   ContentError,
   ContentValidationError,
 } from "./service.js";
-import { syncFileToLanding, isDevServerRunning } from "../preview/service.js";
+import { syncFileToLanding } from "../preview/service.js";
 
 export const contentRouter = Router();
 
@@ -46,14 +46,11 @@ contentRouter.put("/:filename", async (req: Request, res: Response) => {
     const filename = req.params.filename as string;
     const result = await writeContentFile(filename, req.body);
 
-    // If the Astro dev server is running, sync the file to landing for HMR
-    if (isDevServerRunning()) {
-      try {
-        await syncFileToLanding(filename);
-      } catch (syncErr) {
-        console.error("Warning: failed to sync to landing for HMR:", syncErr);
-        // Don't fail the save — content was already written to CMS
-      }
+    try {
+      await syncFileToLanding(filename);
+    } catch (syncErr) {
+      console.error("Warning: failed to sync saved content to landing:", syncErr);
+      // Don't fail the save — content was already written to CMS.
     }
 
     res.json(result);

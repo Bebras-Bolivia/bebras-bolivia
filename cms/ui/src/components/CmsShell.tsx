@@ -10,11 +10,6 @@ export default function CmsShell() {
         </div>
 
         <nav className="sidebar-nav">
-          <a className="sidebar-link active" data-nav="/" href="/">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            Dashboard
-          </a>
-
           <div className="sidebar-section">Contenido</div>
           <div id="sidebar-content-tree" className="sidebar-content-tree">
             <div className="sidebar-tree-loading">Cargando contenido...</div>
@@ -29,7 +24,7 @@ export default function CmsShell() {
           <div className="sidebar-section">Sistema</div>
           <a className="sidebar-link" data-nav="/snapshots" href="/snapshots">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12,6 12,12 16,14"></polyline></svg>
-            Snapshots
+            Respaldos
           </a>
         </nav>
 
@@ -53,10 +48,14 @@ export default function CmsShell() {
           <button className="btn btn-icon mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
-          <div className="header-title" id="header-title">Dashboard</div>
+          <div className="header-title" id="header-title">Panel</div>
         </div>
         <div className="header-actions">
-          <span className="badge badge-success" id="header-status">En linea</span>
+          <span id="header-editor-actions" className="header-editor-actions"></span>
+          <button className="btn btn-primary btn-sm" id="header-publish-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><polyline points="16,16 12,12 8,16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+            Publicar sitio
+          </button>
         </div>
       </header>
 

@@ -100,21 +100,21 @@ export type ComponentOption = {
 // ── Component options for "add component" modal ──────────
 const componentOptionsList: ComponentOption[] = [
   { value: "sectionRichText", label: "Seccion de Texto", description: "Titulo, parrafos y tip opcional" },
-  { value: "organizerInstitution", label: "Institucion organizadora", description: "Bloque destacado de institucion o sponsor" },
-  { value: "itemsGridIcon", label: "Grid cards + icono", description: "Cards con icono visual" },
-  { value: "itemsGridImage", label: "Grid cards + imagen", description: "Cards con imagen" },
-  { value: "itemsGridNumber", label: "Grid cards + numero", description: "Cards tipo pasos numerados" },
-  { value: "itemsGridSimple", label: "Grid cards simple", description: "Cards sin icono ni imagen" },
+  { value: "organizerInstitution", label: "Institucion organizadora", description: "Bloque destacado de institucion o patrocinador" },
+  { value: "itemsGridIcon", label: "Cuadricula con iconos", description: "Tarjetas con icono visual" },
+  { value: "itemsGridImage", label: "Cuadricula con imagenes", description: "Tarjetas con imagen" },
+  { value: "itemsGridNumber", label: "Cuadricula numerada", description: "Tarjetas tipo pasos numerados" },
+  { value: "itemsGridSimple", label: "Cuadricula simple", description: "Tarjetas sin icono ni imagen" },
   { value: "linksList", label: "Lista de Enlaces", description: "Listado de recursos o enlaces externos" },
   { value: "featureList", label: "Lista de Caracteristicas", description: "Lista con checks y texto introductorio" },
-  { value: "statsGrid", label: "Grid de Estadisticas", description: "Metricas en tarjetas con texto inferior" },
+  { value: "statsGrid", label: "Cuadricula de estadisticas", description: "Metricas en tarjetas con texto inferior" },
   { value: "studentsAgeCategories", label: "Categorias de Edad", description: "Categorias completas y editables" },
   { value: "studentsScoringTable", label: "Tabla de Puntaje", description: "Tabla completa y editable" },
-  { value: "faqAccordion", label: "FAQ Acordeon", description: "Preguntas y respuestas en acordeon" },
+  { value: "faqAccordion", label: "Preguntas frecuentes", description: "Preguntas y respuestas en acordeon" },
   { value: "tabsGuide", label: "Guia en Tabs", description: "Contenido por pestanas" },
   { value: "formContact", label: "Formulario", description: "Formulario de contacto editable" },
-  { value: "blogIndex", label: "Blog Index", description: "Estado vacio y texto Leer mas" },
-  { value: "blogPostUi", label: "Blog Post UI", description: "Textos de volver y CTA del post" },
+  { value: "blogIndex", label: "Listado del blog", description: "Estado vacio y texto Leer mas" },
+  { value: "blogPostUi", label: "Detalle del blog", description: "Textos de volver y llamado a la accion" },
   { value: "contactClassic", label: "Contacto Clasico", description: "Bloque completo como diseno anterior" },
   { value: "cta", label: "CTA", description: "Bloque de titulo, texto y boton" },
 ];
@@ -177,10 +177,10 @@ export function isCollapsibleArray(path: string): boolean {
 // ── Array item labels ────────────────────────────────────
 
 const typeLabelMap: Record<string, string> = {
-  faqQuestions: "FAQ",
-  sponsorsCards: "Sponsors",
-  blogIndex: "Blog Index",
-  blogPostUi: "Blog Post UI",
+  faqQuestions: "Preguntas frecuentes",
+  sponsorsCards: "Patrocinadores",
+  blogIndex: "Listado del blog",
+  blogPostUi: "Detalle del blog",
   contactInfoCards: "Contacto Info",
   contactInternational: "Contacto Internacional",
   contactForm: "Contacto Formulario",
@@ -195,13 +195,13 @@ const typeLabelMap: Record<string, string> = {
   docentesAlcance: "Maestros Alcance",
   teacherInstructionsTabs: "Maestros Guia",
   sectionRichText: "Texto",
-  itemsGrid: "Grid de Cards",
+  itemsGrid: "Cuadricula de tarjetas",
   linksList: "Lista de Enlaces",
   featureList: "Lista de Caracteristicas",
-  statsGrid: "Grid de Estadisticas",
+  statsGrid: "Cuadricula de estadisticas",
   studentsAgeCategories: "Categorias de Edad",
   studentsScoringTable: "Tabla de Puntaje",
-  faqAccordion: "FAQ Acordeon",
+  faqAccordion: "Preguntas frecuentes",
   tabsGuide: "Guia en Tabs",
   formContact: "Formulario",
   cta: "CTA",
@@ -236,7 +236,7 @@ export function getAddTypeOptions(
   if (currentFile === "custom-pages.json" && path.endsWith(".blocks")) {
     return [
       { value: "text", label: "Bloque de texto" },
-      { value: "cardsGrid", label: "Grid de cards" },
+      { value: "cardsGrid", label: "Cuadricula de tarjetas" },
       { value: "tip", label: "Tip / cita" },
       { value: "cta", label: "CTA (boton o enlace)" },
     ];
@@ -277,7 +277,7 @@ export function getAddTypeOptions(
     const parentPath = path.replace(/\.items$/, "");
     const parent: any = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
-      return [{ value: "gridItem", label: "Item de card" }];
+      return [{ value: "gridItem", label: "Tarjeta" }];
     }
     if (parent && parent.type === "featureList") {
       return [{ value: "featureItem", label: "Item de lista" }];
@@ -359,6 +359,33 @@ export function createEmptyArrayItem(
       if (parent.mediaType === "number") return { number: "", title: "", description: "" };
       return { title: "", description: "" };
     }
+  }
+
+  // Link-shaped arrays used across navigation.json, contact.international.links, etc.
+  // Schemas: `links`, `internationalLinks`, `footerColumns[].links` → { label, href }
+  //          `socialLinks` → adds an `icon` field
+  //          `contact.international.links` → adds a `description` field
+  if (normalizedPath.endsWith("socialLinks")) {
+    return { label: "", href: "", icon: "" };
+  }
+
+  if (
+    currentFile === "contact.json" &&
+    normalizedPath.endsWith("international.links")
+  ) {
+    return { label: "", href: "", description: "" };
+  }
+
+  if (
+    normalizedPath.endsWith("internationalLinks") ||
+    normalizedPath.endsWith("footerColumns[].links") ||
+    (currentFile === "navigation.json" && normalizedPath === "links")
+  ) {
+    return { label: "", href: "" };
+  }
+
+  if (normalizedPath.endsWith("footerColumns")) {
+    return { title: "", links: [] };
   }
 
   return "";
@@ -463,11 +490,11 @@ function _customPageBlock(type: string): unknown | null {
   }
   if (type === "cardsGrid") {
     return {
-      type: "cardsGrid", sectionTag: "Grid", heading: "Titulo de cards", columns: 3,
+      type: "cardsGrid", sectionTag: "Cuadricula", heading: "Titulo de tarjetas", columns: 3,
       cards: [
-        { title: "Card 1", description: "Descripcion de la card." },
-        { title: "Card 2", description: "Descripcion de la card." },
-        { title: "Card 3", description: "Descripcion de la card." },
+        { title: "Tarjeta 1", description: "Descripcion de la tarjeta." },
+        { title: "Tarjeta 2", description: "Descripcion de la tarjeta." },
+        { title: "Tarjeta 3", description: "Descripcion de la tarjeta." },
       ],
     };
   }
@@ -537,11 +564,11 @@ function _componentTemplate(type: string): unknown | null {
   const map: Record<string, () => unknown> = {
     faqQuestions: () => ({
       type: "faqQuestions",
-      categories: [{ title: "Nueva seccion FAQ", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
+      categories: [{ title: "Nueva seccion de preguntas frecuentes", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
     }),
     faqAccordion: () => ({
       type: "faqAccordion",
-      categories: [{ title: "Nueva seccion FAQ", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
+      categories: [{ title: "Nueva seccion de preguntas frecuentes", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
     }),
     sectionRichText: () => ({
       type: "sectionRichText", accent: "blue", tag: "Seccion", heading: "Titulo de seccion",
@@ -561,31 +588,31 @@ function _componentTemplate(type: string): unknown | null {
       linkHref: "https://example.com",
     }),
     itemsGrid: () => ({
-      type: "itemsGrid", tag: "Cards", heading: "Titulo de cards", intro: "Texto introductorio opcional",
+      type: "itemsGrid", tag: "Tarjetas", heading: "Titulo de tarjetas", intro: "Texto introductorio opcional",
       columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Card 1", description: "Descripcion", icon: "monitor" },
-        { title: "Card 2", description: "Descripcion", icon: "wifi" },
+        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor" },
+        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi" },
       ],
     }),
     itemsGridIcon: () => ({
-      type: "itemsGrid", tag: "Cards", heading: "Grid con iconos", intro: "Seccion de cards con iconos.",
+      type: "itemsGrid", tag: "Tarjetas", heading: "Cuadricula con iconos", intro: "Seccion de tarjetas con iconos.",
       columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Card 1", description: "Descripcion", icon: "monitor" },
-        { title: "Card 2", description: "Descripcion", icon: "wifi" },
+        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor" },
+        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi" },
       ],
     }),
     itemsGridImage: () => ({
-      type: "itemsGrid", tag: "Cards", heading: "Grid con imagenes", intro: "Seccion de cards con imagen.",
+      type: "itemsGrid", tag: "Tarjetas", heading: "Cuadricula con imagenes", intro: "Seccion de tarjetas con imagen.",
       columns: 3, mediaType: "image", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Card 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
-        { title: "Card 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+        { title: "Tarjeta 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+        { title: "Tarjeta 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
       ],
     }),
     itemsGridNumber: () => ({
-      type: "itemsGrid", tag: "Pasos", heading: "Grid numerado", intro: "Seccion de pasos numerados.",
+      type: "itemsGrid", tag: "Pasos", heading: "Cuadricula numerada", intro: "Seccion de pasos numerados.",
       columns: 3, mediaType: "number", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
         { number: "1", title: "Paso 1", description: "Descripcion" },
@@ -593,11 +620,11 @@ function _componentTemplate(type: string): unknown | null {
       ],
     }),
     itemsGridSimple: () => ({
-      type: "itemsGrid", tag: "Cards", heading: "Grid simple", intro: "Seccion de cards sin media.",
+      type: "itemsGrid", tag: "Tarjetas", heading: "Cuadricula simple", intro: "Seccion de tarjetas sin media.",
       columns: 3, mediaType: "none", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Card 1", description: "Descripcion" },
-        { title: "Card 2", description: "Descripcion" },
+        { title: "Tarjeta 1", description: "Descripcion" },
+        { title: "Tarjeta 2", description: "Descripcion" },
       ],
     }),
     linksList: () => ({
@@ -652,15 +679,15 @@ function _componentTemplate(type: string): unknown | null {
       type: "formContact", tag: "Formulario", heading: "Envianos un mensaje",
       fields: {
         name: { label: "Nombre completo", placeholder: "Tu nombre" },
-        email: { label: "Email", placeholder: "tu@email.com" },
+        email: { label: "Correo electronico", placeholder: "tu@email.com" },
         role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro", "Institucion", "Otro"] },
         message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
       },
       submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
     }),
     sponsorsCards: () => ({
-      type: "sponsorsCards", tag: "Nueva seccion de sponsors", columns: 3,
-      cards: [{ name: "Nuevo sponsor", desc: "Descripcion del sponsor.", image: "/images/sponsor-placeholder.svg" }],
+      type: "sponsorsCards", tag: "Nueva seccion de patrocinadores", columns: 3,
+      cards: [{ name: "Nuevo patrocinador", desc: "Descripcion del patrocinador.", image: "/images/sponsor-placeholder.svg" }],
     }),
     docentesRegistro: () => ({
       type: "docentesRegistro", tag: "Registro", heading: "Como inscriben a sus estudiantes?",
@@ -709,7 +736,7 @@ function _componentTemplate(type: string): unknown | null {
     contactInfoCards: () => ({
       type: "contactInfoCards", tag: "Informacion", heading: "Informacion de Contacto",
       cards: [{
-        icon: "email", title: "Email", description: "Escribenos para cualquier consulta",
+        icon: "email", title: "Correo electronico", description: "Escribenos para cualquier consulta",
         linkLabel: "info@bebras.bo", linkHref: "mailto:info@bebras.bo",
       }],
     }),
@@ -721,7 +748,7 @@ function _componentTemplate(type: string): unknown | null {
       type: "contactForm", tag: "Formulario", heading: "Envianos un Mensaje",
       fields: {
         name: { label: "Nombre completo", placeholder: "Tu nombre" },
-        email: { label: "Email", placeholder: "tu@email.com" },
+        email: { label: "Correo electronico", placeholder: "tu@email.com" },
         role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro / Coordinador", "Institucion", "Otro"] },
         message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
       },
@@ -732,7 +759,7 @@ function _componentTemplate(type: string): unknown | null {
       info: {
         tag: "Informacion", heading: "Informacion de Contacto",
         cards: [{
-          icon: "email", title: "Email", description: "Escribenos para cualquier consulta",
+          icon: "email", title: "Correo electronico", description: "Escribenos para cualquier consulta",
           linkLabel: "info@bebras.bo", linkHref: "mailto:info@bebras.bo",
         }],
       },
@@ -744,7 +771,7 @@ function _componentTemplate(type: string): unknown | null {
         tag: "Formulario", heading: "Envianos un Mensaje",
         fields: {
           name: { label: "Nombre completo", placeholder: "Tu nombre" },
-          email: { label: "Email", placeholder: "tu@email.com" },
+          email: { label: "Correo electronico", placeholder: "tu@email.com" },
           role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro / Coordinador", "Institucion", "Otro"] },
           message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
         },

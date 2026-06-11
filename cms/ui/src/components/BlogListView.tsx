@@ -47,12 +47,12 @@ export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: 
         <div className="flex justify-between items-center mb-lg">
           <div></div>
           <button className="btn btn-primary btn-sm" onClick={onNew}>
-            <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Nuevo post
+            <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Nueva publicacion
           </button>
         </div>
         <div className="empty-state">
           <h3>Sin publicaciones</h3>
-          <p>Crea tu primer post del blog.</p>
+          <p>Crea tu primera publicacion del blog.</p>
         </div>
       </>
     );
@@ -65,7 +65,7 @@ export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: 
           {sortedPosts.length} publicacion{sortedPosts.length !== 1 ? "es" : ""}
         </span>
         <button className="btn btn-primary btn-sm" onClick={onNew}>
-          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Nuevo post
+          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Nueva publicacion
         </button>
       </div>
       <div className="blog-list">

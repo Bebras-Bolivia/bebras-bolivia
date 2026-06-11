@@ -602,10 +602,6 @@ const HomeSectionSchema = z.discriminatedUnion("type", [
 ]);
 
 export const homeSchema = z.object({
-  seo: z.object({
-    pageTitle: z.string(),
-    pageDescription: z.string(),
-  }),
   hero: z.object({
     eyebrow: z.string(),
     welcomeText: z.string(),
@@ -712,8 +708,6 @@ export const teacherInstructionsSchema = z.object({
 
 export const sponsorsSchema = z.object({
   header: z.object({
-    pageTitle: z.string(),
-    pageDescription: z.string(),
     tag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -725,8 +719,6 @@ export const sponsorsSchema = z.object({
 
 export const contactSchema = z.object({
   header: z.object({
-    pageTitle: z.string(),
-    pageDescription: z.string(),
     tag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -737,8 +729,6 @@ export const contactSchema = z.object({
 // ── 12. registro.json ────────────────────────────────────
 
 export const registroSchema = z.object({
-  pageTitle: z.string(),
-  pageDescription: z.string(),
   tag: z.string(),
   heading: z.string(),
   paragraph: z.string(),
@@ -757,8 +747,6 @@ export const registroSchema = z.object({
 // ── 13. estudiantes.json ─────────────────────────────────
 
 export const estudiantesSchema = z.object({
-  pageTitle: z.string(),
-  pageDescription: z.string(),
   header: z.object({
     tag: z.string(),
     heading: z.string(),
@@ -822,8 +810,6 @@ const docentesSectionSchema = z.discriminatedUnion("id", [
 ]);
 
 export const docentesSchema = z.object({
-  pageTitle: z.string(),
-  pageDescription: z.string(),
   header: z.object({
     tag: z.string(),
     heading: z.string(),
@@ -836,8 +822,6 @@ export const docentesSchema = z.object({
 
 export const blogUiSchema = z.object({
   header: z.object({
-    pageTitle: z.string(),
-    pageDescription: z.string(),
     tag: z.string(),
     heading: z.string(),
     headingHighlight: z.string(),

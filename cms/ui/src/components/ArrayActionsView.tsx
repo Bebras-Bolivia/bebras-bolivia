@@ -23,15 +23,18 @@ export default function ArrayActionsView({
   if (showSelect && options.length > 0) {
     return (
       <div className="editor-block-picker">
-        <select className="form-select type-select" value={selected} onChange={(e) => setSelected(e.target.value)}>
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        {options.length > 1 ? (
+          <select className="form-select type-select" value={selected} onChange={(e) => setSelected(e.target.value)}>
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        ) : null}
         <button className="add-item-btn" type="button" onClick={() => onAdd(selected)}>
-          {buttonLabel || "Agregar bloque"}
+          <span aria-hidden="true">+</span> {buttonLabel || "Agregar"}
+          {options.length === 1 ? ` ${options[0].label.toLowerCase()}` : ""}
         </button>
       </div>
     );
@@ -39,7 +42,7 @@ export default function ArrayActionsView({
 
   return (
     <button className="add-item-btn" type="button" onClick={() => onAdd(null)}>
-      {buttonLabel || "Agregar"}
+      <span aria-hidden="true">+</span> {buttonLabel || "Agregar"}
     </button>
   );
 }

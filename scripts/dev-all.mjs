@@ -21,12 +21,7 @@ const paths = {
   landingUploadsDir: resolve(repoRoot, "public", "images", "uploads"),
 };
 
-const astroBin = resolve(
-  repoRoot,
-  "node_modules",
-  ".bin",
-  isWindows() ? "astro.cmd" : "astro"
-);
+const bunBin = isWindows() ? "bun.exe" : "bun";
 
 let syncTimer = null;
 let shuttingDown = false;
@@ -218,7 +213,7 @@ process.on("SIGTERM", () => shutdown(0));
 await syncCmsToLanding();
 await runCommand(
   "cms-ui-build",
-  isWindows() ? "npm.cmd" : "npm",
+  bunBin,
   ["run", "ui:build"],
   cmsRoot
 );
@@ -229,9 +224,9 @@ console.log("[dev:all] Starting CMS on http://localhost:4000");
 
 spawnService(
   "site",
-  astroBin,
-  ["dev", "--host", "127.0.0.1"],
+  bunBin,
+  ["x", "astro", "dev", "--host", "127.0.0.1"],
   repoRoot
 );
 
-spawnService("cms", "bun", ["src/index.ts"], cmsRoot);
+spawnService("cms", bunBin, ["src/index.ts"], cmsRoot);

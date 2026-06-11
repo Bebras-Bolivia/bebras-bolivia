@@ -34,24 +34,24 @@ const Snapshots = {
   },
 
   async handleCreate() {
-    const description = prompt("Descripcion del snapshot (opcional):");
+    const description = prompt("Descripcion del respaldo (opcional):");
     if (description === null) return;
 
     try {
       await window.API.createSnapshot(description);
-      window.Toast.success("Snapshot creado");
+      window.Toast.success("Respaldo creado");
       this.render();
     } catch (err: any) {
-      window.Toast.error(`Error al crear snapshot: ${err.message}`);
+      window.Toast.error(`Error al crear respaldo: ${err.message}`);
     }
   },
 
   async handleRestore(id: number) {
-    if (!confirm(`Restaurar snapshot #${id}? Esto reemplazara el contenido actual.`)) return;
+    if (!confirm(`Restaurar respaldo #${id}? Esto reemplazara el contenido actual.`)) return;
 
     try {
       await window.API.restoreSnapshot(id);
-      window.Toast.success(`Snapshot #${id} restaurado`);
+      window.Toast.success(`Respaldo #${id} restaurado`);
       this.render();
     } catch (err: any) {
       window.Toast.error(`Error al restaurar: ${err.message}`);
@@ -59,11 +59,11 @@ const Snapshots = {
   },
 
   async handleDelete(id: number) {
-    if (!confirm(`Eliminar snapshot #${id}? Esta accion no se puede deshacer.`)) return;
+    if (!confirm(`Eliminar respaldo #${id}? Esta accion no se puede deshacer.`)) return;
 
     try {
       await window.API.deleteSnapshot(id);
-      window.Toast.success("Snapshot eliminado");
+      window.Toast.success("Respaldo eliminado");
       this.render();
     } catch (err: any) {
       window.Toast.error(`Error al eliminar: ${err.message}`);

@@ -9,9 +9,9 @@ const header = sponsorsData.header || {};
 const components: any[] = Array.isArray(sponsorsData.components) ? sponsorsData.components : [];
 ---
 
-<Layout title={header.pageTitle || "Patrocinadores"} description={header.pageDescription || "Patrocinadores y aliados de Bebras Bolivia."}>
+<Layout title="Patrocinadores" description="Patrocinadores y organizaciones que apoyan el Desafío Bebras Bolivia.">
   <div class="relative w-full">
-    <InternalPageHero tag={header.tag} heading={header.heading} />
+    <InternalPageHero tag={header.tag} heading={header.heading} description={header.subtitle} />
 
     <main class="relative z-10 w-full min-h-screen bg-bebras-paper dark:bg-zinc-950 pb-20 pt-10 lg:pt-14">
       <PageComponentsRenderer components={components} />

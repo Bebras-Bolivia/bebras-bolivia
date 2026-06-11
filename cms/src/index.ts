@@ -110,12 +110,6 @@ app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ── DEBUG: Log all incoming requests ──────────────────────
-app.use((req, _res, next) => {
-  console.log(`[DEBUG] ${req.method} ${req.path}`);
-  next();
-});
-
 // ── API Routes ─────────────────────────────────────────────
 app.use("/api/auth", authRouter);
 
@@ -125,11 +119,6 @@ app.use("/api/blog", requireAuth, blogRouter);
 app.use("/api/media", requireAuth, mediaRouter);
 app.use("/api/snapshots", requireAuth, snapshotRouter);
 app.use("/api/publish", requireAuth, publishRouter);
-// DEBUG: direct test route to check if Express even sees this path
-app.post("/api/preview/start", (req, res, next) => {
-  console.log(`[DEBUG] Direct /api/preview/start matched! method=${req.method}`);
-  next();
-});
 app.use("/api/preview", requireAuth, previewRouter);
 
 // ── Health check ───────────────────────────────────────────
@@ -254,8 +243,10 @@ app.get("/favicon.svg", (_req, res) => {
 });
 
 // ── Static files (CMS UI) ─────────────────────────────────
+// The CMS UI is the built Astro+React app in ui-dist/. The public/ folder now
+// holds only shared assets (styles.css and a no-JS login fallback).
 const uiDistDir = resolve(import.meta.dir, "..", "ui-dist");
-const legacyPublicDir = resolve(import.meta.dir, "..", "public");
+const publicAssetsDir = resolve(import.meta.dir, "..", "public");
 const uiIndexFile = resolve(uiDistDir, "index.html");
 const uiLoginFile = resolve(uiDistDir, "login", "index.html");
 
@@ -268,7 +259,7 @@ app.get("/login.html", (_req, res) => {
     res.sendFile(uiLoginFile);
     return;
   }
-  res.sendFile(resolve(legacyPublicDir, "login.html"));
+  res.sendFile(resolve(publicAssetsDir, "login.html"));
 });
 
 app.get("/login", (_req, res) => {
@@ -276,11 +267,11 @@ app.get("/login", (_req, res) => {
     res.sendFile(uiLoginFile);
     return;
   }
-  res.sendFile(resolve(legacyPublicDir, "login.html"));
+  res.sendFile(resolve(publicAssetsDir, "login.html"));
 });
 
 app.use(express.static(uiDistDir));
-app.use(express.static(legacyPublicDir));
+app.use(express.static(publicAssetsDir));
 
 // SPA fallback — serve index.html for all non-API, non-preview, non-asset routes
 app.get(/^\/(?!api\/|preview-site\/|_astro\/|@vite\/|@fs\/|node_modules\/|images\/|favicon\.svg).*/, (_req, res) => {
@@ -288,7 +279,16 @@ app.get(/^\/(?!api\/|preview-site\/|_astro\/|@vite\/|@fs\/|node_modules\/|images
     res.sendFile(uiIndexFile);
     return;
   }
-  res.sendFile(resolve(legacyPublicDir, "index.html"));
+  res
+    .status(503)
+    .type("html")
+    .send(
+      `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Bebras CMS</title></head>` +
+        `<body style="font-family:system-ui;max-width:32rem;margin:4rem auto;padding:0 1rem;color:#1a1a2e;">` +
+        `<h1>La interfaz del CMS no está compilada</h1>` +
+        `<p>Ejecuta <code>bun run ui:build</code> dentro de <code>cms/</code> (o usa <code>bun run dev:all</code> desde la raíz) y recarga esta página.</p>` +
+        `</body></html>`
+    );
 });
 
 // ── Admin sync ──────────────────────────────────────────────
