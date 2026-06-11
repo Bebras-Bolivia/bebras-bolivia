@@ -7,7 +7,6 @@ import { getNestedValue } from "./path-helpers";
 // ── Route mapping ────────────────────────────────────────
 export const fileToPage: Record<string, string> = {
   "home.json": "/",
-  "navigation.json": "/",
   "hero.json": "/",
   "about.json": "/",
   "categories.json": "/",
@@ -376,10 +375,8 @@ export function createEmptyArrayItem(
     }
   }
 
-  // Link-shaped arrays used across navigation.json, contact.international.links, etc.
-  // Schemas: `links`, `internationalLinks`, `footerColumns[].links` → { label, href }
-  //          `socialLinks` → adds an `icon` field
-  //          `contact.international.links` → adds a `description` field
+  // Link-shaped arrays used across contact.international.links, etc.
+  // Schemas: `contact.international.links` → adds a `description` field
   if (normalizedPath.endsWith("socialLinks")) {
     return { label: "", href: "", icon: "" };
   }
@@ -393,8 +390,7 @@ export function createEmptyArrayItem(
 
   if (
     normalizedPath.endsWith("internationalLinks") ||
-    normalizedPath.endsWith("footerColumns[].links") ||
-    (currentFile === "navigation.json" && normalizedPath === "links")
+    normalizedPath.endsWith("footerColumns[].links")
   ) {
     return { label: "", href: "" };
   }

@@ -136,8 +136,8 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
               <p
                 className="font-display text-[clamp(1.15rem,5.2vw,1.8rem)] font-bold uppercase leading-[0.9] text-bebras-green sm:text-[1.8rem]"
               >
-                <span className="block">{navData.brand.name}</span>
-                <span className="block">{navData.brand.suffix}</span>
+                <span className="block">Bebras</span>
+                <span className="block">Bolivia</span>
               </p>
             </div>
           </a>

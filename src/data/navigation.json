@@ -1,0 +1,54 @@
+{
+  "links": [
+    {
+      "label": "Inicio",
+      "href": "/"
+    },
+    {
+      "label": "Estudiantes",
+      "href": "/estudiantes"
+    },
+    {
+      "label": "Maestros",
+      "href": "/maestros"
+    },
+    {
+      "label": "Preguntas",
+      "href": "/faq"
+    },
+    {
+      "label": "Noticias",
+      "href": "/blog"
+    },
+    {
+      "label": "Patrocinadores",
+      "href": "/sponsors"
+    },
+    {
+      "label": "Contacto",
+      "href": "/contacto"
+    }
+  ],
+  "cta": {
+    "label": "Inscribirse",
+    "href": "/registro"
+  },
+  "socialLinks": [
+    {
+      "label": "Instagram",
+      "href": "https://instagram.com/bebrasbolivia",
+      "icon": "instagram"
+    },
+    {
+      "label": "Email",
+      "href": "mailto:info@bebras.bo",
+      "icon": "email"
+    },
+    {
+      "label": "Facebook",
+      "href": "https://facebook.com/bebrasbolivia",
+      "icon": "facebook"
+    }
+  ],
+  "internationalLinks": []
+}

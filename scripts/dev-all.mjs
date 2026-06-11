@@ -22,7 +22,7 @@ const paths = {
 };
 
 const bunBin = isWindows() ? "bun.exe" : "bun";
-const obsoleteDataFiles = new Set(["custom-pages.json", "site.json"]);
+const obsoleteDataFiles = new Set(["custom-pages.json", "site.json", "navigation.json"]);
 
 let syncTimer = null;
 let shuttingDown = false;

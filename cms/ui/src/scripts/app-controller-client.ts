@@ -14,7 +14,6 @@ declare global {
 
 const contentMeta: Record<string, { label: string; desc: string; icon: string }> = {
   "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
-  "navigation.json": { label: "Navegacion y footer", desc: "Navbar, footer, links sociales", icon: "menu" },
   "hero.json": { label: "Portada", desc: "Banner principal, llamados a la accion y estadisticas", icon: "zap" },
   "about.json": { label: "Acerca de", desc: "Seccion que es Bebras, tarjetas", icon: "info" },
   "categories.json": { label: "Categorias", desc: "Grupos de edad y descripcion", icon: "layers" },
@@ -50,7 +49,6 @@ const contentHierarchy = [
   { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
-  { label: "Navegacion y footer", parent: "navigation.json", children: [] },
 ];
 
 function contentFileFromRoute(value: string) {

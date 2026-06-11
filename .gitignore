@@ -34,6 +34,7 @@ skills*
 
 # assets
 screenshots/
+.codex-logs/
 
 # CMS/runtime local content
 cms/content/cms.sqlite-shm
@@ -45,5 +46,7 @@ cms/content/current/blog/*
 !cms/content/current/blog/.gitkeep
 src/data/*
 !src/data/.gitkeep
+!src/data/navigation.json
+!src/data/site.json
 src/content/blog/*
 !src/content/blog/.gitkeep

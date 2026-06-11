@@ -425,32 +425,6 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-// ── 1. navigation.json ───────────────────────────────────
-
-export const navigationSchema = z.object({
-  brand: z.object({
-    name: z.string(),
-    suffix: z.string(),
-    href: z.string(),
-  }),
-  links: z.array(LinkSchema),
-  cta: LinkSchema,
-  footerColumns: z.array(
-    z.object({
-      title: z.string(),
-      links: z.array(LinkSchema),
-    })
-  ),
-  socialLinks: z.array(
-    z.object({
-      label: z.string(),
-      href: z.string(),
-      icon: z.string(),
-    })
-  ),
-  internationalLinks: z.array(LinkSchema),
-});
-
 // ── 2. hero.json ─────────────────────────────────────────
 
 export const heroSchema = z.object({
@@ -784,7 +758,6 @@ export const pageCompositionSchema = z.object({
 
 export const contentSchemas: Record<string, z.ZodType> = {
   "home.json": homeSchema,
-  "navigation.json": navigationSchema,
   "hero.json": heroSchema,
   "about.json": aboutSchema,
   "categories.json": categoriesSchema,

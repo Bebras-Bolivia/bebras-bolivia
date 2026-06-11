@@ -38,17 +38,7 @@ const Editor = {
   isAutoNumberField(path: string) { return this.lib.isAutoNumberField(path, this.currentData); },
   isCollapsibleArray(path: string) { return this.lib.isCollapsibleArray(path); },
   isLockedArray(path: string): boolean {
-    // Arrays whose items map to existing site pages or fixed structural slots.
-    // Adding or removing entries here would create dead URLs or break layout —
-    // we let users edit individual entries (labels, hrefs) but not the list shape.
-    if (this.currentFile !== "navigation.json") return false;
-    return (
-      path === "links" ||
-      path === "internationalLinks" ||
-      path === "socialLinks" ||
-      path === "footerColumns" ||
-      /^footerColumns\[\d+\]\.links$/.test(path)
-    );
+    return false;
   },
   getArrayItemLabel(obj: any, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
   getAddTypeOptions(path: string) { return this.lib.getAddTypeOptions(path, this.currentFile, this.currentData) || []; },
