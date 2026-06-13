@@ -20,120 +20,9 @@ interface Props {
 }
 
 const { components = [] } = Astro.props;
-
-function mapLegacyToUnified(component: any) {
-  if (!component || typeof component !== "object") return component;
-
-  if (component.type === "sponsorsCards") {
-    return {
-      type: "itemsGrid",
-      tag: component.tag,
-      accent: component.accent,
-      cardPalette: component.cardPalette,
-      columns: component.columns,
-      mediaType: "image",
-      items: (component.cards || []).map((c: any) => ({
-        title: c.name,
-        description: c.desc,
-        image: c.image,
-      })),
-    };
-  }
-
-  if (component.type === "contactInfoCards") {
-    return {
-      type: "itemsGrid",
-      tag: component.tag,
-      heading: component.heading,
-      accent: component.accent,
-      cardPalette: component.cardPalette,
-      columns: 1,
-      mediaType: "icon",
-      items: (component.cards || []).map((c: any) => ({
-        title: c.title,
-        description: c.description,
-        icon: c.icon,
-        linkLabel: c.linkLabel,
-        linkHref: c.linkHref,
-        socialLinks: c.socialLinks,
-      })),
-    };
-  }
-
-  if (component.type === "contactInternational") {
-    return {
-      type: "linksList",
-      tag: component.tag,
-      accent: component.accent,
-      cardPalette: component.cardPalette,
-      links: component.links || [],
-    };
-  }
-
-  if (component.type === "docentesRegistro") {
-    return {
-      type: "itemsGrid",
-      tag: component.tag,
-      heading: component.heading,
-      intro: component.intro,
-      accent: component.accent,
-      cardPalette: component.cardPalette,
-      columns: component.columns || 3,
-      mediaType: "number",
-      items: (component.steps || []).map((s: any) => ({
-        number: s.num,
-        title: s.title,
-        description: s.desc,
-      })),
-    };
-  }
-
-  if (component.type === "docentesRequisitos") {
-    return {
-      type: "itemsGrid",
-      tag: component.tag,
-      heading: component.heading,
-      accent: component.accent,
-      cardPalette: component.cardPalette,
-      columns: component.columns || 2,
-      mediaType: "icon",
-      items: (component.requirements || []).map((r: any) => ({
-        icon: r.icon,
-        title: r.title,
-        description: r.desc,
-      })),
-    };
-  }
-
-  if (component.type === "docentesAlcance") {
-    return {
-      type: "sectionRichText",
-      tag: component.tag,
-      heading: component.heading,
-      accent: component.accent,
-      paragraphs: component.content || [],
-      tip: component.tip,
-    };
-  }
-
-  if (component.type === "teacherInstructionsTabs") {
-    return {
-      type: "tabsGuide",
-      sectionTag: component.sectionTag,
-      heading: component.heading,
-      accent: component.accent,
-      cardPalette: component.cardPalette,
-      subtitle: component.subtitle,
-      tabs: component.tabs || [],
-    };
-  }
-
-  return component;
-}
 ---
 
-{components.map((rawComponent: any) => {
-  const component = mapLegacyToUnified(rawComponent);
+{components.map((component: any) => {
 
   if (component.type === "itemsGrid") {
     return (
@@ -222,7 +111,7 @@ function mapLegacyToUnified(component: any) {
     return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} cardPalette={component.cardPalette} />;
   }
 
-  if (component.type === "faqQuestions" || component.type === "faqAccordion") {
+  if (component.type === "faqAccordion") {
     return <FAQQuestionsBlock categories={component.categories} />;
   }
 
@@ -231,10 +120,6 @@ function mapLegacyToUnified(component: any) {
   }
 
   if (component.type === "formContact") {
-    return <ContactFormBlock data={component} />;
-  }
-
-  if (component.type === "contactForm") {
     return <ContactFormBlock data={component} />;
   }
 

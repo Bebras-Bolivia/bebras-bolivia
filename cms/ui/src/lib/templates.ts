@@ -204,23 +204,14 @@ export function isCollapsibleArray(path: string): boolean {
 // ── Array item labels ────────────────────────────────────
 
 const typeLabelMap: Record<string, string> = {
-  faqQuestions: "Preguntas frecuentes",
-  sponsorsCards: "Patrocinadores",
   blogIndex: "Listado del blog",
   blogPostUi: "Detalle del blog",
-  contactInfoCards: "Contacto Info",
-  contactInternational: "Contacto Internacional",
-  contactForm: "Contacto Formulario",
   contactClassic: "Contacto Clasico",
   organizerInstitution: "Institucion Organizadora",
   introEditorial: "Texto editorial",
   homeAgeCategories: "Categorías por edad",
   homeDualCta: "Doble llamado a la acción",
   aboutBebrasEditorial: "Sobre Bebras",
-  docentesRegistro: "Maestros Registro",
-  docentesRequisitos: "Maestros Requisitos",
-  docentesAlcance: "Maestros Alcance",
-  teacherInstructionsTabs: "Maestros Guia",
   sectionRichText: "Texto",
   itemsGrid: "Cuadricula de tarjetas",
   linksList: "Lista de Enlaces",
@@ -265,20 +256,10 @@ export function getAddTypeOptions(
     ];
   }
 
-  if (currentFile === "estudiantes.json" && path === "sections") {
-    return [
-      { value: "participacion", label: "Estudiantes: Participacion" },
-      { value: "desafio", label: "Estudiantes: Desafio" },
-      { value: "habilidades", label: "Estudiantes: Habilidades" },
-      { value: "formato", label: "Estudiantes: Formato" },
-      { value: "certificados", label: "Estudiantes: Certificados" },
-    ];
-  }
-
   if (/\.tabs$/.test(path)) {
     const parentPath = path.replace(/\.tabs$/, "");
     const parent: any = getNestedValue(currentData, parentPath);
-    if (parent && (parent.type === "tabsGuide" || parent.type === "teacherInstructionsTabs")) {
+    if (parent && parent.type === "tabsGuide") {
       return [{ value: "tabStep", label: "Pestana" }];
     }
   }
@@ -419,11 +400,6 @@ export function createTypedArrayItem(
     return _componentTemplate(selectedType);
   }
 
-  // ── Estudiantes sections ──
-  if (currentFile === "estudiantes.json" && path === "sections") {
-    return _estudiantesSection(selectedType);
-  }
-
   // ── Generic typed items ──
   if (selectedType === "tabStep") {
     return {
@@ -514,10 +490,6 @@ function _homeSection(type: string): unknown | null {
 
 function _componentTemplate(type: string): unknown | null {
   const map: Record<string, () => unknown> = {
-    faqQuestions: () => ({
-      type: "faqQuestions",
-      categories: [{ title: "Nueva seccion de preguntas frecuentes", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
-    }),
     faqAccordion: () => ({
       type: "faqAccordion",
       categories: [{ title: "Nueva seccion de preguntas frecuentes", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
@@ -637,41 +609,6 @@ function _componentTemplate(type: string): unknown | null {
       },
       submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
     }),
-    sponsorsCards: () => ({
-      type: "sponsorsCards", tag: "Nueva seccion de patrocinadores", columns: 3,
-      cards: [{ name: "Nuevo patrocinador", desc: "Descripcion del patrocinador.", image: "/images/sponsor-placeholder.svg" }],
-    }),
-    docentesRegistro: () => ({
-      type: "docentesRegistro", tag: "Registro", heading: "Como inscriben a sus estudiantes?",
-      intro: "El proceso de inscripcion es simple y gratuito.", columns: 3,
-      steps: [
-        { num: "1", title: "Registro del coordinador", desc: "Crear cuenta en la plataforma Bebras Bolivia." },
-        { num: "2", title: "Inscripcion de estudiantes", desc: "Agregar estudiantes por categoria de edad." },
-        { num: "3", title: "Dia del desafio", desc: "Supervisar la sesion en la escuela." },
-      ],
-    }),
-    docentesRequisitos: () => ({
-      type: "docentesRequisitos", tag: "Requisitos", heading: "Que necesita la escuela?", columns: 2,
-      requirements: [
-        { icon: "monitor", title: "Computadoras con navegador web", desc: "Chrome, Firefox, Edge o Safari actualizados." },
-        { icon: "wifi", title: "Conexion a internet", desc: "Estable durante los 45 minutos del desafio." },
-      ],
-    }),
-    docentesAlcance: () => ({
-      type: "docentesAlcance", tag: "Alcance", heading: "Quien deberia participar?",
-      content: ["Contenido de alcance para maestros."],
-      tip: "Tip: El desafio no requiere conocimientos previos de programacion.",
-    }),
-    teacherInstructionsTabs: () => ({
-      type: "teacherInstructionsTabs", sectionTag: "Guia para coordinadores",
-      heading: "Instrucciones para Coordinadores",
-      subtitle: "Guia paso a paso para antes, durante y despues del desafio.",
-      cardPalette: ["blue", "red", "yellow"],
-      tabs: [{
-        id: "antes", label: "Antes", heading: "Antes del Desafio",
-        items: [{ title: "Registrarse como coordinador", desc: "Completar los datos de la escuela." }],
-      }],
-    }),
     cta: () => ({
       type: "cta", tag: "", heading: "No encontraste lo que buscabas?",
       text: "Contactanos y con gusto resolveremos tus dudas.",
@@ -684,27 +621,6 @@ function _componentTemplate(type: string): unknown | null {
     }),
     blogPostUi: () => ({
       type: "blogPostUi", backLabel: "Volver al blog", ctaLabel: "Inscribirse al desafio",
-    }),
-    contactInfoCards: () => ({
-      type: "contactInfoCards", tag: "Informacion", heading: "Informacion de Contacto",
-      cards: [{
-        icon: "email", title: "Correo electronico", description: "Escribenos para cualquier consulta",
-        linkLabel: "info@bebras.bo", linkHref: "mailto:info@bebras.bo",
-      }],
-    }),
-    contactInternational: () => ({
-      type: "contactInternational", tag: "Comunidad Internacional",
-      links: [{ label: "Bebras Internacional ->", href: "https://www.bebras.org/", description: "Sitio oficial Bebras" }],
-    }),
-    contactForm: () => ({
-      type: "contactForm", tag: "Formulario", heading: "Envianos un Mensaje",
-      fields: {
-        name: { label: "Nombre completo", placeholder: "Tu nombre" },
-        email: { label: "Correo electronico", placeholder: "tu@email.com" },
-        role: { label: "Rol", placeholder: "Seleccionar...", options: ["Estudiante", "Maestro / Coordinador", "Institucion", "Otro"] },
-        message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
-      },
-      submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
     }),
     contactClassic: () => ({
       type: "contactClassic",
@@ -736,32 +652,3 @@ function _componentTemplate(type: string): unknown | null {
   return factory ? factory() : null;
 }
 
-// ── Private: estudiantes section templates ────────────────
-
-function _estudiantesSection(type: string): unknown | null {
-  const map: Record<string, () => unknown> = {
-    participacion: () => ({
-      id: "participacion", tag: "Participacion", heading: "Como participar",
-      content: ["Parrafo"], link: { label: "Ver maestros", href: "/maestros" },
-    }),
-    desafio: () => ({
-      id: "desafio", tag: "Desafio", heading: "Que es el desafio", content: ["Parrafo"],
-    }),
-    habilidades: () => ({
-      id: "habilidades", tag: "Habilidades", heading: "Habilidades clave",
-      intro: "Intro", skills: [{ title: "Habilidad", desc: "Descripcion" }], outro: "Cierre",
-    }),
-    formato: () => ({
-      id: "formato", tag: "Formato", heading: "Formato del desafio",
-      stats: [{ value: "15", label: "Preguntas" }, { value: "45", label: "Minutos" }],
-      content: ["Parrafo"],
-    }),
-    certificados: () => ({
-      id: "certificados", tag: "Certificados", heading: "Certificados",
-      content: ["Parrafo"], cta: { label: "Inscribirse", href: "/registro" },
-    }),
-  };
-
-  const factory = map[type];
-  return factory ? factory() : null;
-}

@@ -232,56 +232,6 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
     ctaLabel: z.string(),
   }),
   z.object({
-    type: z.literal("contactInfoCards"),
-    tag: z.string(),
-    heading: z.string(),
-    cards: z.array(
-      z.object({
-        icon: z.string(),
-        title: z.string(),
-        description: z.string(),
-        linkLabel: z.string().optional(),
-        linkHref: z.string().optional(),
-        socialLinks: z
-          .array(
-            z.object({
-              label: z.string(),
-              href: z.string(),
-            })
-          )
-          .optional(),
-      })
-    ),
-  }),
-  z.object({
-    type: z.literal("contactInternational"),
-    tag: z.string(),
-    links: z.array(
-      z.object({
-        label: z.string(),
-        href: z.string(),
-        description: z.string(),
-      })
-    ),
-  }),
-  z.object({
-    type: z.literal("contactForm"),
-    tag: z.string(),
-    heading: z.string(),
-    fields: z.object({
-      name: z.object({ label: z.string(), placeholder: z.string() }),
-      email: z.object({ label: z.string(), placeholder: z.string() }),
-      role: z.object({
-        label: z.string(),
-        placeholder: z.string(),
-        options: z.array(z.string()),
-      }),
-      message: z.object({ label: z.string(), placeholder: z.string() }),
-    }),
-    submitLabel: z.string(),
-    disclaimer: z.string(),
-  }),
-  z.object({
     type: z.literal("contactClassic"),
     accent: BrandColorSchema.optional(),
     cardPalette: BrandPaletteSchema,
@@ -332,87 +282,6 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
       submitLabel: z.string(),
       disclaimer: z.string(),
     }),
-  }),
-  z.object({
-    type: z.literal("faqQuestions"),
-    categories: z.array(
-      z.object({
-        title: z.string(),
-        items: z.array(
-          z.object({
-            question: z.string(),
-            answer: z.string(),
-          })
-        ),
-      })
-    ),
-  }),
-  z.object({
-    type: z.literal("sponsorsCards"),
-    tag: z.string(),
-    columns: z.number().int().min(1).max(4),
-    cards: z.array(
-      z.object({
-        name: z.string(),
-        desc: z.string(),
-        image: z.string(),
-      })
-    ),
-  }),
-  z.object({
-    type: z.literal("docentesRegistro"),
-    tag: z.string(),
-    heading: z.string(),
-    intro: z.string(),
-    columns: z.number().int().min(1).max(4).optional(),
-    steps: z.array(
-      z.object({
-        num: z.string(),
-        title: z.string(),
-        desc: z.string(),
-      })
-    ),
-  }),
-  z.object({
-    type: z.literal("docentesRequisitos"),
-    tag: z.string(),
-    heading: z.string(),
-    columns: z.number().int().min(1).max(4).optional(),
-    requirements: z.array(
-      z.object({
-        icon: z.string(),
-        title: z.string(),
-        desc: z.string(),
-      })
-    ),
-  }),
-  z.object({
-    type: z.literal("docentesAlcance"),
-    tag: z.string(),
-    heading: z.string(),
-    content: z.array(z.string()),
-    tip: z.string(),
-  }),
-  z.object({
-    type: z.literal("teacherInstructionsTabs"),
-    accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema.optional(),
-    sectionTag: z.string(),
-    heading: z.string(),
-    subtitle: z.string(),
-    tabs: z.array(
-      z.object({
-        id: z.string(),
-        label: z.string(),
-        heading: z.string(),
-        items: z.array(
-          z.object({
-            title: z.string(),
-            desc: z.string(),
-          })
-        ),
-      })
-    ),
   }),
   z.object({
     type: z.literal("cta"),
@@ -664,58 +533,6 @@ export const estudiantesSchema = z.object({
 });
 
 // ── 14. docentes.json ────────────────────────────────────
-// Polymorphic sections discriminated by `id`
-
-const docentesRegistro = z.object({
-  id: z.literal("registro"),
-  tag: z.string(),
-  heading: z.string(),
-  intro: z.string(),
-  columns: z.number().int().min(1).max(4).optional(),
-  steps: z.array(
-    z.object({
-      num: z.string(),
-      title: z.string(),
-      desc: z.string(),
-    })
-  ),
-});
-
-const docentesRequisitos = z.object({
-  id: z.literal("requisitos"),
-  tag: z.string(),
-  heading: z.string(),
-  columns: z.number().int().min(1).max(4).optional(),
-  requirements: z.array(
-    z.object({
-      icon: z.string(),
-      title: z.string(),
-      desc: z.string(),
-    })
-  ),
-});
-
-const docentesAlcance = z.object({
-  id: z.literal("alcance"),
-  tag: z.string(),
-  heading: z.string(),
-  content: z.array(z.string()),
-  tip: z.string(),
-});
-
-const docentesCta = z.object({
-  id: z.literal("cta"),
-  heading: z.string(),
-  content: z.array(z.string()),
-  cta: LinkSchema,
-});
-
-const docentesSectionSchema = z.discriminatedUnion("id", [
-  docentesRegistro,
-  docentesRequisitos,
-  docentesAlcance,
-  docentesCta,
-]);
 
 export const docentesSchema = z.object({
   header: z.object({
