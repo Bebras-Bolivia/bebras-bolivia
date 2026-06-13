@@ -7,11 +7,8 @@ import { getNestedValue } from "./path-helpers";
 // ── Route mapping ────────────────────────────────────────
 export const fileToPage: Record<string, string> = {
   "home.json": "/",
-  "hero.json": "/",
-  "about.json": "/",
   "categories.json": "/",
   "scoring.json": "/",
-  "news.json": "/",
   "faq.json": "/faq/",
   "teacher-instructions.json": "/maestros/",
   "sponsors.json": "/sponsors/",

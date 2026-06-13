@@ -107,9 +107,8 @@ Todas estas pasaron de `bg-cream + grain-paper` (estilo editorial viejo) a `bg-b
 
 - `docentes.astro`, `estudiantes.astro`, `maestros.astro`
 - `faq.astro`, `contacto.astro`, `registro.astro`
-- `sponsors.astro`, `prueba.astro`, `[customPage].astro`
+- `sponsors.astro`, `prueba.astro`
 - `blog/index.astro`, `blog/[slug].astro`
-- `components/AboutBebras.astro`
 
 ---
 

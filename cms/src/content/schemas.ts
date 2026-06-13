@@ -294,25 +294,6 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-// ── 2. hero.json ─────────────────────────────────────────
-
-export const heroSchema = z.object({
-  badge: z.string(),
-  headline: z.object({
-    line1: z.string(),
-    line2: z.string(),
-    line3: z.string(),
-  }),
-  subtitle: z.string(),
-  ctaPrimary: LinkSchema,
-  ctaSecondary: LinkSchema,
-  mascot: z.object({
-    src: z.string(),
-    alt: z.string(),
-  }),
-  stats: z.array(StatSchema),
-});
-
 // ── Home page ─────────────────────────────────────────────
 
 const HomeEditorialSectionSchema = z.object({
@@ -392,25 +373,7 @@ export const homeSchema = z.object({
   components: z.array(SharedPageComponentSchema).optional(),
 });
 
-// ── 4. about.json ────────────────────────────────────────
-
-export const aboutSchema = z.object({
-  sectionTag: z.string(),
-  heading: z.string(),
-  headingHighlight: z.string(),
-  subtitle: z.string(),
-  cards: z.array(
-    z.object({
-      number: z.string(),
-      title: z.string(),
-      body: z.string(),
-      icon: z.string(),
-      link: LinkSchema.optional(),
-    })
-  ),
-});
-
-// ── 5. categories.json ───────────────────────────────────
+// ── 2. categories.json ───────────────────────────────────
 
 export const categoriesSchema = z.object({
   sectionTag: z.string(),
@@ -427,7 +390,7 @@ export const categoriesSchema = z.object({
   ),
 });
 
-// ── 6. scoring.json ──────────────────────────────────────
+// ── 3. scoring.json ──────────────────────────────────────
 
 export const scoringSchema = z.object({
   sectionTag: z.string(),
@@ -445,21 +408,7 @@ export const scoringSchema = z.object({
   summaryColumns: z.number().int().min(1).max(4).optional(),
 });
 
-// ── 7. news.json ─────────────────────────────────────────
-
-export const newsSchema = z.object({
-  slides: z.array(
-    z.object({
-      title: z.string(),
-      description: z.string(),
-      link: z.string(),
-      linkText: z.string(),
-      tag: z.string(),
-    })
-  ),
-});
-
-// ── 8. faq.json ──────────────────────────────────────────
+// ── 4. faq.json ──────────────────────────────────────────
 
 export const faqSchema = z.object({
   header: z.object({
@@ -470,7 +419,7 @@ export const faqSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 9. teacher-instructions.json ─────────────────────────
+// ── 5. teacher-instructions.json ─────────────────────────
 
 export const teacherInstructionsSchema = z.object({
   header: z.object({
@@ -481,7 +430,7 @@ export const teacherInstructionsSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 10. sponsors.json ────────────────────────────────────
+// ── 6. sponsors.json ────────────────────────────────────
 
 export const sponsorsSchema = z.object({
   header: z.object({
@@ -492,7 +441,7 @@ export const sponsorsSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 11. contact.json ─────────────────────────────────────
+// ── 7. contact.json ─────────────────────────────────────
 
 export const contactSchema = z.object({
   header: z.object({
@@ -503,7 +452,7 @@ export const contactSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 12. registro.json ────────────────────────────────────
+// ── 8. registro.json ────────────────────────────────────
 
 export const registroSchema = z.object({
   tag: z.string(),
@@ -521,7 +470,7 @@ export const registroSchema = z.object({
   components: z.array(SharedPageComponentSchema).optional(),
 });
 
-// ── 13. estudiantes.json ─────────────────────────────────
+// ── 9. estudiantes.json ─────────────────────────────────
 
 export const estudiantesSchema = z.object({
   header: z.object({
@@ -532,7 +481,7 @@ export const estudiantesSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 14. docentes.json ────────────────────────────────────
+// ── 10. docentes.json ────────────────────────────────────
 
 export const docentesSchema = z.object({
   header: z.object({
@@ -543,7 +492,7 @@ export const docentesSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 15. blog-ui.json ─────────────────────────────────────
+// ── 11. blog-ui.json ─────────────────────────────────────
 
 export const blogUiSchema = z.object({
   header: z.object({
@@ -555,7 +504,7 @@ export const blogUiSchema = z.object({
   components: z.array(SharedPageComponentSchema),
 });
 
-// ── 16. page-composition.json ─────────────────────────────
+// ── 12. page-composition.json ─────────────────────────────
 
 const ChildPlacementSchema = z.object({
   enabled: z.boolean(),
@@ -575,11 +524,8 @@ export const pageCompositionSchema = z.object({
 
 export const contentSchemas: Record<string, z.ZodType> = {
   "home.json": homeSchema,
-  "hero.json": heroSchema,
-  "about.json": aboutSchema,
   "categories.json": categoriesSchema,
   "scoring.json": scoringSchema,
-  "news.json": newsSchema,
   "faq.json": faqSchema,
   "teacher-instructions.json": teacherInstructionsSchema,
   "sponsors.json": sponsorsSchema,

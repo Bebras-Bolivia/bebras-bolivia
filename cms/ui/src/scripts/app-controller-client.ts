@@ -14,11 +14,8 @@ declare global {
 
 const contentMeta: Record<string, { label: string; desc: string; icon: string }> = {
   "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
-  "hero.json": { label: "Portada", desc: "Banner principal, llamados a la accion y estadisticas", icon: "zap" },
-  "about.json": { label: "Acerca de", desc: "Seccion que es Bebras, tarjetas", icon: "info" },
   "categories.json": { label: "Categorias", desc: "Grupos de edad y descripcion", icon: "layers" },
   "scoring.json": { label: "Puntaje", desc: "Tabla de puntajes, resumen", icon: "bar-chart" },
-  "news.json": { label: "Noticias", desc: "Slides del carrusel de noticias", icon: "newspaper" },
   "faq.json": { label: "Preguntas frecuentes", desc: "Preguntas frecuentes por categoria", icon: "help-circle" },
   "teacher-instructions.json": { label: "Maestros (guia)", desc: "Instrucciones en tabs", icon: "book-open" },
   "sponsors.json": { label: "Patrocinadores", desc: "Patrocinadores y ancla de navegacion", icon: "heart" },
@@ -31,10 +28,7 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
 };
 
 const hiddenContentFiles = new Set([
-  "hero.json",
-  "about.json",
   "categories.json",
-  "news.json",
   "scoring.json",
   "teacher-instructions.json",
   "page-composition.json",
