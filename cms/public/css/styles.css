@@ -866,32 +866,33 @@ a:hover { text-decoration: underline; }
 .media-stepper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
   margin-bottom: 0.875rem;
   position: relative;
-  --wizard-progress: 0%;
 }
 
-.media-stepper::before,
+/* Base rail — the full grey line */
+.media-stepper::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(100% / 6);      /* centre of step 1 */
+  right: calc(100% / 6);     /* centre of step 3 */
+  height: 2px;
+  transform: translateY(-50%);
+  background: var(--border);
+}
+
+/* Filled portion — driven by --stepper-fill set inline on the element */
 .media-stepper::after {
   content: "";
   position: absolute;
   top: 50%;
-  left: 1rem;
-  right: 1rem;
+  left: calc(100% / 6);
+  width: var(--stepper-fill, 0%);
   height: 2px;
   transform: translateY(-50%);
-}
-
-.media-stepper::before {
-  background: var(--border);
-}
-
-.media-stepper::after {
-  right: auto;
-  width: var(--wizard-progress);
   background: var(--border-focus);
+  transition: width 260ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .media-step {
@@ -914,18 +915,28 @@ a:hover { text-decoration: underline; }
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--bg-raised);
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 700;
   position: relative;
   z-index: 1;
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
 
-.media-step.is-current .media-step-num,
 .media-step.is-active .media-step-num {
+  background: #3a2c14;
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-surface));
+  color: var(--accent);
   border-color: var(--border-focus);
+}
+
+.media-step.is-current .media-step-num {
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .media-wizard-panel {
@@ -940,13 +951,19 @@ a:hover { text-decoration: underline; }
 }
 
 .media-wizard-preview {
+  grid-row: 1 / span 2;
   display: flex;
   align-items: flex-start;
 }
 
-.media-wizard-panel .form-group,
+/* On desktop the form-group and actions sit in the second column */
+.media-wizard-panel .form-group {
+  grid-column: 2;
+  margin-bottom: 0;
+}
+
 .media-wizard-actions {
-  grid-column: 1 / -1;
+  grid-column: 2;
 }
 
 .media-size-grid {
@@ -1029,20 +1046,35 @@ a:hover { text-decoration: underline; }
 
 .media-card-delete {
   position: absolute;
+  /* Inset so it stays inside the card border */
   top: 0.5rem;
   right: 0.5rem;
-  width: 2rem;
-  min-width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
   padding: 0;
-  border-radius: 999px;
+  /* Square corners to match the rest of the UI */
+  border-radius: var(--radius);
   justify-content: center;
   z-index: 2;
+  /* Red by default — it's a destructive action */
+  background: var(--danger);
+  color: #fff;
+  border: 1px solid var(--danger);
+  opacity: 1;
+  transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.media-card-delete:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 85%, #000);
+  border-color: color-mix(in srgb, var(--danger) 85%, #000);
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
 }
 
 .media-card-delete svg {
-  width: 15px;
-  height: 15px;
+  width: 13px;
+  height: 13px;
 }
 
 .editor-modal-overlay-center {
@@ -1079,10 +1111,43 @@ a:hover { text-decoration: underline; }
 }
 
 .btn-icon-only {
-  padding-inline: 0.625rem;
   width: 32px;
   height: 32px;
-  padding: 0.375rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG injected via dangerouslySetInnerHTML sits inside a <span>.
+   Without these rules the span is inline and can push the button taller
+   or off-centre. */
+.btn-icon-only > span,
+.btn-icon-only > span > svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+/* Publish button and editor save button in the main header:
+   force the same 32 px height and centre every child. */
+#header-publish-btn,
+#editor-save {
+  height: 32px;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG-bearing spans inside header action buttons */
+#header-publish-btn > span,
+#editor-save > span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
 }
 
 .header-context-actions {
@@ -2143,9 +2208,22 @@ a:hover { text-decoration: underline; }
   }
 
   .media-size-grid,
-  .media-wizard-panel,
   .media-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Wizard panel: stack image above controls on small screens */
+  .media-wizard-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .media-wizard-preview {
+    grid-row: auto;
+  }
+
+  .media-wizard-panel .form-group,
+  .media-wizard-actions {
+    grid-column: 1;
   }
 
   .media-stepper {
@@ -2162,11 +2240,6 @@ a:hover { text-decoration: underline; }
 
   .media-wizard-actions {
     flex-direction: column;
-  }
-
-  .media-wizard-panel .form-group,
-  .media-wizard-actions {
-    grid-column: 1;
   }
 
   .media-grid {
@@ -2261,8 +2334,11 @@ a:hover { text-decoration: underline; }
   }
 
   .header-context-actions .btn .btn-text,
-  .header-editor-actions .btn .btn-text {
-    display: none;
+  .header-editor-actions .btn .btn-text,
+  .header-actions .btn .btn-text,
+  #header-publish-btn .btn-text,
+  #editor-save .btn-text {
+    display: none !important;
   }
 
   .header-context-actions .btn,
@@ -2276,13 +2352,13 @@ a:hover { text-decoration: underline; }
     justify-content: center;
   }
 
-  /* Collapse header action buttons to icon-only on small screens. */
-  .header-actions .btn .btn-text {
-    display: none;
-  }
-
-  .header-actions .btn {
-    padding: 0.5rem;
+  /* Publish button and save button: square icon-only on mobile */
+  #header-publish-btn,
+  #editor-save {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    justify-content: center !important;
   }
 }
 

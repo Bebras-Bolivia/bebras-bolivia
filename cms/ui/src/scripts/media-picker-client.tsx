@@ -178,15 +178,29 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
         </div>
         {!markdownMode ? <p className="editor-modal-subtitle">Elige una imagen existente o sube una nueva.</p> : null}
 
-        {markdownMode ? (
-          <div className="media-stepper" aria-label="Pasos para insertar imagen">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className={`media-step${currentStep > step ? " is-complete" : ""}${currentStep >= step ? " is-active" : ""}${currentStep === step ? " is-current" : ""}`}>
-                <span className="media-step-num">{step}</span>
-              </div>
-            ))}
-          </div>
-        ) : null}
+        {markdownMode ? (() => {
+          // Rail runs from left:100%/6 to right:100%/6.
+          // Step centres: step1=100%/6, step2=100%/2, step3=100%*5/6.
+          // Fill width needed to reach each step from step1 centre:
+          //   step1 → 0, step2 → 100%/2 - 100%/6 = 100%/3, step3 → 100%*5/6 - 100%/6 = 100%*2/3
+          const stepperFill = currentStep === 1 ? "0%" : currentStep === 2 ? "calc(100% / 3)" : "calc(100% * 2 / 3)";
+          return (
+            <div
+              className="media-stepper"
+              aria-label="Pasos para insertar imagen"
+              style={{ "--stepper-fill": stepperFill } as React.CSSProperties}
+            >
+              {[1, 2, 3].map((step) => (
+                <div
+                  key={step}
+                  className={`media-step${currentStep > step ? " is-complete is-active" : ""}${currentStep === step ? " is-active is-current" : ""}`}
+                >
+                  <span className="media-step-num">{step}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })() : null}
 
         {(!markdownMode || currentStep === 1) ? (
           <div
