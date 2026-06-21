@@ -36,11 +36,7 @@ import {
   resetDndState,
 } from "../lib";
 
-declare global {
-  interface Window {
-    CMSEditorLib?: typeof lib;
-  }
-}
+
 
 const lib = {
   // path-helpers

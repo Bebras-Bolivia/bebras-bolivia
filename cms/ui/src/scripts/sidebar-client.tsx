@@ -16,13 +16,6 @@ type Payload = {
 
 const roots = new WeakMap<Element, Root>();
 
-declare global {
-  interface Window {
-    CMSSidebar?: {
-      mountTree: (target: Element, payload: Payload) => void;
-    };
-  }
-}
 
 function mountTree(target: Element, payload: Payload) {
   let root = roots.get(target);

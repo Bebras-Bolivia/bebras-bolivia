@@ -1,16 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare global {
-  interface Window {
-    API: any;
-    Toast: any;
-    App: any;
-    CMSEditorPreview?: {
-      ensure: (editor: any) => Promise<void>;
-      load: (editor: any, forceReload?: boolean) => void;
-    };
-  }
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SafeAny = any;

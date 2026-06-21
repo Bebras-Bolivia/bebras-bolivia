@@ -21,14 +21,7 @@ type ConfirmPayload = {
   tone?: "danger" | "default";
 };
 
-declare global {
-  interface Window {
-    CMSModal?: {
-      openPicker: (payload: PickerPayload) => Promise<string | null>;
-      openConfirm: (payload: ConfirmPayload) => Promise<boolean>;
-    };
-  }
-}
+
 
 function PickerModal({
   payload,

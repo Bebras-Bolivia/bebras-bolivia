@@ -30,20 +30,7 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    API: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    App: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Toast: any;
-    CMSMediaPicker?: {
-      open: () => Promise<string | null>;
-      openForMarkdown: () => Promise<{ markdown: string; url: string } | null>;
-    };
-  }
-}
+
 
 export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, onBack, onSave }: Props) {
   const [formSlug, setFormSlug] = useState(slug || "");

@@ -1,18 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare global {
-  interface Window {
-    CMS_BASE_PATH?: string;
-    API: any;
-    Toast: any;
-    CMSDashboard?: any;
-    CMSSidebar?: any;
-    Editor: any;
-    Blog: any;
-    Snapshots: any;
-    App?: any;
-  }
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const contentMeta: Record<string, { label: string; desc: string; icon: string }> = {
   "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
@@ -115,7 +100,10 @@ const App = {
       const target = (e.target as HTMLElement | null)?.closest("[data-nav]");
       if (!target) return;
       e.preventDefault();
-      this.navigate(target.getAttribute("data-nav"));
+      const navPath = target.getAttribute("data-nav");
+      if (navPath) {
+        this.navigate(navPath);
+      }
       this.closeMobileSidebar();
     });
     document.getElementById("logout-btn")?.addEventListener("click", (e) => {
@@ -174,7 +162,9 @@ const App = {
       });
       container.innerHTML = '<div id="react-sidebar-tree-root"></div>';
       const root = document.getElementById("react-sidebar-tree-root");
-      window.CMSSidebar?.mountTree(root, { nodes, icons, onNavigate: (path: string) => this.navigate(path) });
+      if (root) {
+        window.CMSSidebar?.mountTree(root, { nodes, icons, onNavigate: (path: string) => this.navigate(path) });
+      }
     } catch (err) {
       container.innerHTML = `<div class="sidebar-tree-loading">No se pudo cargar el contenido</div>`;
       console.error("Failed to render sidebar content tree", err);
@@ -242,17 +232,19 @@ const App = {
       const files = contentData.files || [];
       main.innerHTML = '<div id="react-dashboard-root"></div>';
       const root = document.getElementById("react-dashboard-root");
-      window.CMSDashboard?.mount(root, {
-        files,
-        posts: blogData.posts || [],
-        snapshots: snapshotData.snapshots || [],
-        publishData,
-        contentTree: this.getContentTree(files),
-        contentMeta,
-        icons,
-        onNavigate: (path: string) => this.navigate(path),
-        onPublish: () => this.handlePublish(),
-      });
+      if (root) {
+        window.CMSDashboard?.mount(root, {
+          files,
+          posts: blogData.posts || [],
+          snapshots: snapshotData.snapshots || [],
+          publishData,
+          contentTree: this.getContentTree(files),
+          contentMeta,
+          icons,
+          onNavigate: (path: string) => this.navigate(path),
+          onPublish: () => this.handlePublish(),
+        });
+      }
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : String(err);
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(errMsg)}</p></div>`;

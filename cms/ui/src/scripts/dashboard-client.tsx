@@ -25,13 +25,7 @@ type MountPayload = {
 
 const roots = new WeakMap<Element, Root>();
 
-declare global {
-  interface Window {
-    CMSDashboard?: {
-      mount: (target: Element, payload: MountPayload) => void;
-    };
-  }
-}
+
 
 function mount(target: Element, payload: MountPayload): void {
   let root = roots.get(target);

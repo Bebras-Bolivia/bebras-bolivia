@@ -61,14 +61,7 @@ const selectOptionLabels: Record<string, string> = {
   yaguarete: "Yaguarete",
 };
 
-declare global {
-  interface Window {
-    CMSEditor?: {
-      mountPrimitives: (target: Element, payload: PrimitivesPayload) => void;
-      unmountPrimitives: () => void;
-    };
-  }
-}
+
 
 function FieldInput({
   field,

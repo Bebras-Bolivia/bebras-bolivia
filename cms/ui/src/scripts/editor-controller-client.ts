@@ -1,23 +1,3 @@
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    API: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Toast: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    App: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CMSEditor?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CMSEditorLib: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CMSEditorPreview: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CMSModal?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Editor?: any;
-  }
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SafeAny = any;
@@ -29,6 +9,7 @@ const Editor = {
   devServerReady: false,
   devServerStarting: false,
   devServerPort: null as number | null,
+  previewMode: null as string | null,
   previewDraftTimer: null as ReturnType<typeof setTimeout> | null,
   collapsedItems: new Set<string>(),
   itemExpandedState: new Map<string, boolean>(),

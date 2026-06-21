@@ -1,14 +1,3 @@
-declare global {
-  interface Window {
-    CMS_BASE_PATH?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    API?: any;
-    Toast?: {
-      success: (msg: string) => void;
-      error: (msg: string) => void;
-    };
-  }
-}
 
 const API = {
   basePath: (window.CMS_BASE_PATH || "").replace(/\/$/, ""),

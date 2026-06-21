@@ -1,14 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare global {
-  interface Window {
-    API: any;
-    Toast: any;
-    App: any;
-    CMSSnapshots?: any;
-    Snapshots?: any;
-  }
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 type SafeAny = any;

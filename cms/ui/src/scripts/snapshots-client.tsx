@@ -15,13 +15,6 @@ type Payload = {
 
 const roots = new WeakMap<Element, Root>();
 
-declare global {
-  interface Window {
-    CMSSnapshots?: {
-      mountList: (target: Element, payload: Payload) => void;
-    };
-  }
-}
 
 function mountList(target: Element, payload: Payload) {
   let root = roots.get(target);

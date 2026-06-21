@@ -1,17 +1,3 @@
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    API: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Toast: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    App: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CMSBlog?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Blog?: any;
-  }
-}
 
 function formatDate(dateVal: string): string {
   if (!dateVal) return new Date().toISOString().split("T")[0];
@@ -94,7 +80,7 @@ const Blog = {
       frontmatter: {
         title: frontmatter.title || "",
         description: frontmatter.description || "",
-        date: formatDate(frontmatter.date),
+        date: formatDate(frontmatter.date || ""),
         author: frontmatter.author || "Bebras Bolivia",
         image: frontmatter.image || "",
       },

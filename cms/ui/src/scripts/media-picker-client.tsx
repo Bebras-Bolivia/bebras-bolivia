@@ -15,24 +15,6 @@ type ImageInsertResult = {
   url: string;
 };
 
-declare global {
-  interface Window {
-    CMS_BASE_PATH?: string;
-    CMSMediaPicker?: {
-      open: () => Promise<string | null>;
-      openForMarkdown: () => Promise<ImageInsertResult | null>;
-    };
-    CMSModal?: {
-      openConfirm: (payload: {
-        title: string;
-        message: string;
-        confirmLabel?: string;
-        cancelLabel?: string;
-        tone?: "danger" | "default";
-      }) => Promise<boolean>;
-    };
-  }
-}
 
 function cmsUrl(path: string): string {
   const basePath = (window.CMS_BASE_PATH || "").replace(/\/$/, "");

@@ -49,15 +49,7 @@ type EditorPayload = {
 const roots = new WeakMap<Element, Root>();
 let activeBlogRoot: Root | null = null;
 
-declare global {
-  interface Window {
-    CMSBlog?: {
-      mountList: (target: Element, payload: Payload) => void;
-      mountEditor: (target: Element, payload: EditorPayload) => void;
-      unmount: () => void;
-    };
-  }
-}
+
 
 function mountList(target: Element, payload: Payload) {
   let root = roots.get(target);
