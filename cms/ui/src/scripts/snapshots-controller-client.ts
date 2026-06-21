@@ -38,8 +38,13 @@ const Snapshots = {
       confirmLabel: "Crear respaldo",
       cancelLabel: "Cancelar",
       defaultValue: "",
+      maxLength: 120,
     });
     if (description === null) return;
+    if (description.trim().length > 120) {
+      window.Toast.error("El nombre del respaldo es demasiado largo");
+      return;
+    }
 
     try {
       await window.API.createSnapshot(description.trim());

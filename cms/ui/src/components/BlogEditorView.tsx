@@ -329,6 +329,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
                 value={formSlug}
                 placeholder="mi-nuevo-post"
                 pattern="[a-z0-9\-]+"
+                maxLength={80}
                 title="Solo letras minusculas, numeros y guiones"
                 onChange={(e) => setFormSlug(e.target.value)}
                 disabled={!isNew}
@@ -342,12 +343,12 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
             <div className="form-group">
               <label htmlFor="blog-title-react">Titulo</label>
-              <input type="text" id="blog-title-react" className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              <input type="text" id="blog-title-react" className="form-input" value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} required />
             </div>
 
             <div className="form-group">
               <label htmlFor="blog-desc-react">Descripcion</label>
-              <textarea id="blog-desc-react" className="form-textarea" rows={2} value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+              <textarea id="blog-desc-react" className="form-textarea" rows={2} value={description} maxLength={280} onChange={(e) => setDescription(e.target.value)}></textarea>
             </div>
 
             <div className="form-group">
@@ -385,6 +386,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
               id="blog-body-react"
               className="form-textarea mono"
               rows={20}
+              maxLength={50000}
               style={{ minHeight: "300px" }}
               ref={markdownRef}
               value={markdown}

@@ -38,7 +38,11 @@ snapshotRouter.get("/", (_req: Request, res: Response) => {
  */
 snapshotRouter.post("/", async (req: Request, res: Response) => {
   try {
-    const description = req.body?.description ?? "";
+    const description = String(req.body?.description ?? "").trim();
+    if (description.length > 120) {
+      res.status(400).json({ error: "Snapshot description too long" });
+      return;
+    }
     const author = (req as Request & { user?: { name?: string } }).user?.name ?? "Unknown";
     const meta = await createSnapshot(description, author);
     res.status(201).json(meta);

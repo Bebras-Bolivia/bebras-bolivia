@@ -27,6 +27,7 @@ type InputPayload = {
   label?: string;
   placeholder?: string;
   defaultValue?: string;
+  maxLength?: number;
   confirmLabel?: string;
   cancelLabel?: string;
 };
@@ -153,9 +154,11 @@ function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (val
               id="editor-modal-input"
               className="form-input"
               value={value}
+              maxLength={payload.maxLength || 120}
               placeholder={payload.placeholder}
               onChange={(e) => setValue(e.target.value)}
             />
+            <div className="form-hint">{value.length}/{payload.maxLength || 120}</div>
           </div>
           <div className="editor-confirm-actions editor-input-actions">
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => onClose(null)}>

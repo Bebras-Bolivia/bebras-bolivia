@@ -110,9 +110,13 @@ const Blog = {
         body: string;
       }) => {
         if (!nextSlug) return window.Toast.error("El slug es obligatorio");
+        if (nextSlug.length > 80) return window.Toast.error("El slug es demasiado largo");
         if (!nextFrontmatter.title) return window.Toast.error("El titulo es obligatorio");
+        if (nextFrontmatter.title.length > 120) return window.Toast.error("El titulo es demasiado largo");
         if (!nextFrontmatter.description) return window.Toast.error("La descripcion es obligatoria");
+        if (nextFrontmatter.description.length > 280) return window.Toast.error("La descripcion es demasiado larga");
         if (!nextFrontmatter.date) return window.Toast.error("La fecha es obligatoria");
+        if (nextBody.length > 50000) return window.Toast.error("El contenido es demasiado largo");
 
         try {
           if (isNew) {
