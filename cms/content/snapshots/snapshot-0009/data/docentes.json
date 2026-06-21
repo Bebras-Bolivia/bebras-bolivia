@@ -1,0 +1,129 @@
+{
+  "pageTitle": "Maestros",
+  "pageDescription": "Información para maestros y coordinadores escolares sobre cómo inscribir estudiantes en el Desafío Bebras Bolivia.",
+  "header": {
+    "tag": "Para maestros",
+    "heading": "Información para maestros",
+    "subtitle": "Guía completa para coordinadores escolares que desean inscribir a sus estudiantes en el Desafío Bebras."
+  },
+  "components": [
+    {
+      "type": "itemsGrid",
+      "tag": "Registro",
+      "heading": "¿Cómo inscribir a sus estudiantes?",
+      "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
+      "columns": 3,
+      "mediaType": "number",
+      "cardPalette": ["red", "yellow", "green"],
+      "items": [
+        {
+          "number": "1",
+          "title": "Registro del coordinador",
+          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
+        },
+        {
+          "number": "2",
+          "title": "Inscripción de estudiantes",
+          "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Yaguarete."
+        },
+        {
+          "number": "3",
+          "title": "Día del desafío",
+          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío."
+        }
+      ]
+    },
+    {
+      "type": "itemsGrid",
+      "tag": "Requisitos",
+      "heading": "¿Qué necesita la escuela?",
+      "columns": 2,
+      "mediaType": "icon",
+      "cardPalette": ["blue", "red", "yellow", "green"],
+      "items": [
+        {
+          "icon": "monitor",
+          "title": "Computadoras con navegador web",
+          "description": "Chrome, Firefox, Edge o Safari actualizados."
+        },
+        {
+          "icon": "wifi",
+          "title": "Conexión a internet",
+          "description": "Estable durante los 45 minutos del desafío."
+        },
+        {
+          "icon": "user",
+          "title": "Un coordinador registrado",
+          "description": "Maestro o representante que supervise la sesión."
+        },
+        {
+          "icon": "clock",
+          "title": "45 minutos de clase",
+          "description": "Un bloque horario durante la semana del desafío."
+        }
+      ]
+    },
+    {
+      "type": "sectionRichText",
+      "tag": "Alcance",
+      "accent": "blue",
+      "heading": "¿Quién debería participar?",
+      "paragraphs": [
+        "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel académico. El desafío está diseñado para ser accesible y no requiere conocimientos previos de informática o programación.",
+        "La participación amplia tiene ventajas: permite comparar resultados a nivel escolar y motivar a más estudiantes a desarrollar habilidades de pensamiento computacional."
+      ],
+      "tip": "Sugerencia: no se necesita una clase de informática dedicada. El desafío puede realizarse en cualquier hora de clase con acceso a computadoras."
+    },
+    {
+      "type": "tabsGuide",
+      "sectionTag": "Guía para coordinadores",
+      "heading": "Instrucciones para coordinadores",
+      "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
+      "cardPalette": ["blue", "red", "yellow"],
+      "tabs": [
+        {
+          "id": "antes",
+          "label": "Antes",
+          "heading": "Antes del desafío",
+          "items": [
+            { "title": "Registrarse como coordinador", "desc": "en la plataforma Bebras Bolivia y completar los datos de la escuela." },
+            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Guacamayo, Capibara, Titi, Jucumari y Yaguarete)." },
+            { "title": "Verificar el equipamiento", "desc": "Asegurar que las computadoras tengan navegador actualizado y conexión a internet estable." },
+            { "title": "Preparar a los estudiantes", "desc": "Compartir ejemplos de problemas de años anteriores para que se familiaricen con el formato." }
+          ]
+        },
+        {
+          "id": "durante",
+          "label": "Durante",
+          "heading": "Durante el desafío",
+          "items": [
+            { "title": "Supervisión", "desc": "El coordinador debe estar presente durante toda la sesión para resolver dudas técnicas." },
+            { "title": "Sin ayuda externa", "desc": "Los estudiantes deben resolver los problemas de forma individual, sin consultar a compañeros ni usar recursos externos." },
+            { "title": "Control del tiempo", "desc": "El sistema controla automáticamente los 45 minutos. El coordinador debe asegurar que todos inicien correctamente." },
+            { "title": "Problemas técnicos", "desc": "Si hay problemas de conectividad, contactar al soporte técnico. Se pueden hacer ajustes de tiempo en casos verificables." }
+          ]
+        },
+        {
+          "id": "despues",
+          "label": "Después",
+          "heading": "Después del desafío",
+          "items": [
+            { "title": "Resultados", "desc": "Los resultados estarán disponibles en la plataforma unos días después del desafío." },
+            { "title": "Certificados", "desc": "Todos los participantes reciben certificado digital. Los mejores puntajes reciben reconocimientos adicionales." },
+            { "title": "Discusión en clase", "desc": "Se recomienda revisar los problemas con los estudiantes para reforzar los conceptos de pensamiento computacional." },
+            { "title": "Problemas archivados", "desc": "Los problemas del desafío quedan disponibles como material didáctico para usar durante el año escolar." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "accent": "red",
+      "tag": "",
+      "heading": "¿Listo para inscribir a tu escuela?",
+      "text": "El registro es rápido, gratuito y te permite inscribir a todos los estudiantes que desees.",
+      "buttonLabel": "Registrarse como coordinador",
+      "buttonHref": "/registro"
+    }
+  ]
+}
