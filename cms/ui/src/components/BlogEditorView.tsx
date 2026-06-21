@@ -8,6 +8,12 @@ type Frontmatter = {
   author: string;
 };
 
+type MarkdownAction = {
+  label: string;
+  title: string;
+  onClick: () => void;
+};
+
 interface Props {
   isNew: boolean;
   slug: string;
@@ -171,16 +177,99 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     });
   };
 
+  const replaceSelection = (transform: (selected: string) => { text: string; selectStart?: number; selectEnd?: number }) => {
+    const textarea = markdownRef.current;
+    const start = textarea?.selectionStart ?? markdown.length;
+    const end = textarea?.selectionEnd ?? markdown.length;
+    const selected = markdown.slice(start, end);
+    const result = transform(selected);
+    const nextValue = `${markdown.slice(0, start)}${result.text}${markdown.slice(end)}`;
+    setMarkdown(nextValue);
+
+    window.requestAnimationFrame(() => {
+      if (!textarea) return;
+      textarea.focus();
+      const nextStart = start + (result.selectStart ?? result.text.length);
+      const nextEnd = start + (result.selectEnd ?? result.text.length);
+      textarea.setSelectionRange(nextStart, nextEnd);
+    });
+  };
+
+  const wrapSelection = (prefix: string, suffix: string, placeholder: string) => {
+    replaceSelection((selected) => {
+      const content = selected || placeholder;
+      return {
+        text: `${prefix}${content}${suffix}`,
+        selectStart: prefix.length,
+        selectEnd: prefix.length + content.length,
+      };
+    });
+  };
+
+  const prefixLines = (prefixFactory: (index: number) => string, placeholder: string) => {
+    replaceSelection((selected) => {
+      const content = selected || placeholder;
+      const lines = content.split("\n");
+      const next = lines.map((line, index) => `${prefixFactory(index)}${line || placeholder}`).join("\n");
+      return { text: next };
+    });
+  };
+
+  const insertHeading = (level: number) => {
+    const hashes = "#".repeat(level);
+    replaceSelection((selected) => {
+      const content = selected || "Titulo";
+      return {
+        text: `${hashes} ${content}`,
+        selectStart: hashes.length + 1,
+        selectEnd: hashes.length + 1 + content.length,
+      };
+    });
+  };
+
+  const insertSeparator = () => {
+    insertAtCursor(`${markdown.length > 0 && !markdown.endsWith("\n") ? "\n" : ""}\n---\n\n`);
+  };
+
+  const insertLink = () => {
+    replaceSelection((selected) => {
+      const label = selected || "Texto del enlace";
+      const url = "https://";
+      return {
+        text: `[${label}](${url})`,
+        selectStart: label.length + 3,
+        selectEnd: label.length + 11,
+      };
+    });
+  };
+
   const handleInsertImage = async () => {
     try {
       const selected = await window.CMSMediaPicker?.open?.();
       if (!selected) return;
+      const alt = prompt("Texto alternativo de la imagen", "Imagen")?.trim() || "Imagen";
+      const size = (prompt("Tamano: sm, md, lg o full (vacío = full)", "") || "").trim().toLowerCase();
+      const sizeSuffix = ["sm", "md", "lg", "full"].includes(size) && size !== "full" ? `|${size}` : "";
       const needsSpacing = markdown.length > 0 && !markdown.endsWith("\n");
-      insertAtCursor(`${needsSpacing ? "\n\n" : ""}![Imagen](${selected})\n`);
+      insertAtCursor(`${needsSpacing ? "\n\n" : ""}![${alt}${sizeSuffix}](${selected})\n`);
     } catch (err: any) {
       window.Toast.error(err?.message || "No se pudo abrir la galeria de imagenes");
     }
   };
+
+  const actions: MarkdownAction[] = [
+    { label: "H1", title: "Titulo grande", onClick: () => insertHeading(1) },
+    { label: "H2", title: "Subtitulo", onClick: () => insertHeading(2) },
+    { label: "H3", title: "Subtitulo pequeno", onClick: () => insertHeading(3) },
+    { label: "B", title: "Negrita", onClick: () => wrapSelection("**", "**", "texto") },
+    { label: "I", title: "Cursiva", onClick: () => wrapSelection("*", "*", "texto") },
+    { label: "Lista", title: "Lista con viñetas", onClick: () => prefixLines(() => "- ", "Elemento") },
+    { label: "1.", title: "Lista numerada", onClick: () => prefixLines((index) => `${index + 1}. `, "Elemento") },
+    { label: ">", title: "Cita", onClick: () => prefixLines(() => "> ", "Cita") },
+    { label: "Link", title: "Enlace", onClick: insertLink },
+    { label: "Img", title: "Insertar imagen", onClick: handleInsertImage },
+    { label: "---", title: "Separador", onClick: insertSeparator },
+  ];
 
   return (
     <>
@@ -250,11 +339,19 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           <div className="divider"></div>
 
           <div className="form-group">
-            <div className="blog-markdown-label-row">
-              <label htmlFor="blog-body-react">Contenido (Markdown)</label>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={handleInsertImage}>
-                Insertar imagen
-              </button>
+            <label htmlFor="blog-body-react">Contenido (Markdown)</label>
+            <div className="blog-markdown-toolbar" role="toolbar" aria-label="Atajos de Markdown">
+              {actions.map((action) => (
+                <button
+                  key={action.label + action.title}
+                  type="button"
+                  className="btn btn-ghost btn-sm blog-markdown-tool"
+                  title={action.title}
+                  onClick={action.onClick}
+                >
+                  {action.label}
+                </button>
+              ))}
             </div>
             <textarea
               id="blog-body-react"
