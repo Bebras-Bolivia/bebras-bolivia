@@ -8,6 +8,7 @@ import { createSnapshot } from "../snapshots/service.js";
 import { isDevServerRunning, stopDevServer, startDevServer } from "../preview/service.js";
 import { preserveDiacritics } from "../content/preserve-text.js";
 import { CONTENT_FILES } from "../content/schemas.js";
+import { copyUtf8TextFile } from "../lib/utf8-files.js";
 
 // Publish lock — reject concurrent publishes
 let isPublishing = false;
@@ -84,7 +85,7 @@ export async function publish(author: string): Promise<PublishLogRow> {
     const blogFiles = await readdir(config.currentBlogDir);
     for (const file of blogFiles) {
       if (file.endsWith(".md")) {
-        await cp(
+        await copyUtf8TextFile(
           join(config.currentBlogDir, file),
           join(config.landingBlogDir, file)
         );

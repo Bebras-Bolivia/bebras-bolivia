@@ -28,11 +28,19 @@ const Snapshots = {
   },
 
   async handleCreate() {
-    const description = prompt("Descripcion del respaldo (opcional):");
+    const description = await window.CMSModal?.openInput?.({
+      title: "Crear respaldo",
+      subtitle: "Ingresa un nombre o descripcion para identificar este respaldo.",
+      label: "Nombre del respaldo",
+      placeholder: "Ej. Antes de actualizar preguntas frecuentes",
+      confirmLabel: "Crear respaldo",
+      cancelLabel: "Cancelar",
+      defaultValue: "",
+    });
     if (description === null) return;
 
     try {
-      await window.API.createSnapshot(description);
+      await window.API.createSnapshot(description.trim());
       window.Toast.success("Respaldo creado");
       this.render();
     } catch (err: SafeAny) {
@@ -41,7 +49,13 @@ const Snapshots = {
   },
 
   async handleRestore(id: number) {
-    if (!confirm(`Restaurar respaldo #${id}? Esto reemplazara el contenido actual.`)) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: `Restaurar respaldo #${id}`,
+      message: "Esto reemplazara el contenido actual del CMS por el del respaldo seleccionado.",
+      confirmLabel: "Restaurar",
+      cancelLabel: "Cancelar",
+    });
+    if (!confirmed) return;
 
     try {
       await window.API.restoreSnapshot(id);
@@ -53,7 +67,14 @@ const Snapshots = {
   },
 
   async handleDelete(id: number) {
-    if (!confirm(`Eliminar respaldo #${id}? Esta accion no se puede deshacer.`)) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: `Eliminar respaldo #${id}`,
+      message: "Esta accion no se puede deshacer.",
+      confirmLabel: "Eliminar",
+      cancelLabel: "Cancelar",
+      tone: "danger",
+    });
+    if (!confirmed) return;
 
     try {
       await window.API.deleteSnapshot(id);

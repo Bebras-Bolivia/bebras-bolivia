@@ -21,6 +21,16 @@ type ConfirmPayload = {
   tone?: "danger" | "default";
 };
 
+type InputPayload = {
+  title: string;
+  subtitle?: string;
+  label?: string;
+  placeholder?: string;
+  defaultValue?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+};
+
 
 
 function PickerModal({
@@ -101,6 +111,66 @@ function ConfirmModal({ payload, onClose }: { payload: ConfirmPayload; onClose: 
   );
 }
 
+function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (value: string | null) => void }) {
+  const [value, setValue] = React.useState(payload.defaultValue || "");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose(null);
+    };
+    document.addEventListener("keydown", onEsc);
+    document.body.classList.add("editor-modal-open");
+    inputRef.current?.focus();
+    inputRef.current?.select();
+    return () => {
+      document.removeEventListener("keydown", onEsc);
+      document.body.classList.remove("editor-modal-open");
+    };
+  }, [onClose]);
+
+  return (
+    <div className="editor-modal-overlay editor-modal-overlay-center" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
+      <div className="editor-modal editor-input-modal">
+        <div className="editor-modal-header">
+          <h3>{payload.title}</h3>
+          <button type="button" className="editor-modal-close" aria-label="Cerrar" onClick={() => onClose(null)}>
+            x
+          </button>
+        </div>
+        {payload.subtitle ? <p className="editor-modal-subtitle">{payload.subtitle}</p> : null}
+        <form
+          className="editor-input-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            onClose(value);
+          }}
+        >
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            {payload.label ? <label htmlFor="editor-modal-input">{payload.label}</label> : null}
+            <input
+              ref={inputRef}
+              id="editor-modal-input"
+              className="form-input"
+              value={value}
+              placeholder={payload.placeholder}
+              onChange={(e) => setValue(e.target.value)}
+            />
+          </div>
+          <div className="editor-confirm-actions editor-input-actions">
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => onClose(null)}>
+              {payload.cancelLabel || "Cancelar"}
+            </button>
+            <button type="submit" className="btn btn-primary btn-sm">
+              {payload.confirmLabel || "Aceptar"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 async function openPicker(payload: PickerPayload): Promise<string | null> {
   const mount = document.createElement("div");
   document.body.appendChild(mount);
@@ -131,6 +201,21 @@ async function openConfirm(payload: ConfirmPayload): Promise<boolean> {
   });
 }
 
+async function openInput(payload: InputPayload): Promise<string | null> {
+  const mount = document.createElement("div");
+  document.body.appendChild(mount);
+  const root = createRoot(mount);
+
+  return new Promise((resolve) => {
+    const done = (value: string | null) => {
+      root.unmount();
+      mount.remove();
+      resolve(value);
+    };
+    root.render(<InputModal payload={payload} onClose={done} />);
+  });
+}
+
 export function registerModalRenderer() {
-  window.CMSModal = { openPicker, openConfirm };
+  window.CMSModal = { openPicker, openConfirm, openInput };
 }

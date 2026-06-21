@@ -5,7 +5,6 @@ declare global {
     API: any;
     Toast: any;
     App: any;
-    CMSDashboard: any;
     CMSSidebar: any;
     CMSEditor: any;
     CMSEditorLib: any;

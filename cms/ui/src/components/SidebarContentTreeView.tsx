@@ -70,7 +70,7 @@ export default function SidebarContentTreeView({ nodes, icons, onNavigate }: Pro
           }}
         >
           <span dangerouslySetInnerHTML={iconHtml(icons, "layers")}></span>
-          <span>Publicaciones</span>
+          <span>Blog</span>
         </a>
       </div>
     </>

@@ -39,7 +39,7 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --sidebar-w: 248px;
+  --sidebar-w: 216px;
   --header-h: 60px;
   --transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -756,11 +756,24 @@ a:hover { text-decoration: underline; }
   max-width: 420px;
 }
 
+.editor-input-modal {
+  max-width: 480px;
+}
+
+.editor-input-form {
+  display: grid;
+  gap: 1rem;
+}
+
 .editor-confirm-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.editor-input-actions {
+  margin-top: 0;
 }
 
 .editor-modal-close {

@@ -1,8 +1,9 @@
-import { readdir, mkdir, cp, rm, writeFile } from "fs/promises";
+import { readdir, mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 import { config } from "../config.js";
 import { getDb, type SnapshotRow } from "../db/index.js";
 import { CONTENT_FILES } from "../content/schemas.js";
+import { copyUtf8TextFile } from "../lib/utf8-files.js";
 
 export interface SnapshotMeta {
   id: number;
@@ -46,7 +47,7 @@ export async function createSnapshot(
   try {
     for (const file of CONTENT_FILES) {
       try {
-        await cp(
+        await copyUtf8TextFile(
           join(config.currentDataDir, file),
           join(snapshotDataDir, file)
         );
@@ -63,7 +64,7 @@ export async function createSnapshot(
     const blogFiles = await readdir(config.currentBlogDir);
     for (const file of blogFiles) {
       if (file.endsWith(".md")) {
-        await cp(
+        await copyUtf8TextFile(
           join(config.currentBlogDir, file),
           join(snapshotBlogDir, file)
         );
@@ -179,7 +180,7 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
   try {
     for (const file of CONTENT_FILES) {
       try {
-        await cp(
+        await copyUtf8TextFile(
           join(snapshotDataDir, file),
           join(config.currentDataDir, file)
         );
@@ -204,7 +205,7 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
     const blogFiles = await readdir(snapshotBlogDir);
     for (const file of blogFiles) {
       if (file.endsWith(".md")) {
-        await cp(
+        await copyUtf8TextFile(
           join(snapshotBlogDir, file),
           join(config.currentBlogDir, file)
         );

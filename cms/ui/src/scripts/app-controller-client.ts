@@ -171,8 +171,6 @@ const App = {
     }
   },
 
-  // The first content page (e.g. Inicio) is the CMS landing screen — a
-  // non-technical editor arrives straight at editable content, not a dashboard.
   firstContentFile() {
     return this.contentHierarchy[0]?.parent || "home.json";
   },
@@ -181,7 +179,7 @@ const App = {
     const path = this.appPathname();
     document.querySelectorAll("[data-nav]").forEach((el) => el.classList.toggle("active", el.getAttribute("data-nav") === path));
 
-    if (path === "/" || path === "/dashboard") {
+    if (path === "/") {
       const filename = this.firstContentFile();
       const meta = contentMeta[filename];
       this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
@@ -219,38 +217,6 @@ const App = {
     Promise.resolve().then(() => renderFn());
   },
 
-  async renderDashboard() {
-    const main = document.getElementById("main-content");
-    if (!main) return;
-    try {
-      const [contentData, blogData, snapshotData, publishData] = await Promise.all([
-        window.API.listContent(),
-        window.API.listBlog(),
-        window.API.listSnapshots(),
-        window.API.publishStatus().catch(() => null),
-      ]);
-      const files = contentData.files || [];
-      main.innerHTML = '<div id="react-dashboard-root"></div>';
-      const root = document.getElementById("react-dashboard-root");
-      if (root) {
-        window.CMSDashboard?.mount(root, {
-          files,
-          posts: blogData.posts || [],
-          snapshots: snapshotData.snapshots || [],
-          publishData,
-          contentTree: this.getContentTree(files),
-          contentMeta,
-          icons,
-          onNavigate: (path: string) => this.navigate(path),
-          onPublish: () => this.handlePublish(),
-        });
-      }
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(errMsg)}</p></div>`;
-    }
-  },
-
   getContentTree(files: string[]) {
     const existing = new Set(files.filter((file) => !hiddenContentFiles.has(file)));
     const seen = new Set<string>();
@@ -265,7 +231,14 @@ const App = {
   },
 
   async handlePublish() {
-    if (!confirm("Publicar el sitio? Esto creara un respaldo y reconstruira el sitio.")) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: "Publicar sitio",
+      message: "Esto creara un respaldo y reconstruira el sitio con el contenido actual.",
+      confirmLabel: "Publicar",
+      cancelLabel: "Cancelar",
+    });
+    if (!confirmed) return;
+
     try {
       await window.API.publish();
       window.Toast.success("Sitio publicado exitosamente");

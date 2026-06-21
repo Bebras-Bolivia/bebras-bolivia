@@ -35,7 +35,14 @@ const Blog = {
   },
 
   async handleDelete(slug: string) {
-    if (!confirm(`Eliminar la publicacion "${slug}"? Esta accion no se puede deshacer.`)) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: "Eliminar publicacion",
+      message: `Eliminar la publicacion "${slug}"? Esta accion no se puede deshacer.`,
+      confirmLabel: "Eliminar",
+      cancelLabel: "Cancelar",
+      tone: "danger",
+    });
+    if (!confirmed) return;
 
     try {
       await window.API.deleteBlog(slug);
