@@ -23,7 +23,7 @@ publishRouter.get("/status", (_req: Request, res: Response) => {
  */
 publishRouter.post("/", async (req: Request, res: Response) => {
   try {
-    const author = (req as any).user?.name ?? "Unknown";
+    const author = (req as Request & { user?: { name?: string } }).user?.name ?? "Unknown";
     const result = await publish(author);
     res.json({ ok: true, publish: result });
   } catch (err) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   interface Window {
     CMS_BASE_PATH?: string;
@@ -11,6 +12,7 @@ declare global {
     App?: any;
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const contentMeta: Record<string, { label: string; desc: string; icon: string }> = {
   "home.json": { label: "Inicio", desc: "Pagina de inicio completa", icon: "dashboard" },
@@ -65,7 +67,7 @@ const icons: Record<string, string> = {
 
 const App = {
   currentPage: null as string | null,
-  user: null as any,
+  user: null as { name: string; email: string } | null,
   basePath: (window.CMS_BASE_PATH || "").replace(/\/$/, ""),
   contentMeta,
   contentHierarchy,
@@ -109,8 +111,8 @@ const App = {
   },
 
   setupNav() {
-    document.querySelector(".sidebar-nav")?.addEventListener("click", (e: any) => {
-      const target = e.target.closest("[data-nav]");
+    document.querySelector(".sidebar-nav")?.addEventListener("click", (e: Event) => {
+      const target = (e.target as HTMLElement | null)?.closest("[data-nav]");
       if (!target) return;
       e.preventDefault();
       this.navigate(target.getAttribute("data-nav"));
@@ -160,7 +162,7 @@ const App = {
     try {
       const contentData = await window.API.listContent();
       const tree = this.getContentTree(contentData.files || []);
-      const nodes = tree.map((node: any) => {
+      const nodes = tree.map((node: { parent: string; children: string[] }) => {
         const parentMeta = contentMeta[node.parent] || { label: node.parent, icon: "edit" };
         return {
           parent: node.parent,
@@ -251,8 +253,9 @@ const App = {
         onNavigate: (path: string) => this.navigate(path),
         onPublish: () => this.handlePublish(),
       });
-    } catch (err: any) {
-      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(err.message)}</p></div>`;
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(errMsg)}</p></div>`;
     }
   },
 
@@ -274,8 +277,8 @@ const App = {
     try {
       await window.API.publish();
       window.Toast.success("Sitio publicado exitosamente");
-    } catch (err: any) {
-      const msg = err.message || "Error desconocido";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error desconocido";
       window.Toast.error(msg.length > 100 ? `Error al publicar: ${msg.slice(0, 120)}...` : `Error al publicar: ${msg}`);
       if (msg.length > 100) console.error("Full publish error:", msg);
     }

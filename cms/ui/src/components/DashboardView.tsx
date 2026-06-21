@@ -3,11 +3,20 @@ import React from "react";
 type ContentMeta = Record<string, { label?: string; desc?: string }>;
 type ContentNode = { parent: string; children: string[] };
 
+type PublishData = {
+  isPublishing?: boolean;
+  isBuilding?: boolean;
+  lastPublish?: {
+    finished_at?: string;
+    date?: string;
+  } | null;
+};
+
 interface DashboardData {
   files: string[];
   posts: unknown[];
   snapshots: unknown[];
-  publishData: any;
+  publishData: PublishData;
   contentTree: ContentNode[];
   contentMeta: ContentMeta;
   icons: Record<string, string>;

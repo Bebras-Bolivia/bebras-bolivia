@@ -2,11 +2,20 @@ import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import DashboardView from "../components/DashboardView";
 
+type PublishData = {
+  isPublishing?: boolean;
+  isBuilding?: boolean;
+  lastPublish?: {
+    finished_at?: string;
+    date?: string;
+  } | null;
+};
+
 type MountPayload = {
   files: string[];
   posts: unknown[];
   snapshots: unknown[];
-  publishData: any;
+  publishData: PublishData;
   contentTree: { parent: string; children: string[] }[];
   contentMeta: Record<string, { label?: string; desc?: string }>;
   icons: Record<string, string>;

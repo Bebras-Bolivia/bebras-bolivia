@@ -64,7 +64,7 @@ mediaRouter.post(
   upload.single("file"),
   async (req: Request, res: Response) => {
     try {
-      const file = (req as any).file;
+      const file = (req as Request & { file?: Express.Multer.File }).file;
       if (!file) {
         res.status(400).json({ error: "No file uploaded" });
         return;

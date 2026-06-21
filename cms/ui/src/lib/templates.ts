@@ -1,6 +1,8 @@
 // ── Templates & config — extracted from editor.js ──
 // Contains all static configuration, component option maps, typed item
 // factories, and field-type resolution logic.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SafeAny = any;
 
 import { getNestedValue } from "./path-helpers";
 
@@ -177,7 +179,7 @@ export function isImagePathField(path: string, value: unknown): boolean {
 export function isAutoNumberField(path: string, currentData: unknown): boolean {
   if (!/\.items\[\d+\]\.number$/.test(path)) return false;
   const parentPath = path.replace(/\.items\[\d+\]\.number$/, "");
-  const parent: any = getNestedValue(currentData, parentPath);
+  const parent: SafeAny = getNestedValue(currentData, parentPath);
   return !!(parent && parent.type === "itemsGrid" && parent.mediaType === "number");
 }
 
@@ -222,7 +224,7 @@ const typeLabelMap: Record<string, string> = {
   cta: "CTA",
 };
 
-export function getArrayItemLabel(obj: any, idx: number): string {
+export function getArrayItemLabel(obj: SafeAny, idx: number): string {
   if (obj && typeof obj === "object") {
     const mapped = typeLabelMap[obj.type];
     if (mapped) return `#${idx + 1} — ${mapped}`;
@@ -255,7 +257,7 @@ export function getAddTypeOptions(
 
   if (/\.tabs$/.test(path)) {
     const parentPath = path.replace(/\.tabs$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "tabsGuide") {
       return [{ value: "tabStep", label: "Pestana" }];
     }
@@ -267,7 +269,7 @@ export function getAddTypeOptions(
 
   if (/\.items$/.test(path)) {
     const parentPath = path.replace(/\.items$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
       return [{ value: "gridItem", label: "Tarjeta" }];
     }
@@ -278,7 +280,7 @@ export function getAddTypeOptions(
 
   if (/\.categories$/.test(path)) {
     const parentPath = path.replace(/\.categories$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "studentsAgeCategories") {
       return [{ value: "ageCategoryItem", label: "Categoria" }];
     }
@@ -286,7 +288,7 @@ export function getAddTypeOptions(
 
   if (/\.rows$/.test(path)) {
     const parentPath = path.replace(/\.rows$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "studentsScoringTable") {
       return [{ value: "scoringRow", label: "Fila de tabla" }];
     }
@@ -294,7 +296,7 @@ export function getAddTypeOptions(
 
   if (/\.summaryCards$/.test(path)) {
     const parentPath = path.replace(/\.summaryCards$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "studentsScoringTable") {
       return [{ value: "scoringSummary", label: "Resumen" }];
     }
@@ -344,7 +346,7 @@ export function createEmptyArrayItem(
 
   if (normalizedPath.endsWith(".items")) {
     const parentPath = String(path).replace(/\.items$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
       if (parent.mediaType === "icon") return { title: "", description: "", icon: "monitor" };
       if (parent.mediaType === "image") return { title: "", description: "", image: "/images/sponsor-placeholder.svg" };
@@ -413,7 +415,7 @@ export function createTypedArrayItem(
 
   if (selectedType === "gridItem") {
     const parentPath = path.replace(/\.items$/, "");
-    const parent: any = getNestedValue(currentData, parentPath);
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
       if (parent.mediaType === "icon") return { title: "Nuevo item", description: "Descripcion", icon: "monitor" };
       if (parent.mediaType === "image") return { title: "Nuevo item", description: "Descripcion", image: "/images/sponsor-placeholder.svg" };

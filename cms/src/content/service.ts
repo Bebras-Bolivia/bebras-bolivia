@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { config } from "../config.js";
 import { contentSchemas, CONTENT_FILES } from "./schemas.js";

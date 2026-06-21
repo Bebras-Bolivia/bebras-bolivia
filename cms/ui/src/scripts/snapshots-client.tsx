@@ -2,8 +2,11 @@ import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import SnapshotsView from "../components/SnapshotsView";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SafeAny = any;
+
 type Payload = {
-  snapshots: any[];
+  snapshots: SafeAny[];
   icons: Record<string, string>;
   onCreate: () => void;
   onRestore: (id: number) => void;

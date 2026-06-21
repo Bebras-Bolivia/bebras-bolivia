@@ -32,8 +32,11 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     API: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     App: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Toast: any;
     CMSMediaPicker?: {
       open: () => Promise<string | null>;
@@ -109,9 +112,9 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
         const targetPath = `/preview-site/blog/${encodeURIComponent(result.slug)}/`;
         setPreviewFrameSrc(`${window.App.appUrl(targetPath)}?t=${Date.now()}`);
         setPreviewReady(true);
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (cancelled) return;
-        setPreviewError(err?.message || "No se pudo generar la vista previa del post.");
+        setPreviewError(err instanceof Error ? err.message : "No se pudo generar la vista previa del post.");
       } finally {
         if (!cancelled) setPreviewLoading(false);
       }
@@ -136,6 +139,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeaderSlot(document.getElementById("header-editor-actions"));
     setHeaderContextSlot(document.getElementById("header-context-actions"));
   }, []);
@@ -252,8 +256,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       if (!selected) return;
       const needsSpacing = markdown.length > 0 && !markdown.endsWith("\n");
       insertAtCursor(`${needsSpacing ? "\n\n" : ""}${selected.markdown}\n`);
-    } catch (err: any) {
-      window.Toast.error(err?.message || "No se pudo abrir la galeria de imagenes");
+    } catch (err: unknown) {
+      window.Toast.error(err instanceof Error ? err.message : "No se pudo abrir la galeria de imagenes");
     }
   };
 

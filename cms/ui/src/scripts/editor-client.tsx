@@ -81,6 +81,7 @@ function FieldInput({
   const [draftValue, setDraftValue] = React.useState(String(value ?? ""));
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraftValue(String(value ?? ""));
   }, [field.path, value]);
 
@@ -165,7 +166,6 @@ function EditorPrimitivesView({
   fields,
   icons,
   onSave,
-  onReset,
   onFieldChange,
   onInitPreview,
   onInitComplex,

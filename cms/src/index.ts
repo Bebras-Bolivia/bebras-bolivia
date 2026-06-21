@@ -23,8 +23,8 @@ function stripBasePath(req: express.Request, _res: express.Response, next: expre
   const { basePath } = config;
   if (basePath && (req.url === basePath || req.url.startsWith(`${basePath}/`))) {
     req.url = req.url.slice(basePath.length) || "/";
-    delete (req as any)._parsedUrl;
-    delete (req as any)._parsedOriginalUrl;
+    delete (req as express.Request & { _parsedUrl?: unknown })._parsedUrl;
+    delete (req as express.Request & { _parsedOriginalUrl?: unknown })._parsedOriginalUrl;
   }
   next();
 }

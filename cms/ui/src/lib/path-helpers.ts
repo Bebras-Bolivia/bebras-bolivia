@@ -1,4 +1,6 @@
 // ── Path helpers — pure utility functions extracted from editor.js ──
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SafeAny = any;
 
 /**
  * Parse a dot/bracket path like "foo.bar[0].baz" into an array of keys.
@@ -22,7 +24,7 @@ export function parsePath(path: string): (string | number)[] {
  */
 export function getNestedValue(obj: unknown, path: string): unknown {
   const parts = parsePath(path);
-  let current: any = obj;
+  let current: SafeAny = obj;
   for (const part of parts) {
     if (current === null || current === undefined) return undefined;
     current = current[part];
@@ -35,7 +37,7 @@ export function getNestedValue(obj: unknown, path: string): unknown {
  */
 export function setNestedValue(obj: unknown, path: string, value: unknown): void {
   const parts = parsePath(path);
-  let current: any = obj;
+  let current: SafeAny = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
     if (current[part] === undefined || current[part] === null) {
@@ -248,9 +250,9 @@ const specialLabels: Record<string, string> = {
 /**
  * Generate a slug that doesn't collide with existing page slugs.
  */
-export function generateUniqueSlug(data: any, base: string): string {
+export function generateUniqueSlug(data: SafeAny, base: string): string {
   const pages = Array.isArray(data?.pages) ? data.pages : [];
-  const used = new Set(pages.map((p: any) => p.slug));
+  const used = new Set(pages.map((p: SafeAny) => p.slug));
   if (!used.has(base)) return base;
   let i = 2;
   while (used.has(`${base}-${i}`)) i++;

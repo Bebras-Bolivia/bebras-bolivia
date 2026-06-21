@@ -3,8 +3,17 @@ import { createRoot, type Root } from "react-dom/client";
 import BlogListView from "../components/BlogListView";
 import BlogEditorView from "../components/BlogEditorView";
 
+type BlogPost = {
+  slug: string;
+  frontmatter?: {
+    title?: string;
+    date?: string;
+    author?: string;
+  };
+};
+
 type Payload = {
-  posts: any[];
+  posts: BlogPost[];
   icons: Record<string, string>;
   onNew: () => void;
   onEdit: (slug: string) => void;

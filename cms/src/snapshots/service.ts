@@ -1,4 +1,4 @@
-import { readdir, mkdir, cp, rm, readFile, writeFile } from "fs/promises";
+import { readdir, mkdir, cp, rm, writeFile } from "fs/promises";
 import { join } from "path";
 import { config } from "../config.js";
 import { getDb, type SnapshotRow } from "../db/index.js";

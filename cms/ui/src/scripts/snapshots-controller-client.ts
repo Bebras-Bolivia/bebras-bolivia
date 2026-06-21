@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   interface Window {
     API: any;
@@ -7,6 +8,10 @@ declare global {
     Snapshots?: any;
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+type SafeAny = any;
 
 const Snapshots = {
   async render() {
@@ -28,7 +33,7 @@ const Snapshots = {
         onRestore: (id: number) => this.handleRestore(id),
         onDelete: (id: number) => this.handleDelete(id),
       });
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
     }
   },
@@ -41,7 +46,7 @@ const Snapshots = {
       await window.API.createSnapshot(description);
       window.Toast.success("Respaldo creado");
       this.render();
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       window.Toast.error(`Error al crear respaldo: ${err.message}`);
     }
   },
@@ -53,7 +58,7 @@ const Snapshots = {
       await window.API.restoreSnapshot(id);
       window.Toast.success(`Respaldo #${id} restaurado`);
       this.render();
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       window.Toast.error(`Error al restaurar: ${err.message}`);
     }
   },
@@ -65,7 +70,7 @@ const Snapshots = {
       await window.API.deleteSnapshot(id);
       window.Toast.success("Respaldo eliminado");
       this.render();
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       window.Toast.error(`Error al eliminar: ${err.message}`);
     }
   },

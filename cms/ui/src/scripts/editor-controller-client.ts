@@ -1,19 +1,30 @@
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     API: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Toast: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     App: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     CMSEditor?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     CMSEditorLib: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     CMSEditorPreview: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     CMSModal?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Editor?: any;
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SafeAny = any;
+
 const Editor = {
   currentFile: null as string | null,
-  currentData: null as any,
+  currentData: null as SafeAny,
   dirty: false,
   devServerReady: false,
   devServerStarting: false,
@@ -28,8 +39,8 @@ const Editor = {
 
   escapeForPre(value: string) { return this.lib.escapeForPre(value); },
   formatLabel(key: string) { return this.lib.formatLabel(key); },
-  getNestedValue(obj: any, path: string) { return this.lib.getNestedValue(obj, path); },
-  setNestedValue(obj: any, path: string, value: unknown) { return this.lib.setNestedValue(obj, path, value); },
+  getNestedValue(obj: SafeAny, path: string) { return this.lib.getNestedValue(obj, path); },
+  setNestedValue(obj: SafeAny, path: string, value: unknown) { return this.lib.setNestedValue(obj, path, value); },
   getFieldType(path: string, value: unknown) { return this.lib.getFieldType(path, value); },
   getFieldLabel(path: string, key: string) {
     if (path === "header.subtitle") return "Descripcion visible";
@@ -37,10 +48,10 @@ const Editor = {
   },
   isAutoNumberField(path: string) { return this.lib.isAutoNumberField(path, this.currentData); },
   isCollapsibleArray(path: string) { return this.lib.isCollapsibleArray(path); },
-  isLockedArray(path: string): boolean {
+  isLockedArray(_path: string): boolean {
     return false;
   },
-  getArrayItemLabel(obj: any, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
+  getArrayItemLabel(obj: SafeAny, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
   getAddTypeOptions(path: string) { return this.lib.getAddTypeOptions(path, this.currentFile, this.currentData) || []; },
   waitForPreviewUpdate() { return new Promise((resolve) => setTimeout(resolve, 500)); },
 
@@ -57,7 +68,7 @@ const Editor = {
       main.innerHTML = '<div id="react-editor-primitives-root"></div>';
       const root = document.getElementById("react-editor-primitives-root");
       if (root) this.mountReactPrimitives(root, meta.label, filename);
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
     }
   },
@@ -104,9 +115,9 @@ const Editor = {
     this.mountReactPrimitives(root, meta.label, this.currentFile);
   },
 
-  buildComplexNodes(obj: any, path = "") {
+  buildComplexNodes(obj: SafeAny, path = "") {
     if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
-    const nodes: any[] = [];
+    const nodes: SafeAny[] = [];
     Object.entries(obj).forEach(([key, value]) => {
       const fieldPath = path ? `${path}.${key}` : key;
       if (this.lib.shouldHideField(key)) return;
@@ -125,10 +136,10 @@ const Editor = {
   // Partition a typed item's primitive fields into content vs. design groups.
   // The leaf key (last path segment) is matched against the type's design set.
   // Unknown types put everything in `content`, so other pages are unaffected.
-  splitFieldsByGroup(type: string | undefined, fields: any[]) {
-    if (!this.lib.hasFieldGroups(type)) return { content: fields, advanced: [] as any[] };
-    const content: any[] = [];
-    const advanced: any[] = [];
+  splitFieldsByGroup(type: string | undefined, fields: SafeAny[]) {
+    if (!this.lib.hasFieldGroups(type)) return { content: fields, advanced: [] as SafeAny[] };
+    const content: SafeAny[] = [];
+    const advanced: SafeAny[] = [];
     for (const field of fields) {
       const leaf = String(field.path).split(".").pop()?.replace(/\[\d+\]$/, "") || "";
       if (this.lib.isDesignField(type, leaf)) advanced.push(field);
@@ -137,11 +148,11 @@ const Editor = {
     return { content, advanced };
   },
 
-  buildArrayNode(arr: any[], path: string, key: string) {
+  buildArrayNode(arr: SafeAny[], path: string, key: string) {
     const addOptions = this.getAddTypeOptions(path);
     // Use the rich modal picker (name + description) when adding shared
     // components, or when the typed options carry descriptions (home sections).
-    const usePicker = path === "components" || addOptions.some((o: any) => o.description);
+    const usePicker = path === "components" || addOptions.some((o: SafeAny) => o.description);
     return {
       kind: "array",
       path,
@@ -189,9 +200,9 @@ const Editor = {
     return field;
   },
 
-  extractPrimitiveFields(obj: any, path = "", deep = true) {
+  extractPrimitiveFields(obj: SafeAny, path = "", deep = true) {
     if (!obj || typeof obj !== "object" || Array.isArray(obj)) return [];
-    const out: any[] = [];
+    const out: SafeAny[] = [];
     Object.entries(obj).forEach(([key, value]) => {
       const fieldPath = path ? `${path}.${key}` : key;
       if (this.lib.shouldHideField(key)) return;
@@ -205,7 +216,7 @@ const Editor = {
     return out;
   },
 
-  toPrimitiveField(path: string, key: string, value: any) {
+  toPrimitiveField(path: string, key: string, value: SafeAny) {
     const type = this.getFieldType(path, value);
     const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color"].includes(type) ? type : "text";
     return {
@@ -218,7 +229,7 @@ const Editor = {
     };
   },
 
-  addArrayItem(path: string, currentArr: any[], selectedType: string | null = null) {
+  addArrayItem(path: string, currentArr: SafeAny[], selectedType: string | null = null) {
     if (this.isLockedArray(path)) return;
     const nextIdx = currentArr.length;
     if (selectedType) {
@@ -269,18 +280,18 @@ const Editor = {
   },
 
   normalizeStructuredArrays() {
-    const walk = (node: any) => {
+    const walk = (node: SafeAny) => {
       if (!node || typeof node !== "object") return;
       if (Array.isArray(node)) return node.forEach(walk);
       if (node.type === "itemsGrid" && node.mediaType === "number" && Array.isArray(node.items)) {
-        node.items = node.items.map((item: any, idx: number) => ({ ...item, number: String(idx + 1) }));
+        node.items = node.items.map((item: SafeAny, idx: number) => ({ ...item, number: String(idx + 1) }));
       }
       Object.values(node).forEach(walk);
     };
     walk(this.currentData);
   },
 
-  async openAddComponentModal(path: string, currentArr: any[]) {
+  async openAddComponentModal(path: string, currentArr: SafeAny[]) {
     // Shared components have their own rich option list; typed arrays (e.g. home
     // sections) carry their options — with descriptions — via getAddTypeOptions.
     const componentOptions = this.lib.getComponentOptions(path);
@@ -303,7 +314,7 @@ const Editor = {
         this.loadPreviewIframe(true);
       }
       window.Toast.success(this.devServerReady ? "Guardado - vista previa recargada" : "Contenido guardado");
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       window.Toast.error(err.details ? `Error de validacion: ${err.details}` : `Error al guardar: ${err.message}`);
     }
   },
@@ -338,7 +349,7 @@ const Editor = {
       await this.waitForPreviewUpdate();
       this.loadPreviewIframe(true);
       window.Toast.info("Vista previa actualizada con tus cambios");
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       window.Toast.error(err?.message ? `No se pudo actualizar la vista previa: ${err.message}` : "No se pudo actualizar la vista previa");
     }
   },

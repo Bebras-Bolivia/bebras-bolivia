@@ -58,7 +58,7 @@ export async function requireAuth(
       res.status(401).json({ error: "Invalid token subject" });
       return;
     }
-    (req as any).user = {
+    (req as Request & { user?: { id: number; email: string; name: string } }).user = {
       id: userId,
       email: payload.email,
       name: payload.name,

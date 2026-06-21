@@ -91,7 +91,7 @@ authRouter.post("/logout", (_req: Request, res: Response) => {
  * Requires authentication.
  */
 authRouter.get("/me", requireAuth, (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = (req as Request & { user?: { id: number; email: string; name: string } }).user;
   res.json({ user });
 });
 

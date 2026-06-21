@@ -32,7 +32,7 @@ snapshotRouter.get("/", (_req: Request, res: Response) => {
 snapshotRouter.post("/", async (req: Request, res: Response) => {
   try {
     const description = req.body?.description ?? "";
-    const author = (req as any).user?.name ?? "Unknown";
+    const author = (req as Request & { user?: { name?: string } }).user?.name ?? "Unknown";
     const meta = await createSnapshot(description, author);
     res.status(201).json(meta);
   } catch (err) {

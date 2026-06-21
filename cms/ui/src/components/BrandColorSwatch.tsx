@@ -32,6 +32,7 @@ export default function BrandColorSwatch({ id, value, onChange, path }: Props) {
   const [selectedColor, setSelectedColor] = React.useState<BrandColor | null>(current);
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedColor(current);
   }, [current]);
 

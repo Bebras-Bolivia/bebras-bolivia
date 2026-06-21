@@ -49,13 +49,13 @@ async function getFreePort(startPort: number): Promise<number> {
   return new Promise((resolve) => {
     const server = createServer();
     server.listen(startPort, () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as import("net").AddressInfo).port;
       server.close(() => resolve(port));
     });
     server.on("error", () => {
       const fbServer = createServer();
       fbServer.listen(0, () => {
-        const port = (fbServer.address() as any).port;
+        const port = (fbServer.address() as import("net").AddressInfo).port;
         fbServer.close(() => resolve(port));
       });
       fbServer.on("error", () => resolve(startPort + 1));
@@ -388,19 +388,20 @@ export async function syncBlogDraftToLanding(
     throw new PreviewError("Invalid blog slug for preview", 400);
   }
 
+  const fm = frontmatter as Record<string, unknown> | null | undefined;
   const normalized = blogFrontmatterSchema.safeParse({
-    title: typeof (frontmatter as any)?.title === "string" && (frontmatter as any).title.trim()
-      ? (frontmatter as any).title.trim()
+    title: typeof fm?.title === "string" && fm.title.trim()
+      ? fm.title.trim()
       : "Vista previa",
-    description: typeof (frontmatter as any)?.description === "string" && (frontmatter as any).description.trim()
-      ? (frontmatter as any).description.trim()
+    description: typeof fm?.description === "string" && fm.description.trim()
+      ? fm.description.trim()
       : "Borrador en vista previa del CMS.",
-    date: (frontmatter as any)?.date || new Date().toISOString().split("T")[0],
-    author: typeof (frontmatter as any)?.author === "string" && (frontmatter as any).author.trim()
-      ? (frontmatter as any).author.trim()
+    date: fm?.date || new Date().toISOString().split("T")[0],
+    author: typeof fm?.author === "string" && fm.author.trim()
+      ? fm.author.trim()
       : "Bebras Bolivia",
-    image: typeof (frontmatter as any)?.image === "string" && (frontmatter as any).image.trim()
-      ? (frontmatter as any).image.trim()
+    image: typeof fm?.image === "string" && fm.image.trim()
+      ? fm.image.trim()
       : undefined,
   });
 

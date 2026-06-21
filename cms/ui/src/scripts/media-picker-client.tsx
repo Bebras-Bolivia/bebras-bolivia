@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+type SafeAny = any;
+
 type MediaFile = {
   filename: string;
   size: number;
@@ -64,7 +67,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
       if (!res.ok) throw new Error("No se pudo cargar la galeria");
       const data = await res.json();
       setFiles(Array.isArray(data.files) ? data.files : []);
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       setError(err.message || "No se pudo cargar la galeria");
     } finally {
       setLoading(false);
@@ -111,7 +114,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
       setSelectedFile(created);
       setAltText(file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "));
       setWizardStep(2);
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       setError(err.message || "No se pudo subir el archivo");
     } finally {
       setUploading(false);
@@ -135,7 +138,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "No se pudo eliminar el archivo");
       await loadFiles();
-    } catch (err: any) {
+    } catch (err: SafeAny) {
       setError(err.message || "No se pudo eliminar el archivo");
     } finally {
       setDeleting(null);

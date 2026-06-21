@@ -1,9 +1,14 @@
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     API: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Toast: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     App: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     CMSBlog?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Blog?: any;
   }
 }
@@ -37,8 +42,9 @@ const Blog = {
         onEdit: (slug: string) => window.App.navigate(`/blog/edit/${encodeURIComponent(slug)}`),
         onDelete: (slug: string) => this.handleDelete(slug),
       });
-    } catch (err: any) {
-      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(errMsg)}</p></div>`;
     }
   },
 
@@ -49,8 +55,9 @@ const Blog = {
       await window.API.deleteBlog(slug);
       window.Toast.success("Publicacion eliminada");
       this.renderList();
-    } catch (err: any) {
-      window.Toast.error(`Error al eliminar: ${err.message}`);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      window.Toast.error(`Error al eliminar: ${errMsg}`);
     }
   },
 
@@ -59,13 +66,14 @@ const Blog = {
     if (!main) return;
 
     const isNew = !slug;
-    let post: any = null;
+    let post: { frontmatter?: { title?: string; description?: string; date?: string; author?: string; image?: string }; body?: string } | null = null;
 
     if (!isNew) {
       try {
         post = await window.API.getBlog(slug);
-      } catch (err: any) {
-        main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
+      } catch (err: unknown) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(errMsg)}</p></div>`;
         return;
       }
     }
@@ -93,7 +101,21 @@ const Blog = {
       body,
       icons: window.App.icons,
       onBack: () => window.App.navigate("/blog"),
-      onSave: async ({ slug: nextSlug, frontmatter: nextFrontmatter, body: nextBody }: any) => {
+      onSave: async ({
+        slug: nextSlug,
+        frontmatter: nextFrontmatter,
+        body: nextBody,
+      }: {
+        slug: string;
+        frontmatter: {
+          title: string;
+          description: string;
+          date: string;
+          author: string;
+          image?: string;
+        };
+        body: string;
+      }) => {
         if (!nextSlug) return window.Toast.error("El slug es obligatorio");
         if (!nextFrontmatter.title) return window.Toast.error("El titulo es obligatorio");
         if (!nextFrontmatter.description) return window.Toast.error("La descripcion es obligatoria");
@@ -108,8 +130,8 @@ const Blog = {
             await window.API.updateBlog(currentSlug, nextFrontmatter, nextBody);
             window.Toast.success("Publicacion guardada");
           }
-        } catch (err: any) {
-          window.Toast.error(`Error: ${err.message}`);
+        } catch (err: unknown) {
+          window.Toast.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
         }
       },
     });

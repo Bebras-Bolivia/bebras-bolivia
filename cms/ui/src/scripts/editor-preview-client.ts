@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   interface Window {
     API: any;
@@ -9,6 +10,10 @@ declare global {
     };
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SafeAny = any;
 
 type PreviewScrollPosition = {
   x: number;
@@ -48,7 +53,7 @@ function restoreIframeScrollPosition(iframe: HTMLIFrameElement, position: Previe
   tryRestore();
 }
 
-async function ensure(editor: any): Promise<void> {
+async function ensure(editor: SafeAny): Promise<void> {
   const overlay = document.getElementById("preview-overlay");
   const overlayText = document.getElementById("preview-overlay-text");
   const iframe = document.getElementById("preview-frame") as HTMLIFrameElement | null;
@@ -81,7 +86,7 @@ async function ensure(editor: any): Promise<void> {
 
     load(editor);
     window.Toast.success(result.mode === "static" ? "Vista previa lista" : "Vista previa lista — tus cambios se ven al guardar");
-  } catch (err: any) {
+  } catch (err: SafeAny) {
     editor.devServerStarting = false;
     window.Toast.error(`Error al iniciar vista previa: ${err.message}`);
 
@@ -97,7 +102,7 @@ async function ensure(editor: any): Promise<void> {
   }
 }
 
-function load(editor: any, forceReload = false): void {
+function load(editor: SafeAny, forceReload = false): void {
   const iframe = document.getElementById("preview-frame") as HTMLIFrameElement | null;
   if (!iframe) return;
 

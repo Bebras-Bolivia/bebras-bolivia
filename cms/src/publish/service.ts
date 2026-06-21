@@ -124,10 +124,6 @@ export async function publish(author: string): Promise<PublishLogRow> {
       "UPDATE publish_log SET status = 'failed', output = ?, finished_at = datetime('now') WHERE id = ?"
     ).run(errorMsg, logId);
 
-    const row = db
-      .query("SELECT * FROM publish_log WHERE id = ?")
-      .get(logId) as PublishLogRow;
-
     throw new PublishError(`Publish failed: ${errorMsg}`, 500);
   } finally {
     isPublishing = false;

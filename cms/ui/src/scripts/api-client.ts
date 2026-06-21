@@ -1,8 +1,12 @@
 declare global {
   interface Window {
     CMS_BASE_PATH?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     API?: any;
-    Toast?: any;
+    Toast?: {
+      success: (msg: string) => void;
+      error: (msg: string) => void;
+    };
   }
 }
 
@@ -47,9 +51,9 @@ const API = {
     const data = contentType.includes("application/json") ? await res.json() : await res.text();
 
     if (!res.ok) {
-      const err: any = new Error(typeof data === "object" && data.error ? data.error : `Error HTTP ${res.status}`);
+      const err = new Error(typeof data === "object" && data && "error" in data && typeof data.error === "string" ? data.error : `Error HTTP ${res.status}`) as Error & { status?: number; details?: unknown };
       err.status = res.status;
-      err.details = typeof data === "object" && data.details ? data.details : null;
+      err.details = typeof data === "object" && data && "details" in data ? data.details : null;
       throw err;
     }
 
