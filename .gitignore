@@ -50,3 +50,5 @@ src/data/*
 !src/data/site.json
 src/content/blog/*
 !src/content/blog/.gitkeep
+public/images/uploads/*
+!public/images/uploads/.gitkeep
