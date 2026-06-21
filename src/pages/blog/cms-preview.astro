@@ -1,0 +1,32 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getCollection, render } from "astro:content";
+import blogUi from "@/data/blog-ui.json";
+import BlogPostArticle from "@/components/BlogPostArticle.astro";
+
+const previewPost = (await getCollection("blog")).find((post) => post.id.replace(/\.md$/, "") === "cms-preview");
+const uiData = blogUi as any;
+const components: any[] = Array.isArray(uiData.components) ? uiData.components : [];
+const postUi = components.find((c) => c.type === "blogPostUi") || {
+  backLabel: "Volver al blog",
+  ctaLabel: "Inscribirse al desafio",
+};
+
+if (!previewPost) {
+  return Astro.redirect("/blog");
+}
+
+const { Content } = await render(previewPost);
+---
+
+<Layout title={previewPost.data.title} description={previewPost.data.description} image={previewPost.data.image}>
+  <BlogPostArticle
+    title={previewPost.data.title}
+    description={previewPost.data.description}
+    date={previewPost.data.date}
+    author={previewPost.data.author}
+    image={previewPost.data.image}
+    postUi={postUi}
+    Content={Content}
+  />
+</Layout>

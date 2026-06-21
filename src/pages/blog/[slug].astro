@@ -2,9 +2,12 @@
 import Layout from "@/layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
 import blogUi from "@/data/blog-ui.json";
+import BlogPostArticle from "@/components/BlogPostArticle.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  const posts = (await getCollection("blog")).filter(
+    (post) => post.id.replace(/\.md$/, "") !== "cms-preview"
+  );
   return posts.map((post) => ({
     params: { slug: post.id.replace(/\.md$/, "") },
     props: { post },
@@ -20,96 +23,16 @@ const postUi = components.find((c) => c.type === "blogPostUi") || {
   ctaLabel: "Inscribirse al desafio",
 };
 
-const formattedDate = post.data.date.toLocaleDateString("es-BO", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
 ---
 
 <Layout title={post.data.title} description={post.data.description} image={post.data.image}>
-  <article class="bg-bebras-paper py-14 lg:py-16 dark:bg-zinc-950">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <!-- Back link -->
-      <a
-        href="/blog"
-        class="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-1"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-        <span class="text-xs uppercase tracking-[0.15em] font-semibold">{postUi.backLabel}</span>
-      </a>
-
-      <!-- Header -->
-      <header class="mb-7">
-        <div class="flex items-center gap-3 mb-4">
-          <time datetime={post.data.date.toISOString()} class="text-xs uppercase tracking-[0.1em] text-muted-foreground font-mono">
-            {formattedDate}
-          </time>
-          {post.data.author && (
-            <>
-              <span class="rule-line w-8"></span>
-              <span class="text-xs uppercase tracking-[0.15em] text-muted-foreground font-semibold">{post.data.author}</span>
-            </>
-          )}
-        </div>
-        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
-          {post.data.title}
-        </h1>
-        <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
-          {post.data.description}
-        </p>
-        <div class="rule-line mt-5"></div>
-      </header>
-
-      <!-- Featured image -->
-      {post.data.image && (
-        <div class="overflow-hidden border-y border-border mb-8 py-4">
-          <img
-            src={post.data.image}
-            alt={post.data.title}
-            class="w-full aspect-video object-cover"
-          />
-        </div>
-      )}
-
-      <!-- Content -->
-      <div class="prose sm:prose-lg max-w-none
-        prose-headings:text-foreground prose-headings:font-bold prose-headings:tracking-tight
-        prose-p:text-muted-foreground prose-p:leading-relaxed
-        prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-primary/80
-        prose-strong:text-foreground
-        prose-li:text-muted-foreground
-        prose-ul:text-muted-foreground
-        prose-ol:text-muted-foreground
-        prose-table:text-muted-foreground
-        prose-th:text-foreground prose-th:font-semibold
-        prose-td:border-border prose-th:border-border
-        prose-hr:border-border
-        prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-blockquote:not-italic
-        prose-code:font-mono prose-code:text-primary
-      ">
-        <Content />
-      </div>
-
-      <!-- Footer -->
-      <div class="mt-10 pt-6 border-t border-border">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <a
-            href="/blog"
-            class="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-1"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-            <span class="text-xs uppercase tracking-[0.15em] font-semibold">{postUi.backLabel}</span>
-          </a>
-          <a
-            href="/blog"
-            class="group inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
-          >
-            {postUi.ctaLabel}
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </article>
+  <BlogPostArticle
+    title={post.data.title}
+    description={post.data.description}
+    date={post.data.date}
+    author={post.data.author}
+    image={post.data.image}
+    postUi={postUi}
+    Content={Content}
+  />
 </Layout>
