@@ -308,9 +308,8 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
                 >
                   <img src={file.url} alt={file.filename} className="media-card-thumb" />
                   <span className="title">{file.filename}</span>
-                  <span className="desc">{formatSize(file.size)}</span>
                 </button>
-                <button type="button" className="btn btn-danger btn-sm media-card-delete" disabled={deleting === file.filename} onClick={() => deleteFile(file.filename)}>
+                <button type="button" className="btn btn-danger btn-sm media-card-delete" aria-label={`Eliminar ${file.filename}`} disabled={deleting === file.filename} onClick={() => deleteFile(file.filename)}>
                   {deleting === file.filename ? "..." : "Eliminar"}
                 </button>
               </div>

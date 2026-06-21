@@ -273,14 +273,14 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     <>
       {headerSlot
         ? createPortal(
-            <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving} aria-label={isNew ? "Crear publicación" : "Guardar publicación"}>
+            <button className="btn btn-primary btn-sm btn-icon-only" onClick={handleSave} disabled={saving} aria-label={isNew ? "Crear publicación" : "Guardar publicación"} title={isNew ? "Crear publicación" : "Guardar publicación"}>
               {saving ? (
                 <>
-                  <div className="spinner" style={{ width: "14px", height: "14px" }}></div> Guardando...
+                  <div className="spinner" style={{ width: "14px", height: "14px" }}></div>
                 </>
               ) : (
                 <>
-                  <span dangerouslySetInnerHTML={iconHtml(icons, "save")}></span> {isNew ? "Crear" : "Guardar"}
+                  <span dangerouslySetInnerHTML={iconHtml(icons, "save")}></span>
                 </>
               )}
             </button>,
