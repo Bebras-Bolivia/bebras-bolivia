@@ -11,7 +11,9 @@ type Frontmatter = {
 type MarkdownAction = {
   label: string;
   title: string;
+  icon: React.ReactNode;
   onClick: () => void;
+  group?: string;
 };
 
 interface Props {
@@ -256,18 +258,34 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   };
 
   const actions: MarkdownAction[] = [
-    { label: "H1", title: "Titulo grande", onClick: () => insertHeading(1) },
-    { label: "H2", title: "Subtitulo", onClick: () => insertHeading(2) },
-    { label: "H3", title: "Subtitulo pequeno", onClick: () => insertHeading(3) },
-    { label: "B", title: "Negrita", onClick: () => wrapSelection("**", "**", "texto") },
-    { label: "I", title: "Cursiva", onClick: () => wrapSelection("*", "*", "texto") },
-    { label: "Lista", title: "Lista con viñetas", onClick: () => prefixLines(() => "- ", "Elemento") },
-    { label: "1.", title: "Lista numerada", onClick: () => prefixLines((index) => `${index + 1}. `, "Elemento") },
-    { label: ">", title: "Cita", onClick: () => prefixLines(() => "> ", "Cita") },
-    { label: "Link", title: "Enlace", onClick: insertLink },
-    { label: "Img", title: "Insertar imagen", onClick: handleInsertImage },
-    { label: "---", title: "Separador", onClick: insertSeparator },
+    /* ── Headings ── */
+    { label: "H1", title: "Título grande", group: "heading", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h8"/><path d="M4 18V6"/><path d="M12 18V6"/><path d="M17 12l3-2v8"/></svg>, onClick: () => insertHeading(1) },
+    { label: "H2", title: "Subtítulo", group: "heading", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h8"/><path d="M4 18V6"/><path d="M12 18V6"/><path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1"/></svg>, onClick: () => insertHeading(2) },
+    { label: "H3", title: "Subtítulo pequeño", group: "heading", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h8"/><path d="M4 18V6"/><path d="M12 18V6"/><path d="M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2"/><path d="M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2"/></svg>, onClick: () => insertHeading(3) },
+    /* ── Text formatting ── */
+    { label: "B", title: "Negrita", group: "format", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>, onClick: () => wrapSelection("**", "**", "texto") },
+    { label: "I", title: "Cursiva", group: "format", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>, onClick: () => wrapSelection("*", "*", "texto") },
+    /* ── Lists & quote ── */
+    { label: "Lista", title: "Lista con viñetas", group: "list", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>, onClick: () => prefixLines(() => "- ", "Elemento") },
+    { label: "1.", title: "Lista numerada", group: "list", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>, onClick: () => prefixLines((index) => `${index + 1}. `, "Elemento") },
+    { label: ">", title: "Cita", group: "list", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6H3"/><path d="M21 12H8"/><path d="M21 18H8"/><path d="M3 12l4-4-4-4" fill="none"/></svg>, onClick: () => prefixLines(() => "> ", "Cita") },
+    /* ── Insert ── */
+    { label: "Link", title: "Enlace", group: "insert", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, onClick: insertLink },
+    { label: "Img", title: "Insertar imagen", group: "insert", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>, onClick: handleInsertImage },
+    { label: "---", title: "Separador horizontal", group: "insert", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>, onClick: insertSeparator },
   ];
+
+  /* Group actions by their group key to render separators */
+  const groupedActions = actions.reduce<{ group: string; items: MarkdownAction[] }[]>((acc, action) => {
+    const last = acc[acc.length - 1];
+    if (last && last.group === (action.group || "")) {
+      last.items.push(action);
+    } else {
+      acc.push({ group: action.group || "", items: [action] });
+    }
+    return acc;
+  }, []);
+
 
   return (
     <>
@@ -349,16 +367,24 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           <div className="form-group">
             <label htmlFor="blog-body-react">Contenido (Markdown)</label>
             <div className="blog-markdown-toolbar" role="toolbar" aria-label="Atajos de Markdown">
-              {actions.map((action) => (
-                <button
-                  key={action.label + action.title}
-                  type="button"
-                  className="btn btn-ghost btn-sm blog-markdown-tool"
-                  title={action.title}
-                  onClick={action.onClick}
-                >
-                  {action.label}
-                </button>
+              {groupedActions.map((group, gi) => (
+                <React.Fragment key={group.group}>
+                  {gi > 0 && <span className="md-toolbar-sep" aria-hidden="true" />}
+                  <div className="md-toolbar-group">
+                    {group.items.map((action) => (
+                      <button
+                        key={action.label + action.title}
+                        type="button"
+                        className="md-tool-btn"
+                        title={action.title}
+                        aria-label={action.title}
+                        onClick={action.onClick}
+                      >
+                        <span className="md-tool-icon">{action.icon}</span>
+                      </button>
+                    ))}
+                  </div>
+                </React.Fragment>
               ))}
             </div>
             <textarea
