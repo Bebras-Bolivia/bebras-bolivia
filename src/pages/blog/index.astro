@@ -18,7 +18,7 @@ const indexUi = components.find((c) => c.type === "blogIndex") || {
 };
 ---
 
-<Layout title="Noticias" description="Noticias, recursos y novedades del Desafío Bebras Bolivia.">
+<Layout title={header.pageTitle || header.heading || "Noticias"} description={header.pageDescription || header.subtitle}>
   <div class="relative w-full">
     <InternalPageHero tag={header.tag} heading={header.heading || "Noticias"} description={header.subtitle} />
 
