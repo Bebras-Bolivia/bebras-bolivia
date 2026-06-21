@@ -9,6 +9,8 @@ type Payload = {
   snapshots: SafeAny[];
   icons: Record<string, string>;
   onCreate: () => void;
+  onUpload: (file: File) => void;
+  onDownload: (id: number) => void;
   onRestore: (id: number) => void;
   onDelete: (id: number) => void;
 };

@@ -19,6 +19,8 @@ const Snapshots = {
         snapshots,
         icons: window.App.icons,
         onCreate: () => this.handleCreate(),
+        onUpload: (file: File) => this.handleUpload(file),
+        onDownload: (id: number) => this.handleDownload(id),
         onRestore: (id: number) => this.handleRestore(id),
         onDelete: (id: number) => this.handleDelete(id),
       });
@@ -63,6 +65,25 @@ const Snapshots = {
       this.render();
     } catch (err: SafeAny) {
       window.Toast.error(`Error al restaurar: ${err.message}`);
+    }
+  },
+
+  handleDownload(id: number) {
+    const link = document.createElement("a");
+    link.href = window.API.downloadSnapshotUrl(id);
+    link.download = "";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  },
+
+  async handleUpload(file: File) {
+    try {
+      await window.API.uploadSnapshot(file);
+      window.Toast.success("Respaldo importado");
+      this.render();
+    } catch (err: SafeAny) {
+      window.Toast.error(`Error al importar: ${err.message}`);
     }
   },
 
