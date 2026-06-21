@@ -86,7 +86,7 @@ function ConfirmModal({ payload, onClose }: { payload: ConfirmPayload; onClose: 
   }, [onClose]);
 
   return (
-    <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(false)}>
+    <div className="editor-modal-overlay editor-modal-overlay-center" onClick={(e) => e.target === e.currentTarget && onClose(false)}>
       <div className="editor-modal editor-confirm-modal">
         <div className="editor-modal-header">
           <h3>{payload.title}</h3>

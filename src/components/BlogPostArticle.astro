@@ -135,7 +135,7 @@ const formattedDate = date.toLocaleDateString("es-BO", {
   }
 
   .blog-post-content a {
-    color: var(--color-bebras-blue, #324c87);
+    color: var(--color-bebras-green, #1b8f60);
     font-weight: 700;
     text-decoration: underline;
     text-decoration-thickness: 2px;
@@ -160,7 +160,7 @@ const formattedDate = date.toLocaleDateString("es-BO", {
   }
 
   .blog-post-content li::marker {
-    color: var(--color-bebras-blue, #324c87);
+    color: var(--color-bebras-green, #1b8f60);
     font-weight: 700;
   }
 
@@ -178,6 +178,9 @@ const formattedDate = date.toLocaleDateString("es-BO", {
 
   .blog-post-content .post-divider {
     margin: 2rem 0;
+    height: 1px;
+    width: 100%;
+    background: color-mix(in srgb, var(--color-bebras-green, #1b8f60) 22%, transparent);
   }
 
   .post-image {

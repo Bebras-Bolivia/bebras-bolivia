@@ -894,7 +894,7 @@ a:hover { text-decoration: underline; }
   color: var(--text);
 }
 
-.media-step.is-active:not(:last-child)::after {
+.media-step.is-complete:not(:last-child)::after {
   background: var(--border-focus);
 }
 
@@ -961,6 +961,7 @@ a:hover { text-decoration: underline; }
 .media-wizard-actions {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
@@ -995,6 +996,7 @@ a:hover { text-decoration: underline; }
 .media-card-thumb {
   width: 100%;
   aspect-ratio: 4 / 3;
+  max-height: 140px;
   object-fit: cover;
   border-radius: calc(var(--radius) - 2px);
   border: 1px solid var(--border-subtle);
@@ -1012,6 +1014,10 @@ a:hover { text-decoration: underline; }
 .media-card-delete {
   width: 100%;
   justify-content: center;
+}
+
+.editor-modal-overlay-center {
+  align-items: center;
 }
 
 .content-item .name {

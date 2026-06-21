@@ -183,7 +183,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
         {markdownMode ? (
           <div className="media-stepper" aria-label="Pasos para insertar imagen">
             {[1, 2, 3].map((step) => (
-              <div key={step} className={`media-step${currentStep >= step ? " is-active" : ""}${currentStep === step ? " is-current" : ""}`}>
+              <div key={step} className={`media-step${currentStep > step ? " is-complete" : ""}${currentStep >= step ? " is-active" : ""}${currentStep === step ? " is-current" : ""}`}>
                 <span className="media-step-num">{step}</span>
               </div>
             ))}
