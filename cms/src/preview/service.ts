@@ -322,7 +322,10 @@ export async function syncContentToLanding(): Promise<void> {
     // No blog files yet — fine
   }
 
-  // Copy media files
+  await syncMediaToLanding();
+}
+
+async function syncMediaToLanding(): Promise<void> {
   const uploadsDir = join(config.landingPublicDir, "images", "uploads");
   await mkdir(uploadsDir, { recursive: true });
   try {
@@ -410,6 +413,7 @@ export async function syncBlogDraftToLanding(
   const dest = join(config.landingBlogDir, `${resolvedSlug}.md`);
   const content = matter.stringify(String(body || "") + "\n", formatFrontmatter(normalized.data));
   await writeFile(dest, content, "utf-8");
+  await syncMediaToLanding();
 
   return resolvedSlug;
 }

@@ -1735,7 +1735,7 @@ a:hover { text-decoration: underline; }
 }
 
 .form-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: brightness(0) saturate(100%) invert(82%) sepia(41%) saturate(3172%) hue-rotate(344deg) brightness(102%) contrast(97%);
+  filter: brightness(0) saturate(100%) invert(74%) sepia(72%) saturate(720%) hue-rotate(359deg) brightness(102%) contrast(95%);
   cursor: pointer;
 }
 
