@@ -13,6 +13,7 @@ import { blogRouter } from "./blog/routes.js";
 import { mediaRouter } from "./media/routes.js";
 import { snapshotRouter } from "./snapshots/routes.js";
 import { publishRouter } from "./publish/routes.js";
+import { initializePublishScheduler } from "./publish/service.js";
 import { previewRouter } from "./preview/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
 import { CONTENT_FILES } from "./content/schemas.js";
@@ -312,6 +313,7 @@ async function boot() {
   await ensureRuntimeDirectories();
   await syncWorkingCopiesFromLanding();
   getDb();
+  initializePublishScheduler();
   await syncAdminFromEnv();
   app.listen(config.port, config.host, () => {
     console.log(`\nBebras CMS running at http://${config.host}:${config.port}${withBasePath("/")}`);
