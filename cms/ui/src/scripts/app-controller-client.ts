@@ -110,7 +110,7 @@ const App = {
       e.preventDefault();
       window.API.logout();
     });
-    document.getElementById("header-publish-btn")?.addEventListener("click", () => this.handlePublish());
+    document.getElementById("header-publish-btn")?.addEventListener("click", () => this.navigate("/publish"));
   },
 
   setupMobileSidebar() {

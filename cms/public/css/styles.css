@@ -512,13 +512,11 @@ a:hover { text-decoration: underline; }
 }
 
 .publish-hero {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
   gap: 1rem;
-  background:
-    radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 38%),
-    var(--bg-surface);
+  background: var(--bg-surface);
 }
 
 .publish-eyebrow {
@@ -537,7 +535,7 @@ a:hover { text-decoration: underline; }
 
 .publish-hero p {
   color: var(--text-secondary);
-  max-width: 42rem;
+  max-width: none;
 }
 
 .publish-hero-actions,
@@ -550,7 +548,7 @@ a:hover { text-decoration: underline; }
 
 .publish-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1.2fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -576,6 +574,10 @@ a:hover { text-decoration: underline; }
   font-size: 0.9375rem;
 }
 
+.publish-status-list strong {
+  line-height: 1.4;
+}
+
 .publish-schedule-form .form-group {
   flex: 1;
   margin-bottom: 0;
@@ -584,6 +586,40 @@ a:hover { text-decoration: underline; }
 .publish-active-schedule {
   justify-content: space-between;
   align-items: center;
+}
+
+.publish-active-schedule p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+
+.publish-active-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: var(--bg-surface);
+}
+
+.publish-active-card-copy {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.publish-active-card-copy h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.publish-active-card-copy p {
+  margin: 0.15rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 
 .publish-changes-header {
@@ -2571,7 +2607,6 @@ a:hover { text-decoration: underline; }
     align-items: flex-start;
   }
 
-  .publish-hero,
   .publish-hero-actions,
   .publish-schedule-form,
   .publish-active-schedule {
@@ -2579,9 +2614,19 @@ a:hover { text-decoration: underline; }
     align-items: stretch;
   }
 
+  .publish-hero {
+    grid-template-columns: 1fr;
+  }
+
   .publish-grid,
   .publish-change-item {
     grid-template-columns: 1fr;
+  }
+
+  .publish-active-card,
+  .publish-active-card-copy {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .publish-change-main {

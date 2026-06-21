@@ -63,7 +63,8 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
 
 function formatDate(value?: string | null) {
   if (!value) return "Sin fecha";
-  const date = new Date(value);
+  const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) ? `${value.replace(" ", "T")}Z` : value;
+  const date = new Date(normalized);
   if (Number.isNaN(date.getTime())) return "Sin fecha";
   return date.toLocaleString("es-BO", { dateStyle: "medium", timeStyle: "short" });
 }
@@ -96,7 +97,9 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
   const [runAt, setRunAt] = React.useState(defaultLocalDateTime);
   const isPublishing = Boolean(status?.isPublishing);
   const lastPublishDate = status?.lastPublish?.finished_at || status?.lastPublish?.started_at;
+  const lastPublishStatus = status?.lastPublish?.status;
   const hasChanges = changes.summary.total > 0;
+  const activeSchedule = schedule.active && ["scheduled", "running"].includes(schedule.active.status) ? schedule.active : null;
 
   return (
     <div className="publish-page">
@@ -104,16 +107,14 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
         <div>
           <div className="publish-eyebrow">Publicación del sitio</div>
           <h2>{hasChanges ? `${changes.summary.total} cambio${changes.summary.total === 1 ? "" : "s"} sin publicar` : "Todo está publicado"}</h2>
-          <p>
-            Revisa qué archivos cambiaron antes de publicar, o programa una publicación automática para más adelante.
-          </p>
+          <p>Revisa cambios pendientes o programa una publicación automática.</p>
         </div>
         <div className="publish-hero-actions">
           <button type="button" className="btn btn-ghost btn-sm" onClick={onRefresh}>
             <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> Actualizar
           </button>
-          <button type="button" className="btn btn-primary btn-sm" onClick={onPublish} disabled={isPublishing}>
-            <span dangerouslySetInnerHTML={iconHtml(icons, "publish")}></span> {isPublishing ? "Publicando..." : "Publicar ahora"}
+          <button type="button" className="btn btn-primary btn-sm" onClick={onPublish} disabled={isPublishing || !hasChanges}>
+            <span dangerouslySetInnerHTML={iconHtml(icons, "publish")}></span> {isPublishing ? "Publicando..." : "Publicar sitio"}
           </button>
         </div>
       </section>
@@ -126,32 +127,16 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
           <div className="publish-status-list">
             <div>
               <span>Última publicación</span>
-              <strong>{formatDate(lastPublishDate)}</strong>
-            </div>
-            <div>
-              <span>Estado actual</span>
-              <strong>{isPublishing ? "Publicando" : statusLabel(status?.lastPublish?.status || "Sin registro")}</strong>
+              <strong>{lastPublishStatus ? `${statusLabel(lastPublishStatus)} · ${formatDate(lastPublishDate)}` : formatDate(lastPublishDate)}</strong>
             </div>
           </div>
         </section>
 
-        <section className="card publish-schedule-card">
-          <div className="card-header">
-            <div className="card-title">Programar publicación</div>
-          </div>
-          {schedule.active ? (
-            <div className="publish-active-schedule">
-              <div>
-                <span className="badge badge-info">{statusLabel(schedule.active.status)}</span>
-                <strong>{formatDate(schedule.active.run_at)}</strong>
-              </div>
-              {schedule.active.status === "scheduled" ? (
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => onCancelSchedule(schedule.active!.id)}>
-                  Cancelar
-                </button>
-              ) : null}
+        {!activeSchedule ? (
+          <section className="card publish-schedule-card">
+            <div className="card-header">
+              <div className="card-title">Programar publicación</div>
             </div>
-          ) : (
             <form
               className="publish-schedule-form"
               onSubmit={(e) => {
@@ -165,9 +150,26 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
               </div>
               <button type="submit" className="btn btn-primary btn-sm">Programar</button>
             </form>
-          )}
-        </section>
+          </section>
+        ) : null}
       </div>
+
+      {activeSchedule ? (
+        <section className="card publish-active-card">
+          <div className="publish-active-card-copy">
+            <span className={`badge ${activeSchedule.status === "running" ? "badge-warning" : "badge-info"}`}>{statusLabel(activeSchedule.status)}</span>
+            <div>
+              <h3>{activeSchedule.status === "running" ? "Publicación en proceso" : "Publicación programada"}</h3>
+              <p>{formatDate(activeSchedule.run_at)}</p>
+            </div>
+          </div>
+          {activeSchedule.status === "scheduled" ? (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => onCancelSchedule(activeSchedule.id)}>
+              Cancelar programación
+            </button>
+          ) : null}
+        </section>
+      ) : null}
 
       <section className="card publish-changes-card">
         <div className="card-header publish-changes-header">
@@ -203,22 +205,6 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
         )}
       </section>
 
-      {schedule.history.length > 0 ? (
-        <section className="card publish-history-card">
-          <div className="card-header">
-            <div className="card-title">Historial programado</div>
-          </div>
-          <div className="publish-history-list">
-            {schedule.history.map((item) => (
-              <div className="publish-history-item" key={item.id}>
-                <span className="badge badge-info">{statusLabel(item.status)}</span>
-                <span>{formatDate(item.run_at)}</span>
-                {item.output ? <small>{item.output}</small> : null}
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
     </div>
   );
 }
