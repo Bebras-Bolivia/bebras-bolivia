@@ -1,14 +1,21 @@
 import { Router, type Request, type Response } from "express";
+import multer from "multer";
 import {
   createSnapshot,
   listSnapshots,
   getSnapshot,
   restoreSnapshot,
   deleteSnapshot,
+  exportSnapshotArchive,
+  importSnapshotArchive,
   SnapshotError,
 } from "./service.js";
 
 export const snapshotRouter = Router();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024, files: 1, fields: 1 },
+});
 
 /**
  * GET /api/snapshots
@@ -38,6 +45,47 @@ snapshotRouter.post("/", async (req: Request, res: Response) => {
   } catch (err) {
     console.error("Error creating snapshot:", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+snapshotRouter.post("/upload", upload.single("file"), async (req: Request, res: Response) => {
+  try {
+    const file = (req as Request & { file?: Express.Multer.File }).file;
+    if (!file) {
+      res.status(400).json({ error: "No file uploaded" });
+      return;
+    }
+    const author = (req as Request & { user?: { name?: string } }).user?.name ?? "Unknown";
+    const meta = await importSnapshotArchive(file.buffer, author);
+    res.status(201).json({ ok: true, snapshot: meta });
+  } catch (err) {
+    if (err instanceof SnapshotError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error importing snapshot:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+snapshotRouter.get("/:id/download", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string, 10);
+    if (isNaN(id)) {
+      res.status(400).json({ error: "Invalid snapshot ID" });
+      return;
+    }
+    const archive = await exportSnapshotArchive(id);
+    res.setHeader("Content-Type", "application/gzip");
+    res.setHeader("Content-Disposition", `attachment; filename=\"${archive.filename}\"`);
+    res.send(archive.buffer);
+  } catch (err) {
+    if (err instanceof SnapshotError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error exporting snapshot:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 });
 
