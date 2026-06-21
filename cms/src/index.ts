@@ -235,9 +235,11 @@ app.use("/_astro", async (req, res, next) => {
   } catch { next(); }
 });
 
-// Static fallback for /_astro/ and /images/ (when dev server is off, serve from dist)
+// Static fallback for /_astro/ and /images/.
+// /images points to landing/public so preview posts can load uploaded media from
+// /images/uploads/* in both dev-server and static-preview modes.
 app.use("/_astro", express.static(resolve(landingDistDir, "_astro")));
-app.use("/images", express.static(resolve(landingDistDir, "images")));
+app.use("/images", express.static(resolve(config.landingPublicDir, "images")));
 app.get("/favicon.svg", (_req, res) => {
   res.sendFile(resolve(landingDistDir, "favicon.svg"));
 });

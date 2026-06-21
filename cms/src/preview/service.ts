@@ -1,11 +1,13 @@
-import { readdir, cp, mkdir, writeFile, readFile } from "fs/promises";
+import { readdir, cp, mkdir, writeFile, readFile, rm } from "fs/promises";
 import { existsSync } from "fs";
 import { join, resolve } from "path";
 import { spawn, type ChildProcess } from "child_process";
+import matter from "gray-matter";
 import { config } from "../config.js";
 import { createServer } from "net";
 import { contentSchemas, CONTENT_FILES } from "../content/schemas.js";
 import { preserveDiacritics } from "../content/preserve-text.js";
+import { blogFrontmatterSchema, formatFrontmatter } from "../blog/service.js";
 
 // ── Dev Server State ──────────────────────────────────────
 let devProcess: ChildProcess | null = null;
@@ -13,6 +15,11 @@ let devServerReady = false;
 let devServerStarting = false;
 let devServerError: string | null = null;
 let devServerPort = 4322;
+const BLOG_PREVIEW_SLUG = "cms-preview";
+
+export function getBlogPreviewSlug(): string {
+  return BLOG_PREVIEW_SLUG;
+}
 
 export interface PreviewStatus {
   running: boolean;
@@ -365,6 +372,54 @@ export async function syncDraftToLanding(
 
   await mkdir(config.landingDataDir, { recursive: true });
   await writeFile(dest, JSON.stringify(result.data, null, 2) + "\n", "utf-8");
+}
+
+export async function syncBlogDraftToLanding(
+  slug: string,
+  frontmatter: unknown,
+  body: string,
+  usePreviewSlug = false
+): Promise<string> {
+  const resolvedSlug = usePreviewSlug ? BLOG_PREVIEW_SLUG : slug;
+  if (!resolvedSlug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(resolvedSlug)) {
+    throw new PreviewError("Invalid blog slug for preview", 400);
+  }
+
+  const normalized = blogFrontmatterSchema.safeParse({
+    title: typeof (frontmatter as any)?.title === "string" && (frontmatter as any).title.trim()
+      ? (frontmatter as any).title.trim()
+      : "Vista previa",
+    description: typeof (frontmatter as any)?.description === "string" && (frontmatter as any).description.trim()
+      ? (frontmatter as any).description.trim()
+      : "Borrador en vista previa del CMS.",
+    date: (frontmatter as any)?.date || new Date().toISOString().split("T")[0],
+    author: typeof (frontmatter as any)?.author === "string" && (frontmatter as any).author.trim()
+      ? (frontmatter as any).author.trim()
+      : "Bebras Bolivia",
+    image: typeof (frontmatter as any)?.image === "string" && (frontmatter as any).image.trim()
+      ? (frontmatter as any).image.trim()
+      : undefined,
+  });
+
+  if (!normalized.success) {
+    const details = normalized.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+    throw new PreviewError(`Blog draft validation failed: ${details}`, 400);
+  }
+
+  await mkdir(config.landingBlogDir, { recursive: true });
+  const dest = join(config.landingBlogDir, `${resolvedSlug}.md`);
+  const content = matter.stringify(String(body || "") + "\n", formatFrontmatter(normalized.data));
+  await writeFile(dest, content, "utf-8");
+
+  return resolvedSlug;
+}
+
+export async function cleanupBlogDraftPreview(): Promise<void> {
+  try {
+    await rm(join(config.landingBlogDir, `${BLOG_PREVIEW_SLUG}.md`));
+  } catch {
+    // Missing preview file is fine.
+  }
 }
 
 async function readJsonIfExists(filePath: string): Promise<unknown> {

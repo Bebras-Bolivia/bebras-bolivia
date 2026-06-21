@@ -5,6 +5,9 @@ import {
   getPreviewStatus,
   syncContentToLanding,
   syncDraftToLanding,
+  syncBlogDraftToLanding,
+  cleanupBlogDraftPreview,
+  getBlogPreviewSlug,
   PreviewError,
 } from "./service.js";
 
@@ -90,6 +93,41 @@ previewRouter.post("/draft", async (req: Request, res: Response) => {
       res.status(err.status).json({ error: err.message });
     } else {
       console.error("Error syncing draft preview:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+previewRouter.post("/blog-draft", async (req: Request, res: Response) => {
+  try {
+    const { slug, frontmatter, body, usePreviewSlug } = req.body ?? {};
+    if (frontmatter === undefined || body === undefined) {
+      return res.status(400).json({ error: "frontmatter and body are required" });
+    }
+
+    const useTempSlug = Boolean(usePreviewSlug);
+    const previewSlug = await syncBlogDraftToLanding(String(slug || ""), frontmatter, String(body || ""), useTempSlug);
+    res.json({ ok: true, slug: useTempSlug ? getBlogPreviewSlug() : previewSlug });
+  } catch (err) {
+    if (err instanceof PreviewError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error syncing blog draft preview:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+previewRouter.post("/blog-draft/cleanup", async (_req: Request, res: Response) => {
+  try {
+    await cleanupBlogDraftPreview();
+    await syncContentToLanding();
+    res.json({ ok: true });
+  } catch (err) {
+    if (err instanceof PreviewError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error cleaning blog draft preview:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   }

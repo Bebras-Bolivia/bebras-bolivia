@@ -215,7 +215,7 @@ export async function deletePost(slug: string): Promise<void> {
 /**
  * Format frontmatter for gray-matter output (date as YYYY-MM-DD string).
  */
-function formatFrontmatter(fm: BlogFrontmatter): Record<string, unknown> {
+export function formatFrontmatter(fm: BlogFrontmatter): Record<string, unknown> {
   return {
     title: fm.title,
     description: fm.description,
