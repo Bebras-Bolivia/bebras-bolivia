@@ -39,6 +39,7 @@ function getLandingBlogDir(): string {
 }
 
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const PREVIEW_SLUG = "cms-preview";
 
 function assertValidSlug(slug: string): void {
   if (typeof slug !== "string" || !SLUG_REGEX.test(slug)) {
@@ -71,6 +72,7 @@ export async function listPosts(): Promise<BlogPostSummary[]> {
 
   for (const file of files) {
     const slug = file.replace(/\.md$/, "");
+    if (slug === PREVIEW_SLUG) continue;
     let raw: string;
     try {
       raw = await readFile(join(dir, file), "utf-8");

@@ -5,9 +5,9 @@ import blogUi from "@/data/blog-ui.json";
 import InternalPageHero from "@/components/InternalPageHero.astro";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 
-const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
+const posts = (await getCollection("blog"))
+  .filter((post) => post.id.replace(/\.md$/, "") !== "cms-preview")
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const uiData = blogUi as any;
 const header = uiData.header || {};
