@@ -2310,11 +2310,13 @@ a:hover { text-decoration: underline; }
   margin-bottom: 0.5rem;
 }
 
-.form-input[type="date"] {
+.form-input[type="date"],
+.form-input[type="datetime-local"] {
   color-scheme: dark;
 }
 
-.form-input[type="date"]::-webkit-calendar-picker-indicator {
+.form-input[type="date"]::-webkit-calendar-picker-indicator,
+.form-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: brightness(0) saturate(100%) invert(74%) sepia(72%) saturate(720%) hue-rotate(359deg) brightness(102%) contrast(95%);
   cursor: pointer;
 }
