@@ -1,8 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import blogUi from "@/data/blog-ui.json";
 import BlogPostArticle from "@/components/BlogPostArticle.astro";
+import { renderBlogMarkdown } from "@/lib/blog-markdown";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog")).filter(
@@ -15,13 +16,13 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
 const uiData = blogUi as any;
 const components: any[] = Array.isArray(uiData.components) ? uiData.components : [];
 const postUi = components.find((c) => c.type === "blogPostUi") || {
   backLabel: "Volver al blog",
   ctaLabel: "Inscribirse al desafio",
 };
+const contentHtml = renderBlogMarkdown(post.body || "");
 
 ---
 
@@ -33,6 +34,6 @@ const postUi = components.find((c) => c.type === "blogPostUi") || {
     author={post.data.author}
     image={post.data.image}
     postUi={postUi}
-    Content={Content}
+    contentHtml={contentHtml}
   />
 </Layout>

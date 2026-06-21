@@ -1,8 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import blogUi from "@/data/blog-ui.json";
 import BlogPostArticle from "@/components/BlogPostArticle.astro";
+import { renderBlogMarkdown } from "@/lib/blog-markdown";
 
 const previewPost = (await getCollection("blog")).find((post) => post.id.replace(/\.md$/, "") === "cms-preview");
 const uiData = blogUi as any;
@@ -16,7 +17,7 @@ if (!previewPost) {
   return Astro.redirect("/blog");
 }
 
-const { Content } = await render(previewPost);
+const contentHtml = renderBlogMarkdown(previewPost.body || "");
 ---
 
 <Layout title={previewPost.data.title} description={previewPost.data.description} image={previewPost.data.image}>
@@ -27,6 +28,6 @@ const { Content } = await render(previewPost);
     author={previewPost.data.author}
     image={previewPost.data.image}
     postUi={postUi}
-    Content={Content}
+    contentHtml={contentHtml}
   />
 </Layout>

@@ -9,10 +9,10 @@ interface Props {
     backLabel?: string;
     ctaLabel?: string;
   };
-  Content: any;
+  contentHtml: string;
 }
 
-const { title, description, date, author, image, postUi, Content } = Astro.props;
+const { title, description, date, author, image, postUi, contentHtml } = Astro.props;
 
 const formattedDate = date.toLocaleDateString("es-BO", {
   year: "numeric",
@@ -77,7 +77,7 @@ const formattedDate = date.toLocaleDateString("es-BO", {
       prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-blockquote:not-italic
       prose-code:font-mono prose-code:text-primary
     ">
-      <Content />
+      <Fragment set:html={contentHtml} />
     </div>
 
     <div class="mt-10 pt-6 border-t border-border">
@@ -100,3 +100,45 @@ const formattedDate = date.toLocaleDateString("es-BO", {
     </div>
   </div>
 </article>
+
+<style is:global>
+  .post-image {
+    margin: 1.5rem auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .post-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .post-image--sm {
+    max-width: 40%;
+  }
+
+  .post-image--md {
+    max-width: 60%;
+  }
+
+  .post-image--lg {
+    max-width: 80%;
+  }
+
+  .post-image--full {
+    max-width: 100%;
+  }
+
+  @media (max-width: 900px) {
+    .post-image--sm,
+    .post-image--md,
+    .post-image--lg,
+    .post-image--full {
+      max-width: 100%;
+    }
+  }
+</style>
