@@ -96,6 +96,10 @@ export type ComponentOption = {
   description: string;
 };
 
+function isComponentsPath(path: string): boolean {
+  return path === "components" || path.endsWith(".components");
+}
+
 // ── Component options for "add component" modal ──────────
 const componentOptionsList: ComponentOption[] = [
   { value: "sectionRichText", label: "Seccion de Texto", description: "Titulo, parrafos y tip opcional" },
@@ -119,7 +123,7 @@ const componentOptionsList: ComponentOption[] = [
 ];
 
 export function getComponentOptions(path: string): ComponentOption[] {
-  if (path === "components") return componentOptionsList;
+  if (isComponentsPath(path)) return componentOptionsList;
   return [];
 }
 
@@ -348,17 +352,18 @@ export function createEmptyArrayItem(
     const parentPath = String(path).replace(/\.items$/, "");
     const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
-      if (parent.mediaType === "icon") return { title: "", description: "", icon: "monitor" };
-      if (parent.mediaType === "image") return { title: "", description: "", image: "/images/sponsor-placeholder.svg" };
-      if (parent.mediaType === "number") return { number: "", title: "", description: "" };
-      return { title: "", description: "" };
+      const base = { title: "", description: "", linkLabel: "", linkHref: "", socialLinks: [] };
+      if (parent.mediaType === "icon") return { ...base, icon: "monitor" };
+      if (parent.mediaType === "image") return { ...base, image: "/images/sponsor-placeholder.svg" };
+      if (parent.mediaType === "number") return { ...base, number: "" };
+      return base;
     }
   }
 
   // Link-shaped arrays used across contact.international.links, etc.
   // Schemas: `contact.international.links` → adds a `description` field
   if (normalizedPath.endsWith("socialLinks")) {
-    return { label: "", href: "", icon: "" };
+    return { label: "", href: "" };
   }
 
   if (
@@ -395,7 +400,7 @@ export function createTypedArrayItem(
   }
 
   // ── Shared page components ──
-  if (path === "components") {
+  if (isComponentsPath(path)) {
     return _componentTemplate(selectedType);
   }
 
@@ -417,11 +422,12 @@ export function createTypedArrayItem(
     const parentPath = path.replace(/\.items$/, "");
     const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
-      if (parent.mediaType === "icon") return { title: "Nuevo item", description: "Descripcion", icon: "monitor" };
-      if (parent.mediaType === "image") return { title: "Nuevo item", description: "Descripcion", image: "/images/sponsor-placeholder.svg" };
-      if (parent.mediaType === "number") return { number: "", title: "Nuevo item", description: "Descripcion" };
+      const base = { title: "Nuevo item", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] };
+      if (parent.mediaType === "icon") return { ...base, icon: "monitor" };
+      if (parent.mediaType === "image") return { ...base, image: "/images/sponsor-placeholder.svg" };
+      if (parent.mediaType === "number") return { ...base, number: "" };
     }
-    return { title: "Nuevo item", description: "Descripcion" };
+    return { title: "Nuevo item", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] };
   }
 
   if (selectedType === "featureItem") {
@@ -511,62 +517,62 @@ function _componentTemplate(type: string): unknown | null {
       linkHref: "https://example.com",
     }),
     itemsGrid: () => ({
-      type: "itemsGrid", tag: "Tarjetas", heading: "Titulo de tarjetas", intro: "Texto introductorio opcional",
+      type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Titulo de tarjetas", intro: "Texto introductorio opcional",
       columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor" },
-        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi" },
+        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi", linkLabel: "", linkHref: "", socialLinks: [] },
       ],
     }),
     itemsGridIcon: () => ({
-      type: "itemsGrid", tag: "Tarjetas", heading: "Cuadricula con iconos", intro: "Seccion de tarjetas con iconos.",
+      type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Cuadricula con iconos", intro: "Seccion de tarjetas con iconos.",
       columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor" },
-        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi" },
+        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi", linkLabel: "", linkHref: "", socialLinks: [] },
       ],
     }),
     itemsGridImage: () => ({
-      type: "itemsGrid", tag: "Tarjetas", heading: "Cuadricula con imagenes", intro: "Seccion de tarjetas con imagen.",
+      type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Cuadricula con imagenes", intro: "Seccion de tarjetas con imagen.",
       columns: 3, mediaType: "image", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
-        { title: "Tarjeta 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg" },
+        { title: "Tarjeta 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg", linkLabel: "", linkHref: "", socialLinks: [] },
       ],
     }),
     itemsGridNumber: () => ({
-      type: "itemsGrid", tag: "Pasos", heading: "Cuadricula numerada", intro: "Seccion de pasos numerados.",
+      type: "itemsGrid", accent: "blue", tag: "Pasos", heading: "Cuadricula numerada", intro: "Seccion de pasos numerados.",
       columns: 3, mediaType: "number", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { number: "1", title: "Paso 1", description: "Descripcion" },
-        { number: "2", title: "Paso 2", description: "Descripcion" },
+        { number: "1", title: "Paso 1", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
+        { number: "2", title: "Paso 2", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
       ],
     }),
     itemsGridSimple: () => ({
-      type: "itemsGrid", tag: "Tarjetas", heading: "Cuadricula simple", intro: "Seccion de tarjetas sin media.",
+      type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Cuadricula simple", intro: "Seccion de tarjetas sin media.",
       columns: 3, mediaType: "none", cardPalette: ["red", "yellow", "green", "blue"],
       items: [
-        { title: "Tarjeta 1", description: "Descripcion" },
-        { title: "Tarjeta 2", description: "Descripcion" },
+        { title: "Tarjeta 1", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 2", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
       ],
     }),
     linksList: () => ({
-      type: "linksList", tag: "Enlaces", heading: "Recursos", cardPalette: ["blue", "red", "yellow", "green"],
+      type: "linksList", accent: "blue", tag: "Enlaces", heading: "Recursos", cardPalette: ["blue", "red", "yellow", "green"],
       links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
     }),
     featureList: () => ({
-      type: "featureList", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio",
+      type: "featureList", accent: "blue", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio",
       cardPalette: ["blue", "red", "yellow", "green"],
       items: [{ title: "Punto 1", desc: "Descripcion" }], outro: "Texto de cierre",
     }),
     statsGrid: () => ({
-      type: "statsGrid", tag: "Estadisticas", heading: "Titulo de estadisticas", columns: 3,
+      type: "statsGrid", accent: "blue", tag: "Estadisticas", heading: "Titulo de estadisticas", columns: 3,
       cardPalette: ["green", "yellow", "red", "blue"],
       stats: [{ value: "15", label: "Preguntas" }, { value: "45", label: "Minutos" }],
       paragraphs: ["Descripcion del bloque."],
     }),
     studentsAgeCategories: () => ({
-      type: "studentsAgeCategories", sectionTag: "Niveles", heading: "Categorias por Edad",
+      type: "studentsAgeCategories", accent: "blue", sectionTag: "Niveles", heading: "Categorias por Edad",
       cardPalette: ["red", "yellow", "green", "blue", "gray"],
       subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
       categories: [
@@ -578,7 +584,7 @@ function _componentTemplate(type: string): unknown | null {
       ],
     }),
     studentsScoringTable: () => ({
-      type: "studentsScoringTable", sectionTag: "Puntuacion", heading: "Sistema de Puntuacion",
+      type: "studentsScoringTable", accent: "blue", sectionTag: "Puntuacion", heading: "Sistema de Puntuacion",
       subtitle: "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
       cardPalette: ["red", "yellow", "green", "blue"],
       tableHeaders: ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
@@ -591,7 +597,7 @@ function _componentTemplate(type: string): unknown | null {
       summaryColumns: 2,
     }),
     tabsGuide: () => ({
-      type: "tabsGuide", sectionTag: "Guia", heading: "Instrucciones", subtitle: "Pasos por etapa",
+      type: "tabsGuide", accent: "blue", sectionTag: "Guia", heading: "Instrucciones", subtitle: "Pasos por etapa",
       cardPalette: ["blue", "red", "yellow"],
       tabs: [{
         id: "antes", label: "Antes", heading: "Antes del desafio",
@@ -599,7 +605,7 @@ function _componentTemplate(type: string): unknown | null {
       }],
     }),
     formContact: () => ({
-      type: "formContact", tag: "Formulario", heading: "Envianos un mensaje",
+      type: "formContact", accent: "blue", tag: "Formulario", heading: "Envianos un mensaje",
       fields: {
         name: { label: "Nombre completo", placeholder: "Tu nombre" },
         email: { label: "Correo electronico", placeholder: "tu@email.com" },
@@ -609,7 +615,7 @@ function _componentTemplate(type: string): unknown | null {
       submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
     }),
     cta: () => ({
-      type: "cta", tag: "", heading: "No encontraste lo que buscabas?",
+      type: "cta", accent: "blue", tag: "", heading: "No encontraste lo que buscabas?",
       text: "Contactanos y con gusto resolveremos tus dudas.",
       buttonLabel: "Ir a Contacto", buttonHref: "/contacto",
     }),
@@ -623,6 +629,8 @@ function _componentTemplate(type: string): unknown | null {
     }),
     contactClassic: () => ({
       type: "contactClassic",
+      accent: "blue",
+      cardPalette: ["blue", "red", "yellow", "green"],
       info: {
         tag: "Informacion", heading: "Informacion de Contacto",
         cards: [{
