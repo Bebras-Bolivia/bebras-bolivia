@@ -3,6 +3,7 @@ import multer from "multer";
 import { resolve } from "path";
 import { config } from "../config.js";
 import { listMedia, deleteMedia, validateUpload, MediaError } from "./service.js";
+import { syncContentToLanding } from "../preview/service.js";
 
 // Configure multer to save to the media directory
 const storage = multer.diskStorage({
@@ -61,7 +62,7 @@ mediaRouter.get("/", async (_req: Request, res: Response) => {
 mediaRouter.post(
   "/upload",
   upload.single("file"),
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const file = (req as any).file;
       if (!file) {
@@ -70,6 +71,12 @@ mediaRouter.post(
       }
 
       validateUpload(file);
+
+      try {
+        await syncContentToLanding();
+      } catch (syncErr) {
+        console.error("Warning: failed to sync uploaded media to landing:", syncErr);
+      }
 
       res.status(201).json({
         filename: file.filename,
@@ -112,6 +119,13 @@ mediaRouter.delete("/:filename", async (req: Request, res: Response) => {
   try {
     const filename = req.params.filename as string;
     await deleteMedia(filename);
+
+    try {
+      await syncContentToLanding();
+    } catch (syncErr) {
+      console.error("Warning: failed to sync media deletion to landing:", syncErr);
+    }
+
     res.json({ ok: true });
   } catch (err) {
     if (err instanceof MediaError) {
