@@ -62,21 +62,7 @@ const formattedDate = date.toLocaleDateString("es-BO", {
       </div>
     )}
 
-    <div class="prose sm:prose-lg max-w-none
-      prose-headings:text-foreground prose-headings:font-bold prose-headings:tracking-tight
-      prose-p:text-muted-foreground prose-p:leading-relaxed
-      prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-primary/80
-      prose-strong:text-foreground
-      prose-li:text-muted-foreground
-      prose-ul:text-muted-foreground
-      prose-ol:text-muted-foreground
-      prose-table:text-muted-foreground
-      prose-th:text-foreground prose-th:font-semibold
-      prose-td:border-border prose-th:border-border
-      prose-hr:border-border
-      prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-blockquote:not-italic
-      prose-code:font-mono prose-code:text-primary
-    ">
+    <div class="blog-post-content">
       <Fragment set:html={contentHtml} />
     </div>
 
@@ -102,6 +88,98 @@ const formattedDate = date.toLocaleDateString("es-BO", {
 </article>
 
 <style is:global>
+  .blog-post-content {
+    color: rgba(24, 24, 27, 0.84);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  .blog-post-content > *:first-child {
+    margin-top: 0;
+  }
+
+  .blog-post-content h1,
+  .blog-post-content h2,
+  .blog-post-content h3 {
+    color: var(--color-foreground, #18181b);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    margin: 1.75rem 0 0.85rem;
+  }
+
+  .blog-post-content h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+
+  .blog-post-content h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+  }
+
+  .blog-post-content h3 {
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+  }
+
+  .blog-post-content p,
+  .blog-post-content ul,
+  .blog-post-content ol,
+  .blog-post-content blockquote,
+  .blog-post-content pre,
+  .blog-post-content table {
+    margin: 0 0 1rem;
+  }
+
+  .blog-post-content strong {
+    color: var(--color-foreground, #18181b);
+    font-weight: 700;
+  }
+
+  .blog-post-content a {
+    color: var(--color-bebras-blue, #324c87);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  .blog-post-content ul,
+  .blog-post-content ol {
+    padding-left: 1.35rem;
+  }
+
+  .blog-post-content ul {
+    list-style: disc;
+  }
+
+  .blog-post-content ol {
+    list-style: decimal;
+  }
+
+  .blog-post-content li {
+    margin: 0.35rem 0;
+  }
+
+  .blog-post-content li::marker {
+    color: var(--color-bebras-blue, #324c87);
+    font-weight: 700;
+  }
+
+  .blog-post-content blockquote {
+    margin: 1.5rem 0;
+    padding: 0.25rem 0 0.25rem 1rem;
+    border-left: 3px solid var(--color-bebras-yellow, #f8ae31);
+    color: rgba(24, 24, 27, 0.72);
+    font-style: italic;
+  }
+
+  .blog-post-content blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  .blog-post-content .post-divider {
+    margin: 2rem 0;
+  }
+
   .post-image {
     margin: 1.5rem auto;
     display: flex;
@@ -115,6 +193,13 @@ const formattedDate = date.toLocaleDateString("es-BO", {
     border-radius: 1rem;
     border: 1px solid rgba(148, 163, 184, 0.18);
     background: rgba(255, 255, 255, 0.02);
+  }
+
+  .post-image .post-image-caption {
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    color: rgba(24, 24, 27, 0.6);
+    text-align: center;
   }
 
   .post-image--sm {

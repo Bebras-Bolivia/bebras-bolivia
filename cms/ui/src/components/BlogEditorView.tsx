@@ -291,7 +291,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       {headerContextSlot
         ? createPortal(
             <button className="btn btn-ghost btn-sm" onClick={onBack} aria-label="Volver al blog">
-              &larr; Volver al blog
+              <span aria-hidden="true">&larr;</span>
+              <span className="btn-text">Volver al blog</span>
             </button>,
             headerContextSlot
           )

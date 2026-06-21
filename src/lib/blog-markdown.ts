@@ -30,5 +30,5 @@ export function renderBlogMarkdown(markdown: string): string {
     breaks: true,
   }) as string;
 
-  return transformImageTags(html);
+  return transformImageTags(html).replace(/<hr\s*\/?>/g, '<div class="rule-line post-divider"></div>');
 }
