@@ -155,7 +155,7 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
                 <label htmlFor="publish-run-at">Fecha y hora</label>
                 <input id="publish-run-at" type="datetime-local" className="form-input" value={runAt} onChange={(e) => setRunAt(e.target.value)} />
               </div>
-              <button type="submit" className="btn btn-primary btn-sm">Programar</button>
+              <button type="submit" className="btn btn-primary btn-sm" disabled={!hasChanges}>Programar</button>
             </form>
           </section>
         ) : null}
@@ -182,9 +182,6 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
         <div className="card-header publish-changes-header">
           <div>
             <div className="card-title">Cambios no publicados</div>
-            <div className="text-muted text-sm">
-              {changes.summary.content} contenido, {changes.summary.blog} blog, {changes.summary.added} nuevos, {changes.summary.modified} modificados, {changes.summary.deleted} eliminados
-            </div>
           </div>
         </div>
         {changes.items.length === 0 ? (

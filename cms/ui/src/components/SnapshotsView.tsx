@@ -87,7 +87,7 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
                 </div>
                 <div className="actions flex gap-sm">
                   <button className="btn btn-ghost btn-sm" onClick={() => onRestore(snap.id)}>
-                    <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> Restaurar
+                    <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> <span className="snapshot-restore-text">Restaurar</span>
                   </button>
                   <button className="btn btn-ghost btn-sm btn-icon-only" aria-label={`Descargar respaldo #${snap.id}`} onClick={() => onDownload(snap.id)}>
                     <span dangerouslySetInnerHTML={iconHtml(icons, "download")}></span>
