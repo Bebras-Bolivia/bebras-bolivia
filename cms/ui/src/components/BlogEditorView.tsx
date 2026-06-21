@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Frontmatter = {
   title: string;
   description: string;
   date: string;
   author: string;
-  image?: string;
 };
 
 interface Props {
@@ -22,15 +22,114 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
+declare global {
+  interface Window {
+    API: any;
+    App: any;
+    Toast: any;
+    CMSMediaPicker?: {
+      open: () => Promise<string | null>;
+    };
+  }
+}
+
 export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, onBack, onSave }: Props) {
   const [formSlug, setFormSlug] = useState(slug || "");
   const [title, setTitle] = useState(frontmatter.title || "");
   const [description, setDescription] = useState(frontmatter.description || "");
   const [date, setDate] = useState(frontmatter.date || new Date().toISOString().split("T")[0]);
-  const [author, setAuthor] = useState(frontmatter.author || "Bebras Bolivia");
-  const [image, setImage] = useState(frontmatter.image || "");
   const [markdown, setMarkdown] = useState(body || "");
   const [saving, setSaving] = useState(false);
+  const [previewFrameSrc, setPreviewFrameSrc] = useState("");
+  const [previewReady, setPreviewReady] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(true);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const syncTimer = useRef<number | null>(null);
+  const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
+  const [headerContextSlot, setHeaderContextSlot] = useState<HTMLElement | null>(null);
+  const previewRevision = useRef(0);
+  const markdownRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const previewPayload = useMemo(() => ({
+    slug: formSlug.trim(),
+    frontmatter: {
+      title: title.trim(),
+      description: description.trim(),
+      date,
+      author: "Bebras Bolivia",
+    },
+    body: markdown,
+  }), [formSlug, title, description, date, markdown]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const currentRevision = ++previewRevision.current;
+
+    async function ensurePreviewServer() {
+      const status = await window.API.previewStatus().catch(() => null);
+      if (status?.running) return status;
+      return window.API.startPreview();
+    }
+
+    async function syncPreview() {
+      setPreviewLoading(true);
+      setPreviewError(null);
+
+      try {
+        const previewStatus = await ensurePreviewServer();
+        const result = await window.API.syncBlogPreviewDraft(
+          previewPayload.slug,
+          previewPayload.frontmatter,
+          previewPayload.body,
+          true
+        );
+
+        if (cancelled || currentRevision !== previewRevision.current) return;
+
+        if (previewStatus?.mode === "static") {
+          setPreviewError("La vista previa en vivo del blog necesita el servidor de desarrollo activo.");
+        }
+
+        // Astro content collections can lag one file-change cycle behind if the
+        // iframe reloads before the dev server finishes re-indexing the draft.
+        // Give the blog preview extra settle time so it doesn't show one edit behind.
+        await new Promise((resolve) => window.setTimeout(resolve, 900));
+
+        if (cancelled || currentRevision !== previewRevision.current) return;
+
+        const targetPath = `/preview-site/blog/${encodeURIComponent(result.slug)}/`;
+        setPreviewFrameSrc(`${window.App.appUrl(targetPath)}?t=${Date.now()}`);
+        setPreviewReady(true);
+      } catch (err: any) {
+        if (cancelled) return;
+        setPreviewError(err?.message || "No se pudo generar la vista previa del post.");
+      } finally {
+        if (!cancelled) setPreviewLoading(false);
+      }
+    }
+
+    if (syncTimer.current) window.clearTimeout(syncTimer.current);
+    syncTimer.current = window.setTimeout(syncPreview, 700);
+
+    return () => {
+      cancelled = true;
+      if (syncTimer.current) {
+        window.clearTimeout(syncTimer.current);
+        syncTimer.current = null;
+      }
+    };
+  }, [previewPayload, isNew]);
+
+  useEffect(() => {
+    return () => {
+      window.API.cleanupBlogPreviewDraft().catch(() => {});
+    };
+  }, []);
+
+  useEffect(() => {
+    setHeaderSlot(document.getElementById("header-editor-actions"));
+    setHeaderContextSlot(document.getElementById("header-context-actions"));
+  }, []);
 
   const handleSave = async () => {
     if (!formSlug.trim() || !title.trim() || !description.trim() || !date) {
@@ -44,8 +143,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           title: title.trim(),
           description: description.trim(),
           date,
-          author: author.trim() || "Bebras Bolivia",
-          ...(image.trim() ? { image: image.trim() } : {}),
+          author: "Bebras Bolivia",
         },
         body: markdown,
       });
@@ -54,28 +152,63 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     }
   };
 
+  const insertAtCursor = (text: string) => {
+    const textarea = markdownRef.current;
+    if (!textarea) {
+      setMarkdown((prev) => `${prev}${prev.endsWith("\n") || prev.length === 0 ? "" : "\n\n"}${text}`);
+      return;
+    }
+
+    const start = textarea.selectionStart ?? markdown.length;
+    const end = textarea.selectionEnd ?? markdown.length;
+    const nextValue = `${markdown.slice(0, start)}${text}${markdown.slice(end)}`;
+    setMarkdown(nextValue);
+
+    window.requestAnimationFrame(() => {
+      textarea.focus();
+      const caret = start + text.length;
+      textarea.setSelectionRange(caret, caret);
+    });
+  };
+
+  const handleInsertImage = async () => {
+    try {
+      const selected = await window.CMSMediaPicker?.open?.();
+      if (!selected) return;
+      const needsSpacing = markdown.length > 0 && !markdown.endsWith("\n");
+      insertAtCursor(`${needsSpacing ? "\n\n" : ""}![Imagen](${selected})\n`);
+    } catch (err: any) {
+      window.Toast.error(err?.message || "No se pudo abrir la galeria de imagenes");
+    }
+  };
+
   return (
     <>
-      <div className="editor-toolbar">
-        <div>
-          <button className="btn btn-ghost btn-sm" onClick={onBack}>
-            &larr; Volver al blog
-          </button>
-        </div>
-        <div className="flex gap-sm">
-          <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
-            {saving ? (
-              <>
-                <div className="spinner" style={{ width: "14px", height: "14px" }}></div> Guardando...
-              </>
-            ) : (
-              <>
-                <span dangerouslySetInnerHTML={iconHtml(icons, "save")}></span> {isNew ? "Crear" : "Guardar"}
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+      {headerSlot
+        ? createPortal(
+            <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving} aria-label={isNew ? "Crear publicación" : "Guardar publicación"}>
+              {saving ? (
+                <>
+                  <div className="spinner" style={{ width: "14px", height: "14px" }}></div> Guardando...
+                </>
+              ) : (
+                <>
+                  <span dangerouslySetInnerHTML={iconHtml(icons, "save")}></span> {isNew ? "Crear" : "Guardar"}
+                </>
+              )}
+            </button>,
+            headerSlot
+          )
+        : null}
+
+      {headerContextSlot
+        ? createPortal(
+            <button className="btn btn-ghost btn-sm" onClick={onBack} aria-label="Volver al blog">
+              &larr; Volver al blog
+            </button>,
+            headerContextSlot
+          )
+        : null}
 
       <div className="editor-layout">
         <div className="editor-form" id="blog-form-react">
@@ -114,41 +247,53 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
             <input type="date" id="blog-date-react" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="blog-author-react">Autor</label>
-            <input type="text" id="blog-author-react" className="form-input" value={author} onChange={(e) => setAuthor(e.target.value)} />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="blog-image-react">Imagen (ruta)</label>
-            <input
-              type="text"
-              id="blog-image-react"
-              className="form-input"
-              value={image}
-              placeholder="/images/mi-imagen.jpg"
-              onChange={(e) => setImage(e.target.value)}
-            />
-          </div>
-
           <div className="divider"></div>
 
           <div className="form-group">
-            <label htmlFor="blog-body-react">Contenido (Markdown)</label>
+            <div className="blog-markdown-label-row">
+              <label htmlFor="blog-body-react">Contenido (Markdown)</label>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={handleInsertImage}>
+                Insertar imagen
+              </button>
+            </div>
             <textarea
               id="blog-body-react"
               className="form-textarea mono"
               rows={20}
               style={{ minHeight: "300px" }}
+              ref={markdownRef}
               value={markdown}
               onChange={(e) => setMarkdown(e.target.value)}
             ></textarea>
           </div>
         </div>
 
-        <div className="editor-preview" style={{ padding: "1.5rem", overflowY: "auto", background: "var(--bg-surface)", color: "var(--text)" }}>
-          <div id="blog-preview-content" style={{ fontSize: "0.875rem", lineHeight: 1.7 }}>
-            <p className="text-muted">La vista previa de Markdown estara disponible en una futura version.</p>
+        <div className="editor-preview blog-live-preview">
+          <div className="blog-preview-shell" id="blog-preview-content">
+            <div className="blog-preview-toolbar">
+              <div className="blog-preview-badge">Vista previa real</div>
+              <div className="blog-preview-status">
+                {previewLoading ? "Actualizando..." : previewError ? "Con incidencias" : previewReady ? "Sincronizada" : "Pendiente"}
+              </div>
+            </div>
+
+            {previewError ? (
+              <div className="blog-preview-fallback">
+                <h3>No se pudo cargar la vista previa</h3>
+                <p>{previewError}</p>
+              </div>
+            ) : previewFrameSrc ? (
+              <iframe
+                title="Vista previa del post"
+                className="blog-preview-frame"
+                src={previewFrameSrc}
+              />
+            ) : (
+              <div className="blog-preview-fallback">
+                <h3>Preparando vista previa</h3>
+                <p>Espera un momento mientras el CMS sincroniza el borrador con la página real del blog.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

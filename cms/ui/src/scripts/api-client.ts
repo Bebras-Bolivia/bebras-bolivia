@@ -101,6 +101,10 @@ const API = {
   previewStatus() { return this.get("/api/preview/status"); },
   syncPreview() { return this.post("/api/preview/sync"); },
   syncPreviewDraft(filename: string, data: unknown) { return this.post("/api/preview/draft", { filename, data }); },
+  syncBlogPreviewDraft(slug: string, frontmatter: unknown, body: string, usePreviewSlug = false) {
+    return this.post("/api/preview/blog-draft", { slug, frontmatter, body, usePreviewSlug });
+  },
+  cleanupBlogPreviewDraft() { return this.post("/api/preview/blog-draft/cleanup"); },
 
   listMedia() { return this.get("/api/media"); },
   uploadMedia(file: File) {

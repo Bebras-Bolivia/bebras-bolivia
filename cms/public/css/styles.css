@@ -840,6 +840,12 @@ a:hover { text-decoration: underline; }
   gap: 0.5rem;
 }
 
+.header-context-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* ── Editor (split panel) ───────────────────────────────── */
 .editor-layout {
   display: grid;
@@ -1647,6 +1653,92 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
 }
 
+.blog-live-preview {
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  color: var(--text);
+}
+
+.blog-preview-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.blog-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.blog-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.875rem;
+}
+
+.blog-preview-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.blog-preview-frame {
+  width: 100%;
+  min-height: 720px;
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: white;
+}
+
+.blog-preview-fallback {
+  border: 1px dashed var(--border-focus);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  padding: 1rem 1.125rem;
+}
+
+.blog-preview-fallback h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.blog-preview-fallback p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.blog-markdown-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-input[type="date"] {
+  color-scheme: dark;
+}
+
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(82%) sepia(41%) saturate(3172%) hue-rotate(344deg) brightness(102%) contrast(97%);
+  cursor: pointer;
+}
+
 /* ── Misc ───────────────────────────────────────────────── */
 .divider {
   height: 1px;
@@ -1781,6 +1873,11 @@ a:hover { text-decoration: underline; }
   /* Dashboard grid: single column on very small */
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .blog-markdown-label-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   /* Content items: stack if needed */
