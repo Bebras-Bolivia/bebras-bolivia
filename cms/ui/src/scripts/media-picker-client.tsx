@@ -36,10 +36,8 @@ function cmsUrl(path: string): string {
   return `${basePath}${path}`;
 }
 
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+function displayFilename(filename: string): string {
+  return filename.replace(/^\d+-/, "");
 }
 
 function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: string | ImageInsertResult | null) => void; markdownMode?: boolean }) {
@@ -170,7 +168,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
   };
 
   return (
-    <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
+    <div className={`editor-modal-overlay${markdownMode ? " editor-modal-overlay-center" : ""}`} onClick={(e) => e.target === e.currentTarget && onClose(null)}>
       <div className="editor-modal" style={{ maxWidth: "760px" }}>
         <div className="editor-modal-header">
           <h3>{markdownMode ? "Insertar imagen" : "Seleccionar imagen"}</h3>
@@ -231,7 +229,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
         {markdownMode && selectedFile && currentStep === 2 ? (
           <div className="media-wizard-panel">
             <div className="media-wizard-preview">
-              <img src={selectedFile.url} alt={selectedFile.filename} className="media-card-thumb" />
+              <img src={selectedFile.url} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
             </div>
             <div className="form-group">
               <label htmlFor="media-alt-text">Nombre visible / alt</label>
@@ -251,7 +249,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
         {markdownMode && selectedFile && currentStep === 3 ? (
           <div className="media-wizard-panel">
             <div className="media-wizard-preview">
-              <img src={selectedFile.url} alt={selectedFile.filename} className="media-card-thumb" />
+              <img src={selectedFile.url} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
             </div>
             <div className="form-group">
               <label>Tamano</label>
@@ -306,11 +304,11 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
                     setWizardStep(3);
                   }}
                 >
-                  <img src={file.url} alt={file.filename} className="media-card-thumb" />
-                  <span className="title">{file.filename}</span>
+                  <img src={file.url} alt={displayFilename(file.filename)} className="media-card-thumb" />
+                  <span className="title">{displayFilename(file.filename)}</span>
                 </button>
                 <button type="button" className="btn btn-danger btn-sm media-card-delete" aria-label={`Eliminar ${file.filename}`} disabled={deleting === file.filename} onClick={() => deleteFile(file.filename)}>
-                  {deleting === file.filename ? "..." : "Eliminar"}
+                  {deleting === file.filename ? "..." : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="3,6 5,6 21,6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>}
                 </button>
               </div>
             ))
