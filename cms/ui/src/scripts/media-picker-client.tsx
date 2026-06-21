@@ -31,7 +31,9 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
+  const [dragActive, setDragActive] = useState(false);
 
   const loadFiles = async () => {
     setLoading(true);
@@ -81,6 +83,29 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
     }
   };
 
+  const deleteFile = async (filename: string) => {
+    if (!confirm(`Eliminar ${filename}?`)) return;
+    setDeleting(filename);
+    setError("");
+    try {
+      const res = await fetch(cmsUrl(`/api/media/${encodeURIComponent(filename)}`), { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo eliminar el archivo");
+      await loadFiles();
+    } catch (err: any) {
+      setError(err.message || "No se pudo eliminar el archivo");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setDragActive(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) await uploadFile(file);
+  };
+
   return (
     <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
       <div className="editor-modal" style={{ maxWidth: "760px" }}>
@@ -92,41 +117,71 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
         </div>
         <p className="editor-modal-subtitle">Elige una imagen existente o sube una nueva.</p>
 
-        <div style={{ marginBottom: "0.75rem" }}>
-          <input
-            type="file"
-            accept="image/*"
-            disabled={uploading}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                uploadFile(file);
-              }
-              e.currentTarget.value = "";
-            }}
-          />
-          {uploading ? <div className="text-sm text-muted" style={{ marginTop: "0.5rem" }}>Subiendo...</div> : null}
+        <div
+          className={`media-dropzone${dragActive ? " is-active" : ""}`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setDragActive(false);
+          }}
+          onDrop={handleDrop}
+        >
+          <div className="media-dropzone-copy">
+            <strong>{uploading ? "Subiendo imagen..." : "Arrastra una imagen aquí"}</strong>
+            <span>o elige un archivo desde tu computadora</span>
+          </div>
+          <label className="btn btn-ghost btn-sm media-dropzone-button">
+            Seleccionar archivo
+            <input
+              type="file"
+              accept="image/*"
+              disabled={uploading}
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  uploadFile(file);
+                }
+                e.currentTarget.value = "";
+              }}
+            />
+          </label>
         </div>
 
         {error ? <div className="text-sm" style={{ color: "var(--danger)", marginBottom: "0.75rem" }}>{error}</div> : null}
 
-        <div className="editor-modal-list" style={{ maxHeight: "320px", overflowY: "auto" }}>
+        <div className="editor-modal-list media-grid" style={{ maxHeight: "360px", overflowY: "auto" }}>
           {loading ? (
             <div className="text-sm text-muted">Cargando galeria...</div>
           ) : files.length === 0 ? (
             <div className="text-sm text-muted">No hay imagenes subidas.</div>
           ) : (
             files.map((file) => (
-              <button
+              <div
                 key={file.filename}
-                type="button"
-                className="editor-modal-option"
-                onClick={() => onClose(file.url)}
-                style={{ textAlign: "left" }}
+                className="media-card"
               >
-                <span className="title">{file.filename}</span>
-                <span className="desc">{formatSize(file.size)}</span>
-              </button>
+                <button
+                  type="button"
+                  className="media-card-select"
+                  onClick={() => onClose(file.url)}
+                >
+                  <img src={file.url} alt={file.filename} className="media-card-thumb" />
+                  <span className="title">{file.filename}</span>
+                  <span className="desc">{formatSize(file.size)}</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm media-card-delete"
+                  disabled={deleting === file.filename}
+                  onClick={() => deleteFile(file.filename)}
+                >
+                  {deleting === file.filename ? "..." : "Eliminar"}
+                </button>
+              </div>
             ))
           )}
         </div>
