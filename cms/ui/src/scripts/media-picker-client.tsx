@@ -7,11 +7,17 @@ type MediaFile = {
   url: string;
 };
 
+type ImageInsertResult = {
+  markdown: string;
+  url: string;
+};
+
 declare global {
   interface Window {
     CMS_BASE_PATH?: string;
     CMSMediaPicker?: {
       open: () => Promise<string | null>;
+      openForMarkdown: () => Promise<ImageInsertResult | null>;
     };
   }
 }
@@ -27,13 +33,26 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void }) {
+function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: string | ImageInsertResult | null) => void; markdownMode?: boolean }) {
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<MediaFile | null>(null);
+  const [pendingUploadedFile, setPendingUploadedFile] = useState<MediaFile | null>(null);
+  const [altText, setAltText] = useState("Imagen");
+  const [size, setSize] = useState<"sm" | "md" | "lg" | "full">("full");
+
+  const isWizard = markdownMode;
+  const currentStep = !isWizard ? 1 : !selectedFile ? 1 : pendingUploadedFile ? 2 : 3;
+
+  const stepItems = [
+    { num: 1, label: "Elegir foto" },
+    { num: 2, label: "Nombre" },
+    { num: 3, label: "Tamano" },
+  ];
 
   const loadFiles = async () => {
     setLoading(true);
@@ -75,7 +94,20 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "No se pudo subir el archivo");
       await loadFiles();
-      onClose(data.url || cmsUrl(`/api/media/file/${data.filename}`));
+      const created = {
+        filename: data.filename,
+        size: file.size,
+        url: data.url || cmsUrl(`/api/media/file/${data.filename}`),
+      } satisfies MediaFile;
+
+      if (!markdownMode) {
+        onClose(created.url);
+        return;
+      }
+
+      setPendingUploadedFile(created);
+      setSelectedFile(created);
+      setAltText(file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "));
     } catch (err: any) {
       setError(err.message || "No se pudo subir el archivo");
     } finally {
@@ -84,7 +116,6 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
   };
 
   const deleteFile = async (filename: string) => {
-    if (!confirm(`Eliminar ${filename}?`)) return;
     setDeleting(filename);
     setError("");
     try {
@@ -99,6 +130,16 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
     }
   };
 
+  const completeMarkdownInsert = () => {
+    if (!selectedFile) return;
+    const cleanAlt = (altText || "Imagen").trim() || "Imagen";
+    const sizeSuffix = size === "full" ? "" : `|${size}`;
+    onClose({
+      markdown: `![${cleanAlt}${sizeSuffix}](${selectedFile.url})`,
+      url: selectedFile.url,
+    });
+  };
+
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setDragActive(false);
@@ -110,12 +151,23 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
     <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
       <div className="editor-modal" style={{ maxWidth: "760px" }}>
         <div className="editor-modal-header">
-          <h3>Seleccionar imagen</h3>
+          <h3>{markdownMode ? "Insertar imagen" : "Seleccionar imagen"}</h3>
           <button type="button" className="editor-modal-close" onClick={() => onClose(null)}>
             x
           </button>
         </div>
-        <p className="editor-modal-subtitle">Elige una imagen existente o sube una nueva.</p>
+        <p className="editor-modal-subtitle">{markdownMode ? "Elige una imagen, define su nombre y selecciona un tamano antes de insertarla en el Markdown." : "Elige una imagen existente o sube una nueva."}</p>
+
+        {markdownMode ? (
+          <div className="media-stepper" aria-label="Pasos para insertar imagen">
+            {stepItems.map((step) => (
+              <div key={step.num} className={`media-step${currentStep >= step.num ? " is-active" : ""}${currentStep === step.num ? " is-current" : ""}`}>
+                <span className="media-step-num">{step.num}</span>
+                <span className="media-step-label">{step.label}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         <div
           className={`media-dropzone${dragActive ? " is-active" : ""}`}
@@ -153,6 +205,43 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
 
         {error ? <div className="text-sm" style={{ color: "var(--danger)", marginBottom: "0.75rem" }}>{error}</div> : null}
 
+        {markdownMode && selectedFile ? (
+          <div className="media-wizard-panel">
+            <div className="media-wizard-preview">
+              <img src={selectedFile.url} alt={selectedFile.filename} className="media-card-thumb" />
+            </div>
+            {pendingUploadedFile ? (
+              <div className="form-group">
+                <label htmlFor="media-alt-text">Nombre visible / alt</label>
+                <input id="media-alt-text" className="form-input" value={altText} onChange={(e) => setAltText(e.target.value)} />
+              </div>
+            ) : null}
+            <div className="form-group">
+              <label>Tamano</label>
+              <div className="media-size-grid">
+                {(["sm", "md", "lg", "full"] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    className={`media-size-option${size === option ? " is-selected" : ""}`}
+                    onClick={() => setSize(option)}
+                  >
+                    {option.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="media-wizard-actions">
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setSelectedFile(null); setPendingUploadedFile(null); setAltText("Imagen"); setSize("full"); }}>
+                Cambiar imagen
+              </button>
+              <button type="button" className="btn btn-primary btn-sm" onClick={completeMarkdownInsert}>
+                Insertar en Markdown
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         <div className="editor-modal-list media-grid" style={{ maxHeight: "360px", overflowY: "auto" }}>
           {loading ? (
             <div className="text-sm text-muted">Cargando galeria...</div>
@@ -167,18 +256,22 @@ function MediaPickerModal({ onClose }: { onClose: (value: string | null) => void
                 <button
                   type="button"
                   className="media-card-select"
-                  onClick={() => onClose(file.url)}
+                  onClick={() => {
+                    if (!markdownMode) {
+                      onClose(file.url);
+                      return;
+                    }
+                    setPendingUploadedFile(null);
+                    setSelectedFile(file);
+                    setAltText("Imagen");
+                    setSize("full");
+                  }}
                 >
                   <img src={file.url} alt={file.filename} className="media-card-thumb" />
                   <span className="title">{file.filename}</span>
                   <span className="desc">{formatSize(file.size)}</span>
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-danger btn-sm media-card-delete"
-                  disabled={deleting === file.filename}
-                  onClick={() => deleteFile(file.filename)}
-                >
+                <button type="button" className="btn btn-danger btn-sm media-card-delete" disabled={deleting === file.filename} onClick={() => deleteFile(file.filename)}>
                   {deleting === file.filename ? "..." : "Eliminar"}
                 </button>
               </div>
@@ -195,15 +288,29 @@ async function open(): Promise<string | null> {
   document.body.appendChild(mount);
   const root = createRoot(mount);
   return new Promise((resolve) => {
-    const done = (value: string | null) => {
+    const done = (value: string | ImageInsertResult | null) => {
       root.unmount();
       mount.remove();
-      resolve(value);
+      resolve(typeof value === "string" ? value : value?.url || null);
     };
     root.render(<MediaPickerModal onClose={done} />);
   });
 }
 
+async function openForMarkdown(): Promise<ImageInsertResult | null> {
+  const mount = document.createElement("div");
+  document.body.appendChild(mount);
+  const root = createRoot(mount);
+  return new Promise((resolve) => {
+    const done = (value: string | ImageInsertResult | null) => {
+      root.unmount();
+      mount.remove();
+      resolve(typeof value === "string" ? { markdown: `![Imagen](${value})`, url: value } : value);
+    };
+    root.render(<MediaPickerModal onClose={done} markdownMode />);
+  });
+}
+
 export function registerMediaPickerRenderer() {
-  window.CMSMediaPicker = { open };
+  window.CMSMediaPicker = { open, openForMarkdown };
 }

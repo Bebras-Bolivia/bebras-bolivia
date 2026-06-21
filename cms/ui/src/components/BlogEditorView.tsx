@@ -35,6 +35,7 @@ declare global {
     Toast: any;
     CMSMediaPicker?: {
       open: () => Promise<string | null>;
+      openForMarkdown: () => Promise<{ markdown: string; url: string } | null>;
     };
   }
 }
@@ -245,13 +246,10 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
   const handleInsertImage = async () => {
     try {
-      const selected = await window.CMSMediaPicker?.open?.();
+      const selected = await window.CMSMediaPicker?.openForMarkdown?.();
       if (!selected) return;
-      const alt = prompt("Texto alternativo de la imagen", "Imagen")?.trim() || "Imagen";
-      const size = (prompt("Tamano: sm, md, lg o full (vacío = full)", "") || "").trim().toLowerCase();
-      const sizeSuffix = ["sm", "md", "lg", "full"].includes(size) && size !== "full" ? `|${size}` : "";
       const needsSpacing = markdown.length > 0 && !markdown.endsWith("\n");
-      insertAtCursor(`${needsSpacing ? "\n\n" : ""}![${alt}${sizeSuffix}](${selected})\n`);
+      insertAtCursor(`${needsSpacing ? "\n\n" : ""}${selected.markdown}\n`);
     } catch (err: any) {
       window.Toast.error(err?.message || "No se pudo abrir la galeria de imagenes");
     }
