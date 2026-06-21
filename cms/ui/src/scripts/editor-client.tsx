@@ -218,20 +218,11 @@ function EditorPrimitivesView({
     </button>
   );
 
-  const resetButton = (
-    <button className="btn btn-ghost btn-sm" onClick={onReset} aria-label="Actualizar vista previa" title="Recarga la vista previa con tus cambios actuales">
-      <span dangerouslySetInnerHTML={{ __html: icons.refresh || "" }}></span> <span className="btn-text">Actualizar vista previa</span>
-    </button>
-  );
-
   return (
     <>
       {headerSlot
         ? createPortal(
-            <>
-              {resetButton}
-              {saveButton}
-            </>,
+            saveButton,
             headerSlot
           )
         : null}

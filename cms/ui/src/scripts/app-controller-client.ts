@@ -214,8 +214,11 @@ const App = {
     // Clear any editor action buttons that were portalled into the header by a
     // previous editor view, so they don't linger on Blog/Snapshots pages.
     window.CMSEditor?.unmountPrimitives?.();
+    window.CMSBlog?.unmount?.();
     const headerContext = document.getElementById("header-context-actions");
     if (headerContext) headerContext.innerHTML = "";
+    const headerEditorActions = document.getElementById("header-editor-actions");
+    if (headerEditorActions) headerEditorActions.innerHTML = "";
     const headerTitle = document.getElementById("header-title");
     if (headerTitle) headerTitle.textContent = title;
     const main = document.getElementById("main-content");
