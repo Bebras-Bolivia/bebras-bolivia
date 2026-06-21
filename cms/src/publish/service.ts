@@ -285,20 +285,21 @@ async function compareKnownFiles(options: CompareFilesOptions): Promise<PublishC
     ]);
 
     if (current.content === null && published.content === null) continue;
-    if (current.content === published.content) continue;
 
     const status: PublishChangeStatus = current.content === null
       ? "deleted"
       : published.content === null
         ? "added"
         : "modified";
+    const changedPaths = describeChangedPaths(options.type, current.content, published.content);
+    if (current.content === published.content || (status === "modified" && changedPaths.length === 0)) continue;
 
     items.push({
       type: options.type,
       file,
       label: labelForFile(options.type, file),
       status,
-      changedPaths: describeChangedPaths(options.type, current.content, published.content),
+      changedPaths,
       currentUpdatedAt: current.updatedAt,
       publishedUpdatedAt: published.updatedAt,
     });
