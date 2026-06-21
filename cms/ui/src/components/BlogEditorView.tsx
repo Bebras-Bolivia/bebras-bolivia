@@ -327,39 +327,41 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
       <div className="editor-layout">
         <div className="editor-form" id="blog-form-react">
-          <div className="form-group">
-            <label htmlFor="blog-slug-react">Slug (URL)</label>
-            <input
-              type="text"
-              id="blog-slug-react"
-              className="form-input mono"
-              value={formSlug}
-              placeholder="mi-nuevo-post"
-              pattern="[a-z0-9\-]+"
-              title="Solo letras minusculas, numeros y guiones"
-              onChange={(e) => setFormSlug(e.target.value)}
-              disabled={!isNew}
-            />
-            {isNew && (
-              <span className="text-sm text-muted">
-                Solo letras minusculas, numeros y guiones. No se puede cambiar despues.
-              </span>
-            )}
-          </div>
+          <div className="editor-group">
+            <div className="form-group">
+              <label htmlFor="blog-slug-react">Slug (URL)</label>
+              <input
+                type="text"
+                id="blog-slug-react"
+                className="form-input mono"
+                value={formSlug}
+                placeholder="mi-nuevo-post"
+                pattern="[a-z0-9\-]+"
+                title="Solo letras minusculas, numeros y guiones"
+                onChange={(e) => setFormSlug(e.target.value)}
+                disabled={!isNew}
+              />
+              {isNew && (
+                <span className="text-sm text-muted">
+                  Solo letras minusculas, numeros y guiones. No se puede cambiar despues.
+                </span>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="blog-title-react">Titulo</label>
-            <input type="text" id="blog-title-react" className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          </div>
+            <div className="form-group">
+              <label htmlFor="blog-title-react">Titulo</label>
+              <input type="text" id="blog-title-react" className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="blog-desc-react">Descripcion</label>
-            <textarea id="blog-desc-react" className="form-textarea" rows={2} value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
-          </div>
+            <div className="form-group">
+              <label htmlFor="blog-desc-react">Descripcion</label>
+              <textarea id="blog-desc-react" className="form-textarea" rows={2} value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="blog-date-react">Fecha</label>
-            <input type="date" id="blog-date-react" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} />
+            <div className="form-group">
+              <label htmlFor="blog-date-react">Fecha</label>
+              <input type="date" id="blog-date-react" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} />
+            </div>
           </div>
 
           <div className="divider"></div>
