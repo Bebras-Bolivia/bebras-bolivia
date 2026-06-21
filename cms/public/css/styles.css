@@ -514,7 +514,7 @@ a:hover { text-decoration: underline; }
 .publish-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  align-items: start;
   gap: 1rem;
   background: var(--bg-surface);
 }
@@ -557,10 +557,19 @@ a:hover { text-decoration: underline; }
   gap: 0.875rem;
 }
 
+.publish-status-list-inline {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
 .publish-status-list div,
 .publish-active-schedule > div {
   display: grid;
   gap: 0.2rem;
+}
+
+.publish-status-value {
+  min-width: 0;
 }
 
 .publish-status-list span {
@@ -576,6 +585,7 @@ a:hover { text-decoration: underline; }
 
 .publish-status-list strong {
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .publish-schedule-form .form-group {
@@ -2615,6 +2625,10 @@ a:hover { text-decoration: underline; }
   }
 
   .publish-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .publish-status-list-inline {
     grid-template-columns: 1fr;
   }
 

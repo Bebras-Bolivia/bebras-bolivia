@@ -81,6 +81,15 @@ function statusLabel(status: string) {
   return labels[status] || status;
 }
 
+function PublishStatusValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="publish-status-value">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
 function changeStatusLabel(status: PublishChange["status"]) {
   if (status === "added") return "Nuevo";
   if (status === "deleted") return "Eliminado";
@@ -124,11 +133,9 @@ export default function PublishView({ status, changes, schedule, icons, onPublis
           <div className="card-header">
             <div className="card-title">Estado</div>
           </div>
-          <div className="publish-status-list">
-            <div>
-              <span>Última publicación</span>
-              <strong>{lastPublishStatus ? `${statusLabel(lastPublishStatus)} · ${formatDate(lastPublishDate)}` : formatDate(lastPublishDate)}</strong>
-            </div>
+          <div className="publish-status-list publish-status-list-inline">
+            <PublishStatusValue label="Estado" value={isPublishing ? "Publicando" : lastPublishStatus ? statusLabel(lastPublishStatus) : "Sin registro"} />
+            <PublishStatusValue label="Última publicación" value={formatDate(lastPublishDate)} />
           </div>
         </section>
 
