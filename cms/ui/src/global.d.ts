@@ -12,10 +12,12 @@ declare global {
     CMSModal: any;
     CMSMediaPicker: any;
     CMSSnapshots: any;
+    CMSPublish: any;
     CMSBlog: any;
     Editor: any;
     Blog: any;
     Snapshots: any;
+    Publish: any;
   }
 }
 export {};

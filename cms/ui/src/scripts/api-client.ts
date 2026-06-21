@@ -88,6 +88,10 @@ const API = {
 
   publish() { return this.post("/api/publish"); },
   publishStatus() { return this.get("/api/publish/status"); },
+  publishChanges() { return this.get("/api/publish/changes"); },
+  publishSchedule() { return this.get("/api/publish/schedule"); },
+  schedulePublish(runAt: string) { return this.post("/api/publish/schedule", { runAt }); },
+  cancelScheduledPublish(id: number) { return this.del(`/api/publish/schedule/${id}`); },
 
   startPreview() { return this.post("/api/preview/start"); },
   stopPreview() { return this.post("/api/preview/stop"); },

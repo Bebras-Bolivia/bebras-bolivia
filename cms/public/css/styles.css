@@ -505,6 +505,172 @@ a:hover { text-decoration: underline; }
   color: var(--text);
 }
 
+/* ── Publish management ─────────────────────────────────── */
+.publish-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.publish-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 38%),
+    var(--bg-surface);
+}
+
+.publish-eyebrow {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.publish-hero h2 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  margin-bottom: 0.25rem;
+}
+
+.publish-hero p {
+  color: var(--text-secondary);
+  max-width: 42rem;
+}
+
+.publish-hero-actions,
+.publish-schedule-form,
+.publish-active-schedule {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.publish-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1.2fr);
+  gap: 1rem;
+}
+
+.publish-status-list {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.publish-status-list div,
+.publish-active-schedule > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.publish-status-list span {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.publish-status-list strong,
+.publish-active-schedule strong {
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.publish-schedule-form .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.publish-active-schedule {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.publish-changes-header {
+  align-items: flex-start;
+}
+
+.publish-change-list,
+.publish-history-list {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.publish-change-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.75fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.publish-change-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.publish-change-main h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+.publish-change-main p {
+  margin: 0.125rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.publish-change-badge {
+  flex-shrink: 0;
+}
+
+.publish-change-added { background: var(--success-soft); color: var(--success); }
+.publish-change-modified { background: var(--accent-soft); color: var(--accent); }
+.publish-change-deleted { background: var(--danger-soft); color: var(--danger); }
+
+.publish-change-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.375rem;
+}
+
+.publish-change-details span {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+}
+
+.publish-history-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.375rem 0.75rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+
+.publish-history-item small {
+  grid-column: 2;
+  color: var(--text-muted);
+}
+
+.publish-empty-state {
+  padding: 2rem 1rem;
+}
+
 /* ── Content list ───────────────────────────────────────── */
 .content-list {
   display: flex;
@@ -2401,6 +2567,27 @@ a:hover { text-decoration: underline; }
     flex-direction: column;
     gap: 0.75rem;
     align-items: flex-start;
+  }
+
+  .publish-hero,
+  .publish-hero-actions,
+  .publish-schedule-form,
+  .publish-active-schedule {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .publish-grid,
+  .publish-change-item {
+    grid-template-columns: 1fr;
+  }
+
+  .publish-change-main {
+    align-items: flex-start;
+  }
+
+  .publish-change-details {
+    justify-content: flex-start;
   }
 
   /* Toast: full width on mobile */

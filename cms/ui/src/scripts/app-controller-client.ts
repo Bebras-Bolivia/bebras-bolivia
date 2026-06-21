@@ -192,7 +192,8 @@ const App = {
     else if (path.startsWith("/blog/edit/")) {
       const slug = decodeURIComponent(path.replace("/blog/edit/", ""));
       this.showPage(`Editar: ${slug}`, () => window.Blog.renderEditor(slug));
-    } else if (path === "/snapshots") this.showPage("Respaldos", () => window.Snapshots.render());
+    } else if (path === "/publish") this.showPage("Publicación", () => window.Publish.render());
+    else if (path === "/snapshots") this.showPage("Respaldos", () => window.Snapshots.render());
     else {
       const filename = this.firstContentFile();
       const meta = contentMeta[filename];
