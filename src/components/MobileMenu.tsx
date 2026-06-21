@@ -24,6 +24,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
   // context that traps a `fixed` child. Portal the overlay+menu to <body> so it
   // escapes that context and its z-index applies against the viewport.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

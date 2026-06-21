@@ -276,6 +276,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   ];
 
   /* Group actions by their group key to render separators */
+  // eslint-disable-next-line react-hooks/refs
   const groupedActions = actions.reduce<{ group: string; items: MarkdownAction[] }[]>((acc, action) => {
     const last = acc[acc.length - 1];
     if (last && last.group === (action.group || "")) {

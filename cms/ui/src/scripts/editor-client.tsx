@@ -190,6 +190,7 @@ function EditorPrimitivesView({
   // via a portal, so every action sits in one bar. React removes the portalled
   // nodes automatically when this component unmounts.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeaderSlot(document.getElementById("header-editor-actions"));
   }, []);
 
