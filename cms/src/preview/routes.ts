@@ -7,9 +7,11 @@ import {
   syncDraftToLanding,
   syncBlogDraftToLanding,
   cleanupBlogDraftPreview,
+  syncSnapshotToLanding,
   getBlogPreviewSlug,
   PreviewError,
 } from "./service.js";
+import { getSnapshot } from "../snapshots/service.js";
 
 export const previewRouter = Router();
 
@@ -72,6 +74,36 @@ previewRouter.post("/sync", async (_req: Request, res: Response) => {
   } catch (err) {
     console.error("Error syncing content:", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+previewRouter.post("/snapshot/cleanup", async (_req: Request, res: Response) => {
+  try {
+    await syncContentToLanding();
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Error cleaning snapshot preview:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+previewRouter.post("/snapshot/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string, 10);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "Invalid snapshot ID" });
+    }
+
+    const snapshot = await getSnapshot(id);
+    await syncSnapshotToLanding(snapshot.dirName);
+    res.json({ ok: true });
+  } catch (err) {
+    if (err instanceof PreviewError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error syncing snapshot preview:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 });
 

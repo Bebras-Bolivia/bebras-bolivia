@@ -108,6 +108,8 @@ const API = {
     return this.post("/api/preview/blog-draft", { slug, frontmatter, body, usePreviewSlug });
   },
   cleanupBlogPreviewDraft() { return this.post("/api/preview/blog-draft/cleanup"); },
+  syncSnapshotPreview(id: number) { return this.post(`/api/preview/snapshot/${id}`); },
+  cleanupSnapshotPreview() { return this.post("/api/preview/snapshot/cleanup"); },
 
   listMedia() { return this.get("/api/media"); },
   uploadMedia(file: File) {

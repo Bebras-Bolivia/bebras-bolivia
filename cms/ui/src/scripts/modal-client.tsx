@@ -27,6 +27,7 @@ type ConfirmPayload = {
   confirmLabel?: string;
   cancelLabel?: string;
   tone?: "danger" | "default";
+  image?: string;
 };
 
 type InputPayload = {
@@ -407,6 +408,11 @@ function ConfirmModal({ payload, onClose }: { payload: ConfirmPayload; onClose: 
             x
           </button>
         </div>
+        {payload.image ? (
+          <div className="editor-confirm-image">
+            <img src={payload.image} alt="" />
+          </div>
+        ) : null}
         <p className="editor-modal-subtitle">{payload.message}</p>
         <div className="editor-confirm-actions">
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => onClose(false)}>

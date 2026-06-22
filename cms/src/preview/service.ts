@@ -433,6 +433,47 @@ export async function cleanupBlogDraftPreview(): Promise<void> {
   }
 }
 
+export async function syncSnapshotToLanding(dirName: string): Promise<void> {
+  const snapshotDir = join(config.snapshotsDir, dirName);
+  if (!existsSync(snapshotDir)) {
+    throw new PreviewError(`Snapshot directory not found: ${dirName}`, 404);
+  }
+
+  const snapshotDataDir = join(snapshotDir, "data");
+  const snapshotBlogDir = join(snapshotDir, "blog");
+
+  await mkdir(config.landingDataDir, { recursive: true });
+  for (const file of CONTENT_FILES) {
+    const src = join(snapshotDataDir, file);
+    if (existsSync(src)) {
+      await cp(src, join(config.landingDataDir, file));
+    }
+  }
+
+  await mkdir(config.landingBlogDir, { recursive: true });
+  try {
+    for (const file of await readdir(config.landingBlogDir)) {
+      if (file.endsWith(".md")) {
+        await rm(join(config.landingBlogDir, file));
+      }
+    }
+  } catch {
+    void 0;
+  }
+
+  try {
+    for (const file of await readdir(snapshotBlogDir)) {
+      if (file.endsWith(".md")) {
+        await cp(join(snapshotBlogDir, file), join(config.landingBlogDir, file));
+      }
+    }
+  } catch {
+    void 0;
+  }
+
+  await syncMediaToLanding();
+}
+
 async function readJsonIfExists(filePath: string): Promise<unknown> {
   try {
     return JSON.parse(await readFile(filePath, "utf-8"));

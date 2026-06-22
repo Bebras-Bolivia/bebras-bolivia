@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 type Snapshot = {
@@ -66,9 +66,19 @@ function bucketFor(value: string | undefined, now: Date): AgeBucket {
   return "yearly";
 }
 
+const EyeIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+);
+
 export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, onDownload, onRestore, onDelete }: Props) {
   const [headerSlot] = useState<HTMLElement | null>(() => document.getElementById("header-editor-actions"));
   const [headerSubtitleSlot] = useState<HTMLElement | null>(() => document.getElementById("header-subtitle"));
+
+  const [previewId, setPreviewId] = useState<number | null>(null);
+  const [previewSrc, setPreviewSrc] = useState("");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const previewRevision = useRef(0);
 
   const ordered = [...(snapshots || [])].sort((a, b) => b.id - a.id);
 
@@ -78,6 +88,47 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
     label: BUCKET_LABELS[bucket],
     items: ordered.filter((snap) => bucketFor(snap.createdAt || snap.date, now) === bucket),
   })).filter((group) => group.items.length > 0);
+
+  useEffect(() => {
+    return () => {
+      window.API.cleanupSnapshotPreview().catch(() => {});
+    };
+  }, []);
+
+  const openPreview = async (id: number) => {
+    const revision = ++previewRevision.current;
+    setPreviewId(id);
+    setPreviewLoading(true);
+    setPreviewError(null);
+    setPreviewSrc("");
+
+    try {
+      const status = await window.API.previewStatus().catch(() => null);
+      if (!status?.running) await window.API.startPreview();
+      await window.API.syncSnapshotPreview(id);
+
+      if (revision !== previewRevision.current) return;
+
+      await new Promise((resolve) => window.setTimeout(resolve, 900));
+      if (revision !== previewRevision.current) return;
+
+      setPreviewSrc(`${window.App.appUrl("/preview-site/")}?t=${Date.now()}`);
+    } catch (err: unknown) {
+      if (revision !== previewRevision.current) return;
+      setPreviewError(err instanceof Error ? err.message : "No se pudo generar la vista previa.");
+    } finally {
+      if (revision === previewRevision.current) setPreviewLoading(false);
+    }
+  };
+
+  const closePreview = () => {
+    previewRevision.current++;
+    setPreviewId(null);
+    setPreviewSrc("");
+    setPreviewError(null);
+    setPreviewLoading(false);
+    window.API.cleanupSnapshotPreview().catch(() => {});
+  };
 
   const headerActions = headerSlot
     ? createPortal(
@@ -114,18 +165,26 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
       )
     : null;
 
+  if (ordered.length === 0) {
+    return (
+      <>
+        {headerActions}
+        {countBadge}
+        <div className="empty-state">
+          <h3>Sin respaldos</h3>
+          <p>Crea un respaldo para guardar el estado actual del contenido.</p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       {headerActions}
       {countBadge}
 
-      {ordered.length === 0 ? (
-        <div className="empty-state">
-          <h3>Sin respaldos</h3>
-          <p>Crea un respaldo para guardar el estado actual del contenido.</p>
-        </div>
-      ) : (
-        <div>
+      <div className={`snapshots-layout${previewId !== null ? " has-preview" : ""}`}>
+        <div className="snapshots-list">
           {grouped.map((group) => (
             <section className="snapshot-group" key={group.bucket}>
               <div className="snapshot-group-header">
@@ -134,9 +193,10 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
               </div>
               {group.items.map((snap) => {
                 const date = formatSnapshotDate(snap.createdAt || snap.date);
+                const isActive = snap.id === previewId;
 
                 return (
-                  <div className="snapshot-item" key={snap.id}>
+                  <div className={`snapshot-item${isActive ? " is-active" : ""}`} key={snap.id}>
                     <div className="meta">
                       <div className="id">Respaldo #{snap.id}</div>
                       <div className="desc">{snap.description || "Sin descripcion"}</div>
@@ -145,6 +205,9 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
                       </div>
                     </div>
                     <div className="actions flex gap-sm">
+                      <button className="btn btn-ghost btn-sm btn-icon-only" aria-label={`Ver respaldo #${snap.id}`} title="Ver" onClick={() => openPreview(snap.id)}>
+                        <EyeIcon />
+                      </button>
                       <button className="btn btn-ghost btn-sm" onClick={() => onRestore(snap.id)}>
                         <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> <span className="snapshot-restore-text">Restaurar</span>
                       </button>
@@ -161,7 +224,33 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
             </section>
           ))}
         </div>
-      )}
+
+        {previewId !== null && (
+          <aside className="snapshots-preview">
+            <div className="snapshots-preview-toolbar">
+              <div className="snapshots-preview-title">
+                Vista previa &mdash; Respaldo #{previewId}
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={closePreview} aria-label="Cerrar vista previa">
+                Cerrar
+              </button>
+            </div>
+            {previewError ? (
+              <div className="snapshots-preview-fallback">
+                <h3>No se pudo cargar la vista previa</h3>
+                <p>{previewError}</p>
+              </div>
+            ) : previewLoading || !previewSrc ? (
+              <div className="snapshots-preview-fallback">
+                <div className="spinner"></div>
+                <p>Generando la vista previa del respaldo...</p>
+              </div>
+            ) : (
+              <iframe title={`Vista previa del respaldo ${previewId}`} className="snapshots-preview-frame" src={previewSrc} />
+            )}
+          </aside>
+        )}
+      </div>
     </>
   );
 }

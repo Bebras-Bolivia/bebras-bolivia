@@ -100,9 +100,17 @@ const App = {
       }
       this.closeMobileSidebar();
     });
-    document.getElementById("logout-btn")?.addEventListener("click", (e) => {
+    document.getElementById("logout-btn")?.addEventListener("click", async (e) => {
       e.preventDefault();
-      window.API.logout();
+      const confirmed = await window.CMSModal.openConfirm({
+        title: "Cerrar sesión",
+        message: "¿Estás seguro de que quieres cerrar sesión?",
+        confirmLabel: "Cerrar sesión",
+        cancelLabel: "Cancelar",
+        tone: "danger",
+        image: this.appUrl("/favicon.png"),
+      });
+      if (confirmed) window.API.logout();
     });
     document.getElementById("header-publish-btn")?.addEventListener("click", () => this.navigate("/publish"));
   },
