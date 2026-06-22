@@ -7,7 +7,6 @@ type Frontmatter = {
   date: string;
   author: string;
   image?: string;
-  ctaEnabled?: boolean;
   ctaLabel?: string;
   ctaHref?: string;
 };
@@ -77,7 +76,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [title, setTitle] = useState(frontmatter.title || "");
   const [description, setDescription] = useState(frontmatter.description || "");
   const [date, setDate] = useState(frontmatter.date || new Date().toISOString().split("T")[0]);
-  const [ctaEnabled, setCtaEnabled] = useState(Boolean(frontmatter.ctaEnabled));
   const [ctaLabel, setCtaLabel] = useState(frontmatter.ctaLabel || "");
   const [ctaHref, setCtaHref] = useState(frontmatter.ctaHref || "");
   const [markdown, setMarkdown] = useState(body || "");
@@ -101,12 +99,11 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       description: description.trim(),
       date,
       author: "Bebras Bolivia",
-      ctaEnabled,
       ctaLabel: ctaLabel.trim(),
       ctaHref: ctaHref.trim(),
     },
     body: markdown,
-  }), [formSlug, title, description, date, ctaEnabled, ctaLabel, ctaHref, markdown]);
+  }), [formSlug, title, description, date, ctaLabel, ctaHref, markdown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -184,8 +181,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     if (!formSlug.trim() || !title.trim() || !description.trim() || !date) {
       return;
     }
-    if (ctaEnabled && (!ctaLabel.trim() || !ctaHref.trim())) {
-      window.Toast.error("Completa el texto y enlace del boton, o desactivalo.");
+    if ((ctaLabel.trim() && !ctaHref.trim()) || (!ctaLabel.trim() && ctaHref.trim())) {
+      window.Toast.error("Completa texto y enlace del boton, o deja ambos vacios.");
       return;
     }
     setSaving(true);
@@ -197,7 +194,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           description: description.trim(),
           date,
           author: "Bebras Bolivia",
-          ctaEnabled,
           ctaLabel: ctaLabel.trim(),
           ctaHref: ctaHref.trim(),
         },
@@ -412,21 +408,15 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
               <input type="date" id="blog-date-react" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="blog-cta-enabled-react">Boton del articulo</label>
-              <label className="toggle-row" htmlFor="blog-cta-enabled-react">
-                <input
-                  type="checkbox"
-                  id="blog-cta-enabled-react"
-                  checked={ctaEnabled}
-                  onChange={(e) => setCtaEnabled(e.target.checked)}
-                />
-                <span>Mostrar boton al final de esta noticia</span>
-              </label>
-            </div>
-
-            {ctaEnabled ? (
-              <div className="editor-group nested-group">
+            <details className="blog-cta-card" open={Boolean(ctaLabel || ctaHref)}>
+              <summary>
+                <span>
+                  <strong>Boton del articulo</strong>
+                  <small>{ctaLabel && ctaHref ? `${ctaLabel} -> ${ctaHref}` : "Opcional: se muestra solo si completas texto y enlace."}</small>
+                </span>
+                <span className="blog-cta-card-status">{ctaLabel && ctaHref ? "Activo" : "Vacio"}</span>
+              </summary>
+              <div className="blog-cta-card-body">
                 <div className="form-group">
                   <label htmlFor="blog-cta-label-react">Texto del boton</label>
                   <input
@@ -452,7 +442,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
                   />
                 </div>
               </div>
-            ) : null}
+            </details>
           </div>
 
           <div className="divider"></div>

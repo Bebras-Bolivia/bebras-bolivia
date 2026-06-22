@@ -59,7 +59,7 @@ const Blog = {
     if (!main) return;
 
     const isNew = !slug;
-    let post: { frontmatter?: { title?: string; description?: string; date?: string; author?: string; image?: string; ctaEnabled?: boolean; ctaLabel?: string; ctaHref?: string }; body?: string } | null = null;
+    let post: { frontmatter?: { title?: string; description?: string; date?: string; author?: string; image?: string; ctaLabel?: string; ctaHref?: string }; body?: string } | null = null;
 
     if (!isNew) {
       try {
@@ -90,7 +90,6 @@ const Blog = {
           date: formatDate(frontmatter.date || ""),
           author: frontmatter.author || "Bebras Bolivia",
           image: frontmatter.image || "",
-          ctaEnabled: Boolean(frontmatter.ctaEnabled),
           ctaLabel: frontmatter.ctaLabel || "",
           ctaHref: frontmatter.ctaHref || "",
       },
@@ -109,7 +108,6 @@ const Blog = {
           date: string;
           author: string;
           image?: string;
-          ctaEnabled?: boolean;
           ctaLabel?: string;
           ctaHref?: string;
         };

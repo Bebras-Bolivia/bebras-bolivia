@@ -8,14 +8,13 @@ interface Props {
   postUi: {
     backLabel?: string;
   };
-  ctaEnabled?: boolean;
   ctaLabel?: string;
   ctaHref?: string;
   contentHtml: string;
 }
 
-const { title, description, date, author, image, postUi, ctaEnabled = false, ctaLabel, ctaHref, contentHtml } = Astro.props;
-const showCta = Boolean(ctaEnabled && ctaLabel && ctaHref);
+const { title, description, date, author, image, postUi, ctaLabel, ctaHref, contentHtml } = Astro.props;
+const showCta = Boolean(ctaLabel && ctaHref);
 
 const formattedDate = date.toLocaleDateString("es-BO", {
   year: "numeric",

@@ -29,7 +29,6 @@ type EditorPayload = {
     date: string;
     author: string;
     image?: string;
-    ctaEnabled?: boolean;
     ctaLabel?: string;
     ctaHref?: string;
   };
@@ -44,7 +43,6 @@ type EditorPayload = {
       date: string;
       author: string;
       image?: string;
-      ctaEnabled?: boolean;
       ctaLabel?: string;
       ctaHref?: string;
     };
