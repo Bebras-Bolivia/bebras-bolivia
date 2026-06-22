@@ -128,6 +128,7 @@ function FieldInput({
       <BrandColorSwatch
         id={`field-${field.path}`}
         path={field.path}
+        label={field.label}
         value={value}
         onChange={(next) => onFieldChange(field.path, next)}
       />

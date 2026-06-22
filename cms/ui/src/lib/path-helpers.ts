@@ -204,7 +204,7 @@ const specialLabels: Record<string, string> = {
   status: "Estado",
   style: "Estilo visual",
   color: "Color",
-  cardPalette: "Paleta de tarjetas",
+  cardPalette: "Colores",
 
   // ── Visuals ─────────────────────────────────────
   icon: "Icono",

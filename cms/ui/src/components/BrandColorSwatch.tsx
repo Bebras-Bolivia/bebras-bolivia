@@ -23,11 +23,12 @@ interface Props {
   id?: string;
   value: string | number | boolean;
   onChange: (next: string) => void;
+  label?: string;
   /** Pass the field path so we can detect cardPalette items and render compact. */
   path?: string;
 }
 
-export default function BrandColorSwatch({ id, value, onChange, path }: Props) {
+export default function BrandColorSwatch({ id, value, onChange, label, path }: Props) {
   const current = normalizeBrandColor(value);
   const [selectedColor, setSelectedColor] = React.useState<BrandColor | null>(current);
 
@@ -46,7 +47,7 @@ export default function BrandColorSwatch({ id, value, onChange, path }: Props) {
   const pickerClass = `brand-color-picker${isCompact ? " brand-color-picker--compact" : ""}`;
 
   return (
-    <div id={id} className={pickerClass} role="radiogroup">
+    <div id={id} className={pickerClass} role="radiogroup" aria-label={label}>
       {BRAND_COLORS.map((color) => {
         const selected = color === selectedColor;
         return (

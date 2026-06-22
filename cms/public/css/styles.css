@@ -2657,6 +2657,17 @@ a:hover { text-decoration: underline; }
   margin: 0;
 }
 
+.array-color-palette-item {
+  padding: 0.625rem 2.75rem 0.625rem 0.625rem;
+}
+
+.array-color-palette-item .brand-color-picker {
+  width: 100%;
+  border-color: transparent;
+  background: transparent;
+  padding: 0;
+}
+
 .array-primitive-item .form-textarea {
   width: 100%;
   min-height: 7rem;

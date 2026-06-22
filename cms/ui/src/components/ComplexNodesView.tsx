@@ -128,6 +128,7 @@ function FieldInput({
       <BrandColorSwatch
         id={`field-${field.path}`}
         path={field.path}
+        label={field.label}
         value={value}
         onChange={(next) => onFieldChange(field.path, next)}
       />
@@ -325,18 +326,28 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
             item.children.length === 0 &&
             (!item.advancedFields || item.advancedFields.length === 0) &&
             item.fields[0]?.path === item.itemPath;
+          const isCardPaletteItem = /(^|\.)cardPalette\[\d+\]$/.test(item.itemPath);
           if (isPrimitiveItem) {
             return (
               <div
-                className={locked ? "array-primitive-item array-item-locked" : "array-primitive-item"}
+                className={`${locked ? "array-primitive-item array-item-locked" : "array-primitive-item"}${isCardPaletteItem ? " array-color-palette-item" : ""}`}
                 key={item.itemPath}
               >
-                <FieldGroup
-                  field={item.fields[0]}
-                  onFieldChange={props.onFieldChange}
-                  draftValues={props.draftValues}
-                  setDraftValue={props.setDraftValue}
-                />
+                {isCardPaletteItem ? (
+                  <FieldInput
+                    field={item.fields[0]}
+                    onFieldChange={props.onFieldChange}
+                    draftValues={props.draftValues}
+                    setDraftValue={props.setDraftValue}
+                  />
+                ) : (
+                  <FieldGroup
+                    field={item.fields[0]}
+                    onFieldChange={props.onFieldChange}
+                    draftValues={props.draftValues}
+                    setDraftValue={props.setDraftValue}
+                  />
+                )}
                 {!locked ? (
                   <ArrayItemActionsView trashIcon={icons.trash || ""} onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
                 ) : null}
