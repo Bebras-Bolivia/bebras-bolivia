@@ -7,6 +7,7 @@
     "dev": "bunx astro dev",
     "dev:all": "bun scripts/dev-all.mjs",
     "build": "bunx astro build",
+    "build:all": "bun scripts/build-all.mjs",
     "preview": "bunx astro preview",
     "astro": "bunx astro",
     "lint": "bunx eslint .",
