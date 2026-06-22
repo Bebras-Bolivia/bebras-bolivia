@@ -111,7 +111,7 @@ const { components = [] } = Astro.props;
     return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} cardPalette={component.cardPalette} />;
   }
 
-  if (component.type === "faqAccordion") {
+  if (component.type === "faqAccordion" || component.type === "faqQuestions") {
     return <FAQQuestionsBlock categories={component.categories} />;
   }
 

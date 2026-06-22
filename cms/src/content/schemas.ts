@@ -29,8 +29,8 @@ const StatSchema = z.object({
 });
 
 const PageMetaSchema = z.object({
-  pageTitle: z.string(),
-  pageDescription: z.string(),
+  pageTitle: z.string().optional(),
+  pageDescription: z.string().optional(),
 });
 
 const SharedPageComponentSchema = z.discriminatedUnion("type", [
@@ -101,7 +101,7 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
     ),
   }),
   z.object({
-    type: z.literal("faqAccordion"),
+    type: z.enum(["faqAccordion", "faqQuestions"]),
     categories: z.array(
       z.object({
         title: z.string(),
