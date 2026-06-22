@@ -8,7 +8,7 @@ const header = data.header;
 const components: any[] = Array.isArray((data as any).components) ? (data as any).components : [];
 ---
 
-<Layout title="Estudiantes" description="Información para estudiantes sobre el Desafío Bebras Bolivia: cómo participar, categorías por edad y sistema de puntuación.">
+<Layout title={(data as any).pageTitle || header.heading} description={(data as any).pageDescription || header.subtitle}>
   <div class="relative w-full">
     <InternalPageHero tag={header.tag} heading={header.heading} description={header.subtitle} />
 

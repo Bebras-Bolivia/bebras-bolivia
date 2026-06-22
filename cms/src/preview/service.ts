@@ -403,6 +403,12 @@ export async function syncBlogDraftToLanding(
     image: typeof fm?.image === "string" && fm.image.trim()
       ? fm.image.trim()
       : undefined,
+    ctaLabel: typeof fm?.ctaLabel === "string" && fm.ctaLabel.trim()
+      ? fm.ctaLabel.trim()
+      : undefined,
+    ctaHref: typeof fm?.ctaHref === "string" && fm.ctaHref.trim()
+      ? fm.ctaHref.trim()
+      : undefined,
   });
 
   if (!normalized.success) {

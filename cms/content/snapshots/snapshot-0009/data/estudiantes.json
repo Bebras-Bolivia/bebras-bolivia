@@ -1,4 +1,6 @@
 {
+  "pageTitle": "Estudiantes",
+  "pageDescription": "Información para estudiantes sobre el Desafío Bebras Bolivia: cómo participar, categorías por edad y sistema de puntuación.",
   "header": {
     "tag": "Para estudiantes",
     "heading": "Información para estudiantes",
@@ -32,12 +34,7 @@
       "tag": "Habilidades clave",
       "heading": "¿Qué es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
-      "cardPalette": [
-        "blue",
-        "red",
-        "yellow",
-        "green"
-      ],
+      "cardPalette": ["blue", "red", "yellow", "green"],
       "items": [
         {
           "title": "Descomposición:",
@@ -63,11 +60,7 @@
       "tag": "El formato",
       "heading": "¿Qué involucra el desafío?",
       "columns": 3,
-      "cardPalette": [
-        "green",
-        "yellow",
-        "red"
-      ],
+      "cardPalette": ["green", "yellow", "red"],
       "stats": [
         {
           "value": "15",
@@ -92,38 +85,21 @@
       "sectionTag": "Puntuación",
       "heading": "Sistema de puntuación",
       "subtitle": "Cada tarea pertenece a una categoría de dificultad. Inicias con 45 puntos.",
-      "tableHeaders": [
-        "Resultado",
-        "Cat. A",
-        "Cat. B",
-        "Cat. C"
-      ],
+      "tableHeaders": ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
       "rows": [
         {
           "label": "Correcta",
-          "values": [
-            "+6",
-            "+9",
-            "+12"
-          ],
+          "values": ["+6", "+9", "+12"],
           "status": "positive"
         },
         {
           "label": "Sin respuesta",
-          "values": [
-            "0",
-            "0",
-            "0"
-          ],
+          "values": ["0", "0", "0"],
           "status": "neutral"
         },
         {
           "label": "Incorrecta",
-          "values": [
-            "-2",
-            "-3",
-            "-4"
-          ],
+          "values": ["-2", "-3", "-4"],
           "status": "negative"
         }
       ],
@@ -138,22 +114,13 @@
         }
       ],
       "summaryColumns": 2,
-      "cardPalette": [
-        "red",
-        "yellow"
-      ]
+      "cardPalette": ["red", "yellow"]
     },
     {
       "type": "studentsAgeCategories",
       "sectionTag": "Niveles",
       "heading": "Categorías por edad",
-      "cardPalette": [
-        "red",
-        "yellow",
-        "green",
-        "blue",
-        "blue"
-      ],
+      "cardPalette": ["red", "yellow", "green", "blue", "blue"],
       "subtitle": "Cinco niveles diseñados para desafiar a cada grupo de edad.",
       "categories": [
         {

@@ -9,7 +9,7 @@ const header = contactData.header || { tag: "Comunícate", heading: "Contacto", 
 const components: any[] = Array.isArray(contactData.components) ? contactData.components : [];
 ---
 
-<Layout title="Contacto" description="Contáctanos para más información sobre el Desafío Bebras Bolivia.">
+<Layout title={header.pageTitle || header.heading} description={header.pageDescription || header.subtitle}>
   <div class="relative w-full">
     <InternalPageHero tag={header.tag} heading={header.heading} description={header.subtitle} />
 

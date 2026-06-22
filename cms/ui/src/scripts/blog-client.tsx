@@ -29,6 +29,8 @@ type EditorPayload = {
     date: string;
     author: string;
     image?: string;
+    ctaLabel?: string;
+    ctaHref?: string;
   };
   body: string;
   icons: Record<string, string>;
@@ -41,6 +43,8 @@ type EditorPayload = {
       date: string;
       author: string;
       image?: string;
+      ctaLabel?: string;
+      ctaHref?: string;
     };
     body: string;
   }) => Promise<void>;

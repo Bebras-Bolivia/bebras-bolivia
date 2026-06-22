@@ -35,7 +35,14 @@ const Blog = {
   },
 
   async handleDelete(slug: string) {
-    if (!confirm(`Eliminar la publicacion "${slug}"? Esta accion no se puede deshacer.`)) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: "Eliminar publicacion",
+      message: `Eliminar la publicacion "${slug}"? Esta accion no se puede deshacer.`,
+      confirmLabel: "Eliminar",
+      cancelLabel: "Cancelar",
+      tone: "danger",
+    });
+    if (!confirmed) return;
 
     try {
       await window.API.deleteBlog(slug);
@@ -52,7 +59,7 @@ const Blog = {
     if (!main) return;
 
     const isNew = !slug;
-    let post: { frontmatter?: { title?: string; description?: string; date?: string; author?: string; image?: string }; body?: string } | null = null;
+    let post: { frontmatter?: { title?: string; description?: string; date?: string; author?: string; image?: string; ctaLabel?: string; ctaHref?: string }; body?: string } | null = null;
 
     if (!isNew) {
       try {
@@ -80,9 +87,11 @@ const Blog = {
       frontmatter: {
         title: frontmatter.title || "",
         description: frontmatter.description || "",
-        date: formatDate(frontmatter.date || ""),
-        author: frontmatter.author || "Bebras Bolivia",
-        image: frontmatter.image || "",
+          date: formatDate(frontmatter.date || ""),
+          author: frontmatter.author || "Bebras Bolivia",
+          image: frontmatter.image || "",
+          ctaLabel: frontmatter.ctaLabel || "",
+          ctaHref: frontmatter.ctaHref || "",
       },
       body,
       icons: window.App.icons,
@@ -99,13 +108,19 @@ const Blog = {
           date: string;
           author: string;
           image?: string;
+          ctaLabel?: string;
+          ctaHref?: string;
         };
         body: string;
       }) => {
         if (!nextSlug) return window.Toast.error("El slug es obligatorio");
+        if (nextSlug.length > 80) return window.Toast.error("El slug es demasiado largo");
         if (!nextFrontmatter.title) return window.Toast.error("El titulo es obligatorio");
+        if (nextFrontmatter.title.length > 120) return window.Toast.error("El titulo es demasiado largo");
         if (!nextFrontmatter.description) return window.Toast.error("La descripcion es obligatoria");
+        if (nextFrontmatter.description.length > 280) return window.Toast.error("La descripcion es demasiado larga");
         if (!nextFrontmatter.date) return window.Toast.error("La fecha es obligatoria");
+        if (nextBody.length > 50000) return window.Toast.error("El contenido es demasiado largo");
 
         try {
           if (isNew) {

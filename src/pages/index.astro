@@ -22,9 +22,9 @@ const imageMap: Record<string, string> = {
 
 const sections: any[] = Array.isArray((homeData as any).sections) ? (homeData as any).sections : [];
 const components: any[] = Array.isArray((homeData as any).components) ? (homeData as any).components : [];
-const latestPost = (await getCollection("blog")).sort(
-	(a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-)[0];
+const latestPost = (await getCollection("blog"))
+	.filter((post) => post.id.replace(/\.md$/, "") !== "cms-preview")
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())[0];
 const latestNews = latestPost
 	? {
 		title: latestPost.data.title,

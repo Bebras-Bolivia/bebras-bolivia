@@ -3,9 +3,10 @@
   import { registerEditorLib } from "../scripts/editor-lib-client";
   import { registerEditorPreview } from "../scripts/editor-preview-client";
   import { registerEditorController } from "../scripts/editor-controller-client";
-  import { registerDashboardRenderer } from "../scripts/dashboard-client";
   import { registerBlogRenderer } from "../scripts/blog-client";
   import { registerBlogController } from "../scripts/blog-controller-client";
+  import { registerPublishRenderer } from "../scripts/publish-client";
+  import { registerPublishController } from "../scripts/publish-controller-client";
   import { registerSnapshotsRenderer } from "../scripts/snapshots-client";
   import { registerSnapshotsController } from "../scripts/snapshots-controller-client";
   import { registerEditorRenderer } from "../scripts/editor-client";
@@ -18,9 +19,10 @@
   registerEditorLib();
   registerEditorPreview();
   registerEditorController();
-  registerDashboardRenderer();
   registerBlogRenderer();
   registerBlogController();
+  registerPublishRenderer();
+  registerPublishController();
   registerSnapshotsRenderer();
   registerSnapshotsController();
   registerEditorRenderer();

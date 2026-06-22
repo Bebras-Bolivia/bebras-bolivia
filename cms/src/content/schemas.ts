@@ -28,6 +28,11 @@ const StatSchema = z.object({
   label: z.string(),
 });
 
+const PageMetaSchema = z.object({
+  pageTitle: z.string(),
+  pageDescription: z.string(),
+});
+
 const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("organizerInstitution"),
@@ -229,7 +234,6 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("blogPostUi"),
     backLabel: z.string(),
-    ctaLabel: z.string(),
   }),
   z.object({
     type: z.literal("contactClassic"),
@@ -411,7 +415,7 @@ export const scoringSchema = z.object({
 // ── 4. faq.json ──────────────────────────────────────────
 
 export const faqSchema = z.object({
-  header: z.object({
+  header: PageMetaSchema.extend({
     tag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -433,7 +437,7 @@ export const teacherInstructionsSchema = z.object({
 // ── 6. sponsors.json ────────────────────────────────────
 
 export const sponsorsSchema = z.object({
-  header: z.object({
+  header: PageMetaSchema.extend({
     tag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -444,7 +448,7 @@ export const sponsorsSchema = z.object({
 // ── 7. contact.json ─────────────────────────────────────
 
 export const contactSchema = z.object({
-  header: z.object({
+  header: PageMetaSchema.extend({
     tag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -454,7 +458,7 @@ export const contactSchema = z.object({
 
 // ── 8. registro.json ────────────────────────────────────
 
-export const registroSchema = z.object({
+export const registroSchema = PageMetaSchema.extend({
   tag: z.string(),
   heading: z.string(),
   paragraph: z.string(),
@@ -472,7 +476,7 @@ export const registroSchema = z.object({
 
 // ── 9. estudiantes.json ─────────────────────────────────
 
-export const estudiantesSchema = z.object({
+export const estudiantesSchema = PageMetaSchema.extend({
   header: z.object({
     tag: z.string(),
     heading: z.string(),
@@ -483,7 +487,7 @@ export const estudiantesSchema = z.object({
 
 // ── 10. docentes.json ────────────────────────────────────
 
-export const docentesSchema = z.object({
+export const docentesSchema = PageMetaSchema.extend({
   header: z.object({
     tag: z.string(),
     heading: z.string(),
@@ -495,10 +499,9 @@ export const docentesSchema = z.object({
 // ── 11. blog-ui.json ─────────────────────────────────────
 
 export const blogUiSchema = z.object({
-  header: z.object({
+  header: PageMetaSchema.extend({
     tag: z.string(),
     heading: z.string(),
-    headingHighlight: z.string(),
     subtitle: z.string(),
   }),
   components: z.array(SharedPageComponentSchema),

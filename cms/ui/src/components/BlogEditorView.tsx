@@ -6,6 +6,9 @@ type Frontmatter = {
   description: string;
   date: string;
   author: string;
+  image?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 };
 
 type MarkdownAction = {
@@ -14,6 +17,11 @@ type MarkdownAction = {
   icon: React.ReactNode;
   onClick: () => void;
   group?: string;
+};
+
+type PreviewScrollPosition = {
+  x: number;
+  y: number;
 };
 
 interface Props {
@@ -30,6 +38,37 @@ function iconHtml(icons: Record<string, string>, name: string): { __html: string
   return { __html: icons[name] || "" };
 }
 
+function getIframeScrollPosition(iframe: HTMLIFrameElement | null): PreviewScrollPosition | null {
+  try {
+    const win = iframe?.contentWindow;
+    const doc = iframe?.contentDocument;
+    if (!win || !doc) return null;
+    return {
+      x: win.scrollX || doc.documentElement.scrollLeft || doc.body?.scrollLeft || 0,
+      y: win.scrollY || doc.documentElement.scrollTop || doc.body?.scrollTop || 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function restoreIframeScrollPosition(iframe: HTMLIFrameElement | null, position: PreviewScrollPosition): void {
+  if (!iframe) return;
+  const tryRestore = (attempt = 0) => {
+    try {
+      iframe.contentWindow?.scrollTo(position.x, position.y);
+    } catch {
+      return;
+    }
+
+    if (attempt < 6) {
+      window.setTimeout(() => tryRestore(attempt + 1), 80);
+    }
+  };
+
+  tryRestore();
+}
+
 
 
 export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, onBack, onSave }: Props) {
@@ -37,6 +76,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [title, setTitle] = useState(frontmatter.title || "");
   const [description, setDescription] = useState(frontmatter.description || "");
   const [date, setDate] = useState(frontmatter.date || new Date().toISOString().split("T")[0]);
+  const [ctaLabel, setCtaLabel] = useState(frontmatter.ctaLabel || "");
+  const [ctaHref, setCtaHref] = useState(frontmatter.ctaHref || "");
   const [markdown, setMarkdown] = useState(body || "");
   const [saving, setSaving] = useState(false);
   const [previewFrameSrc, setPreviewFrameSrc] = useState("");
@@ -48,6 +89,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [headerContextSlot, setHeaderContextSlot] = useState<HTMLElement | null>(null);
   const previewRevision = useRef(0);
   const markdownRef = useRef<HTMLTextAreaElement | null>(null);
+  const previewIframeRef = useRef<HTMLIFrameElement | null>(null);
+  const pendingPreviewScroll = useRef<PreviewScrollPosition | null>(null);
 
   const previewPayload = useMemo(() => ({
     slug: formSlug.trim(),
@@ -56,9 +99,11 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       description: description.trim(),
       date,
       author: "Bebras Bolivia",
+      ctaLabel: ctaLabel.trim(),
+      ctaHref: ctaHref.trim(),
     },
     body: markdown,
-  }), [formSlug, title, description, date, markdown]);
+  }), [formSlug, title, description, date, ctaLabel, ctaHref, markdown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,6 +142,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
         if (cancelled || currentRevision !== previewRevision.current) return;
 
         const targetPath = `/preview-site/blog/${encodeURIComponent(result.slug)}/`;
+        pendingPreviewScroll.current = getIframeScrollPosition(previewIframeRef.current);
         setPreviewFrameSrc(`${window.App.appUrl(targetPath)}?t=${Date.now()}`);
         setPreviewReady(true);
       } catch (err: unknown) {
@@ -135,6 +181,10 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     if (!formSlug.trim() || !title.trim() || !description.trim() || !date) {
       return;
     }
+    if ((ctaLabel.trim() && !ctaHref.trim()) || (!ctaLabel.trim() && ctaHref.trim())) {
+      window.Toast.error("Completa texto y enlace del boton, o deja ambos vacios.");
+      return;
+    }
     setSaving(true);
     try {
       await onSave({
@@ -144,6 +194,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           description: description.trim(),
           date,
           author: "Bebras Bolivia",
+          ctaLabel: ctaLabel.trim(),
+          ctaHref: ctaHref.trim(),
         },
         body: markdown,
       });
@@ -328,6 +380,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
                 value={formSlug}
                 placeholder="mi-nuevo-post"
                 pattern="[a-z0-9\-]+"
+                maxLength={80}
                 title="Solo letras minusculas, numeros y guiones"
                 onChange={(e) => setFormSlug(e.target.value)}
                 disabled={!isNew}
@@ -341,18 +394,54 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
             <div className="form-group">
               <label htmlFor="blog-title-react">Titulo</label>
-              <input type="text" id="blog-title-react" className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              <input type="text" id="blog-title-react" className="form-input" value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} required />
             </div>
 
             <div className="form-group">
               <label htmlFor="blog-desc-react">Descripcion</label>
-              <textarea id="blog-desc-react" className="form-textarea" rows={2} value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+              <textarea id="blog-desc-react" className="form-textarea" rows={2} value={description} maxLength={280} onChange={(e) => setDescription(e.target.value)}></textarea>
             </div>
 
             <div className="form-group">
               <label htmlFor="blog-date-react">Fecha</label>
               <input type="date" id="blog-date-react" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
+
+            <details className="blog-cta-card" open={Boolean(ctaLabel || ctaHref)}>
+              <summary>
+                <span>
+                  <strong>Boton del articulo</strong>
+                  <small>{ctaLabel && ctaHref ? `${ctaLabel} -> ${ctaHref}` : "Opcional: se muestra solo si completas texto y enlace."}</small>
+                </span>
+                <span className="blog-cta-card-status">{ctaLabel && ctaHref ? "Activo" : "Vacio"}</span>
+              </summary>
+              <div className="blog-cta-card-body">
+                <div className="form-group">
+                  <label htmlFor="blog-cta-label-react">Texto del boton</label>
+                  <input
+                    type="text"
+                    id="blog-cta-label-react"
+                    className="form-input"
+                    value={ctaLabel}
+                    maxLength={80}
+                    placeholder="Inscribirse al desafio"
+                    onChange={(e) => setCtaLabel(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="blog-cta-href-react">Enlace del boton</label>
+                  <input
+                    type="text"
+                    id="blog-cta-href-react"
+                    className="form-input"
+                    value={ctaHref}
+                    maxLength={300}
+                    placeholder="/registro"
+                    onChange={(e) => setCtaHref(e.target.value)}
+                  />
+                </div>
+              </div>
+            </details>
           </div>
 
           <div className="divider"></div>
@@ -384,6 +473,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
               id="blog-body-react"
               className="form-textarea mono"
               rows={20}
+              maxLength={50000}
               style={{ minHeight: "300px" }}
               ref={markdownRef}
               value={markdown}
@@ -408,9 +498,16 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
               </div>
             ) : previewFrameSrc ? (
               <iframe
+                ref={previewIframeRef}
                 title="Vista previa del post"
                 className="blog-preview-frame"
                 src={previewFrameSrc}
+                onLoad={() => {
+                  const position = pendingPreviewScroll.current;
+                  if (!position) return;
+                  pendingPreviewScroll.current = null;
+                  restoreIframeScrollPosition(previewIframeRef.current, position);
+                }}
               />
             ) : (
               <div className="blog-preview-fallback">

@@ -40,6 +40,17 @@ function initSchema(db: Database): void {
       started_at  TEXT    NOT NULL DEFAULT (datetime('now')),
       finished_at TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS scheduled_publishes (
+      id             INTEGER PRIMARY KEY AUTOINCREMENT,
+      run_at         TEXT    NOT NULL,
+      author         TEXT    NOT NULL,
+      status         TEXT    NOT NULL DEFAULT 'scheduled',
+      output         TEXT    NOT NULL DEFAULT '',
+      publish_log_id INTEGER REFERENCES publish_log(id),
+      created_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+      updated_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
 
@@ -68,4 +79,15 @@ export interface PublishLogRow {
   output: string;
   started_at: string;
   finished_at: string | null;
+}
+
+export interface ScheduledPublishRow {
+  id: number;
+  run_at: string;
+  author: string;
+  status: string;
+  output: string;
+  publish_log_id: number | null;
+  created_at: string;
+  updated_at: string;
 }

@@ -34,6 +34,7 @@ const Editor = {
   },
   getArrayItemLabel(obj: SafeAny, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
   getAddTypeOptions(path: string) { return this.lib.getAddTypeOptions(path, this.currentFile, this.currentData) || []; },
+  isComponentsPath(path: string) { return path === "components" || path.endsWith(".components"); },
   waitForPreviewUpdate() { return new Promise((resolve) => setTimeout(resolve, 500)); },
 
   async render(filename: string) {
@@ -133,7 +134,7 @@ const Editor = {
     const addOptions = this.getAddTypeOptions(path);
     // Use the rich modal picker (name + description) when adding shared
     // components, or when the typed options carry descriptions (home sections).
-    const usePicker = path === "components" || addOptions.some((o: SafeAny) => o.description);
+    const usePicker = this.isComponentsPath(path) || addOptions.some((o: SafeAny) => o.description);
     return {
       kind: "array",
       path,
@@ -279,7 +280,7 @@ const Editor = {
     const options = componentOptions.length ? componentOptions : this.getAddTypeOptions(path);
     if (!options.length || !window.CMSModal?.openPicker) return;
     const selected = await window.CMSModal.openPicker({
-      title: path === "components" ? "Agregar componente" : "Agregar sección",
+      title: this.isComponentsPath(path) ? "Agregar componente" : "Agregar sección",
       subtitle: "Selecciona lo que deseas agregar.",
       options,
     });

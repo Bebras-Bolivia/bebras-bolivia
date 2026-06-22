@@ -24,6 +24,8 @@ const Snapshots = {
         snapshots,
         icons: window.App.icons,
         onCreate: () => this.handleCreate(),
+        onUpload: (file: File) => this.handleUpload(file),
+        onDownload: (id: number) => this.handleDownload(id),
         onRestore: (id: number) => this.handleRestore(id),
         onDelete: (id: number) => this.handleDelete(id),
       });
@@ -33,11 +35,24 @@ const Snapshots = {
   },
 
   async handleCreate() {
-    const description = prompt("Descripcion del respaldo (opcional):");
+    const description = await window.CMSModal?.openInput?.({
+      title: "Crear respaldo",
+      subtitle: "Ingresa un nombre o descripcion para identificar este respaldo.",
+      label: "Nombre del respaldo",
+      placeholder: "Ej. Antes de actualizar preguntas frecuentes",
+      confirmLabel: "Crear respaldo",
+      cancelLabel: "Cancelar",
+      defaultValue: "",
+      maxLength: 120,
+    });
     if (description === null) return;
+    if (description.trim().length > 120) {
+      window.Toast.error("El nombre del respaldo es demasiado largo");
+      return;
+    }
 
     try {
-      await window.API.createSnapshot(description);
+      await window.API.createSnapshot(description.trim());
       window.Toast.success("Respaldo creado");
       this.render();
     } catch (err: SafeAny) {
@@ -46,7 +61,13 @@ const Snapshots = {
   },
 
   async handleRestore(id: number) {
-    if (!confirm(`Restaurar respaldo #${id}? Esto reemplazara el contenido actual.`)) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: `Restaurar respaldo #${id}`,
+      message: "Esto reemplazara el contenido actual del CMS por el del respaldo seleccionado.",
+      confirmLabel: "Restaurar",
+      cancelLabel: "Cancelar",
+    });
+    if (!confirmed) return;
 
     try {
       await window.API.restoreSnapshot(id);
@@ -57,8 +78,34 @@ const Snapshots = {
     }
   },
 
+  handleDownload(id: number) {
+    const link = document.createElement("a");
+    link.href = window.API.downloadSnapshotUrl(id);
+    link.download = "";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  },
+
+  async handleUpload(file: File) {
+    try {
+      await window.API.uploadSnapshot(file);
+      window.Toast.success("Respaldo importado");
+      this.render();
+    } catch (err: SafeAny) {
+      window.Toast.error(`Error al importar: ${err.message}`);
+    }
+  },
+
   async handleDelete(id: number) {
-    if (!confirm(`Eliminar respaldo #${id}? Esta accion no se puede deshacer.`)) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: `Eliminar respaldo #${id}`,
+      message: "Esta accion no se puede deshacer.",
+      confirmLabel: "Eliminar",
+      cancelLabel: "Cancelar",
+      tone: "danger",
+    });
+    if (!confirmed) return;
 
     try {
       await window.API.deleteSnapshot(id);

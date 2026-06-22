@@ -46,6 +46,8 @@ const icons: Record<string, string> = {
   save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+  download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
   grip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>',
   layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
 };
@@ -102,7 +104,7 @@ const App = {
       e.preventDefault();
       window.API.logout();
     });
-    document.getElementById("header-publish-btn")?.addEventListener("click", () => this.handlePublish());
+    document.getElementById("header-publish-btn")?.addEventListener("click", () => this.navigate("/publish"));
   },
 
   setupMobileSidebar() {
@@ -163,8 +165,6 @@ const App = {
     }
   },
 
-  // The first content page (e.g. Inicio) is the CMS landing screen — a
-  // non-technical editor arrives straight at editable content, not a dashboard.
   firstContentFile() {
     return this.contentHierarchy[0]?.parent || "home.json";
   },
@@ -174,7 +174,7 @@ const App = {
     document.querySelectorAll("[data-nav]").forEach((el) => el.classList.toggle("active", el.getAttribute("data-nav") === path));
 
     const publishBtn = document.getElementById("header-publish-btn");
-    if (publishBtn) publishBtn.style.display = path.startsWith("/blog") || path.startsWith("/snapshots") ? "none" : "";
+    if (publishBtn) publishBtn.style.display = path.startsWith("/blog") || path.startsWith("/snapshots") || path.startsWith("/publish") ? "none" : "";
 
     if (path === "/" || path === "/dashboard") {
       const filename = this.firstContentFile();
@@ -189,7 +189,8 @@ const App = {
     else if (path.startsWith("/blog/edit/")) {
       const slug = decodeURIComponent(path.replace("/blog/edit/", ""));
       this.showPage(`Editar: ${slug}`, () => window.Blog.renderEditor(slug));
-    } else if (path === "/snapshots") this.showPage("Respaldos", () => window.Snapshots.render());
+    } else if (path === "/publish") this.showPage("Publicación", () => window.Publish.render());
+    else if (path === "/snapshots") this.showPage("Respaldos", () => window.Snapshots.render());
     else {
       const filename = this.firstContentFile();
       const meta = contentMeta[filename];
@@ -217,38 +218,6 @@ const App = {
     Promise.resolve().then(() => renderFn());
   },
 
-  async renderDashboard() {
-    const main = document.getElementById("main-content");
-    if (!main) return;
-    try {
-      const [contentData, blogData, snapshotData, publishData] = await Promise.all([
-        window.API.listContent(),
-        window.API.listBlog(),
-        window.API.listSnapshots(),
-        window.API.publishStatus().catch(() => null),
-      ]);
-      const files = contentData.files || [];
-      main.innerHTML = '<div id="react-dashboard-root"></div>';
-      const root = document.getElementById("react-dashboard-root");
-      if (root) {
-        window.CMSDashboard?.mount(root, {
-          files,
-          posts: blogData.posts || [],
-          snapshots: snapshotData.snapshots || [],
-          publishData,
-          contentTree: this.getContentTree(files),
-          contentMeta,
-          icons,
-          onNavigate: (path: string) => this.navigate(path),
-          onPublish: () => this.handlePublish(),
-        });
-      }
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${this.escapeHtml(errMsg)}</p></div>`;
-    }
-  },
-
   getContentTree(files: string[]) {
     const existing = new Set(files.filter((file) => !hiddenContentFiles.has(file)));
     const seen = new Set<string>();
@@ -263,7 +232,14 @@ const App = {
   },
 
   async handlePublish() {
-    if (!confirm("Publicar el sitio? Esto creara un respaldo y reconstruira el sitio.")) return;
+    const confirmed = await window.CMSModal?.openConfirm?.({
+      title: "Publicar sitio",
+      message: "Esto creara un respaldo y reconstruira el sitio con el contenido actual.",
+      confirmLabel: "Publicar",
+      cancelLabel: "Cancelar",
+    });
+    if (!confirmed) return;
+
     try {
       await window.API.publish();
       window.Toast.success("Sitio publicado exitosamente");

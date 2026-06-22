@@ -86,6 +86,7 @@ function FieldInput({
         id={`field-${field.path}`}
         className="form-textarea"
         rows={3}
+        maxLength={5000}
         value={draftValue}
         onChange={(e) => {
           setDraftValue(field.path, e.target.value);
@@ -140,6 +141,7 @@ function FieldInput({
       type={field.type === "number" ? "number" : field.type === "url" ? "url" : "text"}
       readOnly={Boolean(field.readOnly)}
       disabled={Boolean(field.readOnly)}
+      maxLength={field.type === "url" ? 500 : undefined}
       value={draftValue}
       onChange={(e) => {
         setDraftValue(field.path, e.target.value);
@@ -200,6 +202,7 @@ function EditableItemLabel({
       <input
         className="array-item-label-input"
         value={primaryValue}
+        maxLength={120}
         autoFocus
         onChange={(e) => {
           setDraftValue(primaryField.path, e.target.value);

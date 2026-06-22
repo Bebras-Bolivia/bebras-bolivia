@@ -26,6 +26,10 @@ export default function CmsShell() {
           </a>
 
           <div className="sidebar-section">Sistema</div>
+          <a className="sidebar-link" data-nav="/publish" href="/publish">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16,16 12,12 8,16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+            Publicación
+          </a>
           <a className="sidebar-link" data-nav="/snapshots" href="/snapshots">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12,6 12,12 16,14"></polyline></svg>
             Respaldos
@@ -46,7 +50,7 @@ export default function CmsShell() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
           <span id="header-context-actions" className="header-context-actions"></span>
-          <div className="header-title" id="header-title">Panel</div>
+          <div className="header-title" id="header-title">Contenido</div>
           <span id="header-subtitle" className="header-subtitle"></span>
         </div>
         <div className="header-actions">

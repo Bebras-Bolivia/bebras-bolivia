@@ -2,11 +2,11 @@
   "header": {
     "tag": "Ayuda",
     "heading": "Preguntas Frecuentes",
-    "subtitle": "Encuentra respuestas a las preguntas mas comunes sobre el Desafio Bebras Bolivia."
+    "subtitle": "Encuentra respuestas a las preguntas más comunes sobre el Desafío Bebras Bolivia."
   },
   "components": [
     {
-      "type": "faqQuestions",
+      "type": "faqAccordion",
       "categories": [
         {
           "title": "General",

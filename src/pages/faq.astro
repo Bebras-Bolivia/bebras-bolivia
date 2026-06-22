@@ -9,7 +9,7 @@ const header = faq.header || { tag: "Ayuda", heading: "Preguntas frecuentes", su
 const components: any[] = Array.isArray(faq.components) ? faq.components : [];
 ---
 
-<Layout title="Preguntas Frecuentes" description="Preguntas frecuentes sobre el Desafío Bebras Bolivia para estudiantes, maestros y coordinadores.">
+<Layout title={header.pageTitle || header.heading} description={header.pageDescription || header.subtitle}>
   <div class="relative w-full">
     <InternalPageHero tag={header.tag} heading={header.heading} description={header.subtitle} />
 

@@ -85,9 +85,19 @@ const API = {
   createSnapshot(description: string) { return this.post("/api/snapshots", { description }); },
   restoreSnapshot(id: number) { return this.post(`/api/snapshots/${id}/restore`); },
   deleteSnapshot(id: number) { return this.del(`/api/snapshots/${id}`); },
+  downloadSnapshotUrl(id: number) { return this.url(`/api/snapshots/${id}/download`); },
+  uploadSnapshot(file: File) {
+    const fd = new FormData();
+    fd.append("file", file);
+    return this.upload("/api/snapshots/upload", fd);
+  },
 
   publish() { return this.post("/api/publish"); },
   publishStatus() { return this.get("/api/publish/status"); },
+  publishChanges() { return this.get("/api/publish/changes"); },
+  publishSchedule() { return this.get("/api/publish/schedule"); },
+  schedulePublish(runAt: string) { return this.post("/api/publish/schedule", { runAt }); },
+  cancelScheduledPublish(id: number) { return this.del(`/api/publish/schedule/${id}`); },
 
   startPreview() { return this.post("/api/preview/start"); },
   stopPreview() { return this.post("/api/preview/stop"); },

@@ -20,7 +20,6 @@ const uiData = blogUi as any;
 const components: any[] = Array.isArray(uiData.components) ? uiData.components : [];
 const postUi = components.find((c) => c.type === "blogPostUi") || {
   backLabel: "Volver al blog",
-  ctaLabel: "Inscribirse al desafio",
 };
 const contentHtml = renderBlogMarkdown(post.body || "");
 
@@ -34,6 +33,8 @@ const contentHtml = renderBlogMarkdown(post.body || "");
     author={post.data.author}
     image={post.data.image}
     postUi={postUi}
+    ctaLabel={post.data.ctaLabel}
+    ctaHref={post.data.ctaHref}
     contentHtml={contentHtml}
   />
 </Layout>

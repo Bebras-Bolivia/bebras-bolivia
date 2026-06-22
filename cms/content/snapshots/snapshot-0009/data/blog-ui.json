@@ -1,7 +1,10 @@
 {
   "header": {
+    "pageTitle": "Noticias",
+    "pageDescription": "Noticias, recursos y novedades del Desafío Bebras Bolivia.",
     "tag": "Publicaciones",
     "heading": "Noticias",
+    "headingHighlight": "Noticias",
     "subtitle": "Novedades, recursos y consejos para estudiantes y maestros."
   },
   "components": [

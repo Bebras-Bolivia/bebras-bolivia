@@ -13,6 +13,8 @@ interface Props {
   snapshots: Snapshot[];
   icons: Record<string, string>;
   onCreate: () => void;
+  onUpload: (file: File) => void;
+  onDownload: (id: number) => void;
   onRestore: (id: number) => void;
   onDelete: (id: number) => void;
 }
@@ -64,7 +66,7 @@ function bucketFor(value: string | undefined, now: Date): AgeBucket {
   return "yearly";
 }
 
-export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, onDelete }: Props) {
+export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, onDownload, onRestore, onDelete }: Props) {
   const [headerSlot] = useState<HTMLElement | null>(() => document.getElementById("header-editor-actions"));
   const [headerSubtitleSlot] = useState<HTMLElement | null>(() => document.getElementById("header-subtitle"));
 
@@ -77,12 +79,28 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
     items: ordered.filter((snap) => bucketFor(snap.createdAt || snap.date, now) === bucket),
   })).filter((group) => group.items.length > 0);
 
-  const createButton = headerSlot
+  const headerActions = headerSlot
     ? createPortal(
-        <button className="btn btn-primary btn-sm" onClick={onCreate} aria-label="Crear respaldo" title="Crear respaldo">
-          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span>
-          <span className="btn-text">Crear respaldo</span>
-        </button>,
+        <>
+          <label className="btn btn-ghost btn-sm" title="Subir respaldo" aria-label="Subir respaldo">
+            <span dangerouslySetInnerHTML={iconHtml(icons, "upload")}></span>
+            <span className="btn-text">Subir respaldo</span>
+            <input
+              type="file"
+              accept=".gz,.bebras-snapshot.gz,.json.gz,application/gzip"
+              hidden
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                if (file) onUpload(file);
+                e.currentTarget.value = "";
+              }}
+            />
+          </label>
+          <button className="btn btn-primary btn-sm" onClick={onCreate} aria-label="Crear respaldo" title="Crear respaldo">
+            <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span>
+            <span className="btn-text">Crear respaldo</span>
+          </button>
+        </>,
         headerSlot
       )
     : null;
@@ -98,7 +116,7 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
 
   return (
     <>
-      {createButton}
+      {headerActions}
       {countBadge}
 
       {ordered.length === 0 ? (
@@ -128,9 +146,12 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
                     </div>
                     <div className="actions flex gap-sm">
                       <button className="btn btn-ghost btn-sm" onClick={() => onRestore(snap.id)}>
-                        <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> Restaurar
+                        <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> <span className="snapshot-restore-text">Restaurar</span>
                       </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => onDelete(snap.id)}>
+                      <button className="btn btn-ghost btn-sm btn-icon-only" aria-label={`Descargar respaldo #${snap.id}`} onClick={() => onDownload(snap.id)}>
+                        <span dangerouslySetInnerHTML={iconHtml(icons, "download")}></span>
+                      </button>
+                      <button className="btn btn-danger btn-sm btn-icon-only" aria-label={`Eliminar respaldo #${snap.id}`} onClick={() => onDelete(snap.id)}>
                         <span dangerouslySetInnerHTML={iconHtml(icons, "trash")}></span>
                       </button>
                     </div>

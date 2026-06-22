@@ -13,6 +13,7 @@ import { blogRouter } from "./blog/routes.js";
 import { mediaRouter } from "./media/routes.js";
 import { snapshotRouter } from "./snapshots/routes.js";
 import { publishRouter } from "./publish/routes.js";
+import { initializePublishScheduler } from "./publish/service.js";
 import { previewRouter } from "./preview/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
 import { startDailyBackupScheduler, stopDailyBackupScheduler } from "./snapshots/service.js";
@@ -314,6 +315,7 @@ async function boot() {
   await ensureRuntimeDirectories();
   await syncWorkingCopiesFromLanding();
   getDb();
+  initializePublishScheduler();
   await syncAdminFromEnv();
   startDailyBackupScheduler();
   app.listen(config.port, config.host, () => {

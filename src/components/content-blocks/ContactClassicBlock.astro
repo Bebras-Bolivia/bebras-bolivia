@@ -74,6 +74,7 @@ const contactIconMap = {
                 </div>
                 <div>
                   <p class="brand-card-muted text-sm uppercase tracking-[0.15em] font-bold mb-2">{card.title}</p>
+                  <p class="brand-card-muted text-base leading-relaxed mb-2">{card.description}</p>
                   {card.linkHref && card.linkLabel && (
                     <a href={card.linkHref} class="text-lg font-bold tracking-tight hover:underline">{card.linkLabel}</a>
                   )}
@@ -104,6 +105,7 @@ const contactIconMap = {
                   <span class="font-mono text-xs text-primary/60 font-bold">{String(i + 1).padStart(2, "0")}</span>
                   <span class="group-hover:translate-x-2 transition-transform">{link.label}</span>
                 </a>
+                <p class="brand-card-muted ml-10 mt-1 text-sm leading-relaxed">{link.description}</p>
               </li>
             ))}
           </ul>
