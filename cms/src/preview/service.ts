@@ -309,9 +309,16 @@ export async function syncContentToLanding(): Promise<void> {
   // Copy blog files
   await mkdir(config.landingBlogDir, { recursive: true });
   try {
+    const existingBlogFiles = await readdir(config.landingBlogDir);
+    for (const file of existingBlogFiles) {
+      if (file.endsWith(".md")) {
+        await rm(join(config.landingBlogDir, file));
+      }
+    }
+
     const blogFiles = await readdir(config.currentBlogDir);
     for (const file of blogFiles) {
-      if (file.endsWith(".md")) {
+      if (file.endsWith(".md") && file !== `${BLOG_PREVIEW_SLUG}.md`) {
         await cp(
           join(config.currentBlogDir, file),
           join(config.landingBlogDir, file)

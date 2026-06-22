@@ -112,7 +112,7 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
       await new Promise((resolve) => window.setTimeout(resolve, 900));
       if (revision !== previewRevision.current) return;
 
-      setPreviewSrc(`${window.App.appUrl("/preview-site/")}?t=${Date.now()}`);
+      setPreviewSrc(`${window.App.appUrl("/preview-site/")}?preview=${revision}`);
     } catch (err: unknown) {
       if (revision !== previewRevision.current) return;
       setPreviewError(err instanceof Error ? err.message : "No se pudo generar la vista previa.");

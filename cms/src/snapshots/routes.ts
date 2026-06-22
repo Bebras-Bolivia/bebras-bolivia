@@ -10,6 +10,7 @@ import {
   importSnapshotArchive,
   SnapshotError,
 } from "./service.js";
+import { syncContentToLanding } from "../preview/service.js";
 
 export const snapshotRouter = Router();
 const upload = multer({
@@ -21,9 +22,9 @@ const upload = multer({
  * GET /api/snapshots
  * List all snapshots.
  */
-snapshotRouter.get("/", (_req: Request, res: Response) => {
+snapshotRouter.get("/", async (_req: Request, res: Response) => {
   try {
-    const snapshots = listSnapshots();
+    const snapshots = await listSnapshots();
     res.json({ snapshots });
   } catch (err) {
     console.error("Error listing snapshots:", err);
@@ -128,6 +129,7 @@ snapshotRouter.post("/:id/restore", async (req: Request, res: Response) => {
       return;
     }
     const meta = await restoreSnapshot(id);
+    await syncContentToLanding();
     res.json({ ok: true, restored: meta });
   } catch (err) {
     if (err instanceof SnapshotError) {

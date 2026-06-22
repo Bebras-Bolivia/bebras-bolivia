@@ -1,0 +1,23 @@
+{
+  "header": {
+    "pageTitle": "Noticias",
+    "pageDescription": "Noticias, recursos y novedades del Desafío Bebras Bolivia.",
+    "tag": "Publicaciones",
+    "heading": "Noticias",
+    "subtitle": "Novedades, recursos y consejos para estudiantes y maestros."
+  },
+  "components": [
+    {
+      "type": "blogIndex",
+      "emptyState": {
+        "tag": "Sin contenido",
+        "text": "No hay publicaciones aún. Vuelve pronto."
+      },
+      "readMoreLabel": "Leer más"
+    },
+    {
+      "type": "blogPostUi",
+      "backLabel": "Volver a noticias"
+    }
+  ]
+}

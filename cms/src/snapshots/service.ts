@@ -25,6 +25,52 @@ type SnapshotArchive = {
   };
 };
 
+const BLOG_PREVIEW_FILENAME = "cms-preview.md";
+
+function isSnapshotBlogFile(file: string): boolean {
+  return file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME;
+}
+
+async function readSnapshotMetaFromDisk(dirName: string): Promise<SnapshotMeta | null> {
+  try {
+    const meta = JSON.parse(await readFile(join(config.snapshotsDir, dirName, "meta.json"), "utf-8")) as Partial<SnapshotMeta>;
+    const idMatch = /^snapshot-(\d+)$/.exec(dirName);
+    const id = typeof meta.id === "number" ? meta.id : idMatch ? Number(idMatch[1]) : NaN;
+    if (!Number.isFinite(id)) return null;
+
+    return {
+      id,
+      description: typeof meta.description === "string" ? meta.description : "",
+      author: typeof meta.author === "string" ? meta.author : "Unknown",
+      dirName,
+      createdAt: typeof meta.createdAt === "string" ? meta.createdAt : new Date(0).toISOString(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function listSnapshotMetasFromDisk(): Promise<SnapshotMeta[]> {
+  try {
+    const entries = await readdir(config.snapshotsDir, { withFileTypes: true });
+    const metas = await Promise.all(
+      entries
+        .filter((entry) => entry.isDirectory() && /^snapshot-\d+$/.test(entry.name))
+        .map((entry) => readSnapshotMetaFromDisk(entry.name))
+    );
+    return metas.filter((meta): meta is SnapshotMeta => meta !== null);
+  } catch {
+    return [];
+  }
+}
+
+async function nextSnapshotId(): Promise<number> {
+  const db = getDb();
+  const row = db.query("SELECT MAX(id) AS maxId FROM snapshots").get() as { maxId: number | null } | null;
+  const diskMax = (await listSnapshotMetasFromDisk()).reduce((max, snapshot) => Math.max(max, snapshot.id), 0);
+  return Math.max(Number(row?.maxId ?? 0), diskMax) + 1;
+}
+
 /**
  * Create a snapshot of the current content state.
  * Copies all data/ and blog/ files into a numbered snapshot directory.
@@ -34,19 +80,12 @@ export async function createSnapshot(
   author: string
 ): Promise<SnapshotMeta> {
   const db = getDb();
-
-  // Insert row to get the auto-increment ID
-  const result = db
-    .query(
-      "INSERT INTO snapshots (description, author, dir_name) VALUES (?, ?, ?)"
-    )
-    .run(description, author, "placeholder");
-
-  const id = Number(result.lastInsertRowid);
+  const id = await nextSnapshotId();
   const dirName = `snapshot-${String(id).padStart(4, "0")}`;
 
-  // Update the dir_name now that we know the ID
-  db.query("UPDATE snapshots SET dir_name = ? WHERE id = ?").run(dirName, id);
+  db.query(
+    "INSERT INTO snapshots (id, description, author, dir_name) VALUES (?, ?, ?, ?)"
+  ).run(id, description, author, dirName);
 
   const snapshotDir = join(config.snapshotsDir, dirName);
   const snapshotDataDir = join(snapshotDir, "data");
@@ -75,7 +114,7 @@ export async function createSnapshot(
   try {
     const blogFiles = await readdir(config.currentBlogDir);
     for (const file of blogFiles) {
-      if (file.endsWith(".md")) {
+      if (isSnapshotBlogFile(file)) {
         await copyUtf8TextFile(
           join(config.currentBlogDir, file),
           join(snapshotBlogDir, file)
@@ -106,19 +145,28 @@ export async function createSnapshot(
 /**
  * List all snapshots (from DB, most recent first).
  */
-export function listSnapshots(): SnapshotMeta[] {
+export async function listSnapshots(): Promise<SnapshotMeta[]> {
   const db = getDb();
   const rows = db
     .query("SELECT * FROM snapshots ORDER BY id DESC")
     .all() as SnapshotRow[];
 
-  return rows.map((r) => ({
+  const diskSnapshots = await listSnapshotMetasFromDisk();
+  const diskByDirName = new Map(diskSnapshots.map((snapshot) => [snapshot.dirName, snapshot]));
+  const snapshots = rows.map((r) => diskByDirName.get(r.dir_name) ?? ({
     id: r.id,
     description: r.description,
     author: r.author,
     dirName: r.dir_name,
     createdAt: r.created_at,
   }));
+
+  const seen = new Set(snapshots.map((snapshot) => snapshot.dirName));
+  for (const snapshot of diskSnapshots) {
+    if (!seen.has(snapshot.dirName)) snapshots.push(snapshot);
+  }
+
+  return snapshots.sort((a, b) => b.id - a.id);
 }
 
 /**
@@ -132,11 +180,22 @@ export async function getSnapshot(
     .query("SELECT * FROM snapshots WHERE id = ?")
     .get(id) as SnapshotRow | null;
 
-  if (!row) {
+  const diskMeta = (await listSnapshotMetasFromDisk()).find((snapshot) => snapshot.id === id) ?? null;
+  const meta = diskMeta ?? (row
+    ? {
+        id: row.id,
+        description: row.description,
+        author: row.author,
+        dirName: row.dir_name,
+        createdAt: row.created_at,
+      }
+    : null);
+
+  if (!meta) {
     throw new SnapshotError(`Snapshot not found: ${id}`, 404);
   }
 
-  const snapshotDir = join(config.snapshotsDir, row.dir_name);
+  const snapshotDir = join(config.snapshotsDir, meta.dirName);
   let dataFiles: string[] = [];
   let blogFiles: string[] = [];
 
@@ -152,11 +211,11 @@ export async function getSnapshot(
   } catch {}
 
   return {
-    id: row.id,
-    description: row.description,
-    author: row.author,
-    dirName: row.dir_name,
-    createdAt: row.created_at,
+    id: meta.id,
+    description: meta.description,
+    author: meta.author,
+    dirName: meta.dirName,
+    createdAt: meta.createdAt,
     files: { data: dataFiles, blog: blogFiles },
   };
 }
@@ -216,12 +275,9 @@ export async function importSnapshotArchive(buffer: Buffer, author: string): Pro
   const description = archive.meta?.description
     ? `Importado: ${archive.meta.description}`
     : "Importado desde archivo";
-  const result = db
-    .query("INSERT INTO snapshots (description, author, dir_name) VALUES (?, ?, ?)")
-    .run(description, author, "placeholder");
-  const id = Number(result.lastInsertRowid);
+  const id = await nextSnapshotId();
   const dirName = `snapshot-${String(id).padStart(4, "0")}`;
-  db.query("UPDATE snapshots SET dir_name = ? WHERE id = ?").run(dirName, id);
+  db.query("INSERT INTO snapshots (id, description, author, dir_name) VALUES (?, ?, ?, ?)").run(id, description, author, dirName);
 
   const snapshotDir = join(config.snapshotsDir, dirName);
   const snapshotDataDir = join(snapshotDir, "data");
@@ -258,11 +314,22 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
     .query("SELECT * FROM snapshots WHERE id = ?")
     .get(id) as SnapshotRow | null;
 
-  if (!row) {
+  const diskMeta = (await listSnapshotMetasFromDisk()).find((snapshot) => snapshot.id === id) ?? null;
+  const meta = diskMeta ?? (row
+    ? {
+        id: row.id,
+        description: row.description,
+        author: row.author,
+        dirName: row.dir_name,
+        createdAt: row.created_at,
+      }
+    : null);
+
+  if (!meta) {
     throw new SnapshotError(`Snapshot not found: ${id}`, 404);
   }
 
-  const snapshotDir = join(config.snapshotsDir, row.dir_name);
+  const snapshotDir = join(config.snapshotsDir, meta.dirName);
   const snapshotDataDir = join(snapshotDir, "data");
   const snapshotBlogDir = join(snapshotDir, "blog");
 
@@ -304,7 +371,7 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
   try {
     const blogFiles = await readdir(snapshotBlogDir);
     for (const file of blogFiles) {
-      if (file.endsWith(".md")) {
+      if (isSnapshotBlogFile(file)) {
         await copyUtf8TextFile(
           join(snapshotBlogDir, file),
           join(config.currentBlogDir, file)
@@ -314,11 +381,11 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
   } catch {}
 
   return {
-    id: row.id,
-    description: row.description,
-    author: row.author,
-    dirName: row.dir_name,
-    createdAt: row.created_at,
+    id: meta.id,
+    description: meta.description,
+    author: meta.author,
+    dirName: meta.dirName,
+    createdAt: meta.createdAt,
   };
 }
 
@@ -331,11 +398,12 @@ export async function deleteSnapshot(id: number): Promise<void> {
     .query("SELECT * FROM snapshots WHERE id = ?")
     .get(id) as SnapshotRow | null;
 
-  if (!row) {
+  const diskMeta = row ? null : (await listSnapshotMetasFromDisk()).find((snapshot) => snapshot.id === id) ?? null;
+  if (!row && !diskMeta) {
     throw new SnapshotError(`Snapshot not found: ${id}`, 404);
   }
 
-  const snapshotDir = join(config.snapshotsDir, row.dir_name);
+  const snapshotDir = join(config.snapshotsDir, row?.dir_name ?? diskMeta!.dirName);
 
   try {
     await rm(snapshotDir, { recursive: true });
@@ -343,7 +411,7 @@ export async function deleteSnapshot(id: number): Promise<void> {
     // Directory might not exist — that's fine, still delete DB row
   }
 
-  db.query("DELETE FROM snapshots WHERE id = ?").run(id);
+  if (row) db.query("DELETE FROM snapshots WHERE id = ?").run(id);
 }
 
 const DAILY_RETENTION_DAYS = 30;
@@ -413,7 +481,7 @@ function selectSnapshotsToKeep(snapshots: SnapshotMeta[], now: Date): Set<number
 }
 
 export async function applyRetentionPolicy(now: Date = new Date()): Promise<number[]> {
-  const snapshots = listSnapshots();
+  const snapshots = await listSnapshots();
   const keep = selectSnapshotsToKeep(snapshots, now);
   const removed: number[] = [];
 
@@ -440,7 +508,7 @@ function hasSnapshotForDay(snapshots: SnapshotMeta[], date: Date): boolean {
 }
 
 export async function runDailyBackup(now: Date = new Date()): Promise<SnapshotMeta | null> {
-  const snapshots = listSnapshots();
+  const snapshots = await listSnapshots();
   let created: SnapshotMeta | null = null;
 
   if (!hasSnapshotForDay(snapshots, now)) {
