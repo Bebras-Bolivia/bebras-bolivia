@@ -42,6 +42,14 @@ type InputPayload = {
 };
 
 
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </svg>
+  );
+}
 
 function PickerModal({
   payload,
@@ -80,11 +88,11 @@ function PickerModal({
   if (!hasPreview) {
     return (
       <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
-        <div className="editor-modal">
+        <div className="editor-modal" role="dialog" aria-modal="true" aria-labelledby="editor-picker-title">
           <div className="editor-modal-header">
-            <h3>{payload.title}</h3>
+            <h3 id="editor-picker-title">{payload.title}</h3>
             <button type="button" className="editor-modal-close" aria-label="Cerrar" onClick={() => onClose(null)}>
-              x
+              <CloseIcon />
             </button>
           </div>
           {payload.subtitle ? <p className="editor-modal-subtitle">{payload.subtitle}</p> : null}
@@ -103,11 +111,11 @@ function PickerModal({
 
   return (
     <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
-      <div className="editor-modal editor-component-picker-modal">
+      <div className="editor-modal editor-component-picker-modal" role="dialog" aria-modal="true" aria-labelledby="editor-component-picker-title">
         <div className="editor-modal-header">
-          <h3>{payload.title}</h3>
+          <h3 id="editor-component-picker-title">{payload.title}</h3>
           <button type="button" className="editor-modal-close" aria-label="Cerrar" onClick={() => onClose(null)}>
-            x
+            <CloseIcon />
           </button>
         </div>
         {payload.subtitle ? <p className="editor-modal-subtitle">{payload.subtitle}</p> : null}
@@ -401,11 +409,11 @@ function ConfirmModal({ payload, onClose }: { payload: ConfirmPayload; onClose: 
 
   return (
     <div className="editor-modal-overlay editor-modal-overlay-center" onClick={(e) => e.target === e.currentTarget && onClose(false)}>
-      <div className="editor-modal editor-confirm-modal">
+      <div className="editor-modal editor-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="editor-confirm-title">
         <div className="editor-modal-header">
-          <h3>{payload.title}</h3>
+          <h3 id="editor-confirm-title">{payload.title}</h3>
           <button type="button" className="editor-modal-close" aria-label="Cerrar" onClick={() => onClose(false)}>
-            x
+            <CloseIcon />
           </button>
         </div>
         {payload.image ? (
@@ -447,11 +455,11 @@ function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (val
 
   return (
     <div className="editor-modal-overlay editor-modal-overlay-center" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
-      <div className="editor-modal editor-input-modal">
+      <div className="editor-modal editor-input-modal" role="dialog" aria-modal="true" aria-labelledby="editor-input-title">
         <div className="editor-modal-header">
-          <h3>{payload.title}</h3>
+          <h3 id="editor-input-title">{payload.title}</h3>
           <button type="button" className="editor-modal-close" aria-label="Cerrar" onClick={() => onClose(null)}>
-            x
+            <CloseIcon />
           </button>
         </div>
         {payload.subtitle ? <p className="editor-modal-subtitle">{payload.subtitle}</p> : null}

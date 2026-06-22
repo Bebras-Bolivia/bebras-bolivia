@@ -31,7 +31,7 @@ interface Props {
   body: string;
   icons: Record<string, string>;
   onBack: () => void;
-  onSave: (payload: { slug: string; frontmatter: Frontmatter; body: string }) => Promise<void>;
+  onSave: (payload: { slug: string; frontmatter: Frontmatter; body: string }) => Promise<boolean | void>;
 }
 
 function iconHtml(icons: Record<string, string>, name: string): { __html: string } {
@@ -69,10 +69,23 @@ function restoreIframeScrollPosition(iframe: HTMLIFrameElement | null, position:
   tryRestore();
 }
 
+function titleToSlug(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-")
+    .slice(0, 80)
+    .replace(/-+$/g, "");
+}
+
 
 
 export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, onBack, onSave }: Props) {
-  const [formSlug, setFormSlug] = useState(slug || "");
+  const formSlug = slug || "";
   const [title, setTitle] = useState(frontmatter.title || "");
   const [description, setDescription] = useState(frontmatter.description || "");
   const [date, setDate] = useState(frontmatter.date || new Date().toISOString().split("T")[0]);
@@ -81,8 +94,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [markdown, setMarkdown] = useState(body || "");
   const [saving, setSaving] = useState(false);
   const [previewFrameSrc, setPreviewFrameSrc] = useState("");
-  const [previewReady, setPreviewReady] = useState(false);
-  const [previewLoading, setPreviewLoading] = useState(true);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const syncTimer = useRef<number | null>(null);
   const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
@@ -91,9 +102,22 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const markdownRef = useRef<HTMLTextAreaElement | null>(null);
   const previewIframeRef = useRef<HTMLIFrameElement | null>(null);
   const pendingPreviewScroll = useRef<PreviewScrollPosition | null>(null);
+  const currentFormSlug = isNew ? titleToSlug(title) : formSlug;
+
+  const currentSnapshot = useMemo(() => JSON.stringify({
+    slug: currentFormSlug.trim(),
+    title,
+    description,
+    date,
+    ctaLabel,
+    ctaHref,
+    markdown,
+  }), [currentFormSlug, title, description, date, ctaLabel, ctaHref, markdown]);
+  const [savedSnapshot, setSavedSnapshot] = useState(currentSnapshot);
+  const hasPendingChanges = currentSnapshot !== savedSnapshot;
 
   const previewPayload = useMemo(() => ({
-    slug: formSlug.trim(),
+    slug: currentFormSlug.trim(),
     frontmatter: {
       title: title.trim(),
       description: description.trim(),
@@ -103,7 +127,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       ctaHref: ctaHref.trim(),
     },
     body: markdown,
-  }), [formSlug, title, description, date, ctaLabel, ctaHref, markdown]);
+  }), [currentFormSlug, title, description, date, ctaLabel, ctaHref, markdown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,7 +140,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     }
 
     async function syncPreview() {
-      setPreviewLoading(true);
       setPreviewError(null);
 
       try {
@@ -144,12 +167,9 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
         const targetPath = `/preview-site/blog/${encodeURIComponent(result.slug)}/`;
         pendingPreviewScroll.current = getIframeScrollPosition(previewIframeRef.current);
         setPreviewFrameSrc(`${window.App.appUrl(targetPath)}?t=${Date.now()}`);
-        setPreviewReady(true);
       } catch (err: unknown) {
         if (cancelled) return;
         setPreviewError(err instanceof Error ? err.message : "No se pudo generar la vista previa del post.");
-      } finally {
-        if (!cancelled) setPreviewLoading(false);
       }
     }
 
@@ -178,7 +198,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   }, []);
 
   const handleSave = async () => {
-    if (!formSlug.trim() || !title.trim() || !description.trim() || !date) {
+    if (!currentFormSlug.trim() || !title.trim() || !description.trim() || !date) {
       return;
     }
     if ((ctaLabel.trim() && !ctaHref.trim()) || (!ctaLabel.trim() && ctaHref.trim())) {
@@ -187,8 +207,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     }
     setSaving(true);
     try {
-      await onSave({
-        slug: formSlug.trim(),
+      const saved = await onSave({
+        slug: currentFormSlug.trim(),
         frontmatter: {
           title: title.trim(),
           description: description.trim(),
@@ -199,6 +219,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
         },
         body: markdown,
       });
+      if (saved !== false) setSavedSnapshot(currentSnapshot);
     } finally {
       setSaving(false);
     }
@@ -333,7 +354,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
   return (
     <>
-      {headerSlot
+      {headerSlot && hasPendingChanges
         ? createPortal(
             <button
               className="btn btn-primary btn-sm"
@@ -371,27 +392,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       <div className="editor-layout">
         <div className="editor-form" id="blog-form-react">
           <div className="editor-group">
-            <div className="form-group">
-              <label htmlFor="blog-slug-react">Slug (URL)</label>
-              <input
-                type="text"
-                id="blog-slug-react"
-                className="form-input mono"
-                value={formSlug}
-                placeholder="mi-nuevo-post"
-                pattern="[a-z0-9\-]+"
-                maxLength={80}
-                title="Solo letras minusculas, numeros y guiones"
-                onChange={(e) => setFormSlug(e.target.value)}
-                disabled={!isNew}
-              />
-              {isNew && (
-                <span className="text-sm text-muted">
-                  Solo letras minusculas, numeros y guiones. No se puede cambiar despues.
-                </span>
-              )}
-            </div>
-
             <div className="form-group">
               <label htmlFor="blog-title-react">Titulo</label>
               <input type="text" id="blog-title-react" className="form-input" value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} required />
@@ -484,13 +484,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
         <div className="editor-preview blog-live-preview">
           <div className="blog-preview-shell" id="blog-preview-content">
-            <div className="blog-preview-toolbar">
-              <div className="blog-preview-badge">Vista previa real</div>
-              <div className="blog-preview-status">
-                {previewLoading ? "Actualizando..." : previewError ? "Con incidencias" : previewReady ? "Sincronizada" : "Pendiente"}
-              </div>
-            </div>
-
             {previewError ? (
               <div className="blog-preview-fallback">
                 <h3>No se pudo cargar la vista previa</h3>

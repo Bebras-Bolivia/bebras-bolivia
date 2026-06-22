@@ -127,12 +127,15 @@ const Blog = {
             await window.API.createBlog(nextSlug, nextFrontmatter, nextBody);
             window.Toast.success("Publicacion creada");
             window.App.navigate(`/blog/edit/${encodeURIComponent(nextSlug)}`);
+            return true;
           } else {
             await window.API.updateBlog(currentSlug, nextFrontmatter, nextBody);
             window.Toast.success("Publicacion guardada");
+            return true;
           }
         } catch (err: unknown) {
           window.Toast.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+          return false;
         }
       },
     });

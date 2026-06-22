@@ -16,15 +16,15 @@ type PrimitivesPayload = {
     readOnly?: boolean;
   }>;
   icons: Record<string, string>;
-  onSave: () => void;
+  onSave: () => Promise<boolean | void> | boolean | void;
   onReset: () => void;
   onFieldChange: (path: string, value: string | number | boolean) => void;
   onInitPreview: () => void;
   onInitComplex: (el: HTMLElement) => void;
-  onAddArrayItem?: (path: string, selectedType: string | null, componentPicker?: boolean) => void;
-  onRemoveArrayItem?: (path: string, idx: number) => void;
+  onAddArrayItem?: (path: string, selectedType: string | null, componentPicker?: boolean) => Promise<boolean | void> | boolean | void;
+  onRemoveArrayItem?: (path: string, idx: number) => boolean | void;
   onToggleArrayCollapse?: (itemPath: string, expanded: boolean) => void;
-  onMoveArrayItem?: (path: string, fromIdx: number, toIdx: number) => void;
+  onMoveArrayItem?: (path: string, fromIdx: number, toIdx: number) => boolean | void;
   complexNodes?: ComplexNode[];
 };
 
@@ -172,6 +172,7 @@ function EditorPrimitivesView({
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
   const [saving, setSaving] = React.useState(false);
+  const [hasPendingChanges, setHasPendingChanges] = React.useState(false);
   const [headerSlot, setHeaderSlot] = React.useState<HTMLElement | null>(null);
 
   React.useEffect(() => {
@@ -192,11 +193,21 @@ function EditorPrimitivesView({
   const handleSave = async () => {
     setSaving(true);
     try {
-      await onSave();
+      const saved = await onSave();
+      if (saved !== false) setHasPendingChanges(false);
     } finally {
       setSaving(false);
     }
   };
+
+  const markChanged = React.useCallback(() => {
+    setHasPendingChanges(true);
+  }, []);
+
+  const handleFieldChange = React.useCallback((path: string, value: string | number | boolean) => {
+    markChanged();
+    onFieldChange(path, value);
+  }, [markChanged, onFieldChange]);
 
   const saveButton = (
     <button
@@ -216,7 +227,7 @@ function EditorPrimitivesView({
 
   return (
     <>
-      {headerSlot
+      {headerSlot && hasPendingChanges
         ? createPortal(
             saveButton,
             headerSlot
@@ -230,7 +241,7 @@ function EditorPrimitivesView({
               {fields.map((field) => (
                 <div className="form-group" key={field.path}>
                   <label htmlFor={`field-${field.path}`}>{field.label}</label>
-                  <FieldInput field={field} onFieldChange={onFieldChange} />
+                  <FieldInput field={field} onFieldChange={handleFieldChange} />
                 </div>
               ))}
             </div>
@@ -240,11 +251,20 @@ function EditorPrimitivesView({
               <ComplexNodesView
                 nodes={complexNodes}
                 icons={icons}
-                onFieldChange={onFieldChange}
-                onAddArrayItem={onAddArrayItem || (() => {})}
-                onRemoveArrayItem={onRemoveArrayItem || (() => {})}
+                onFieldChange={handleFieldChange}
+                onAddArrayItem={async (path, selectedType, componentPicker) => {
+                  const changed = await onAddArrayItem?.(path, selectedType, componentPicker);
+                  if (changed !== false) markChanged();
+                }}
+                onRemoveArrayItem={(path, idx) => {
+                  const changed = onRemoveArrayItem?.(path, idx);
+                  if (changed !== false) markChanged();
+                }}
                 onToggleArrayCollapse={onToggleArrayCollapse || (() => {})}
-                onMoveArrayItem={onMoveArrayItem || (() => {})}
+                onMoveArrayItem={(path, fromIdx, toIdx) => {
+                  const changed = onMoveArrayItem?.(path, fromIdx, toIdx);
+                  if (changed !== false) markChanged();
+                }}
               />
             ) : null}
           </div>

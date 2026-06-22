@@ -35,7 +35,33 @@ const Editor = {
   getArrayItemLabel(obj: SafeAny, idx: number) { return this.lib.getArrayItemLabel(obj, idx); },
   getAddTypeOptions(path: string) { return this.lib.getAddTypeOptions(path, this.currentFile, this.currentData) || []; },
   isComponentsPath(path: string) { return path === "components" || path.endsWith(".components"); },
-  waitForPreviewUpdate() { return new Promise((resolve) => setTimeout(resolve, 500)); },
+  waitForPreviewUpdate() { return new Promise((resolve) => setTimeout(resolve, 850)); },
+  getPreviewDependencyFiles(filename: string) {
+    const dependencyMap: Record<string, string[]> = {
+      "estudiantes.json": ["categories.json", "scoring.json", "page-composition.json"],
+      "docentes.json": ["teacher-instructions.json", "page-composition.json"],
+      "categories.json": ["estudiantes.json", "page-composition.json"],
+      "scoring.json": ["estudiantes.json", "page-composition.json"],
+      "teacher-instructions.json": ["docentes.json", "page-composition.json"],
+      "page-composition.json": ["estudiantes.json", "docentes.json", "categories.json", "scoring.json", "teacher-instructions.json"],
+    };
+
+    return dependencyMap[filename] || [];
+  },
+  async syncPreviewDependencies() {
+    if (!this.currentFile) return;
+
+    for (const filename of this.getPreviewDependencyFiles(this.currentFile)) {
+      if (filename === this.currentFile) continue;
+      try {
+        const data = await window.API.getContent(filename);
+        await window.API.syncPreviewDraft(filename, data);
+      } catch {
+        // Dependency preview sync is best-effort. The active draft below is the
+        // one that must surface validation errors during save.
+      }
+    }
+  },
 
   async render(filename: string) {
     const main = document.getElementById("main-content");
@@ -73,12 +99,11 @@ const Editor = {
       complexNodes: this.buildComplexNodes(this.currentData, ""),
       onAddArrayItem: (path: string, selectedType: string | null, componentPicker?: boolean) => {
         const currentArr = this.getNestedValue(this.currentData, path);
-        if (!Array.isArray(currentArr)) return;
+        if (!Array.isArray(currentArr)) return false;
         if (componentPicker) {
-          this.openAddComponentModal(path, currentArr);
-          return;
+          return this.openAddComponentModal(path, currentArr);
         }
-        this.addArrayItem(path, currentArr, selectedType || null);
+        return this.addArrayItem(path, currentArr, selectedType || null);
       },
       onRemoveArrayItem: (path: string, idx: number) => this.removeArrayItem(path, idx),
       onToggleArrayCollapse: (itemPath: string, expanded: boolean) => {
@@ -212,11 +237,12 @@ const Editor = {
   },
 
   addArrayItem(path: string, currentArr: SafeAny[], selectedType: string | null = null) {
-    if (this.isLockedArray(path)) return;
+    if (this.isLockedArray(path)) return false;
     const nextIdx = currentArr.length;
     if (selectedType) {
       const typed = this.lib.createTypedArrayItem(path, selectedType, this.currentFile, this.currentData);
       if (typed !== null) this.setNestedValue(this.currentData, path, [...currentArr, typed]);
+      else return false;
     } else if (currentArr.length === 0) {
       this.setNestedValue(this.currentData, path, [...currentArr, this.lib.createEmptyArrayItem(path, this.currentFile, this.currentData)]);
     } else {
@@ -232,26 +258,30 @@ const Editor = {
     this.dirty = true;
     this.rerenderEditorForm();
     this.schedulePreviewDraftUpdate();
+    return true;
   },
 
   removeArrayItem(path: string, idx: number) {
-    if (this.isLockedArray(path)) return;
+    if (this.isLockedArray(path)) return false;
     const arr = this.getNestedValue(this.currentData, path);
     if (Array.isArray(arr)) {
       arr.splice(idx, 1);
       this.setNestedValue(this.currentData, path, arr);
+    } else {
+      return false;
     }
     this.normalizeStructuredArrays();
     this.dirty = true;
     this.rerenderEditorForm();
     this.schedulePreviewDraftUpdate();
+    return true;
   },
 
   moveArrayItem(path: string, fromIdx: number, toIdx: number) {
-    if (this.isLockedArray(path)) return;
+    if (this.isLockedArray(path)) return false;
     const arr = this.getNestedValue(this.currentData, path);
-    if (!Array.isArray(arr) || fromIdx === toIdx) return;
-    if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return;
+    if (!Array.isArray(arr) || fromIdx === toIdx) return false;
+    if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return false;
     const [moved] = arr.splice(fromIdx, 1);
     arr.splice(toIdx, 0, moved);
     this.setNestedValue(this.currentData, path, arr);
@@ -259,6 +289,7 @@ const Editor = {
     this.dirty = true;
     this.rerenderEditorForm();
     this.schedulePreviewDraftUpdate();
+    return true;
   },
 
   normalizeStructuredArrays() {
@@ -278,13 +309,14 @@ const Editor = {
     // sections) carry their options — with descriptions — via getAddTypeOptions.
     const componentOptions = this.lib.getComponentOptions(path);
     const options = componentOptions.length ? componentOptions : this.getAddTypeOptions(path);
-    if (!options.length || !window.CMSModal?.openPicker) return;
+    if (!options.length || !window.CMSModal?.openPicker) return false;
     const selected = await window.CMSModal.openPicker({
       title: this.isComponentsPath(path) ? "Agregar componente" : "Agregar sección",
       subtitle: "Selecciona lo que deseas agregar.",
       options,
     });
-    if (selected) this.addArrayItem(path, currentArr, selected);
+    if (!selected) return false;
+    return this.addArrayItem(path, currentArr, selected);
   },
 
   async save() {
@@ -296,8 +328,10 @@ const Editor = {
         this.loadPreviewIframe(true);
       }
       window.Toast.success(this.devServerReady ? "Guardado - vista previa recargada" : "Contenido guardado");
+      return true;
     } catch (err: SafeAny) {
       window.Toast.error(err.details ? `Error de validacion: ${err.details}` : `Error al guardar: ${err.message}`);
+      return false;
     }
   },
 
@@ -309,6 +343,7 @@ const Editor = {
     this.previewDraftTimer = setTimeout(async () => {
       this.previewDraftTimer = null;
       try {
+        await this.syncPreviewDependencies();
         await window.API.syncPreviewDraft(this.currentFile, this.currentData);
         await this.waitForPreviewUpdate();
         this.loadPreviewIframe(true);
@@ -328,6 +363,7 @@ const Editor = {
       }
 
       await window.API.syncPreviewDraft(this.currentFile, this.currentData);
+      await this.syncPreviewDependencies();
       await this.waitForPreviewUpdate();
       this.loadPreviewIframe(true);
       window.Toast.info("Vista previa actualizada con tus cambios");

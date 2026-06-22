@@ -15,6 +15,29 @@ type ImageInsertResult = {
   url: string;
 };
 
+type ImageSize = "sm" | "md" | "lg" | "full";
+
+const IMAGE_SIZE_OPTIONS: Array<{
+  value: ImageSize;
+  label: string;
+  hint: string;
+  previewWidth: string;
+}> = [
+  { value: "sm", label: "Pequeña", hint: "40%", previewWidth: "40%" },
+  { value: "md", label: "Mediana", hint: "60%", previewWidth: "60%" },
+  { value: "lg", label: "Grande", hint: "80%", previewWidth: "80%" },
+  { value: "full", label: "Completa", hint: "100%", previewWidth: "100%" },
+];
+
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </svg>
+  );
+}
 
 function cmsUrl(path: string): string {
   const basePath = (window.CMS_BASE_PATH || "").replace(/\/$/, "");
@@ -35,7 +58,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
   const [selectedFile, setSelectedFile] = useState<MediaFile | null>(null);
   const [pendingUploadedFile, setPendingUploadedFile] = useState<MediaFile | null>(null);
   const [altText, setAltText] = useState("Imagen");
-  const [size, setSize] = useState<"sm" | "md" | "lg" | "full">("full");
+  const [size, setSize] = useState<ImageSize>("full");
   const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
 
   const isWizard = markdownMode;
@@ -154,11 +177,11 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
 
   return (
     <div className={`editor-modal-overlay${markdownMode ? " editor-modal-overlay-center" : ""}`} onClick={(e) => e.target === e.currentTarget && onClose(null)}>
-      <div className="editor-modal" style={{ maxWidth: "760px" }}>
+      <div className="editor-modal" style={{ maxWidth: "760px" }} role="dialog" aria-modal="true" aria-labelledby="media-picker-title">
         <div className="editor-modal-header">
-          <h3>{markdownMode ? "Insertar imagen" : "Seleccionar imagen"}</h3>
-          <button type="button" className="editor-modal-close" onClick={() => onClose(null)}>
-            x
+          <h3 id="media-picker-title">{markdownMode ? "Insertar imagen" : "Seleccionar imagen"}</h3>
+          <button type="button" className="editor-modal-close" aria-label="Cerrar" onClick={() => onClose(null)}>
+            <CloseIcon />
           </button>
         </div>
         {!markdownMode ? <p className="editor-modal-subtitle">Elige una imagen existente o sube una nueva.</p> : null}
@@ -251,16 +274,23 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
               <img src={selectedFile.url} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
             </div>
             <div className="form-group">
-              <label>Tamano</label>
+              <label>Tamaño de la imagen</label>
               <div className="media-size-grid">
-                {(["sm", "md", "lg", "full"] as const).map((option) => (
+                {IMAGE_SIZE_OPTIONS.map((option) => (
                   <button
-                    key={option}
+                    key={option.value}
                     type="button"
-                    className={`media-size-option${size === option ? " is-selected" : ""}`}
-                    onClick={() => setSize(option)}
+                    className={`media-size-option${size === option.value ? " is-selected" : ""}`}
+                    style={{ "--media-size-preview-width": option.previewWidth } as React.CSSProperties}
+                    onClick={() => setSize(option.value)}
                   >
-                    {option.toUpperCase()}
+                    <span className="media-size-option-main">
+                      <span>{option.label}</span>
+                      <strong>{option.hint}</strong>
+                    </span>
+                    <span className="media-size-option-track" aria-hidden="true">
+                      <span></span>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -270,7 +300,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
                 Atras
               </button>
               <button type="button" className="btn btn-primary btn-sm" onClick={completeMarkdownInsert}>
-                Insertar en Markdown
+                Insertar
               </button>
             </div>
           </div>

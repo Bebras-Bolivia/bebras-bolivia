@@ -72,7 +72,7 @@ async function ensure(editor: SafeAny): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     load(editor);
-    window.Toast.success(result.mode === "static" ? "Vista previa lista" : "Vista previa lista — tus cambios se ven al guardar");
+    window.Toast.success(result.mode === "static" ? "Vista previa lista" : "Vista previa lista - cambios en vivo activos");
   } catch (err: SafeAny) {
     editor.devServerStarting = false;
     window.Toast.error(`Error al iniciar vista previa: ${err.message}`);

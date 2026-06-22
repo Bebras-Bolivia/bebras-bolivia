@@ -9,8 +9,8 @@ import { getNestedValue } from "./path-helpers";
 // ── Route mapping ────────────────────────────────────────
 export const fileToPage: Record<string, string> = {
   "home.json": "/",
-  "categories.json": "/",
-  "scoring.json": "/",
+  "categories.json": "/estudiantes/",
+  "scoring.json": "/estudiantes/",
   "faq.json": "/faq/",
   "teacher-instructions.json": "/maestros/",
   "sponsors.json": "/sponsors/",
@@ -19,6 +19,7 @@ export const fileToPage: Record<string, string> = {
   "estudiantes.json": "/estudiantes/",
   "docentes.json": "/maestros/",
   "blog-ui.json": "/blog/",
+  "page-composition.json": "/estudiantes/",
 };
 
 // ── Field hints ──────────────────────────────────────────

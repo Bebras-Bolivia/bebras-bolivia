@@ -47,7 +47,7 @@ type EditorPayload = {
       ctaHref?: string;
     };
     body: string;
-  }) => Promise<void>;
+  }) => Promise<boolean | void>;
 };
 
 const roots = new WeakMap<Element, Root>();
