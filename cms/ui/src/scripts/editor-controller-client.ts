@@ -11,6 +11,7 @@ const Editor = {
   devServerPort: null as number | null,
   previewMode: null as string | null,
   previewDraftTimer: null as ReturnType<typeof setTimeout> | null,
+  previewSyncQueued: false,
   collapsedItems: new Set<string>(),
   itemExpandedState: new Map<string, boolean>(),
 
@@ -336,7 +337,12 @@ const Editor = {
   },
 
   schedulePreviewDraftUpdate() {
-    if (!this.devServerReady || !this.currentFile) return;
+    if (!this.currentFile) return;
+    if (!this.devServerReady) {
+      this.previewSyncQueued = true;
+      return;
+    }
+    this.previewSyncQueued = false;
     if (this.previewDraftTimer) clearTimeout(this.previewDraftTimer);
     // 600ms debounce: long enough to coalesce typing bursts, short enough
     // that pausing for a beat shows the change in the iframe.
@@ -372,7 +378,12 @@ const Editor = {
     }
   },
 
-  ensureDevServer() { return window.CMSEditorPreview.ensure(this); },
+  async ensureDevServer() {
+    await window.CMSEditorPreview.ensure(this);
+    if (this.previewSyncQueued && this.devServerReady) {
+      this.schedulePreviewDraftUpdate();
+    }
+  },
   loadPreviewIframe(forceReload = false) { return window.CMSEditorPreview.load(this, forceReload); },
 };
 

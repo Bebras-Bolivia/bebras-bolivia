@@ -64,7 +64,7 @@ async function ensure(editor: SafeAny): Promise<void> {
 
   try {
     const result = await window.API.startPreview();
-    editor.devServerReady = true;
+    editor.devServerReady = result.mode !== "static";
     editor.devServerStarting = false;
     editor.devServerPort = result.port;
     editor.previewMode = result.mode || "dev";
@@ -72,7 +72,11 @@ async function ensure(editor: SafeAny): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     load(editor);
-    window.Toast.success(result.mode === "static" ? "Vista previa lista" : "Vista previa lista - cambios en vivo activos");
+    if (result.mode === "static") {
+      window.Toast.info("Vista previa estatica lista. Los cambios en vivo requieren el servidor de desarrollo.");
+    } else {
+      window.Toast.success("Vista previa lista - cambios en vivo activos");
+    }
   } catch (err: SafeAny) {
     editor.devServerStarting = false;
     window.Toast.error(`Error al iniciar vista previa: ${err.message}`);
