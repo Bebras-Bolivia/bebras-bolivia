@@ -16,6 +16,11 @@ type MarkdownAction = {
   group?: string;
 };
 
+type PreviewScrollPosition = {
+  x: number;
+  y: number;
+};
+
 interface Props {
   isNew: boolean;
   slug: string;
@@ -28,6 +33,37 @@ interface Props {
 
 function iconHtml(icons: Record<string, string>, name: string): { __html: string } {
   return { __html: icons[name] || "" };
+}
+
+function getIframeScrollPosition(iframe: HTMLIFrameElement | null): PreviewScrollPosition | null {
+  try {
+    const win = iframe?.contentWindow;
+    const doc = iframe?.contentDocument;
+    if (!win || !doc) return null;
+    return {
+      x: win.scrollX || doc.documentElement.scrollLeft || doc.body?.scrollLeft || 0,
+      y: win.scrollY || doc.documentElement.scrollTop || doc.body?.scrollTop || 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function restoreIframeScrollPosition(iframe: HTMLIFrameElement | null, position: PreviewScrollPosition): void {
+  if (!iframe) return;
+  const tryRestore = (attempt = 0) => {
+    try {
+      iframe.contentWindow?.scrollTo(position.x, position.y);
+    } catch {
+      return;
+    }
+
+    if (attempt < 6) {
+      window.setTimeout(() => tryRestore(attempt + 1), 80);
+    }
+  };
+
+  tryRestore();
 }
 
 
@@ -48,6 +84,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [headerContextSlot, setHeaderContextSlot] = useState<HTMLElement | null>(null);
   const previewRevision = useRef(0);
   const markdownRef = useRef<HTMLTextAreaElement | null>(null);
+  const previewIframeRef = useRef<HTMLIFrameElement | null>(null);
+  const pendingPreviewScroll = useRef<PreviewScrollPosition | null>(null);
 
   const previewPayload = useMemo(() => ({
     slug: formSlug.trim(),
@@ -97,6 +135,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
         if (cancelled || currentRevision !== previewRevision.current) return;
 
         const targetPath = `/preview-site/blog/${encodeURIComponent(result.slug)}/`;
+        pendingPreviewScroll.current = getIframeScrollPosition(previewIframeRef.current);
         setPreviewFrameSrc(`${window.App.appUrl(targetPath)}?t=${Date.now()}`);
         setPreviewReady(true);
       } catch (err: unknown) {
@@ -411,9 +450,16 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
               </div>
             ) : previewFrameSrc ? (
               <iframe
+                ref={previewIframeRef}
                 title="Vista previa del post"
                 className="blog-preview-frame"
                 src={previewFrameSrc}
+                onLoad={() => {
+                  const position = pendingPreviewScroll.current;
+                  if (!position) return;
+                  pendingPreviewScroll.current = null;
+                  restoreIframeScrollPosition(previewIframeRef.current, position);
+                }}
               />
             ) : (
               <div className="blog-preview-fallback">
