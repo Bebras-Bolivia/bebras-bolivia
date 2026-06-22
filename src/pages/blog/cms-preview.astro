@@ -10,7 +10,6 @@ const uiData = blogUi as any;
 const components: any[] = Array.isArray(uiData.components) ? uiData.components : [];
 const postUi = components.find((c) => c.type === "blogPostUi") || {
   backLabel: "Volver al blog",
-  ctaLabel: "Inscribirse al desafio",
 };
 
 if (!previewPost) {
@@ -28,6 +27,9 @@ const contentHtml = renderBlogMarkdown(previewPost.body || "");
     author={previewPost.data.author}
     image={previewPost.data.image}
     postUi={postUi}
+    ctaEnabled={previewPost.data.ctaEnabled}
+    ctaLabel={previewPost.data.ctaLabel}
+    ctaHref={previewPost.data.ctaHref}
     contentHtml={contentHtml}
   />
 </Layout>

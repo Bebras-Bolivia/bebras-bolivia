@@ -7,12 +7,15 @@ interface Props {
   image?: string;
   postUi: {
     backLabel?: string;
-    ctaLabel?: string;
   };
+  ctaEnabled?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;
   contentHtml: string;
 }
 
-const { title, description, date, author, image, postUi, contentHtml } = Astro.props;
+const { title, description, date, author, image, postUi, ctaEnabled = false, ctaLabel, ctaHref, contentHtml } = Astro.props;
+const showCta = Boolean(ctaEnabled && ctaLabel && ctaHref);
 
 const formattedDate = date.toLocaleDateString("es-BO", {
   year: "numeric",
@@ -67,7 +70,7 @@ const formattedDate = date.toLocaleDateString("es-BO", {
     </div>
 
     <div class="mt-10 pt-6 border-t border-border">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class:list={["flex flex-col sm:flex-row items-center gap-4", showCta ? "justify-between" : "justify-start"]}>
         <a
           href="/blog"
           class="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -75,13 +78,15 @@ const formattedDate = date.toLocaleDateString("es-BO", {
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-1"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
           <span class="text-xs uppercase tracking-[0.15em] font-semibold">{postUi.backLabel}</span>
         </a>
-        <a
-          href="/blog"
-          class="group inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
-        >
-          {postUi.ctaLabel}
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
+        {showCta && (
+          <a
+            href={ctaHref}
+            class="group inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
+          >
+            {ctaLabel}
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        )}
       </div>
     </div>
   </div>

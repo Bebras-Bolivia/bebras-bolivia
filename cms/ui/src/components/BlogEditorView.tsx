@@ -6,6 +6,10 @@ type Frontmatter = {
   description: string;
   date: string;
   author: string;
+  image?: string;
+  ctaEnabled?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;
 };
 
 type MarkdownAction = {
@@ -73,6 +77,9 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [title, setTitle] = useState(frontmatter.title || "");
   const [description, setDescription] = useState(frontmatter.description || "");
   const [date, setDate] = useState(frontmatter.date || new Date().toISOString().split("T")[0]);
+  const [ctaEnabled, setCtaEnabled] = useState(Boolean(frontmatter.ctaEnabled));
+  const [ctaLabel, setCtaLabel] = useState(frontmatter.ctaLabel || "");
+  const [ctaHref, setCtaHref] = useState(frontmatter.ctaHref || "");
   const [markdown, setMarkdown] = useState(body || "");
   const [saving, setSaving] = useState(false);
   const [previewFrameSrc, setPreviewFrameSrc] = useState("");
@@ -94,9 +101,12 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
       description: description.trim(),
       date,
       author: "Bebras Bolivia",
+      ctaEnabled,
+      ctaLabel: ctaLabel.trim(),
+      ctaHref: ctaHref.trim(),
     },
     body: markdown,
-  }), [formSlug, title, description, date, markdown]);
+  }), [formSlug, title, description, date, ctaEnabled, ctaLabel, ctaHref, markdown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -174,6 +184,10 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     if (!formSlug.trim() || !title.trim() || !description.trim() || !date) {
       return;
     }
+    if (ctaEnabled && (!ctaLabel.trim() || !ctaHref.trim())) {
+      window.Toast.error("Completa el texto y enlace del boton, o desactivalo.");
+      return;
+    }
     setSaving(true);
     try {
       await onSave({
@@ -183,6 +197,9 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           description: description.trim(),
           date,
           author: "Bebras Bolivia",
+          ctaEnabled,
+          ctaLabel: ctaLabel.trim(),
+          ctaHref: ctaHref.trim(),
         },
         body: markdown,
       });
@@ -394,6 +411,48 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
               <label htmlFor="blog-date-react">Fecha</label>
               <input type="date" id="blog-date-react" className="form-input" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
+
+            <div className="form-group">
+              <label htmlFor="blog-cta-enabled-react">Boton del articulo</label>
+              <label className="toggle-row" htmlFor="blog-cta-enabled-react">
+                <input
+                  type="checkbox"
+                  id="blog-cta-enabled-react"
+                  checked={ctaEnabled}
+                  onChange={(e) => setCtaEnabled(e.target.checked)}
+                />
+                <span>Mostrar boton al final de esta noticia</span>
+              </label>
+            </div>
+
+            {ctaEnabled ? (
+              <div className="editor-group nested-group">
+                <div className="form-group">
+                  <label htmlFor="blog-cta-label-react">Texto del boton</label>
+                  <input
+                    type="text"
+                    id="blog-cta-label-react"
+                    className="form-input"
+                    value={ctaLabel}
+                    maxLength={80}
+                    placeholder="Inscribirse al desafio"
+                    onChange={(e) => setCtaLabel(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="blog-cta-href-react">Enlace del boton</label>
+                  <input
+                    type="text"
+                    id="blog-cta-href-react"
+                    className="form-input"
+                    value={ctaHref}
+                    maxLength={300}
+                    placeholder="/registro"
+                    onChange={(e) => setCtaHref(e.target.value)}
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="divider"></div>

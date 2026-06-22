@@ -12,6 +12,17 @@ export const blogFrontmatterSchema = z.object({
   date: z.coerce.date(),
   image: z.string().optional(),
   author: z.string().default("Bebras Bolivia"),
+  ctaEnabled: z.boolean().default(false),
+  ctaLabel: z.string().optional(),
+  ctaHref: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (!data.ctaEnabled) return;
+  if (!data.ctaLabel?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["ctaLabel"], message: "CTA label is required when CTA is enabled" });
+  }
+  if (!data.ctaHref?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["ctaHref"], message: "CTA href is required when CTA is enabled" });
+  }
 });
 
 export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;
@@ -224,6 +235,7 @@ export function formatFrontmatter(fm: BlogFrontmatter): Record<string, unknown> 
     date: fm.date instanceof Date ? fm.date.toISOString().split("T")[0] : fm.date,
     ...(fm.image ? { image: fm.image } : {}),
     author: fm.author,
+    ...(fm.ctaEnabled ? { ctaEnabled: true, ctaLabel: fm.ctaLabel, ctaHref: fm.ctaHref } : {}),
   };
 }
 
