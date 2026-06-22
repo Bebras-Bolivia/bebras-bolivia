@@ -1634,6 +1634,61 @@ a:hover { text-decoration: underline; }
 
   .editor-component-mobile-preview .component-preview-card {
     min-height: 0;
+    max-width: 100%;
+  }
+
+  .editor-component-mobile-preview .real-preview {
+    margin: 0.75rem;
+    padding: 0.75rem;
+    min-height: 0;
+  }
+
+  .editor-component-mobile-preview .real-card-grid,
+  .editor-component-mobile-preview .real-stats > div,
+  .editor-component-mobile-preview .real-age > div,
+  .editor-component-mobile-preview .real-contact {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-component-mobile-preview .real-card-grid article,
+  .editor-component-mobile-preview .real-features article,
+  .editor-component-mobile-preview .real-stats article,
+  .editor-component-mobile-preview .real-age article,
+  .editor-component-mobile-preview .real-contact article,
+  .editor-component-mobile-preview .real-contact section,
+  .editor-component-mobile-preview .real-links a,
+  .editor-component-mobile-preview .real-tabs article,
+  .editor-component-mobile-preview .real-blog article {
+    min-width: 0;
+  }
+
+  .editor-component-mobile-preview .real-card-grid article {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 0.6rem;
+    align-items: start;
+  }
+
+  .editor-component-mobile-preview .real-card-grid article span {
+    grid-row: span 2;
+    margin-bottom: 0;
+  }
+
+  .editor-component-mobile-preview .real-card-grid article p {
+    grid-column: 2;
+  }
+
+  .editor-component-mobile-preview .real-age article {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 0.55rem;
+    text-align: left;
+    align-items: center;
+  }
+
+  .editor-component-mobile-preview .real-age article strong,
+  .editor-component-mobile-preview .real-age article span {
+    margin: 0;
   }
 
   .editor-component-mobile-preview .preview-mock {
