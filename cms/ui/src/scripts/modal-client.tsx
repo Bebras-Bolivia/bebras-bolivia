@@ -326,12 +326,13 @@ function RealComponentPreview({ option, preview }: { option: PickerOption; previ
   }
 
   if (option.value.startsWith("itemsGrid")) {
-    const media = option.value === "itemsGridNumber" ? ["1", "2", "3"] : option.value === "itemsGridImage" ? ["IMG", "IMG", "IMG"] : option.value === "itemsGridSimple" ? ["", "", ""] : ["⌘", "◌", "↗"];
+    const isSimpleGrid = option.value === "itemsGridSimple";
+    const media = option.value === "itemsGridNumber" ? ["1", "2", "3"] : option.value === "itemsGridImage" ? ["IMG", "IMG", "IMG"] : isSimpleGrid ? ["", "", ""] : ["⌘", "◌", "↗"];
     return (
       <div className="real-preview real-section-preview">
         <p className="real-kicker">Tarjetas</p><h5>{preview.title}</h5><p className="real-intro">Texto introductorio opcional para contextualizar el bloque.</p>
-        <div className="real-card-grid">
-          {media.map((m, index) => <article key={index}><span>{m}</span><strong>{index === 0 ? "Registro" : index === 1 ? "Recursos" : "Seguimiento"}</strong><p>Descripcion breve de la tarjeta.</p></article>)}
+        <div className={`real-card-grid${isSimpleGrid ? " real-card-grid-simple" : ""}`}>
+          {media.map((m, index) => <article key={index}>{!isSimpleGrid ? <span>{m}</span> : null}<strong>{isSimpleGrid ? `Tarjeta ${index + 1}` : index === 0 ? "Registro" : index === 1 ? "Recursos" : "Seguimiento"}</strong><p>Descripcion breve de la tarjeta.</p></article>)}
         </div>
       </div>
     );

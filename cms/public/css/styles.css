@@ -1397,6 +1397,11 @@ a:hover { text-decoration: underline; }
   padding: 0.7rem;
 }
 
+.real-card-grid-simple article {
+  min-height: 92px;
+  align-content: center;
+}
+
 .real-card-grid article span {
   width: 34px;
   height: 34px;
@@ -1460,8 +1465,12 @@ a:hover { text-decoration: underline; }
   justify-content: space-between;
   margin-top: 0;
   background: color-mix(in srgb, var(--preview-tone) 12%, white);
-  color: var(--text);
+  color: #1f2937;
   border: 1px solid color-mix(in srgb, var(--preview-tone) 20%, var(--border));
+}
+
+.real-links a span {
+  color: #1f2937;
 }
 
 .real-features {
@@ -1511,11 +1520,17 @@ a:hover { text-decoration: underline; }
   margin-top: 0.45rem;
   padding: 0.65rem 0.75rem;
   font-size: 0.8rem;
+  color: #1f2937;
 }
 
 .real-faq summary {
   cursor: default;
   font-weight: 850;
+  color: #1f2937;
+}
+
+.real-faq details p {
+  color: #4b5563;
 }
 
 .real-tabs .real-tab-list {
@@ -1537,7 +1552,18 @@ a:hover { text-decoration: underline; }
 .real-blog article {
   border-radius: 16px;
   background: white;
+  color: #1f2937;
   padding: 0.75rem;
+}
+
+.real-tabs article strong,
+.real-blog article h5 {
+  color: #111827;
+}
+
+.real-tabs article p,
+.real-blog article p {
+  color: #4b5563;
 }
 
 .real-form,
