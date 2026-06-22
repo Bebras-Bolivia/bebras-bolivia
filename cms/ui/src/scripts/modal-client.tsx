@@ -69,10 +69,6 @@ function PickerModal({
     return typeof window !== "undefined" && window.matchMedia("(pointer: coarse), (max-width: 760px)").matches;
   }
 
-  function selectOption(value: string) {
-    setSelectedValue((current) => isTouchLikeViewport() && current === value ? "" : value);
-  }
-
   React.useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose(null);
@@ -131,8 +127,7 @@ function PickerModal({
                     aria-selected={selected}
                     onMouseEnter={() => { if (!isTouchLikeViewport()) setSelectedValue(opt.value); }}
                     onFocus={() => { if (!isTouchLikeViewport()) setSelectedValue(opt.value); }}
-                    onClick={() => selectOption(opt.value)}
-                    onDoubleClick={() => onClose(opt.value)}
+                    onClick={() => onClose(opt.value)}
                   >
                     <span className="title">{opt.label}</span>
                     <span className="desc">{opt.description || ""}</span>
@@ -153,9 +148,6 @@ function PickerModal({
         <div className="editor-component-picker-actions">
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => onClose(null)}>
             Cancelar
-          </button>
-          <button type="button" className="btn btn-primary btn-sm" disabled={!selectedOption} onClick={() => selectedOption && onClose(selectedOption.value)}>
-            Insertar componente
           </button>
         </div>
       </div>
