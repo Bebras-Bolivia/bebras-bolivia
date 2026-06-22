@@ -1,7 +1,5 @@
 {
   "header": {
-    "pageTitle": "Contacto",
-    "pageDescription": "Contáctanos para más información sobre el Desafío Bebras Bolivia.",
     "tag": "Comunícate",
     "heading": "Contacto",
     "subtitle": "¿Tienes preguntas? Estamos aquí para ayudarte."
@@ -9,7 +7,11 @@
   "components": [
     {
       "type": "contactClassic",
-      "cardPalette": ["red", "yellow", "green"],
+      "cardPalette": [
+        "red",
+        "yellow",
+        "green"
+      ],
       "info": {
         "tag": "Información",
         "heading": "Información de contacto",
@@ -33,8 +35,14 @@
             "title": "Redes sociales",
             "description": "Síguenos para novedades.",
             "socialLinks": [
-              { "label": "Facebook", "href": "https://facebook.com/bebrasbolivia" },
-              { "label": "Instagram", "href": "https://instagram.com/bebrasbolivia" }
+              {
+                "label": "Facebook",
+                "href": "https://facebook.com/bebrasbolivia"
+              },
+              {
+                "label": "Instagram",
+                "href": "https://instagram.com/bebrasbolivia"
+              }
             ]
           }
         ]
@@ -53,14 +61,28 @@
         "tag": "Formulario",
         "heading": "Envíanos un mensaje",
         "fields": {
-          "name": { "label": "Nombre completo", "placeholder": "Tu nombre" },
-          "email": { "label": "Email", "placeholder": "tu@email.com" },
+          "name": {
+            "label": "Nombre completo",
+            "placeholder": "Tu nombre"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "tu@email.com"
+          },
           "role": {
             "label": "Rol",
             "placeholder": "Seleccionar...",
-            "options": ["Estudiante", "Maestro / Coordinador", "Institución", "Otro"]
+            "options": [
+              "Estudiante",
+              "Maestro / Coordinador",
+              "Institución",
+              "Otro"
+            ]
           },
-          "message": { "label": "Mensaje", "placeholder": "Escribe tu mensaje..." }
+          "message": {
+            "label": "Mensaje",
+            "placeholder": "Escribe tu mensaje..."
+          }
         },
         "submitLabel": "Enviar mensaje",
         "disclaimer": "Este formulario es una vista previa. La funcionalidad de envío se habilitará próximamente."

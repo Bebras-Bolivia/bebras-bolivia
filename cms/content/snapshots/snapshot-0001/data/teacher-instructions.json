@@ -1,23 +1,24 @@
 {
   "header": {
     "sectionTag": "Guía para coordinadores",
-    "heading": "Instrucciones para Coordinadores",
+    "heading": "Instrucciones para coordinadores",
     "subtitle": "Guía paso a paso para antes, durante y después del desafío."
   },
   "components": [
     {
       "type": "tabsGuide",
       "sectionTag": "Guía para coordinadores",
-      "heading": "Instrucciones para Coordinadores",
+      "heading": "Instrucciones para coordinadores",
       "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
+      "cardPalette": ["blue", "red", "yellow"],
       "tabs": [
         {
           "id": "antes",
           "label": "Antes",
-          "heading": "Antes del Desafío",
+          "heading": "Antes del desafío",
           "items": [
             { "title": "Registrarse como coordinador", "desc": "en la plataforma Bebras Bolivia y completar los datos de la escuela." },
-            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Kits, Castors, Benjamins, Cadets, Juniors, Seniors)." },
+            { "title": "Inscribir a los estudiantes", "desc": "organizándolos por categoría de edad (Guacamayo, Capibara, Titi, Jucumari y Yaguarete)." },
             { "title": "Verificar el equipamiento", "desc": "Asegurar que las computadoras tengan navegador actualizado y conexión a internet estable." },
             { "title": "Preparar a los estudiantes", "desc": "Compartir ejemplos de problemas de años anteriores para que se familiaricen con el formato." }
           ]
@@ -25,7 +26,7 @@
         {
           "id": "durante",
           "label": "Durante",
-          "heading": "Durante el Desafío",
+          "heading": "Durante el desafío",
           "items": [
             { "title": "Supervisión", "desc": "El coordinador debe estar presente durante toda la sesión para resolver dudas técnicas." },
             { "title": "Sin ayuda externa", "desc": "Los estudiantes deben resolver los problemas de forma individual, sin consultar a compañeros ni usar recursos externos." },
@@ -36,7 +37,7 @@
         {
           "id": "despues",
           "label": "Después",
-          "heading": "Después del Desafío",
+          "heading": "Después del desafío",
           "items": [
             { "title": "Resultados", "desc": "Los resultados estarán disponibles en la plataforma unos días después del desafío." },
             { "title": "Certificados", "desc": "Todos los participantes reciben certificado digital. Los mejores puntajes reciben reconocimientos adicionales." },

@@ -152,19 +152,18 @@ export async function listSnapshots(): Promise<SnapshotMeta[]> {
     .all() as SnapshotRow[];
 
   const diskSnapshots = await listSnapshotMetasFromDisk();
-  const diskByDirName = new Map(diskSnapshots.map((snapshot) => [snapshot.dirName, snapshot]));
-  const snapshots = rows.map((r) => diskByDirName.get(r.dir_name) ?? ({
-    id: r.id,
-    description: r.description,
-    author: r.author,
-    dirName: r.dir_name,
-    createdAt: r.created_at,
-  }));
+  const rowsByDirName = new Map(rows.map((row) => [row.dir_name, row]));
+  const snapshots = diskSnapshots.map((snapshot) => {
+    const row = rowsByDirName.get(snapshot.dirName);
+    if (!row) return snapshot;
 
-  const seen = new Set(snapshots.map((snapshot) => snapshot.dirName));
-  for (const snapshot of diskSnapshots) {
-    if (!seen.has(snapshot.dirName)) snapshots.push(snapshot);
-  }
+    return {
+      ...snapshot,
+      description: row.description || snapshot.description,
+      author: row.author || snapshot.author,
+      createdAt: row.created_at || snapshot.createdAt,
+    };
+  });
 
   return snapshots.sort((a, b) => b.id - a.id);
 }
@@ -406,9 +405,12 @@ export async function deleteSnapshot(id: number): Promise<void> {
   const snapshotDir = join(config.snapshotsDir, row?.dir_name ?? diskMeta!.dirName);
 
   try {
-    await rm(snapshotDir, { recursive: true });
-  } catch {
-    // Directory might not exist — that's fine, still delete DB row
+    await rm(snapshotDir, { recursive: true, force: true });
+  } catch (err) {
+    throw new SnapshotError(
+      `No se pudo eliminar la carpeta del respaldo (${snapshotDir}). Es posible que esté bloqueada por otro proceso (OneDrive/antivirus). Intenta de nuevo. Detalle: ${(err as Error).message}`,
+      500
+    );
   }
 
   if (row) db.query("DELETE FROM snapshots WHERE id = ?").run(id);

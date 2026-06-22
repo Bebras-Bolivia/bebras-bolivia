@@ -1,14 +1,12 @@
 {
   "header": {
-    "pageTitle": "Preguntas frecuentes",
-    "pageDescription": "Preguntas frecuentes sobre el Desafío Bebras Bolivia para estudiantes, maestros y coordinadores.",
     "tag": "Ayuda",
     "heading": "Preguntas Frecuentes",
-    "subtitle": "Encuentra respuestas a las preguntas más comunes sobre el Desafío Bebras Bolivia."
+    "subtitle": "Encuentra respuestas a las preguntas mas comunes sobre el Desafio Bebras Bolivia."
   },
   "components": [
     {
-      "type": "faqAccordion",
+      "type": "faqQuestions",
       "categories": [
         {
           "title": "General",
