@@ -234,7 +234,6 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("blogPostUi"),
     backLabel: z.string(),
-    ctaLabel: z.string(),
   }),
   z.object({
     type: z.literal("contactClassic"),
@@ -503,7 +502,6 @@ export const blogUiSchema = z.object({
   header: PageMetaSchema.extend({
     tag: z.string(),
     heading: z.string(),
-    headingHighlight: z.string(),
     subtitle: z.string(),
   }),
   components: z.array(SharedPageComponentSchema),

@@ -625,7 +625,7 @@ function _componentTemplate(type: string): unknown | null {
       readMoreLabel: "Leer mas",
     }),
     blogPostUi: () => ({
-      type: "blogPostUi", backLabel: "Volver al blog", ctaLabel: "Inscribirse al desafio",
+      type: "blogPostUi", backLabel: "Volver al blog",
     }),
     contactClassic: () => ({
       type: "contactClassic",
