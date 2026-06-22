@@ -87,7 +87,7 @@ export const selectOptions: Record<string, string[]> = {
 // ── Hidden fields ────────────────────────────────────────
 // `type` is the block/section discriminator (introEditorial, itemsGrid, …) —
 // editing it would break the section, so it's never shown. `id` likewise.
-export const hiddenFields = new Set(["id", "type"]);
+export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription"]);
 
 // ── Component option type ────────────────────────────────
 export type ComponentOption = {
