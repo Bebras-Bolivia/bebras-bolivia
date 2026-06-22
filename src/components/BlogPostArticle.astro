@@ -1,4 +1,6 @@
 ---
+import InternalPageHero from "@/components/InternalPageHero.astro";
+
 interface Props {
   title: string;
   description: string;
@@ -19,9 +21,14 @@ const formattedDate = date.toLocaleDateString("es-BO", {
   month: "long",
   day: "numeric",
 });
+
+const heroTag = author ? `${formattedDate} · ${author}` : formattedDate;
 ---
 
-<article class="bg-bebras-paper py-14 lg:py-16 dark:bg-zinc-950">
+<div class="relative w-full">
+  <InternalPageHero tag={heroTag} heading={title} />
+
+  <article class="relative z-10 bg-bebras-paper py-14 lg:py-16 dark:bg-zinc-950">
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
     <a
       href="/blog"
@@ -32,21 +39,7 @@ const formattedDate = date.toLocaleDateString("es-BO", {
     </a>
 
     <header class="mb-7">
-      <div class="flex items-center gap-3 mb-4">
-        <time datetime={date.toISOString()} class="text-xs uppercase tracking-[0.1em] text-muted-foreground font-mono">
-          {formattedDate}
-        </time>
-        {author && (
-          <>
-            <span class="rule-line w-8"></span>
-            <span class="text-xs uppercase tracking-[0.15em] text-muted-foreground font-semibold">{author}</span>
-          </>
-        )}
-      </div>
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
-        {title}
-      </h1>
-      <p class="mt-5 text-lg text-muted-foreground leading-relaxed">
+      <p class="text-lg text-muted-foreground leading-relaxed">
         {description}
       </p>
       <div class="rule-line mt-5"></div>
@@ -85,7 +78,8 @@ const formattedDate = date.toLocaleDateString("es-BO", {
       </div>
     </div>
   </div>
-</article>
+  </article>
+</div>
 
 <style is:global>
   .blog-post-content {

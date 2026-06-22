@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { createPortal } from "react-dom";
 
 type BlogPost = {
   slug: string;
@@ -35,21 +36,38 @@ function formatPostDate(value?: string) {
 }
 
 export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: Props) {
+  const [headerSlot] = useState<HTMLElement | null>(() => document.getElementById("header-editor-actions"));
+  const [headerSubtitleSlot] = useState<HTMLElement | null>(() => document.getElementById("header-subtitle"));
+
   const sortedPosts = [...(posts || [])].sort((a, b) => {
     const dateA = new Date(a?.frontmatter?.date || 0).getTime();
     const dateB = new Date(b?.frontmatter?.date || 0).getTime();
     return dateB - dateA;
   });
 
+  const newButton = headerSlot
+    ? createPortal(
+        <button className="btn btn-primary btn-sm" onClick={onNew} aria-label="Nueva publicación" title="Nueva publicación">
+          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span>
+          <span className="btn-text">Nueva publicacion</span>
+        </button>,
+        headerSlot
+      )
+    : null;
+
+  const countBadge = headerSubtitleSlot && sortedPosts.length > 0
+    ? createPortal(
+        <>
+          {sortedPosts.length} publicacion{sortedPosts.length !== 1 ? "es" : ""}
+        </>,
+        headerSubtitleSlot
+      )
+    : null;
+
   if (sortedPosts.length === 0) {
     return (
       <>
-        <div className="flex justify-between items-center mb-lg">
-          <div></div>
-          <button className="btn btn-primary btn-sm" onClick={onNew}>
-            <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Nueva publicacion
-          </button>
-        </div>
+        {newButton}
         <div className="empty-state">
           <h3>Sin publicaciones</h3>
           <p>Crea tu primera publicacion del blog.</p>
@@ -60,14 +78,8 @@ export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: 
 
   return (
     <>
-      <div className="flex justify-between items-center mb-lg">
-        <span className="text-muted text-sm">
-          {sortedPosts.length} publicacion{sortedPosts.length !== 1 ? "es" : ""}
-        </span>
-        <button className="btn btn-primary btn-sm" onClick={onNew}>
-          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Nueva publicacion
-        </button>
-      </div>
+      {newButton}
+      {countBadge}
       <div className="blog-list">
         {sortedPosts.map((post) => {
           const slug = post.slug;

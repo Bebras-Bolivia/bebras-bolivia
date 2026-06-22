@@ -15,6 +15,7 @@ import { snapshotRouter } from "./snapshots/routes.js";
 import { publishRouter } from "./publish/routes.js";
 import { previewRouter } from "./preview/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
+import { startDailyBackupScheduler, stopDailyBackupScheduler } from "./snapshots/service.js";
 import { CONTENT_FILES } from "./content/schemas.js";
 
 const app = express();
@@ -302,6 +303,7 @@ async function syncAdminFromEnv() {
 // ── Cleanup on exit ────────────────────────────────────────
 function cleanup() {
   console.log("\nShutting down...");
+  stopDailyBackupScheduler();
   stopDevServer();
   process.exit(0);
 }
@@ -313,6 +315,7 @@ async function boot() {
   await syncWorkingCopiesFromLanding();
   getDb();
   await syncAdminFromEnv();
+  startDailyBackupScheduler();
   app.listen(config.port, config.host, () => {
     console.log(`\nBebras CMS running at http://${config.host}:${config.port}${withBasePath("/")}`);
     console.log(`Environment: ${config.nodeEnv}`);

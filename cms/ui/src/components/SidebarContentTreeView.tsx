@@ -59,20 +59,6 @@ export default function SidebarContentTreeView({ nodes, icons, onNavigate }: Pro
           )}
         </div>
       ))}
-      <div className="sidebar-tree-group">
-        <a
-          className="sidebar-tree-parent"
-          data-nav="/blog"
-          href="/blog"
-          onClick={(e) => {
-            e.preventDefault();
-            onNavigate("/blog");
-          }}
-        >
-          <span dangerouslySetInnerHTML={iconHtml(icons, "layers")}></span>
-          <span>Publicaciones</span>
-        </a>
-      </div>
     </>
   );
 }

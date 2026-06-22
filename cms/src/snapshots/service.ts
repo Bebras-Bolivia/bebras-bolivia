@@ -245,6 +245,143 @@ export async function deleteSnapshot(id: number): Promise<void> {
   db.query("DELETE FROM snapshots WHERE id = ?").run(id);
 }
 
+const DAILY_RETENTION_DAYS = 30;
+const MONTHLY_RETENTION_MONTHS = 12;
+
+function dayKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function monthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function yearKey(date: Date): string {
+  return String(date.getFullYear());
+}
+
+function selectSnapshotsToKeep(snapshots: SnapshotMeta[], now: Date): Set<number> {
+  const keep = new Set<number>();
+  if (snapshots.length === 0) return keep;
+
+  const sorted = [...snapshots].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  keep.add(sorted[0].id);
+
+  const dailyCutoff = new Date(now);
+  dailyCutoff.setDate(dailyCutoff.getDate() - DAILY_RETENTION_DAYS);
+
+  const monthlyCutoff = new Date(now);
+  monthlyCutoff.setMonth(monthlyCutoff.getMonth() - MONTHLY_RETENTION_MONTHS);
+
+  const seenDays = new Set<string>();
+  const seenMonths = new Set<string>();
+  const seenYears = new Set<string>();
+
+  for (const snapshot of sorted) {
+    const created = new Date(snapshot.createdAt);
+    if (Number.isNaN(created.getTime())) {
+      keep.add(snapshot.id);
+      continue;
+    }
+
+    if (created >= dailyCutoff) {
+      const key = dayKey(created);
+      if (!seenDays.has(key)) {
+        seenDays.add(key);
+        keep.add(snapshot.id);
+      }
+    } else if (created >= monthlyCutoff) {
+      const key = monthKey(created);
+      if (!seenMonths.has(key)) {
+        seenMonths.add(key);
+        keep.add(snapshot.id);
+      }
+    } else {
+      const key = yearKey(created);
+      if (!seenYears.has(key)) {
+        seenYears.add(key);
+        keep.add(snapshot.id);
+      }
+    }
+  }
+
+  return keep;
+}
+
+export async function applyRetentionPolicy(now: Date = new Date()): Promise<number[]> {
+  const snapshots = listSnapshots();
+  const keep = selectSnapshotsToKeep(snapshots, now);
+  const removed: number[] = [];
+
+  for (const snapshot of snapshots) {
+    if (!keep.has(snapshot.id)) {
+      try {
+        await deleteSnapshot(snapshot.id);
+        removed.push(snapshot.id);
+      } catch (err) {
+        console.error(`[Retention] Failed to delete snapshot ${snapshot.id}:`, err);
+      }
+    }
+  }
+
+  return removed;
+}
+
+function hasSnapshotForDay(snapshots: SnapshotMeta[], date: Date): boolean {
+  const key = dayKey(date);
+  return snapshots.some((snapshot) => {
+    const created = new Date(snapshot.createdAt);
+    return !Number.isNaN(created.getTime()) && dayKey(created) === key;
+  });
+}
+
+export async function runDailyBackup(now: Date = new Date()): Promise<SnapshotMeta | null> {
+  const snapshots = listSnapshots();
+  let created: SnapshotMeta | null = null;
+
+  if (!hasSnapshotForDay(snapshots, now)) {
+    created = await createSnapshot(
+      `Respaldo automático ${dayKey(now)}`,
+      "Sistema"
+    );
+    console.log(`[Backup] Created daily snapshot #${created.id} (${created.dirName})`);
+  }
+
+  const removed = await applyRetentionPolicy(now);
+  if (removed.length > 0) {
+    console.log(`[Retention] Removed ${removed.length} old snapshot(s): ${removed.join(", ")}`);
+  }
+
+  return created;
+}
+
+const DAILY_BACKUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+let dailyBackupTimer: ReturnType<typeof setInterval> | null = null;
+
+export function startDailyBackupScheduler(): void {
+  if (dailyBackupTimer) return;
+
+  runDailyBackup().catch((err) => {
+    console.error("[Backup] Initial daily backup failed:", err);
+  });
+
+  dailyBackupTimer = setInterval(() => {
+    runDailyBackup().catch((err) => {
+      console.error("[Backup] Scheduled daily backup failed:", err);
+    });
+  }, DAILY_BACKUP_INTERVAL_MS);
+}
+
+export function stopDailyBackupScheduler(): void {
+  if (dailyBackupTimer) {
+    clearInterval(dailyBackupTimer);
+    dailyBackupTimer = null;
+  }
+}
+
 export class SnapshotError extends Error {
   status: number;
   constructor(message: string, status: number) {

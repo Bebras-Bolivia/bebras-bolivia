@@ -14,7 +14,7 @@ type Payload = {
 };
 
 const roots = new WeakMap<Element, Root>();
-
+let activeSnapshotsRoot: Root | null = null;
 
 function mountList(target: Element, payload: Payload) {
   let root = roots.get(target);
@@ -24,8 +24,16 @@ function mountList(target: Element, payload: Payload) {
   }
 
   root.render(<SnapshotsView {...payload} />);
+  activeSnapshotsRoot = root;
+}
+
+function unmount() {
+  if (activeSnapshotsRoot) {
+    activeSnapshotsRoot.unmount();
+    activeSnapshotsRoot = null;
+  }
 }
 
 export function registerSnapshotsRenderer() {
-  window.CMSSnapshots = { mountList };
+  window.CMSSnapshots = { mountList, unmount };
 }

@@ -10,7 +10,7 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "registro.json": { label: "Registro", desc: "Pagina de registro (inscripcion)", icon: "user-plus" },
   "estudiantes.json": { label: "Estudiantes", desc: "Pagina de estudiantes (secciones)", icon: "graduation-cap" },
   "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
-  "blog-ui.json": { label: "Interfaz del blog", desc: "Textos de la interfaz del blog", icon: "file-text" },
+  "blog-ui.json": { label: "Textos de la página", desc: "Textos de la interfaz de noticias", icon: "file-text" },
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
 };
 
@@ -19,6 +19,7 @@ const hiddenContentFiles = new Set([
   "scoring.json",
   "teacher-instructions.json",
   "page-composition.json",
+  "blog-ui.json",
 ]);
 
 const contentHierarchy = [
@@ -26,7 +27,6 @@ const contentHierarchy = [
   { label: "Estudiantes", parent: "estudiantes.json", children: [] },
   { label: "Maestros", parent: "docentes.json", children: [] },
   { label: "Preguntas frecuentes", parent: "faq.json", children: [] },
-  { label: "Blog", parent: "blog-ui.json", children: [] },
   { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
@@ -80,19 +80,11 @@ const App = {
     }
 
     localStorage.setItem("cms_user", JSON.stringify(this.user));
-    this.renderSidebarUser();
     this.setupNav();
     await this.renderSidebarContentTree();
     this.setupMobileSidebar();
     this.route();
     window.addEventListener("popstate", () => this.route());
-  },
-
-  renderSidebarUser() {
-    const userEl = document.getElementById("sidebar-user");
-    if (!userEl || !this.user) return;
-    const initials = (this.user.name || "A").split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
-    userEl.innerHTML = `<div class="avatar">${initials}</div><div class="info"><div class="name">${this.escapeHtml(this.user.name)}</div><div class="email">${this.escapeHtml(this.user.email)}</div></div>`;
   },
 
   setupNav() {
@@ -181,6 +173,9 @@ const App = {
     const path = this.appPathname();
     document.querySelectorAll("[data-nav]").forEach((el) => el.classList.toggle("active", el.getAttribute("data-nav") === path));
 
+    const publishBtn = document.getElementById("header-publish-btn");
+    if (publishBtn) publishBtn.style.display = path.startsWith("/blog") || path.startsWith("/snapshots") ? "none" : "";
+
     if (path === "/" || path === "/dashboard") {
       const filename = this.firstContentFile();
       const meta = contentMeta[filename];
@@ -189,7 +184,7 @@ const App = {
       const filename = contentFileFromRoute(decodeURIComponent(path.replace("/editor/", "")));
       const meta = contentMeta[filename];
       this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
-    } else if (path === "/blog") this.showPage("Blog", () => window.Blog.renderList());
+    } else if (path === "/blog") this.showPage("Noticias", () => window.Blog.renderList());
     else if (path === "/blog/new") this.showPage("Nueva publicacion", () => window.Blog.renderEditor(null));
     else if (path.startsWith("/blog/edit/")) {
       const slug = decodeURIComponent(path.replace("/blog/edit/", ""));
@@ -207,10 +202,13 @@ const App = {
     // previous editor view, so they don't linger on Blog/Snapshots pages.
     window.CMSEditor?.unmountPrimitives?.();
     window.CMSBlog?.unmount?.();
+    window.CMSSnapshots?.unmount?.();
     const headerContext = document.getElementById("header-context-actions");
     if (headerContext) headerContext.innerHTML = "";
     const headerEditorActions = document.getElementById("header-editor-actions");
     if (headerEditorActions) headerEditorActions.innerHTML = "";
+    const headerSubtitle = document.getElementById("header-subtitle");
+    if (headerSubtitle) headerSubtitle.innerHTML = "";
     const headerTitle = document.getElementById("header-title");
     if (headerTitle) headerTitle.textContent = title;
     const main = document.getElementById("main-content");

@@ -15,10 +15,14 @@ export default function CmsShell() {
             <div className="sidebar-tree-loading">Cargando contenido...</div>
           </div>
 
-          <div className="sidebar-section">Blog</div>
+          <div className="sidebar-section">Noticias</div>
           <a className="sidebar-link" data-nav="/blog" href="/blog">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14,2 14,8 20,8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
             Publicaciones
+          </a>
+          <a className="sidebar-link" data-nav="/editor/blog-ui.json" href="/editor/blog-ui.json">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3"></path><path d="M9 20h6"></path><path d="M12 4v16"></path></svg>
+            Textos de la página
           </a>
 
           <div className="sidebar-section">Sistema</div>
@@ -29,14 +33,7 @@ export default function CmsShell() {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user" id="sidebar-user">
-            <div className="avatar">A</div>
-            <div className="info">
-              <div className="name">Admin</div>
-              <div className="email">admin@bebras.bo</div>
-            </div>
-          </div>
-          <a className="sidebar-link" id="logout-btn" href="#" style={{ marginTop: "0.25rem", color: "var(--text-muted)" }}>
+          <a className="sidebar-link" id="logout-btn" href="#" style={{ color: "var(--text-muted)" }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16,17 21,12 16,7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             Cerrar sesion
           </a>
@@ -50,6 +47,7 @@ export default function CmsShell() {
           </button>
           <span id="header-context-actions" className="header-context-actions"></span>
           <div className="header-title" id="header-title">Panel</div>
+          <span id="header-subtitle" className="header-subtitle"></span>
         </div>
         <div className="header-actions">
           <span id="header-editor-actions" className="header-editor-actions"></span>

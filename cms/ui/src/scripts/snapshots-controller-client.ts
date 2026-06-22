@@ -11,6 +11,11 @@ const Snapshots = {
       const data = await window.API.listSnapshots();
       const snapshots = data.snapshots || [];
 
+      window.CMSSnapshots?.unmount?.();
+      const headerSubtitle = document.getElementById("header-subtitle");
+      if (headerSubtitle) headerSubtitle.innerHTML = "";
+      const headerEditorActions = document.getElementById("header-editor-actions");
+      if (headerEditorActions) headerEditorActions.innerHTML = "";
       main.innerHTML = '<div id="react-snapshots-root"></div>';
       const root = document.getElementById("react-snapshots-root");
       if (!root || !window.CMSSnapshots?.mountList) return;

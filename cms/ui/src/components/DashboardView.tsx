@@ -66,7 +66,7 @@ export default function DashboardView(props: DashboardData) {
           <div className="value">{files.length}</div>
         </div>
         <div className="stat-card">
-          <div className="label">Publicaciones del blog</div>
+          <div className="label">Noticias</div>
           <div className="value">{posts.length}</div>
         </div>
         <div className="stat-card">

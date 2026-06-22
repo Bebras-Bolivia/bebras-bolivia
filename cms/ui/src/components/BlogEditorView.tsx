@@ -309,9 +309,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
       {headerContextSlot
         ? createPortal(
-            <button className="btn btn-ghost btn-sm" onClick={onBack} aria-label="Volver al blog">
-              <span aria-hidden="true">&larr;</span>
-              <span className="btn-text">Volver al blog</span>
+            <button className="btn btn-ghost btn-icon" onClick={onBack} aria-label="Volver a noticias" title="Volver a noticias">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6" /></svg>
             </button>,
             headerContextSlot
           )

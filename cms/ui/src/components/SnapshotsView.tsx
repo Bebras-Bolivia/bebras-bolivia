@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { createPortal } from "react-dom";
 
 type Snapshot = {
   id: number;
@@ -35,19 +36,70 @@ function formatSnapshotDate(value?: string) {
   });
 }
 
+const DAILY_RETENTION_DAYS = 30;
+const MONTHLY_RETENTION_MONTHS = 12;
+
+type AgeBucket = "daily" | "monthly" | "yearly";
+
+const BUCKET_LABELS: Record<AgeBucket, string> = {
+  daily: "Últimos 30 días",
+  monthly: "Últimos 12 meses",
+  yearly: "Años anteriores",
+};
+
+const BUCKET_ORDER: AgeBucket[] = ["daily", "monthly", "yearly"];
+
+function bucketFor(value: string | undefined, now: Date): AgeBucket {
+  const created = value ? new Date(value) : null;
+  if (!created || Number.isNaN(created.getTime())) return "yearly";
+
+  const dailyCutoff = new Date(now);
+  dailyCutoff.setDate(dailyCutoff.getDate() - DAILY_RETENTION_DAYS);
+
+  const monthlyCutoff = new Date(now);
+  monthlyCutoff.setMonth(monthlyCutoff.getMonth() - MONTHLY_RETENTION_MONTHS);
+
+  if (created >= dailyCutoff) return "daily";
+  if (created >= monthlyCutoff) return "monthly";
+  return "yearly";
+}
+
 export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, onDelete }: Props) {
+  const [headerSlot] = useState<HTMLElement | null>(() => document.getElementById("header-editor-actions"));
+  const [headerSubtitleSlot] = useState<HTMLElement | null>(() => document.getElementById("header-subtitle"));
+
   const ordered = [...(snapshots || [])].sort((a, b) => b.id - a.id);
+
+  const now = new Date();
+  const grouped = BUCKET_ORDER.map((bucket) => ({
+    bucket,
+    label: BUCKET_LABELS[bucket],
+    items: ordered.filter((snap) => bucketFor(snap.createdAt || snap.date, now) === bucket),
+  })).filter((group) => group.items.length > 0);
+
+  const createButton = headerSlot
+    ? createPortal(
+        <button className="btn btn-primary btn-sm" onClick={onCreate} aria-label="Crear respaldo" title="Crear respaldo">
+          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span>
+          <span className="btn-text">Crear respaldo</span>
+        </button>,
+        headerSlot
+      )
+    : null;
+
+  const countBadge = headerSubtitleSlot && ordered.length > 0
+    ? createPortal(
+        <>
+          {ordered.length} respaldo{ordered.length !== 1 ? "s" : ""}
+        </>,
+        headerSubtitleSlot
+      )
+    : null;
 
   return (
     <>
-      <div className="flex justify-between items-center mb-lg">
-        <span className="text-muted text-sm">
-          {ordered.length} respaldo{ordered.length !== 1 ? "s" : ""}
-        </span>
-        <button className="btn btn-primary btn-sm" onClick={onCreate}>
-          <span dangerouslySetInnerHTML={iconHtml(icons, "plus")}></span> Crear respaldo
-        </button>
-      </div>
+      {createButton}
+      {countBadge}
 
       {ordered.length === 0 ? (
         <div className="empty-state">
@@ -56,29 +108,37 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onRestore, o
         </div>
       ) : (
         <div>
-          {ordered.map((snap) => {
-            const date = formatSnapshotDate(snap.createdAt || snap.date);
-
-            return (
-              <div className="snapshot-item" key={snap.id}>
-                <div className="meta">
-                  <div className="id">Respaldo #{snap.id}</div>
-                  <div className="desc">{snap.description || "Sin descripcion"}</div>
-                  <div className="date">
-                    {date} &mdash; por {snap.author || "Desconocido"}
-                  </div>
-                </div>
-                <div className="actions flex gap-sm">
-                  <button className="btn btn-ghost btn-sm" onClick={() => onRestore(snap.id)}>
-                    <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> Restaurar
-                  </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => onDelete(snap.id)}>
-                    <span dangerouslySetInnerHTML={iconHtml(icons, "trash")}></span>
-                  </button>
-                </div>
+          {grouped.map((group) => (
+            <section className="snapshot-group" key={group.bucket}>
+              <div className="snapshot-group-header">
+                <span className="snapshot-group-title">{group.label}</span>
+                <span className="snapshot-group-count">{group.items.length}</span>
               </div>
-            );
-          })}
+              {group.items.map((snap) => {
+                const date = formatSnapshotDate(snap.createdAt || snap.date);
+
+                return (
+                  <div className="snapshot-item" key={snap.id}>
+                    <div className="meta">
+                      <div className="id">Respaldo #{snap.id}</div>
+                      <div className="desc">{snap.description || "Sin descripcion"}</div>
+                      <div className="date">
+                        {date} &mdash; por {snap.author || "Desconocido"}
+                      </div>
+                    </div>
+                    <div className="actions flex gap-sm">
+                      <button className="btn btn-ghost btn-sm" onClick={() => onRestore(snap.id)}>
+                        <span dangerouslySetInnerHTML={iconHtml(icons, "refresh")}></span> Restaurar
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => onDelete(snap.id)}>
+                        <span dangerouslySetInnerHTML={iconHtml(icons, "trash")}></span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
+          ))}
         </div>
       )}
     </>
