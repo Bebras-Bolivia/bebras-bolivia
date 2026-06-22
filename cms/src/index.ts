@@ -253,12 +253,20 @@ const uiDistDir = resolve(import.meta.dir, "..", "ui-dist");
 const publicAssetsDir = resolve(import.meta.dir, "..", "public");
 const uiIndexFile = resolve(uiDistDir, "index.html");
 const uiLoginFile = resolve(uiDistDir, "login", "index.html");
+const cmsUiStaticOptions = {
+  etag: false,
+  maxAge: 0,
+  setHeaders(res: express.Response) {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+  },
+};
 
 function hasUiBuild(): boolean {
   return existsSync(uiIndexFile);
 }
 
 app.get("/login.html", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   if (hasUiBuild() && existsSync(uiLoginFile)) {
     res.sendFile(uiLoginFile);
     return;
@@ -267,6 +275,7 @@ app.get("/login.html", (_req, res) => {
 });
 
 app.get("/login", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   if (hasUiBuild() && existsSync(uiLoginFile)) {
     res.sendFile(uiLoginFile);
     return;
@@ -274,11 +283,12 @@ app.get("/login", (_req, res) => {
   res.sendFile(resolve(publicAssetsDir, "login.html"));
 });
 
-app.use(express.static(uiDistDir));
-app.use(express.static(publicAssetsDir));
+app.use(express.static(uiDistDir, cmsUiStaticOptions));
+app.use(express.static(publicAssetsDir, cmsUiStaticOptions));
 
 // SPA fallback — serve index.html for all non-API, non-preview, non-asset routes
 app.get(/^\/(?!api\/|preview-site\/|_astro\/|@vite\/|@fs\/|node_modules\/|images\/|favicon\.svg).*/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   if (hasUiBuild()) {
     res.sendFile(uiIndexFile);
     return;
