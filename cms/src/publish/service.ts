@@ -1,4 +1,4 @@
-import { readdir, cp, mkdir, readFile, writeFile, stat } from "fs/promises";
+import { readdir, cp, mkdir, readFile, writeFile, stat, lstat, rename, rm, symlink } from "fs/promises";
 import { existsSync } from "fs";
 import { join, resolve as resolvePath } from "path";
 import { execFile } from "child_process";
@@ -14,6 +14,41 @@ import { copyUtf8TextFile } from "../lib/utf8-files.js";
 let isPublishing = false;
 const scheduledTimers = new Map<number, ReturnType<typeof setTimeout>>();
 const MAX_TIMEOUT_MS = 2_147_483_647;
+let autoPublishTimer: ReturnType<typeof setTimeout> | null = null;
+let autoPublishPending = false;
+let autoPublishAuthor = "CMS auto-publish";
+const AUTO_PUBLISH_DELAY_MS = 2_000;
+
+/**
+ * Debounce CMS writes into a single background publish. If a manual publish is
+ * already running, keep retrying until the newest saved state is deployed.
+ */
+export function queueAutoPublish(author = "CMS auto-publish"): void {
+  autoPublishPending = true;
+  autoPublishAuthor = author;
+  if (autoPublishTimer) clearTimeout(autoPublishTimer);
+
+  autoPublishTimer = setTimeout(async function runQueuedPublish() {
+    autoPublishTimer = null;
+    if (isPublishing) {
+      autoPublishTimer = setTimeout(runQueuedPublish, 1_000);
+      return;
+    }
+
+    autoPublishPending = false;
+    try {
+      console.log(`[Auto-publish] Publishing saved CMS changes for ${autoPublishAuthor}...`);
+      await publish(autoPublishAuthor);
+      console.log("[Auto-publish] Publish complete.");
+    } catch (err) {
+      console.error("[Auto-publish] Publish failed:", err);
+    } finally {
+      if (autoPublishPending && !autoPublishTimer) {
+        autoPublishTimer = setTimeout(runQueuedPublish, AUTO_PUBLISH_DELAY_MS);
+      }
+    }
+  }, AUTO_PUBLISH_DELAY_MS);
+}
 
 export interface PublishStatus {
   isPublishing: boolean;
@@ -209,14 +244,22 @@ export async function publish(author: string): Promise<PublishLogRow> {
 
     // Step 3: Copy blog MD files to landing/src/content/blog/
     await mkdir(config.landingBlogDir, { recursive: true });
-    const blogFiles = await readdir(config.currentBlogDir);
+    const blogFiles = (await readdir(config.currentBlogDir)).filter((file) => file.endsWith(".md"));
+    const publishedBlogFiles = (await readdir(config.landingBlogDir)).filter((file) => file.endsWith(".md"));
+
+    // Mirror deletions as well as additions/updates. Previously, deleted posts
+    // remained in Astro's source directory and were rebuilt indefinitely.
+    await Promise.all(
+      publishedBlogFiles
+        .filter((file) => !blogFiles.includes(file))
+        .map((file) => rm(join(config.landingBlogDir, file), { force: true }))
+    );
+
     for (const file of blogFiles) {
-      if (file.endsWith(".md")) {
-        await copyUtf8TextFile(
-          join(config.currentBlogDir, file),
-          join(config.landingBlogDir, file)
-        );
-      }
+      await copyUtf8TextFile(
+        join(config.currentBlogDir, file),
+        join(config.landingBlogDir, file)
+      );
     }
 
     // Step 4: Copy media files to landing/public/images/uploads/
@@ -449,8 +492,13 @@ async function copyJsonPreservingDiacritics(sourcePath: string, targetPath: stri
  * which can be too old on production servers.
  * Returns the combined stdout+stderr output.
  */
-function runBuild(): Promise<string> {
-  return new Promise((resolve, reject) => {
+async function runBuild(): Promise<string> {
+  const deploymentsDir = resolvePath(config.landingDir, ".deployments");
+  const releaseName = `release-${Date.now()}`;
+  const releaseDir = resolvePath(deploymentsDir, releaseName);
+  await mkdir(deploymentsDir, { recursive: true });
+
+  const output = await new Promise<string>((resolve, reject) => {
     const isBun = Boolean((process.versions as Record<string, string | undefined>).bun);
     const localAstro = resolvePath(
       config.landingDir,
@@ -468,11 +516,12 @@ function runBuild(): Promise<string> {
       : process.platform === "win32"
         ? "npm.cmd"
         : "npm";
-    const args = canRunAstroDirectly
+    const baseArgs = canRunAstroDirectly
       ? process.platform === "win32" || !isBun
         ? ["build"]
         : [localAstro, "build"]
       : ["run", "build"];
+    const args = [...baseArgs, "--outDir", releaseDir];
 
     // execFile (no shell) avoids command-injection if the cwd or args ever
     // become user-controlled in the future.
@@ -495,6 +544,43 @@ function runBuild(): Promise<string> {
       }
     );
   });
+
+  await activateRelease(releaseName);
+  await cleanupOldReleases(releaseName);
+  return output;
+}
+
+/** Switch Apache to a completed release without exposing a half-built dist/. */
+async function activateRelease(releaseName: string): Promise<void> {
+  const distPath = resolvePath(config.landingDir, "dist");
+  const nextLink = resolvePath(config.landingDir, `.dist-next-${process.pid}`);
+  await rm(nextLink, { force: true, recursive: true });
+  await symlink(`.deployments/${releaseName}`, nextLink, "dir");
+
+  try {
+    const current = await lstat(distPath);
+    if (!current.isSymbolicLink()) {
+      // One-time migration from the old in-place directory layout.
+      await rename(distPath, resolvePath(config.landingDir, ".deployments", `legacy-${Date.now()}`));
+    }
+  } catch {
+    // First deployment; there is no previous dist path.
+  }
+
+  // POSIX rename replaces the old symlink atomically.
+  await rename(nextLink, distPath);
+}
+
+async function cleanupOldReleases(activeRelease: string): Promise<void> {
+  const deploymentsDir = resolvePath(config.landingDir, ".deployments");
+  const entries = (await readdir(deploymentsDir))
+    .filter((name) => name !== activeRelease)
+    .sort()
+    .reverse();
+
+  await Promise.all(
+    entries.slice(2).map((name) => rm(resolvePath(deploymentsDir, name), { recursive: true, force: true }))
+  );
 }
 
 export class PublishError extends Error {

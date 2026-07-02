@@ -8,6 +8,7 @@ import {
   BlogError,
 } from "./service.js";
 import { syncContentToLanding, isDevServerRunning } from "../preview/service.js";
+import { queueAutoPublish } from "../publish/service.js";
 
 export const blogRouter = Router();
 
@@ -76,6 +77,7 @@ blogRouter.post("/", async (req: Request, res: Response) => {
     const post = await createPost(slug, frontmatter, body);
     await syncBlogIfDevRunning();
     res.status(201).json(post);
+    queueAutoPublish((req as Request & { user?: { name?: string } }).user?.name ?? "CMS auto-publish");
   } catch (err) {
     if (err instanceof BlogError) {
       res.status(err.status).json({ error: err.message });
@@ -104,6 +106,7 @@ blogRouter.put("/:slug", async (req: Request, res: Response) => {
     const post = await updatePost(slug, frontmatter, body);
     await syncBlogIfDevRunning();
     res.json(post);
+    queueAutoPublish((req as Request & { user?: { name?: string } }).user?.name ?? "CMS auto-publish");
   } catch (err) {
     if (err instanceof BlogError) {
       res.status(err.status).json({ error: err.message });
@@ -124,6 +127,7 @@ blogRouter.delete("/:slug", async (req: Request, res: Response) => {
     await deletePost(slug);
     await syncBlogIfDevRunning();
     res.json({ ok: true });
+    queueAutoPublish((req as Request & { user?: { name?: string } }).user?.name ?? "CMS auto-publish");
   } catch (err) {
     if (err instanceof BlogError) {
       res.status(err.status).json({ error: err.message });

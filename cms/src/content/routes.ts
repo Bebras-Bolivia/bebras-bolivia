@@ -7,6 +7,7 @@ import {
   ContentValidationError,
 } from "./service.js";
 import { syncFileToLanding } from "../preview/service.js";
+import { queueAutoPublish } from "../publish/service.js";
 
 export const contentRouter = Router();
 
@@ -53,7 +54,9 @@ contentRouter.put("/:filename", async (req: Request, res: Response) => {
       // Don't fail the save — content was already written to CMS.
     }
 
-    res.json(result);
+    res.json({ ...result, autoPublishQueued: true });
+    const author = (req as Request & { user?: { name?: string } }).user?.name ?? "CMS auto-publish";
+    queueAutoPublish(author);
   } catch (err) {
     if (err instanceof ContentValidationError) {
       res.status(err.status).json({ error: err.message, details: err.details });

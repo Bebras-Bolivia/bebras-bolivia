@@ -1,5 +1,8 @@
 # build output
 dist/
+# Production uses an atomic symlink named dist and versioned release folders.
+/dist
+/.deployments/
 .agents/
 # generated types
 .astro/
