@@ -1,0 +1,42 @@
+{
+  "sectionTag": "Niveles",
+  "heading": "Categorías por edad",
+  "subtitle": "Cinco niveles diseñados para desafiar a cada grupo de edad.",
+  "categories": [
+    {
+      "name": "Guacamayo",
+      "age": "5-8 años",
+      "emoji": "🦜",
+      "color": "red",
+      "desc": "Primeros pasos en el pensamiento lógico."
+    },
+    {
+      "name": "Capibara",
+      "age": "8-10 años",
+      "emoji": "🦫",
+      "color": "yellow",
+      "desc": "Descubriendo patrones y secuencias."
+    },
+    {
+      "name": "Titi",
+      "age": "10-12 años",
+      "emoji": "🐒",
+      "color": "green",
+      "desc": "Resolviendo problemas con creatividad."
+    },
+    {
+      "name": "Jucumari",
+      "age": "12-14 años",
+      "emoji": "🐻",
+      "color": "blue",
+      "desc": "Algoritmos y pensamiento estructurado."
+    },
+    {
+      "name": "Yaguarete",
+      "age": "14-18 años",
+      "emoji": "🐆",
+      "color": "blue",
+      "desc": "Desafíos avanzados de informática."
+    }
+  ]
+}

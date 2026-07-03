@@ -1,0 +1,44 @@
+{
+  "header": {
+    "tag": "Aliados",
+    "heading": "Nuestros patrocinadores",
+    "subtitle": "Bebras Bolivia es posible gracias al apoyo de instituciones comprometidas con la educación."
+  },
+  "components": [
+    {
+      "type": "organizerInstitution",
+      "accent": "blue",
+      "tag": "Institución organizadora",
+      "name": "Olimpiada Boliviana de Informática",
+      "acronym": "OBI",
+      "location": "Bolivia",
+      "role": "Institución organizadora del Desafío Bebras Bolivia",
+      "description": "Coordina la organización del desafío y articula iniciativas de pensamiento computacional e informática competitiva en Bolivia.",
+      "image": "/images/sponsors/obi-logo.png",
+      "linkLabel": "Facebook OBI",
+      "linkHref": "https://www.facebook.com/olimpiadabolivianadeinformatica/"
+    },
+    {
+      "type": "organizerInstitution",
+      "accent": "green",
+      "tag": "Institución aliada",
+      "name": "Universidad Mayor de San Simón",
+      "acronym": "UMSS",
+      "location": "Cochabamba, Bolivia",
+      "role": "Institución aliada del Desafío Bebras Bolivia",
+      "description": "Acompaña el desarrollo local del desafío y aporta apoyo institucional para su realización en Bolivia.",
+      "image": "/images/sponsors/marcaHorizontal_umss.png",
+      "linkLabel": "umss.edu.bo",
+      "linkHref": "https://www.umss.edu.bo"
+    },
+    {
+      "type": "cta",
+      "accent": "red",
+      "tag": "Colabora",
+      "heading": "¿Te interesa patrocinar Bebras Bolivia?",
+      "text": "Únete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",
+      "buttonLabel": "Contáctanos",
+      "buttonHref": "/contacto"
+    }
+  ]
+}

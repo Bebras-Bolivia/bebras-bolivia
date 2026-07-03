@@ -1,0 +1,92 @@
+{
+  "header": {
+    "tag": "Comunícate",
+    "heading": "Contacto",
+    "subtitle": "¿Tienes preguntas? Estamos aquí para ayudarte."
+  },
+  "components": [
+    {
+      "type": "contactClassic",
+      "cardPalette": [
+        "red",
+        "yellow",
+        "green"
+      ],
+      "info": {
+        "tag": "Información",
+        "heading": "Información de contacto",
+        "cards": [
+          {
+            "icon": "email",
+            "title": "Email",
+            "description": "Escríbenos para cualquier consulta.",
+            "linkLabel": "info@bebras.bo",
+            "linkHref": "mailto:info@bebras.bo"
+          },
+          {
+            "icon": "clipboard",
+            "title": "Registro",
+            "description": "Inscribe a tu escuela en el desafío.",
+            "linkLabel": "Inscribirse al desafío →",
+            "linkHref": "/registro"
+          },
+          {
+            "icon": "share",
+            "title": "Redes sociales",
+            "description": "Síguenos para novedades.",
+            "socialLinks": [
+              {
+                "label": "Facebook",
+                "href": "https://facebook.com/bebrasbolivia"
+              },
+              {
+                "label": "Instagram",
+                "href": "https://instagram.com/bebrasbolivia"
+              }
+            ]
+          }
+        ]
+      },
+      "international": {
+        "tag": "Comunidad internacional",
+        "links": [
+          {
+            "label": "Bebras Internacional →",
+            "href": "https://www.bebras.org/",
+            "description": "Sitio oficial de la iniciativa mundial Bebras."
+          }
+        ]
+      },
+      "form": {
+        "tag": "Formulario",
+        "heading": "Envíanos un mensaje",
+        "fields": {
+          "name": {
+            "label": "Nombre completo",
+            "placeholder": "Tu nombre"
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "tu@email.com"
+          },
+          "role": {
+            "label": "Rol",
+            "placeholder": "Seleccionar...",
+            "options": [
+              "Estudiante",
+              "Maestro / Coordinador",
+              "Institución",
+              "Otro"
+            ]
+          },
+          "message": {
+            "label": "Mensaje",
+            "placeholder": "Escribe tu mensaje..."
+          }
+        },
+        "submitLabel": "Enviar mensaje",
+        "disclaimer": "Este formulario es una vista previa. La funcionalidad de envío se habilitará próximamente."
+      }
+    }
+  ]
+}

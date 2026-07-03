@@ -80,25 +80,26 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
 
     const ctx = gsap.context(() => {
       const desktopQuery = window.matchMedia("(min-width: 1024px)");
-      const showAnim = gsap
-        .from(headerShell, {
-          yPercent: -140,
-          paused: true,
-          duration: 0.24,
-          ease: "power2.out",
-        })
-        .progress(1);
 
+      // `hidden` is the single source of truth for whether the header is out of
+      // view. Instead of play()/reverse()/pause() on one tween (whose internal
+      // direction can get stuck after a reverse), we always animate to an
+      // explicit yPercent target. Duplicate calls short-circuit via `hidden`.
+      let hidden = false;
       let lastScroll = ScrollTrigger.maxScroll(window) ? window.scrollY : 0;
 
-      // Snap the header to fully visible. `.progress(1)` alone is not enough:
-      // after a `reverse()` the tween stays unpaused in the reverse direction,
-      // so moving the playhead would make GSAP resume playing backwards and
-      // slide the header away again on its own. Pausing stops that; the next
-      // play()/reverse() unpauses as usual.
-      const showInstantly = () => {
-        showAnim.progress(1).pause();
+      const setHidden = (next: boolean, instant = false) => {
+        if (next === hidden && !instant) return;
+        hidden = next;
+        gsap.to(headerShell, {
+          yPercent: next ? -140 : 0,
+          duration: instant ? 0 : 0.24,
+          ease: "power2.out",
+          overwrite: "auto",
+        });
       };
+
+      const showInstantly = () => setHidden(false, true);
 
       ScrollTrigger.create({
         start: "top top",
@@ -109,7 +110,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           // On mobile, or near the top of the page, always keep it visible.
           if (!desktopQuery.matches || scroll < 12) {
             lastScroll = scroll;
-            showInstantly();
+            setHidden(false);
             return;
           }
 
@@ -121,9 +122,9 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           lastScroll = scroll;
 
           if (delta < -1) {
-            showAnim.play(); // scrolling up -> show
+            setHidden(false); // scrolling up -> show
           } else if (delta > 1) {
-            showAnim.reverse(); // scrolling down -> hide
+            setHidden(true); // scrolling down -> hide
           }
         },
       });
