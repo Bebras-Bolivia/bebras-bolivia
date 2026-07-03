@@ -66,12 +66,14 @@ const socialColorMap: Record<string, string> = {
       )}
 
       <div class="flex gap-2">
-        {socialLinks.map((link) => (
+        {socialLinks.map((link) => {
+          const isMailto = link.href.startsWith("mailto:");
+          return (
           <a
             href={link.href}
             aria-label={link.label}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isMailto ? undefined : "_blank"}
+            rel={isMailto ? undefined : "noopener noreferrer"}
             class:list={[
               "inline-flex items-center justify-center size-10 rounded-2xl hover:-translate-y-0.5 hover:shadow-md transition-all duration-200",
               socialColorMap[link.icon] ?? "bg-bebras-green text-white",
@@ -90,7 +92,8 @@ const socialColorMap: Record<string, string> = {
               set:html={socialIconMap[link.icon] ?? socialIconMap.email}
             />
           </a>
-        ))}
+          );
+        })}
       </div>
     </div>
   </div>
