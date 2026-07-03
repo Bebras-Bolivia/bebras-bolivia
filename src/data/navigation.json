@@ -35,30 +35,25 @@
   },
   "socialLinks": [
     {
+      "label": "Facebook",
+      "href": "https://www.facebook.com/share/p/1T5ZS2sPb7/",
+      "icon": "facebook"
+    },
+    {
       "label": "Instagram",
-      "href": "https://instagram.com/bebrasbolivia",
+      "href": "https://www.instagram.com/bebrasbolivia?igsh=MXV6cTE5aHpwb3hveg==",
       "icon": "instagram"
     },
     {
       "label": "Email",
-      "href": "mailto:info@bebras.bo",
+      "href": "mailto:bebrasbolivia@gmail.com",
       "icon": "email"
     },
     {
-      "label": "Facebook",
-      "href": "https://facebook.com/bebrasbolivia",
-      "icon": "facebook"
-    },
-    {
       "label": "TikTok",
-      "href": "https://tiktok.com/@bebrasbolivia",
+      "href": "https://www.tiktok.com/@bebras.bolivia?_r=1&_t=ZS-97gYZ7vvJjw",
       "icon": "tiktok"
     }
   ],
-  "internationalLinks": [],
-  "footer": {
-    "copyrightText": "Bebras Bolivia. Todos los derechos reservados.",
-    "trademarkNote": "Bebras es una iniciativa internacional",
-    "trademarkUrl": "https://www.bebras.org"
-  }
+  "internationalLinks": []
 }

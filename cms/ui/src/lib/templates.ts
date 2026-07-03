@@ -365,6 +365,9 @@ export function createEmptyArrayItem(
   // Link-shaped arrays used across contact.international.links, etc.
   // Schemas: `contact.international.links` → adds a `description` field
   if (normalizedPath.endsWith("socialLinks")) {
+    if (currentFile === "navigation.json") {
+      return { label: "", href: "", icon: "facebook" };
+    }
     return { label: "", href: "" };
   }
 
