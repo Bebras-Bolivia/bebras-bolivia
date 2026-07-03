@@ -523,6 +523,44 @@ export const pageCompositionSchema = z.object({
   }),
 });
 
+// ── 13. navigation.json (pie de página + navegación) ─────
+
+const SocialIconSchema = z.enum([
+  "facebook",
+  "instagram",
+  "tiktok",
+  "youtube",
+  "twitter",
+  "email",
+]);
+
+export const navigationSchema = z.object({
+  links: z.array(LinkSchema),
+  cta: LinkSchema.optional(),
+  socialLinks: z.array(
+    z.object({
+      label: z.string(),
+      href: z.string(),
+      icon: SocialIconSchema,
+    })
+  ),
+  internationalLinks: z
+    .array(
+      z.object({
+        label: z.string(),
+        href: z.string(),
+      })
+    )
+    .default([]),
+  footer: z
+    .object({
+      copyrightText: z.string(),
+      trademarkNote: z.string(),
+      trademarkUrl: z.string(),
+    })
+    .optional(),
+});
+
 // ── Schema registry (filename → schema) ──────────────────
 
 export const contentSchemas: Record<string, z.ZodType> = {
@@ -538,6 +576,7 @@ export const contentSchemas: Record<string, z.ZodType> = {
   "docentes.json": docentesSchema,
   "blog-ui.json": blogUiSchema,
   "page-composition.json": pageCompositionSchema,
+  "navigation.json": navigationSchema,
 };
 
 /** All valid content file names */

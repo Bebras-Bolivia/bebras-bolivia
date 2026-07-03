@@ -20,6 +20,7 @@ export const fileToPage: Record<string, string> = {
   "docentes.json": "/maestros/",
   "blog-ui.json": "/blog/",
   "page-composition.json": "/estudiantes/",
+  "navigation.json": "/",
 };
 
 // ── Field hints ──────────────────────────────────────────

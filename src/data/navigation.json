@@ -48,7 +48,17 @@
       "label": "Facebook",
       "href": "https://facebook.com/bebrasbolivia",
       "icon": "facebook"
+    },
+    {
+      "label": "TikTok",
+      "href": "https://tiktok.com/@bebrasbolivia",
+      "icon": "tiktok"
     }
   ],
-  "internationalLinks": []
+  "internationalLinks": [],
+  "footer": {
+    "copyrightText": "Bebras Bolivia. Todos los derechos reservados.",
+    "trademarkNote": "Bebras es una iniciativa internacional",
+    "trademarkUrl": "https://www.bebras.org"
+  }
 }

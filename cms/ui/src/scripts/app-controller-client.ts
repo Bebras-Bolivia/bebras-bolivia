@@ -12,6 +12,7 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
   "blog-ui.json": { label: "Textos de la página", desc: "Textos de la interfaz de noticias", icon: "file-text" },
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
+  "navigation.json": { label: "Pie de página", desc: "Redes sociales, enlaces y textos legales del pie", icon: "link" },
 };
 
 const hiddenContentFiles = new Set([
@@ -30,6 +31,7 @@ const contentHierarchy = [
   { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
+  { label: "Pie de página", parent: "navigation.json", children: [] },
 ];
 
 function contentFileFromRoute(value: string) {

@@ -257,6 +257,15 @@
     color: #fff;
   }
 
+  .brand-card .copy-email-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .brand-card .copy-email-btn:hover {
+    background: rgba(255, 255, 255, 0.36);
+  }
+
   .brand-card-red { background-color: var(--color-bebras-red); }
   .brand-card-yellow { background-color: var(--color-bebras-yellow); }
   .brand-card-green { background-color: var(--color-bebras-green); }
@@ -269,6 +278,13 @@
   .brand-card-gray .brand-card-icon {
     background: rgba(17, 0, 0, 0.08);
     color: var(--color-bebras-ink);
+  }
+  .brand-card-gray .copy-email-btn {
+    background: rgba(17, 0, 0, 0.08);
+    color: var(--color-bebras-ink);
+  }
+  .brand-card-gray .copy-email-btn:hover {
+    background: rgba(17, 0, 0, 0.16);
   }
   /* Legacy alias — pre-migration JSONs may still use blueDark */
   .brand-card-blueDark { background-color: var(--color-bebras-blue-dark); }

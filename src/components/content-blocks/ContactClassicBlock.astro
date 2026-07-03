@@ -53,6 +53,28 @@ const contactIconMap = {
   share: Share2,
 };
 
+// Normaliza el enlace de una tarjeta: si el href parece un correo pero le
+// falta el prefijo "mailto:", lo agrega para que abra el cliente de correo.
+// Evita que un enlace de email quede roto si en el CMS solo escriben la
+// dirección (o borran el "mailto:").
+function normalizeContactHref(href?: string): string | undefined {
+  if (!href) return href;
+  const value = href.trim();
+  // Si ya trae un esquema (mailto:, http:, tel:, ruta /...), déjalo tal cual.
+  if (/^([a-z][a-z0-9+.-]*:|\/|#)/i.test(value)) return value;
+  const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  return looksLikeEmail ? `mailto:${value}` : value;
+}
+
+// Extrae la dirección de correo de un href si corresponde (para el botón
+// "Copiar"). Un enlace mailto: no siempre abre cliente de correo, así que
+// ofrecemos copiar el correo como alternativa que funciona siempre.
+function extractEmail(href?: string): string | null {
+  const normalized = normalizeContactHref(href);
+  if (!normalized) return null;
+  const match = normalized.match(/^mailto:([^?]+)/i);
+  return match ? decodeURIComponent(match[1]) : null;
+}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -75,9 +97,25 @@ const contactIconMap = {
                 <div>
                   <p class="brand-card-muted text-sm uppercase tracking-[0.15em] font-bold mb-2">{card.title}</p>
                   <p class="brand-card-muted text-base leading-relaxed mb-2">{card.description}</p>
-                  {card.linkHref && card.linkLabel && (
-                    <a href={card.linkHref} class="text-lg font-bold tracking-tight hover:underline">{card.linkLabel}</a>
-                  )}
+                  {card.linkHref && card.linkLabel && (() => {
+                    const email = extractEmail(card.linkHref);
+                    return (
+                      <div class="flex flex-wrap items-center gap-3">
+                        <a href={normalizeContactHref(card.linkHref)} class="text-lg font-bold tracking-tight hover:underline">{card.linkLabel}</a>
+                        {email && (
+                          <button
+                            type="button"
+                            class="copy-email-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-[0.1em] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                            data-email={email}
+                            aria-label={`Copiar correo ${email}`}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <span class="copy-email-label">Copiar</span>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {card.socialLinks && (
                     <div class="flex gap-4 mt-2">
                       {card.socialLinks.map((social, idx) => (
@@ -149,3 +187,46 @@ const contactIconMap = {
     </div>
   </div>
 </section>
+
+<script>
+  function initCopyEmailButtons() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(".copy-email-btn");
+    buttons.forEach((btn) => {
+      if (btn.dataset.copyBound === "true") return;
+      btn.dataset.copyBound = "true";
+
+      btn.addEventListener("click", async () => {
+        const email = btn.dataset.email;
+        if (!email) return;
+        const labelEl = btn.querySelector<HTMLElement>(".copy-email-label");
+        const original = labelEl?.textContent ?? "Copiar";
+
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(email);
+          } else {
+            const ta = document.createElement("textarea");
+            ta.value = email;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+          }
+          if (labelEl) labelEl.textContent = "¡Copiado!";
+        } catch {
+          if (labelEl) labelEl.textContent = "Error";
+        }
+
+        window.setTimeout(() => {
+          if (labelEl) labelEl.textContent = original;
+        }, 1800);
+      });
+    });
+  }
+
+  initCopyEmailButtons();
+  // Re-enlazar tras la navegación cliente de Astro.
+  document.addEventListener("astro:page-load", initCopyEmailButtons);
+</script>

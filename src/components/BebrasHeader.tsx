@@ -87,24 +87,32 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
         })
         .progress(1);
 
+      let lastScroll = ScrollTrigger.maxScroll(window) ? window.scrollY : 0;
+
       ScrollTrigger.create({
         start: "top top",
         end: "max",
         onUpdate: (self) => {
-          if (!desktopQuery.matches) {
+          const scroll = self.scroll();
+
+          // On mobile, or near the top of the page, always keep it visible.
+          if (!desktopQuery.matches || scroll < 12) {
+            lastScroll = scroll;
             showAnim.progress(1);
             return;
           }
 
-          if (self.scroll() < 12) {
-            showAnim.progress(1);
-            return;
-          }
+          // Only react to a real change in scroll position, comparing against
+          // our own last value instead of self.direction, which can be stale
+          // (e.g. right after a navigation / ScrollTrigger refresh) and hide
+          // the header without the user having scrolled.
+          const delta = scroll - lastScroll;
+          lastScroll = scroll;
 
-          if (self.direction === -1) {
-            showAnim.play();
-          } else {
-            showAnim.reverse();
+          if (delta < -1) {
+            showAnim.play(); // scrolling up -> show
+          } else if (delta > 1) {
+            showAnim.reverse(); // scrolling down -> hide
           }
         },
       });
