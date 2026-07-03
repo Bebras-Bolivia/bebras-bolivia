@@ -1,6 +1,7 @@
 ---
 import { ClipboardList, Mail, Share2 } from "lucide-react";
 import { getBrandCardClass } from "@/lib/brand-styles";
+import siteData from "@/data/site.json";
 
 interface SocialLink {
   label: string;
@@ -75,6 +76,12 @@ function extractEmail(href?: string): string | null {
   const match = normalized.match(/^mailto:([^?]+)/i);
   return match ? decodeURIComponent(match[1]) : null;
 }
+
+// Correo destino del formulario: el de la primera tarjeta con email
+// (editable desde el CMS), o el correo general del sitio como respaldo.
+const formEmail =
+  data.info.cards.map((card) => extractEmail(card.linkHref)).find(Boolean) ??
+  siteData.email;
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -154,7 +161,7 @@ function extractEmail(href?: string): string | null {
         <div class="editorial-callout px-6 py-6 lg:px-8 lg:py-8 h-full">
           <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{data.form.tag}</p>
           <h2 class="text-3xl font-bold text-foreground mb-8 tracking-tight">{data.form.heading}</h2>
-          <form class="space-y-4" onsubmit="return false;">
+          <form class="space-y-4" data-mailto={formEmail}>
             <div>
               <label for="name" class="block text-xs uppercase tracking-[0.15em] font-bold text-muted-foreground mb-3">{data.form.fields.name.label}</label>
               <input type="text" id="name" name="name" placeholder={data.form.fields.name.placeholder} class="w-full rounded-2xl border border-border bg-white px-5 py-4 text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-medium" />
@@ -189,6 +196,8 @@ function extractEmail(href?: string): string | null {
 </section>
 
 <script>
+  import "@/scripts/contact-mailto";
+
   function initCopyEmailButtons() {
     const buttons = document.querySelectorAll<HTMLButtonElement>(".copy-email-btn");
     buttons.forEach((btn) => {

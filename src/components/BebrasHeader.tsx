@@ -76,6 +76,8 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
 
     gsap.registerPlugin(ScrollTrigger);
 
+    let onAfterSwap: (() => void) | null = null;
+
     const ctx = gsap.context(() => {
       const desktopQuery = window.matchMedia("(min-width: 1024px)");
       const showAnim = gsap
@@ -89,6 +91,15 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
 
       let lastScroll = ScrollTrigger.maxScroll(window) ? window.scrollY : 0;
 
+      // Snap the header to fully visible. `.progress(1)` alone is not enough:
+      // after a `reverse()` the tween stays unpaused in the reverse direction,
+      // so moving the playhead would make GSAP resume playing backwards and
+      // slide the header away again on its own. Pausing stops that; the next
+      // play()/reverse() unpauses as usual.
+      const showInstantly = () => {
+        showAnim.progress(1).pause();
+      };
+
       ScrollTrigger.create({
         start: "top top",
         end: "max",
@@ -98,7 +109,7 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           // On mobile, or near the top of the page, always keep it visible.
           if (!desktopQuery.matches || scroll < 12) {
             lastScroll = scroll;
-            showAnim.progress(1);
+            showInstantly();
             return;
           }
 
@@ -116,9 +127,22 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
           }
         },
       });
+
+      // The header persists across Astro client-side navigations
+      // (transition:persist), so if it was hidden on the previous page it
+      // stays hidden on the new one: the ClientRouter scroll reset doesn't
+      // reach the ScrollTrigger update. Force it visible after each swap.
+      onAfterSwap = () => {
+        lastScroll = window.scrollY;
+        showInstantly();
+      };
+      document.addEventListener("astro:after-swap", onAfterSwap);
     }, headerShell);
 
-    return () => ctx.revert();
+    return () => {
+      if (onAfterSwap) document.removeEventListener("astro:after-swap", onAfterSwap);
+      ctx.revert();
+    };
   }, []);
 
   const isActive = (href: string) => {
