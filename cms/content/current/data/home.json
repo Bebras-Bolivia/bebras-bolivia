@@ -55,14 +55,6 @@
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg"
         },
         {
-          "name": "Yaguarete",
-          "range": "14 a 18 años",
-          "color": "blue",
-          "imageKey": "yaguarete",
-          "author": "MauMirror",
-          "authorUrl": "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg"
-        },
-        {
           "name": "Jucumari",
           "range": "12 a 14 años",
           "color": "blue",
@@ -71,8 +63,16 @@
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg"
         },
         {
+          "name": "Yaguarete",
+          "range": "14 a 16 años",
+          "color": "blue",
+          "imageKey": "yaguarete",
+          "author": "MauMirror",
+          "authorUrl": "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg"
+        },
+        {
           "name": "Kuntur",
-          "range": "14 a 18 años",
+          "range": "17 a 18 años",
           "color": "gray",
           "imageKey": "kuntur",
           "imageUrl": "https://bolivia.wcs.org/Portals/14/IMG_8210.jpg",
