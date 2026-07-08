@@ -119,6 +119,7 @@ async function listTrackedFiles(patterns: string[]): Promise<string[]> {
 
 async function restoreCmsMirrorFiles(): Promise<void> {
   const mirrorFiles = await listTrackedFiles([
+    "cms/content/current/data/*.json",
     "src/data/*.json",
     "src/content/blog/*.md",
     "public/images/uploads/*",
@@ -266,10 +267,12 @@ async function ensureCleanTrackedFiles(): Promise<void> {
 
 async function deployLatest(): Promise<void> {
   await ensureExpectedBranch();
-  // Restore CMS-generated mirror files (src/data/*.json, blog, uploads) to HEAD
-  // first: the CMS rewrites them on every publish, so they are expected to be
-  // dirty. Cleaning them before the guard prevents a normal publish from
-  // blocking the auto-deploy, while still catching genuinely unexpected changes.
+  // Restore CMS-managed content files (cms/content/current/data/*.json,
+  // src/data/*.json, blog, uploads) to HEAD first: the CMS rewrites them on
+  // every save/publish, so they are expected to be dirty. Cleaning them before
+  // the guard prevents a normal publish from blocking the auto-deploy, while
+  // still catching genuinely unexpected changes. On an external-push deploy this
+  // also makes the incoming committed content authoritative (coordination).
   await restoreCmsMirrorFiles();
   await ensureCleanTrackedFiles();
   await runCommand("git", ["fetch", "origin", branch], repoDir);
