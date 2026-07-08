@@ -1,7 +1,5 @@
 {
   "header": {
-    "pageTitle": "Contacto",
-    "pageDescription": "Contáctanos para más información sobre el Desafío Bebras Bolivia.",
     "tag": "Comunícate",
     "heading": "Contacto",
     "subtitle": "¿Tienes preguntas? Estamos aquí para ayudarte."
@@ -9,6 +7,11 @@
   "components": [
     {
       "type": "contactClassic",
+      "cardPalette": [
+        "red",
+        "yellow",
+        "green"
+      ],
       "info": {
         "tag": "Información",
         "heading": "Información de contacto",
@@ -17,8 +20,8 @@
             "icon": "email",
             "title": "Email",
             "description": "Escríbenos para cualquier consulta.",
-            "linkLabel": "bebrasbolivia@gmail.com",
-            "linkHref": "mailto:bebrasbolivia@gmail.com"
+            "linkLabel": "info@bebras.bo",
+            "linkHref": "mailto:info@bebras.bo"
           },
           {
             "icon": "clipboard",
@@ -34,15 +37,15 @@
             "socialLinks": [
               {
                 "label": "Facebook",
-                "href": "https://www.facebook.com/share/p/1T5ZS2sPb7/"
+                "href": "https://facebook.com/bebrasbolivia"
               },
               {
                 "label": "Instagram",
-                "href": "https://www.instagram.com/bebrasbolivia?igsh=MXV6cTE5aHpwb3hveg=="
+                "href": "https://instagram.com/bebrasbolivia"
               },
               {
                 "label": "TikTok",
-                "href": "https://www.tiktok.com/@bebras.bolivia?_r=1&_t=ZS-97gYZ7vvJjw"
+                "href": "https://tiktok.com/@bebrasbolivia"
               }
             ]
           }
@@ -86,7 +89,7 @@
           }
         },
         "submitLabel": "Enviar mensaje",
-        "disclaimer": "Este formulario es una vista previa. La funcionalidad de envío se habilitará próximamente."
+        "disclaimer": "Al enviar se abrirá tu aplicación de correo con el mensaje listo para enviar."
       }
     }
   ]

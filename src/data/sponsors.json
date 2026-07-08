@@ -1,7 +1,5 @@
 {
   "header": {
-    "pageTitle": "Patrocinadores",
-    "pageDescription": "Patrocinadores y organizaciones que apoyan el Desafío Bebras Bolivia.",
     "tag": "Aliados",
     "heading": "Nuestros patrocinadores",
     "subtitle": "Bebras Bolivia es posible gracias al apoyo de instituciones comprometidas con la educación."
@@ -9,6 +7,7 @@
   "components": [
     {
       "type": "organizerInstitution",
+      "accent": "blue",
       "tag": "Institución organizadora",
       "name": "Olimpiada Boliviana de Informática",
       "acronym": "OBI",
@@ -21,6 +20,7 @@
     },
     {
       "type": "organizerInstitution",
+      "accent": "green",
       "tag": "Institución aliada",
       "name": "Universidad Mayor de San Simón",
       "acronym": "UMSS",
@@ -33,6 +33,7 @@
     },
     {
       "type": "cta",
+      "accent": "red",
       "tag": "Colabora",
       "heading": "¿Te interesa patrocinar Bebras Bolivia?",
       "text": "Únete a las organizaciones que apoyan el desarrollo del pensamiento computacional en Bolivia.",

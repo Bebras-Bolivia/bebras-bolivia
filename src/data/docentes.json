@@ -1,6 +1,4 @@
 {
-  "pageTitle": "Maestros",
-  "pageDescription": "Información para maestros y coordinadores escolares sobre cómo inscribir estudiantes en el Desafío Bebras Bolivia.",
   "header": {
     "tag": "Para maestros",
     "heading": "Información para maestros",
@@ -14,21 +12,26 @@
       "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
       "columns": 3,
       "mediaType": "number",
+      "cardPalette": [
+        "red",
+        "yellow",
+        "green"
+      ],
       "items": [
         {
+          "number": "1",
           "title": "Registro del coordinador",
-          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela.",
-          "number": "1"
+          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
         },
         {
+          "number": "2",
           "title": "Inscripción de estudiantes",
-          "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Yaguarete.",
-          "number": "2"
+          "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Yaguarete."
         },
         {
+          "number": "3",
           "title": "Día del desafío",
-          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío.",
-          "number": "3"
+          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío."
         }
       ]
     },
@@ -38,32 +41,39 @@
       "heading": "¿Qué necesita la escuela?",
       "columns": 2,
       "mediaType": "icon",
+      "cardPalette": [
+        "blue",
+        "red",
+        "yellow",
+        "green"
+      ],
       "items": [
         {
+          "icon": "monitor",
           "title": "Computadoras con navegador web",
-          "description": "Chrome, Brave, Opera, Firefox, Edge o Safari actualizados.",
-          "icon": "monitor"
+          "description": "Chrome, Firefox, Edge o Safari actualizados."
         },
         {
+          "icon": "wifi",
           "title": "Conexión a internet",
-          "description": "Estable durante los 45 minutos del desafío.",
-          "icon": "wifi"
+          "description": "Estable durante los 45 minutos del desafío."
         },
         {
+          "icon": "user",
           "title": "Un coordinador registrado",
-          "description": "Maestro o representante que supervise la sesión.",
-          "icon": "user"
+          "description": "Maestro o representante que supervise la sesión."
         },
         {
+          "icon": "clock",
           "title": "45 minutos de clase",
-          "description": "Un bloque horario durante la semana del desafío.",
-          "icon": "clock"
+          "description": "Un bloque horario durante la semana del desafío."
         }
       ]
     },
     {
       "type": "sectionRichText",
       "tag": "Alcance",
+      "accent": "blue",
       "heading": "¿Quién debería participar?",
       "paragraphs": [
         "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel académico. El desafío está diseñado para ser accesible y no requiere conocimientos previos de informática o programación.",
@@ -76,6 +86,11 @@
       "sectionTag": "Guía para coordinadores",
       "heading": "Instrucciones para coordinadores",
       "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
+      "cardPalette": [
+        "blue",
+        "red",
+        "yellow"
+      ],
       "tabs": [
         {
           "id": "antes",
@@ -150,6 +165,7 @@
     },
     {
       "type": "cta",
+      "accent": "red",
       "tag": "",
       "heading": "¿Listo para inscribir a tu escuela?",
       "text": "El registro es rápido, gratuito y te permite inscribir a todos los estudiantes que desees.",

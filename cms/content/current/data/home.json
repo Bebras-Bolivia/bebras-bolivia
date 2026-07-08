@@ -1,8 +1,8 @@
 {
   "hero": {
-    "eyebrow": "Edición 2026",
-    "title": "Bebras Bolivia 2026",
-    "subtitlePrimary": "El desafío de pensamiento computacional para estudiantes de todo el país en la segunda semana de Noviembre.",
+    "eyebrow": "Edición 2028",
+    "title": "Bienvenido a Bebras Bolivia",
+    "subtitlePrimary": "El desafío internacional de pensamiento computacional para estudiantes de todo el país.",
     "subtitleSecondary": "Inscribe a tu unidad educativa y participa junto a más de 70 países.",
     "buttonLabel": "Regístrate aquí",
     "buttonHref": "/registro"
@@ -55,6 +55,14 @@
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg"
         },
         {
+          "name": "Yaguarete",
+          "range": "14 a 18 años",
+          "color": "blue",
+          "imageKey": "yaguarete",
+          "author": "MauMirror",
+          "authorUrl": "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg"
+        },
+        {
           "name": "Jucumari",
           "range": "12 a 14 años",
           "color": "blue",
@@ -63,12 +71,13 @@
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg"
         },
         {
-          "name": "Yaguarete",
+          "name": "Kuntur",
           "range": "14 a 18 años",
-          "color": "blueDark",
-          "imageKey": "yaguarete",
-          "author": "MauMirror",
-          "authorUrl": "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg"
+          "color": "gray",
+          "imageKey": "kuntur",
+          "imageUrl": "https://bolivia.wcs.org/Portals/14/IMG_8210.jpg",
+          "author": "WCS Bolivia",
+          "authorUrl": "https://bolivia.wcs.org/"
         }
       ]
     },
