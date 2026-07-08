@@ -7,73 +7,73 @@
   "components": [
     {
       "type": "itemsGrid",
-      "tag": "Registro",
-      "heading": "¿Cómo inscribir a sus estudiantes?",
-      "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
-      "columns": 3,
-      "mediaType": "number",
       "cardPalette": [
         "red",
         "yellow",
         "green"
       ],
+      "tag": "Registro",
+      "heading": "¿Cómo inscribir a sus estudiantes?",
+      "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
+      "columns": 3,
+      "mediaType": "number",
       "items": [
         {
-          "number": "1",
           "title": "Registro del coordinador",
-          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela."
+          "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela.",
+          "number": "1"
         },
         {
-          "number": "2",
           "title": "Inscripción de estudiantes",
-          "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Yaguarete."
+          "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Kuntur.",
+          "number": "2"
         },
         {
-          "number": "3",
           "title": "Día del desafío",
-          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío."
+          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío.",
+          "number": "3"
         }
       ]
     },
     {
       "type": "itemsGrid",
-      "tag": "Requisitos",
-      "heading": "¿Qué necesita la escuela?",
-      "columns": 2,
-      "mediaType": "icon",
       "cardPalette": [
         "blue",
         "red",
         "yellow",
         "green"
       ],
+      "tag": "Requisitos",
+      "heading": "¿Qué necesita la escuela?",
+      "columns": 2,
+      "mediaType": "icon",
       "items": [
         {
-          "icon": "monitor",
           "title": "Computadoras con navegador web",
-          "description": "Chrome, Firefox, Edge o Safari actualizados."
+          "description": "Chrome, Firefox, Edge o Safari actualizados.",
+          "icon": "monitor"
         },
         {
-          "icon": "wifi",
           "title": "Conexión a internet",
-          "description": "Estable durante los 45 minutos del desafío."
+          "description": "Estable durante los 45 minutos del desafío.",
+          "icon": "wifi"
         },
         {
-          "icon": "user",
           "title": "Un coordinador registrado",
-          "description": "Maestro o representante que supervise la sesión."
+          "description": "Maestro o representante que supervise la sesión.",
+          "icon": "user"
         },
         {
-          "icon": "clock",
           "title": "45 minutos de clase",
-          "description": "Un bloque horario durante la semana del desafío."
+          "description": "Un bloque horario durante la semana del desafío.",
+          "icon": "clock"
         }
       ]
     },
     {
       "type": "sectionRichText",
-      "tag": "Alcance",
       "accent": "blue",
+      "tag": "Alcance",
       "heading": "¿Quién debería participar?",
       "paragraphs": [
         "Recomendamos inscribir a todos los estudiantes interesados, sin importar su nivel académico. El desafío está diseñado para ser accesible y no requiere conocimientos previos de informática o programación.",
@@ -83,14 +83,14 @@
     },
     {
       "type": "tabsGuide",
-      "sectionTag": "Guía para coordinadores",
-      "heading": "Instrucciones para coordinadores",
-      "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
       "cardPalette": [
         "blue",
         "red",
         "yellow"
       ],
+      "sectionTag": "Guía para coordinadores",
+      "heading": "Instrucciones para coordinadores",
+      "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
       "tabs": [
         {
           "id": "antes",
