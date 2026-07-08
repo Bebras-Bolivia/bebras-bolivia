@@ -473,7 +473,7 @@ function _homeSection(type: string): unknown | null {
       linkLabel: "Ver mas",
       linkHref: "/estudiantes",
       items: [
-        { name: "Guacamayo", range: "5 a 8 anos", color: "red", imageKey: "guacamayo", author: "Autor", authorUrl: "https://example.com" },
+        { name: "Guacamayo", range: "5 a 8 anos", color: "red", imageKey: "guacamayo", imageUrl: "", author: "Autor", authorUrl: "https://example.com" },
       ],
     }),
     homeDualCta: () => ({
