@@ -30,7 +30,7 @@
         },
         {
           "title": "Día del desafío",
-          "description": "Supervisar la sesión en la escuela durante los 45 minutos del desafío.",
+          "description": "Supervisar la sesión en la escuela durante el desafío.",
           "number": "3"
         }
       ]
@@ -64,8 +64,8 @@
           "icon": "user"
         },
         {
-          "title": "45 minutos de clase",
-          "description": "Un bloque horario durante la semana del desafío.",
+          "title": "Tiempo para el desafío",
+          "description": "El tiempo necesário para el desafio en la hora y fecha programada.",
           "icon": "clock"
         }
       ]
