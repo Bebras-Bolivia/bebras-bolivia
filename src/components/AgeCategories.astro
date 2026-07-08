@@ -10,10 +10,11 @@ import yaguareteImage from "@/assets/yaguarete.jpg";
 interface Category {
   name: string;
   age: string;
-  emoji: string;
+  emoji?: string;
   color: string;
   desc: string;
   image?: string;
+  imageUrl?: string;
   author?: string;
   authorUrl?: string;
 }
@@ -83,7 +84,7 @@ function slugifyName(name: string) {
 }
 
 function getCategoryImage(cat: Category) {
-  return cat.image || categoryImages[slugifyName(cat.name)] || guacamayoImage.src;
+  return cat.imageUrl?.trim() || cat.image || categoryImages[slugifyName(cat.name)] || guacamayoImage.src;
 }
 
 function getCategoryAuthor(cat: Category) {

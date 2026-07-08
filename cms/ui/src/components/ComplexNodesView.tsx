@@ -366,7 +366,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                   return;
                 }
                 const target = e.target as HTMLElement;
-                if (target.closest("input, textarea, select, button")) {
+                if (target.closest("input, textarea, select, button, a, [contenteditable='true']")) {
                   e.preventDefault();
                   return;
                 }
@@ -374,6 +374,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                 e.dataTransfer.effectAllowed = "move";
                 e.dataTransfer.setData("text/plain", "");
               }}
+              onDragEnd={() => setDragFrom(null)}
               onDragOver={(e) => {
                 if (locked) return;
                 e.preventDefault();
@@ -389,7 +390,11 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
               <div className="array-item-header">
                 <span className="array-item-header-left">
                   {locked ? null : (
-                    <span className="drag-handle" title="Arrastrar para reordenar" dangerouslySetInnerHTML={{ __html: icons.grip || "" }} />
+                    <span
+                      className="drag-handle"
+                      title="Arrastrar para reordenar"
+                      dangerouslySetInnerHTML={{ __html: icons.grip || "" }}
+                    />
                   )}
                   <span className="array-item-index">#{item.idx + 1}</span>
                   <EditableItemLabel

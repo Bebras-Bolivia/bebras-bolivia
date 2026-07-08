@@ -28,15 +28,18 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
     setMounted(true);
   }, []);
 
-  // Update currentPath on client-side navigation (Astro ClientRouter)
   useEffect(() => {
-    function onPageLoad() {
+    function syncPath() {
       setCurrentPath(window.location.pathname);
       setOpen(false);
       setVisible(false);
     }
-    document.addEventListener("astro:page-load", onPageLoad);
-    return () => document.removeEventListener("astro:page-load", onPageLoad);
+    document.addEventListener("astro:after-swap", syncPath);
+    document.addEventListener("astro:page-load", syncPath);
+    return () => {
+      document.removeEventListener("astro:after-swap", syncPath);
+      document.removeEventListener("astro:page-load", syncPath);
+    };
   }, []);
 
   const openMenu = useCallback(() => {

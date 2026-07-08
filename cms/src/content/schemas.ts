@@ -194,7 +194,8 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
       z.object({
         name: z.string(),
         age: z.string(),
-        emoji: z.string(),
+        emoji: z.string().optional(),
+        imageUrl: z.string().optional(),
         color: z.string(),
         desc: z.string(),
       })
@@ -325,6 +326,9 @@ const HomeAgeCategoriesSectionSchema = z.object({
       range: z.string(),
       color: BrandColorSchema,
       imageKey: z.string(),
+      // URL de imagen externa opcional. Si se define, tiene prioridad sobre
+      // imageKey (que selecciona una de las fotos incluidas en el sitio).
+      imageUrl: z.string().optional(),
       author: z.string(),
       authorUrl: z.string(),
     })
@@ -379,19 +383,20 @@ export const homeSchema = z.object({
 
 // ── 2. categories.json ───────────────────────────────────
 
+const AgeCategoryItemSchema = z.object({
+  name: z.string(),
+  age: z.string(),
+  emoji: z.string().optional(),
+  imageUrl: z.string().optional(),
+  color: z.string(),
+  desc: z.string(),
+});
+
 export const categoriesSchema = z.object({
   sectionTag: z.string(),
   heading: z.string(),
   subtitle: z.string(),
-  categories: z.array(
-    z.object({
-      name: z.string(),
-      age: z.string(),
-      emoji: z.string(),
-      color: z.string(),
-      desc: z.string(),
-    })
-  ),
+  categories: z.array(AgeCategoryItemSchema),
 });
 
 // ── 3. scoring.json ──────────────────────────────────────

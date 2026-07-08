@@ -1,8 +1,3 @@
-// Envío del formulario de contacto vía mailto: arma un borrador de correo
-// con los datos del formulario hacia la dirección indicada en data-mailto.
-// El sitio es estático (sin backend público), así que el envío se delega al
-// cliente de correo del visitante.
-
 function buildMailtoUrl(to: string, form: HTMLFormElement): string {
   const fd = new FormData(form);
   const name = String(fd.get("name") ?? "").trim();
@@ -38,5 +33,4 @@ function initContactMailtoForms(): void {
 }
 
 initContactMailtoForms();
-// Re-enlazar tras la navegación cliente de Astro.
 document.addEventListener("astro:page-load", initContactMailtoForms);

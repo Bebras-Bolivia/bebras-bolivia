@@ -14,13 +14,17 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
   const castorRef = useRef<HTMLImageElement>(null);
   const headerShellRef = useRef<HTMLElement>(null);
 
-  // Update currentPath on Astro client-side navigation
   useEffect(() => {
-    function onPageLoad() {
-      setCurrentPath(window.location.pathname);
-    }
-    document.addEventListener("astro:page-load", onPageLoad);
-    return () => document.removeEventListener("astro:page-load", onPageLoad);
+    const syncPath = () => setCurrentPath(window.location.pathname);
+    syncPath();
+    document.addEventListener("astro:after-swap", syncPath);
+    document.addEventListener("astro:page-load", syncPath);
+    window.addEventListener("popstate", syncPath);
+    return () => {
+      document.removeEventListener("astro:after-swap", syncPath);
+      document.removeEventListener("astro:page-load", syncPath);
+      window.removeEventListener("popstate", syncPath);
+    };
   }, []);
 
   // GSAP castor coin-flip animation (teammate's design)
@@ -81,10 +85,6 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
     const ctx = gsap.context(() => {
       const desktopQuery = window.matchMedia("(min-width: 1024px)");
 
-      // `hidden` is the single source of truth for whether the header is out of
-      // view. Instead of play()/reverse()/pause() on one tween (whose internal
-      // direction can get stuck after a reverse), we always animate to an
-      // explicit yPercent target. Duplicate calls short-circuit via `hidden`.
       let hidden = false;
       let lastScroll = ScrollTrigger.maxScroll(window) ? window.scrollY : 0;
 
@@ -107,32 +107,23 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
         onUpdate: (self) => {
           const scroll = self.scroll();
 
-          // On mobile, or near the top of the page, always keep it visible.
           if (!desktopQuery.matches || scroll < 12) {
             lastScroll = scroll;
             setHidden(false);
             return;
           }
 
-          // Only react to a real change in scroll position, comparing against
-          // our own last value instead of self.direction, which can be stale
-          // (e.g. right after a navigation / ScrollTrigger refresh) and hide
-          // the header without the user having scrolled.
           const delta = scroll - lastScroll;
           lastScroll = scroll;
 
           if (delta < -1) {
-            setHidden(false); // scrolling up -> show
+            setHidden(false);
           } else if (delta > 1) {
-            setHidden(true); // scrolling down -> hide
+            setHidden(true);
           }
         },
       });
 
-      // The header persists across Astro client-side navigations
-      // (transition:persist), so if it was hidden on the previous page it
-      // stays hidden on the new one: the ClientRouter scroll reset doesn't
-      // reach the ScrollTrigger update. Force it visible after each swap.
       onAfterSwap = () => {
         lastScroll = window.scrollY;
         showInstantly();

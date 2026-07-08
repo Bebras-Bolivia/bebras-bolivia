@@ -21,6 +21,8 @@ const imageMap: Record<string, string> = {
 };
 
 const sections: any[] = Array.isArray((homeData as any).sections) ? (homeData as any).sections : [];
+const ageCategoriesItems: any[] =
+	sections.find((s) => s?.type === "homeAgeCategories")?.items ?? [];
 const components: any[] = Array.isArray((homeData as any).components) ? (homeData as any).components : [];
 const latestPost = (await getCollection("blog"))
 	.filter((post) => post.id.replace(/\.md$/, "") !== "cms-preview")
@@ -36,6 +38,7 @@ const latestNews = latestPost
 			year: "numeric",
 			month: "short",
 			day: "numeric",
+			timeZone: "UTC",
 		}),
 	}
 	: null;
@@ -52,7 +55,9 @@ function getIntroParagraphs(introSection: any) {
 function getAgeGroups(ageSection: any) {
 	return (Array.isArray(ageSection?.items) ? ageSection.items : []).map((item: any) => ({
 		...item,
-		image: imageMap[item.imageKey] || imageMap.guacamayo,
+		image: (typeof item.imageUrl === "string" && item.imageUrl.trim())
+			|| imageMap[item.imageKey]
+			|| imageMap.guacamayo,
 	}));
 }
 
@@ -78,9 +83,19 @@ function getHomeCtaCardClasses(style?: string) {
 	};
 }
 
-function getBrandCardClass(index: number) {
-	const colors = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue", "brand-card-blue"];
-	return `brand-card ${colors[index % colors.length]}`;
+const cardColorClass: Record<string, string> = {
+	red: "brand-card-red",
+	yellow: "brand-card-yellow",
+	green: "brand-card-green",
+	blue: "brand-card-blue",
+	gray: "brand-card-gray",
+	blueDark: "brand-card-blue",
+};
+
+function getBrandCardClass(index: number, color?: string) {
+	const fallback = ["brand-card-red", "brand-card-yellow", "brand-card-green", "brand-card-blue", "brand-card-blue"];
+	const cls = (color && cardColorClass[color]) || fallback[index % fallback.length];
+	return `brand-card ${cls}`;
 }
 
 type AccentKey = "green" | "blue" | "yellow" | "red";
@@ -155,7 +170,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 	title="Inicio"
 	description="Sitio oficial de Bebras Bolivia. Competencia de pensamiento computacional para estudiantes de primaria y secundaria."
 >
-	<BebrasBoliviaHome hero={(homeData as any).hero} latestNews={latestNews} client:load />
+	<BebrasBoliviaHome hero={(homeData as any).hero} latestNews={latestNews} showcaseCategories={ageCategoriesItems} client:load />
 
 	<main id="contenido" class="relative z-10 w-full scroll-mt-24 bg-(--color-bebras-paper) dark:bg-zinc-950 pb-16 pt-10 lg:pt-14">
 
@@ -205,7 +220,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 											<h2 class="serif-display text-[2.9rem] sm:text-[3.6rem] lg:text-[4.4rem] xl:text-[5.1rem] text-foreground mb-8 leading-[0.95]">{h.prefix}{h.prefix ? " " : ""}<em class:list={["italic", ac.emphasis]}>{h.emphasis}</em></h2>
 											<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 												{ageGroups.map((g: any, i: number) => (
-													<div class:list={["group overflow-hidden", getBrandCardClass(i)]}>
+													<div class:list={["group overflow-hidden", getBrandCardClass(i, g.color)]}>
 														<div class="relative aspect-[4/3] overflow-hidden bg-muted">
 															<img src={g.image} alt={g.name} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
 															<div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">

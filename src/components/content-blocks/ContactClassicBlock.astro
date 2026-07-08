@@ -54,22 +54,14 @@ const contactIconMap = {
   share: Share2,
 };
 
-// Normaliza el enlace de una tarjeta: si el href parece un correo pero le
-// falta el prefijo "mailto:", lo agrega para que abra el cliente de correo.
-// Evita que un enlace de email quede roto si en el CMS solo escriben la
-// dirección (o borran el "mailto:").
 function normalizeContactHref(href?: string): string | undefined {
   if (!href) return href;
   const value = href.trim();
-  // Si ya trae un esquema (mailto:, http:, tel:, ruta /...), déjalo tal cual.
   if (/^([a-z][a-z0-9+.-]*:|\/|#)/i.test(value)) return value;
   const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   return looksLikeEmail ? `mailto:${value}` : value;
 }
 
-// Extrae la dirección de correo de un href si corresponde (para el botón
-// "Copiar"). Un enlace mailto: no siempre abre cliente de correo, así que
-// ofrecemos copiar el correo como alternativa que funciona siempre.
 function extractEmail(href?: string): string | null {
   const normalized = normalizeContactHref(href);
   if (!normalized) return null;
@@ -77,8 +69,6 @@ function extractEmail(href?: string): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-// Correo destino del formulario: el de la primera tarjeta con email
-// (editable desde el CMS), o el correo general del sitio como respaldo.
 const formEmail =
   data.info.cards.map((card) => extractEmail(card.linkHref)).find(Boolean) ??
   siteData.email;
@@ -128,7 +118,7 @@ const formEmail =
                       {card.socialLinks.map((social, idx) => (
                         <>
                           {idx > 0 && <span class="brand-card-muted">|</span>}
-                          <a href={social.href} class="brand-card-muted text-base hover:underline font-bold">{social.label}</a>
+                          <a href={social.href} target="_blank" rel="noopener noreferrer" class="brand-card-muted text-base hover:underline font-bold">{social.label}</a>
                         </>
                       ))}
                     </div>
@@ -236,6 +226,5 @@ const formEmail =
   }
 
   initCopyEmailButtons();
-  // Re-enlazar tras la navegación cliente de Astro.
   document.addEventListener("astro:page-load", initCopyEmailButtons);
 </script>

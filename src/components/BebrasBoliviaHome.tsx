@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { BebrasBeaverShowcase } from "@/components/BebrasBeaverShowcase";
+import { BebrasBeaverShowcase, type ShowcaseCategory } from "@/components/BebrasBeaverShowcase";
 
 type HomeHeroData = {
   eyebrow?: string;
@@ -48,7 +48,7 @@ function renderHeroTitle(title: string) {
   });
 }
 
-export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: HomeHeroData; latestNews?: LatestNewsData | null }) {
+export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCategories }: { hero?: HomeHeroData; latestNews?: LatestNewsData | null; showcaseCategories?: ShowcaseCategory[] }) {
   const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -178,7 +178,7 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews }: { hero?: Ho
                 className="absolute -left-2 bottom-16 size-16 rounded-full bg-bebras-red shadow-lg sm:size-20"
               />
               <div className="relative z-10 flex h-full w-full items-center justify-center">
-                <BebrasBeaverShowcase />
+                <BebrasBeaverShowcase categories={showcaseCategories} />
               </div>
             </div>
           </div>

@@ -210,27 +210,51 @@ function EditorPrimitivesView({
     onFieldChange(path, value);
   }, [markChanged, onFieldChange]);
 
-  const saveButton = (
-    <button
-      className="btn btn-primary btn-sm"
-      id="editor-save"
-      disabled={saving}
-      onClick={handleSave}
-      aria-label="Guardar"
-    >
-      {saving ? (
-        <><div className="spinner" style={{ width: 14, height: 14, display: "inline-block" }}></div> <span className="btn-text">Guardando...</span></>
-      ) : (
-        <><span dangerouslySetInnerHTML={{ __html: icons.save || "" }}></span> <span className="btn-text">Guardar</span></>
-      )}
-    </button>
+  const handleSchedule = async () => {
+    setSaving(true);
+    try {
+      const saved = await onSave();
+      if (saved !== false) {
+        setHasPendingChanges(false);
+        window.App?.navigate("/publish");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const actionButtons = (
+    <>
+      <button
+        className="btn btn-ghost btn-sm"
+        id="editor-schedule"
+        disabled={saving}
+        onClick={handleSchedule}
+        aria-label="Programar publicación"
+      >
+        <span dangerouslySetInnerHTML={{ __html: icons.calendar || icons.clock || "" }}></span> <span className="btn-text">Programar</span>
+      </button>
+      <button
+        className="btn btn-primary btn-sm"
+        id="editor-save"
+        disabled={saving}
+        onClick={handleSave}
+        aria-label="Publicar ahora"
+      >
+        {saving ? (
+          <><div className="spinner" style={{ width: 14, height: 14, display: "inline-block" }}></div> <span className="btn-text">Publicando...</span></>
+        ) : (
+          <><span dangerouslySetInnerHTML={{ __html: icons.publish || "" }}></span> <span className="btn-text">Publicar ahora</span></>
+        )}
+      </button>
+    </>
   );
 
   return (
     <>
       {headerSlot && hasPendingChanges
         ? createPortal(
-            saveButton,
+            actionButtons,
             headerSlot
           )
         : null}

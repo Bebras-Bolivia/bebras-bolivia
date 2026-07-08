@@ -32,6 +32,7 @@ export const fieldHints: Record<string, string> = {
   buttonHref: "url",
   ctaHref: "url",
   link: "url",
+  imageUrl: "url",
   image: "text",
   src: "text",
   defaultDescription: "textarea",
@@ -89,7 +90,7 @@ export const selectOptions: Record<string, string[]> = {
 // ── Hidden fields ────────────────────────────────────────
 // `type` is the block/section discriminator (introEditorial, itemsGrid, …) —
 // editing it would break the section, so it's never shown. `id` likewise.
-export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription"]);
+export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription", "cardPalette", "emoji", "mediaType"]);
 
 // ── Component option type ────────────────────────────────
 export type ComponentOption = {
@@ -440,7 +441,7 @@ export function createTypedArrayItem(
   }
 
   if (selectedType === "ageCategoryItem") {
-    return { name: "Nueva categoria", age: "0-0 anos", emoji: "🧩", color: "blue", desc: "Descripcion" };
+    return { name: "Nueva categoria", age: "0-0 anos", imageUrl: "", color: "blue", desc: "Descripcion" };
   }
 
   if (selectedType === "scoringRow") {
@@ -581,11 +582,11 @@ function _componentTemplate(type: string): unknown | null {
       cardPalette: ["red", "yellow", "green", "blue", "gray"],
       subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
       categories: [
-        { name: "Guacamayo", age: "5-8 anos", emoji: "🦜", color: "red", desc: "Primeros pasos en el pensamiento logico" },
-        { name: "Capibara", age: "8-10 anos", emoji: "🦫", color: "yellow", desc: "Descubriendo patrones y secuencias" },
-        { name: "Titi", age: "10-12 anos", emoji: "🐒", color: "green", desc: "Resolviendo problemas con creatividad" },
-        { name: "Jucumari", age: "12-14 anos", emoji: "🐻", color: "blue", desc: "Algoritmos y pensamiento estructurado" },
-        { name: "Yaguarete", age: "14-18 anos", emoji: "🐆", color: "gray", desc: "Desafios avanzados de informatica" },
+        { name: "Guacamayo", age: "5-8 anos", imageUrl: "", color: "red", desc: "Primeros pasos en el pensamiento logico" },
+        { name: "Capibara", age: "8-10 anos", imageUrl: "", color: "yellow", desc: "Descubriendo patrones y secuencias" },
+        { name: "Titi", age: "10-12 anos", imageUrl: "", color: "green", desc: "Resolviendo problemas con creatividad" },
+        { name: "Jucumari", age: "12-14 anos", imageUrl: "", color: "blue", desc: "Algoritmos y pensamiento estructurado" },
+        { name: "Yaguarete", age: "14-18 anos", imageUrl: "", color: "gray", desc: "Desafios avanzados de informatica" },
       ],
     }),
     studentsScoringTable: () => ({
