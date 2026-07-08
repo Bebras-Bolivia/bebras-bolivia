@@ -131,16 +131,7 @@
           "status": "negative"
         }
       ],
-      "summaryCards": [
-        {
-          "value": "45",
-          "label": "Puntaje inicial"
-        },
-        {
-          "value": "180",
-          "label": "Puntaje máximo"
-        }
-      ],
+      "summaryCards": [],
       "summaryColumns": 2
     },
     {
