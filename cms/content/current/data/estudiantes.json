@@ -1,0 +1,215 @@
+{
+  "pageTitle": "Estudiantes",
+  "pageDescription": "Información para estudiantes sobre el Desafío Bebras Bolivia: cómo participar, categorías por edad y sistema de puntuación.",
+  "header": {
+    "tag": "Para estudiantes",
+    "heading": "Información para estudiantes",
+    "subtitle": "Todo lo que necesitas saber para participar en el Desafío Bebras Bolivia."
+  },
+  "components": [
+    {
+      "type": "sectionRichText",
+      "tag": "Participación",
+      "heading": "¿Cómo participar?",
+      "paragraphs": [
+        "Para participar en el Desafío Bebras, tu maestro o coordinador de la escuela debe registrarse en la plataforma. Una vez registrado, el coordinador inscribe a los estudiantes por categoría de edad. El día del desafío, accedes a la plataforma desde una computadora con navegador web.",
+        "Si tu escuela aún no está inscrita, pide a tu profesor que visite la página para maestros para más información sobre el proceso de registro."
+      ],
+      "linkLabel": "Página para maestros",
+      "linkHref": "/maestros"
+    },
+    {
+      "type": "sectionRichText",
+      "tag": "El desafío",
+      "heading": "¿Qué es el Desafío Bebras?",
+      "paragraphs": [
+        "Bebras es una competencia internacional de pensamiento computacional que se realiza en más de 60 países. No es una competencia de programación: los problemas son acertijos lógicos y situaciones que requieren pensar de forma estructurada.",
+        "No necesitas saber programar ni tener conocimientos previos de informática. Los desafíos están diseñados para ser accesibles, divertidos y estimulantes."
+      ]
+    },
+    {
+      "type": "featureList",
+      "tag": "Habilidades clave",
+      "heading": "¿Qué es el pensamiento computacional?",
+      "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
+      "items": [
+        {
+          "title": "Descomposición:",
+          "desc": "dividir un problema grande en partes más pequeñas."
+        },
+        {
+          "title": "Reconocimiento de patrones:",
+          "desc": "identificar similitudes y tendencias."
+        },
+        {
+          "title": "Abstracción:",
+          "desc": "enfocarse en lo importante e ignorar los detalles irrelevantes."
+        },
+        {
+          "title": "Diseño de algoritmos:",
+          "desc": "crear pasos ordenados para resolver un problema."
+        }
+      ],
+      "outro": "Estas habilidades son útiles en la vida cotidiana, no solo en la informática."
+    },
+    {
+      "type": "statsGrid",
+      "tag": "El formato",
+      "heading": "¿Qué involucra el desafío?",
+      "columns": 3,
+      "stats": [
+        {
+          "value": "9 a 15",
+          "label": "Preguntas"
+        },
+        {
+          "value": "45",
+          "label": "Minutos"
+        },
+        {
+          "value": "100%",
+          "label": "En línea"
+        }
+      ],
+      "paragraphs": [
+        "El desafío consiste en 15 preguntas que debes resolver en 45 minutos. Las preguntas tienen tres niveles de dificultad y cada nivel otorga un puntaje diferente.",
+        "Puedes responder las preguntas en cualquier orden y cambiar tus respuestas antes de que termine el tiempo."
+      ]
+    },
+    {
+      "type": "studentsScoringTable",
+      "sectionTag": "Puntuación",
+      "heading": "Sistema de puntuación",
+      "subtitle": "Cada tarea pertenece a una categoría de dificultad.",
+      "tableHeaders": [
+        "Resultado",
+        "Fácil",
+        "Intermedia",
+        "Difícil"
+      ],
+      "rows": [
+        {
+          "label": "Correcta",
+          "values": [
+            "+6",
+            "+9",
+            "+12"
+          ],
+          "status": "positive"
+        },
+        {
+          "label": "Sin respuesta",
+          "values": [
+            "0",
+            "0",
+            "0"
+          ],
+          "status": "neutral"
+        },
+        {
+          "label": "Incorrecta",
+          "values": [
+            "-2",
+            "-3",
+            "-4"
+          ],
+          "status": "negative"
+        }
+      ],
+      "summaryCards": [],
+      "summaryColumns": 2
+    },
+    {
+      "type": "studentsAgeCategories",
+      "sectionTag": "Niveles",
+      "heading": "Categorías por edad",
+      "subtitle": "Seis niveles diseñados para desafiar a cada grupo de edad.",
+      "categories": [
+        {
+          "name": "Guacamayo",
+          "age": "5-8 años",
+          "emoji": "🦜",
+          "color": "rose",
+          "desc": ""
+        },
+        {
+          "name": "Capibara",
+          "age": "8-10 años",
+          "emoji": "🦫",
+          "color": "amber",
+          "desc": ""
+        },
+        {
+          "name": "Titi",
+          "age": "10-12 años",
+          "emoji": "🐒",
+          "color": "emerald",
+          "desc": ""
+        },
+        {
+          "name": "Jucumari",
+          "age": "12-14 años",
+          "emoji": "🐻",
+          "color": "sky",
+          "desc": ""
+        },
+        {
+          "name": "Yaguarete",
+          "age": "14-16 años",
+          "emoji": "🐆",
+          "color": "indigo",
+          "desc": ""
+        },
+        {
+          "name": "Cóndor",
+          "age": "17-18 años",
+          "emoji": "🪶",
+          "color": "gray",
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "type": "linksList",
+      "accent": "blue",
+      "cardPalette": [
+        "blue",
+        "red",
+        "yellow",
+        "green"
+      ],
+      "tag": "Recursos",
+      "heading": "Recursos para practicar",
+      "links": [
+        {
+          "label": "Tareas Bebras UK",
+          "href": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
+          "description": "Tareas Bebras de Bebras UK "
+        },
+        {
+          "label": "Tareas Bebras UK (Respuestas)",
+          "href": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
+          "description": "Respuestas a las tareas Bebras UK"
+        },
+        {
+          "label": "Tareas Bebras Uruguay",
+          "href": "https://www.uprm.edu/bebras/wp-content/uploads/sites/39/2023/09/Tarjetas-Bebras_Desafios-2023_UY.pdf",
+          "description": "Material de entrenamiento Bebras Uruguay"
+        },
+        {
+          "label": "Recursos Bebras de Mexico",
+          "href": "https://bebras.mx/generales",
+          "description": "Un gran conjunto de taeras para practicar preparado por Bebras Mexico"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "tag": "Reconocimiento",
+      "heading": "Certificados",
+      "text": "Todos los participantes reciben un certificado digital de participación. Los estudiantes con los mejores puntajes de cada categoría reciben reconocimientos especiales.",
+      "buttonLabel": "Inscribirse al desafío",
+      "buttonHref": "/registro"
+    }
+  ]
+}

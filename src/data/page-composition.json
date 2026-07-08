@@ -1,0 +1,14 @@
+{
+  "docentes": {
+    "teacherInstructions": {
+      "enabled": true,
+      "afterSectionId": "alcance"
+    }
+  },
+  "estudiantes": {
+    "scoring": {
+      "enabled": true,
+      "afterSectionId": "formato"
+    }
+  }
+}
