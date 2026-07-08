@@ -196,6 +196,40 @@
       ]
     },
     {
+      "type": "linksList",
+      "accent": "blue",
+      "cardPalette": [
+        "blue",
+        "red",
+        "yellow",
+        "green"
+      ],
+      "tag": "Recursos",
+      "heading": "Recursos para practicar",
+      "links": [
+        {
+          "label": "Tareas Bebras UK",
+          "href": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
+          "description": "Tareas Bebras de Bebras UK "
+        },
+        {
+          "label": "Tareas Bebras UK (Respuestas)",
+          "href": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
+          "description": "Respuestas a las tareas Bebras UK"
+        },
+        {
+          "label": "Tareas Bebras Uruguay",
+          "href": "https://www.uprm.edu/bebras/wp-content/uploads/sites/39/2023/09/Tarjetas-Bebras_Desafios-2023_UY.pdf",
+          "description": "Material de entrenamiento Bebras Uruguay"
+        },
+        {
+          "label": "Recursos Bebras de Mexico",
+          "href": "https://bebras.mx/generales",
+          "description": "Un gran conjunto de taeras para practicar preparado por Bebras Mexico"
+        }
+      ]
+    },
+    {
       "type": "cta",
       "accent": "red",
       "tag": "Reconocimiento",
