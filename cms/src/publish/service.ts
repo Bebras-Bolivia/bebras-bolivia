@@ -282,6 +282,10 @@ export async function publish(author: string): Promise<PublishLogRow> {
       "UPDATE publish_log SET status = 'success', output = ?, finished_at = datetime('now') WHERE id = ?"
     ).run(buildOutput, logId);
 
+    // Version the freshly published content in git so it can be coordinated
+    // across environments. Best-effort — never fails an otherwise-good publish.
+    await commitPublishedContent(author);
+
     const row = db
       .query("SELECT * FROM publish_log WHERE id = ?")
       .get(logId) as PublishLogRow;
@@ -581,6 +585,63 @@ async function cleanupOldReleases(activeRelease: string): Promise<void> {
   await Promise.all(
     entries.slice(2).map((name) => rm(resolvePath(deploymentsDir, name), { recursive: true, force: true }))
   );
+}
+
+/** Content paths that are versioned in git (the CMS JSON data). */
+const GIT_CONTENT_PATHS = ["src/data", "cms/content/current/data"];
+
+/** Run a git command in the landing repo. Rejects with combined output on failure. */
+function runGit(args: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    execFile(
+      "git",
+      args,
+      { cwd: config.landingDir, timeout: 30_000, env: { ...process.env }, shell: false },
+      (error, stdout, stderr) => {
+        const output = `${stdout}\n${stderr}`.trim();
+        if (error) reject(new Error(output || error.message));
+        else resolve(output);
+      }
+    );
+  });
+}
+
+/**
+ * Best-effort: commit (and push) the published CMS content so it is versioned
+ * and can be coordinated across environments. Never throws — a git failure must
+ * not fail an already-successful publish; it is only logged.
+ */
+async function commitPublishedContent(author: string): Promise<void> {
+  try {
+    await runGit(["add", "--", ...GIT_CONTENT_PATHS]);
+
+    // `diff --cached --quiet` exits 0 when nothing is staged, non-zero otherwise.
+    let hasStagedChanges = false;
+    try {
+      await runGit(["diff", "--cached", "--quiet", "--", ...GIT_CONTENT_PATHS]);
+    } catch {
+      hasStagedChanges = true;
+    }
+    if (!hasStagedChanges) {
+      console.log("[Publish] No CMS content changes to commit.");
+      return;
+    }
+
+    const message = `content: publish CMS changes (${author})`;
+    await runGit(["commit", "-m", message, "--", ...GIT_CONTENT_PATHS]);
+    console.log("[Publish] Committed CMS content to git.");
+
+    try {
+      await runGit(["push"]);
+      console.log("[Publish] Pushed CMS content to remote.");
+    } catch (pushErr) {
+      const detail = pushErr instanceof Error ? pushErr.message : String(pushErr);
+      console.error(`[Publish] git push failed (commit kept locally, push it manually): ${detail}`);
+    }
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error(`[Publish] Failed to commit CMS content to git: ${detail}`);
+  }
 }
 
 export class PublishError extends Error {
