@@ -1,4 +1,4 @@
-import { readdir, cp, mkdir, readFile, writeFile, stat, lstat, rename, rm, symlink } from "fs/promises";
+import { readdir, cp, mkdir, readFile, writeFile, stat, lstat, readlink, rename, rm, symlink, unlink } from "fs/promises";
 import { existsSync } from "fs";
 import { join, resolve as resolvePath } from "path";
 import { execFile } from "child_process";
@@ -558,21 +558,65 @@ async function runBuild(): Promise<string> {
 async function activateRelease(releaseName: string): Promise<void> {
   const distPath = resolvePath(config.landingDir, "dist");
   const nextLink = resolvePath(config.landingDir, `.dist-next-${process.pid}`);
-  await rm(nextLink, { force: true, recursive: true });
-  await symlink(`.deployments/${releaseName}`, nextLink, "dir");
-
+  let previousLinkTarget: string | null = null;
+  let legacyPath: string | null = null;
+  await unlinkIfExists(nextLink);
   try {
-    const current = await lstat(distPath);
-    if (!current.isSymbolicLink()) {
-      // One-time migration from the old in-place directory layout.
-      await rename(distPath, resolvePath(config.landingDir, ".deployments", `legacy-${Date.now()}`));
-    }
-  } catch {
-    // First deployment; there is no previous dist path.
-  }
+    await symlink(`.deployments/${releaseName}`, nextLink, "dir");
 
-  // POSIX rename replaces the old symlink atomically.
-  await rename(nextLink, distPath);
+    try {
+      const current = await lstat(distPath);
+      if (!current.isSymbolicLink()) {
+        // One-time migration from the old in-place directory layout.
+        legacyPath = resolvePath(config.landingDir, ".deployments", `legacy-${Date.now()}`);
+        await rename(distPath, legacyPath);
+      } else if (process.platform === "win32") {
+        // Windows rename cannot replace an existing directory symlink.
+        previousLinkTarget = await readlink(distPath);
+        await unlink(distPath);
+      }
+    } catch (error) {
+      if (!isFileNotFoundError(error)) throw error;
+      // First deployment; there is no previous dist path.
+    }
+
+    // POSIX replaces the old symlink atomically; Windows removed it above.
+    await rename(nextLink, distPath);
+  } catch (error) {
+    if (!(await pathExists(distPath))) {
+      try {
+        if (previousLinkTarget) await symlink(previousLinkTarget, distPath, "dir");
+        else if (legacyPath) await rename(legacyPath, distPath);
+      } catch (restoreError) {
+        console.error("[Publish] Failed to restore previous dist release:", restoreError);
+      }
+    }
+    throw error;
+  } finally {
+    await unlinkIfExists(nextLink);
+  }
+}
+
+function isFileNotFoundError(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+async function unlinkIfExists(path: string): Promise<void> {
+  try {
+    await unlink(path);
+  } catch (error) {
+    if (!isFileNotFoundError(error)) throw error;
+  }
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await lstat(path);
+    return true;
+  } catch (error) {
+    if (isFileNotFoundError(error)) return false;
+    throw error;
+  }
 }
 
 async function cleanupOldReleases(activeRelease: string): Promise<void> {

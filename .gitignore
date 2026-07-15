@@ -3,6 +3,7 @@ dist/
 # Production uses an atomic symlink named dist and versioned release folders.
 /dist
 /.deployments/
+/.dist-next-*
 .agents/
 # generated types
 .astro/

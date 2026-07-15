@@ -15,6 +15,7 @@ let devServerReady = false;
 let devServerStarting = false;
 let devServerError: string | null = null;
 let devServerPort = 4322;
+const intentionallyStoppedProcesses = new WeakSet<ChildProcess>();
 const BLOG_PREVIEW_SLUG = "cms-preview";
 
 export function getBlogPreviewSlug(): string {
@@ -137,12 +138,13 @@ export async function startDevServer(): Promise<StartPreviewResult> {
     // back to the stale static dist/ — making the live preview never update.
     const args = [...command.argsPrefix, "dev", "--host", "127.0.0.1", "--port", String(devServerPort)];
 
-    devProcess = spawn(command.cmd, args, {
+    const child = spawn(command.cmd, args, {
       cwd: config.landingDir,
       stdio: ["pipe", "pipe", "pipe"],
       env: { ...process.env, NODE_OPTIONS: "" },
       shell: process.platform === "win32",
     });
+    devProcess = child;
 
     let startupOutput = "";
     let resolvedReady = false;
@@ -167,6 +169,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
     const readyPattern = /https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)\b/;
 
     const markReady = (actualPort: number) => {
+      if (devProcess !== child || intentionallyStoppedProcesses.has(child)) return;
       if (devServerReady) return;
       devServerPort = actualPort;
       devServerReady = true;
@@ -183,24 +186,28 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       if (match) markReady(Number(match[1]));
     };
 
-    devProcess.stdout?.on("data", (chunk: Buffer) => {
+    child.stdout?.on("data", (chunk: Buffer) => {
       const text = chunk.toString();
       startupOutput += text;
       scanForReady(text);
     });
 
-    devProcess.stderr?.on("data", (chunk: Buffer) => {
+    child.stderr?.on("data", (chunk: Buffer) => {
       const text = chunk.toString();
       startupOutput += text;
       scanForReady(text);
     });
 
-    devProcess.on("error", (err) => {
+    child.on("error", (err) => {
       clearTimeout(timeout);
+      if (intentionallyStoppedProcesses.has(child) || devProcess !== child) {
+        if (!resolvedReady) resolve({ ok: true, port: null, mode: "static" });
+        return;
+      }
       devServerReady = false;
       devServerStarting = false;
       devServerError = err.message;
-      devProcess = null;
+      if (devProcess === child) devProcess = null;
       console.error("[Preview] Dev server process error:", err.message);
       if (config.isDev) {
         reject(new PreviewError(`Failed to start dev server: ${err.message}`, 500));
@@ -209,12 +216,19 @@ export async function startDevServer(): Promise<StartPreviewResult> {
       resolve(fallbackToStaticPreview(`Failed to start dev server: ${err.message}`));
     });
 
-    devProcess.on("exit", (code, signal) => {
+    child.on("exit", (code, signal) => {
       clearTimeout(timeout);
+      if (intentionallyStoppedProcesses.has(child)) {
+        console.log("[Preview] Astro dev server stopped");
+        if (!resolvedReady) resolve({ ok: true, port: null, mode: "static" });
+        return;
+      }
       const wasReady = resolvedReady || devServerReady;
-      devServerReady = false;
-      devServerStarting = false;
-      devProcess = null;
+      if (devProcess === child) {
+        devServerReady = false;
+        devServerStarting = false;
+        devProcess = null;
+      }
 
       if (!wasReady) {
         const message = `Dev server exited (code ${code}, signal ${signal}) before ready.\n${startupOutput}`;
@@ -265,6 +279,7 @@ function waitForReady(): Promise<StartPreviewResult> {
 export function stopDevServer(): { ok: true } {
   if (devProcess) {
     console.log("[Preview] Stopping Astro dev server...");
+    intentionallyStoppedProcesses.add(devProcess);
     // On Windows, spawn with shell=true requires killing the tree
     if (process.platform === "win32" && devProcess.pid) {
       try {
