@@ -30,15 +30,16 @@ function SidebarTreeNode({
   icons: Record<string, string>;
   onNavigate: (path: string) => void;
 }) {
+  const currentPath = window.App.appPathname();
   const [open, setOpen] = useState(
-    window.location.pathname.includes(`/editor/${encodeURIComponent(node.parent)}/`),
+    currentPath.startsWith(`/editor/${encodeURIComponent(node.parent)}/`),
   );
 
   if (node.childrenMeta.length === 0) {
     const path = editorPathFor(node.parent);
     return (
       <a
-        className="sidebar-tree-parent"
+        className={`sidebar-tree-parent${currentPath === path ? " active" : ""}`}
         data-nav={path}
         href={path}
         onClick={(e) => {
@@ -69,7 +70,7 @@ function SidebarTreeNode({
           <div className="sidebar-tree-children">
             {node.childrenMeta.map((child) => (
               <a
-                className="sidebar-tree-child"
+                className={`sidebar-tree-child${currentPath === child.path ? " active" : ""}`}
                 data-nav={child.path}
                 href={child.path}
                 key={child.key}
