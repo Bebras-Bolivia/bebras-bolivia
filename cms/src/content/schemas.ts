@@ -536,6 +536,7 @@ const SocialIconSchema = z.enum([
   "tiktok",
   "youtube",
   "twitter",
+  "x",
   "email",
 ]);
 

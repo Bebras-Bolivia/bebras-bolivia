@@ -104,6 +104,7 @@ const selectOptionLabels: Record<string, string> = {
   share: "Compartir",
   school: "Escuela",
   brain: "Pensamiento",
+  x: "X",
   guacamayo: "Guacamayo",
   capibara: "Capibara",
   titi: "Tití",
@@ -111,7 +112,7 @@ const selectOptionLabels: Record<string, string> = {
   yaguarete: "Yaguareté",
 };
 
-const socialIconOptions = ["facebook", "instagram", "tiktok", "youtube", "twitter", "email"];
+const socialIconOptions = ["facebook", "instagram", "tiktok", "youtube", "twitter", "x", "email"];
 
 export function getSelectOptions(path: string, key: string, filename: string | null) {
   const values = filename === "navigation.json" && /^socialLinks\[\d+\]\.icon$/.test(path)
