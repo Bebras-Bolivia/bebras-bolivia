@@ -20,6 +20,7 @@ const Editor = {
   get lib() { return window.CMSEditorLib; },
   get fileToPage() { return this.lib.fileToPage; },
   get selectOptions() { return this.lib.selectOptions; },
+  getSelectOptions(path: string, key: string) { return this.lib.getSelectOptions(path, key, this.currentFile); },
 
   escapeForPre(value: string) { return this.lib.escapeForPre(value); },
   formatLabel(key: string) { return this.lib.formatLabel(key); },
@@ -242,7 +243,7 @@ const Editor = {
       label: this.getFieldLabel(path, key),
       type: editorType,
       value,
-      options: editorType === "select" ? this.selectOptions[key] || [] : undefined,
+      options: editorType === "select" ? this.getSelectOptions(path, key) : undefined,
       readOnly: editorType === "number" && this.isAutoNumberField(path),
     };
   },

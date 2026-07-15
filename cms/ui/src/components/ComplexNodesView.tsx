@@ -3,13 +3,14 @@ import ArrayActionsView from "./ArrayActionsView";
 import ArrayCollapseToggleView from "./ArrayCollapseToggleView";
 import ArrayItemActionsView from "./ArrayItemActionsView";
 import BrandColorSwatch from "./BrandColorSwatch";
+import SelectField, { type SelectOption } from "./SelectField";
 
 export type EditorField = {
   path: string;
   label: string;
   type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
   value: string | number | boolean;
-  options?: string[];
+  options?: SelectOption[];
   readOnly?: boolean;
 };
 
@@ -110,16 +111,14 @@ function FieldInput({
 
   if (field.type === "select") {
     return (
-      <select
+      <SelectField
+        key={`${field.path}:${String(value ?? "")}`}
         id={`field-${field.path}`}
-        className="form-select"
         value={String(value ?? "")}
-        onChange={(e) => onFieldChange(field.path, e.target.value)}
-      >
-        {(field.options || []).map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
+        options={field.options || []}
+        onChange={(next) => onFieldChange(field.path, next)}
+        ariaLabel={field.label}
+      />
     );
   }
 

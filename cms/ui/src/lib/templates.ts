@@ -87,6 +87,42 @@ export const selectOptions: Record<string, string[]> = {
   imageKey: ["guacamayo", "capibara", "titi", "jucumari", "yaguarete"],
 };
 
+const selectOptionLabels: Record<string, string> = {
+  button: "Botón",
+  link: "Enlace",
+  primary: "Principal",
+  secondary: "Secundario",
+  positive: "Positivo",
+  neutral: "Neutral",
+  negative: "Negativo",
+  monitor: "Computadora",
+  wifi: "Internet",
+  user: "Usuario",
+  clock: "Reloj",
+  email: "Correo electrónico",
+  clipboard: "Portapapeles",
+  share: "Compartir",
+  school: "Escuela",
+  brain: "Pensamiento",
+  guacamayo: "Guacamayo",
+  capibara: "Capibara",
+  titi: "Tití",
+  jucumari: "Jucumari",
+  yaguarete: "Yaguareté",
+};
+
+const socialIconOptions = ["facebook", "instagram", "tiktok", "youtube", "twitter", "email"];
+
+export function getSelectOptions(path: string, key: string, filename: string | null) {
+  const values = filename === "navigation.json" && /^socialLinks\[\d+\]\.icon$/.test(path)
+    ? socialIconOptions
+    : selectOptions[key] || [];
+  return values.map((value) => ({
+    value,
+    label: selectOptionLabels[value] || value.charAt(0).toUpperCase() + value.slice(1),
+  }));
+}
+
 // ── Hidden fields ────────────────────────────────────────
 // `type` is the block/section discriminator (introEditorial, itemsGrid, …) —
 // editing it would break the section, so it's never shown. `id` likewise.

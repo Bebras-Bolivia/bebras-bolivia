@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { createPortal } from "react-dom";
 import ComplexNodesView, { type ComplexNode } from "../components/ComplexNodesView";
 import BrandColorSwatch from "../components/BrandColorSwatch";
+import SelectField, { type SelectOption } from "../components/SelectField";
 
 type PrimitivesPayload = {
   title: string;
@@ -12,7 +13,7 @@ type PrimitivesPayload = {
     label: string;
     type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
     value: string | number | boolean;
-    options?: string[];
+    options?: SelectOption[];
     readOnly?: boolean;
   }>;
   icons: Record<string, string>;
@@ -32,36 +33,6 @@ const roots = new WeakMap<Element, Root>();
 // Track the live editor root so we can unmount it (and its header-portalled
 // buttons) cleanly when leaving the editor, instead of poking the DOM by hand.
 let activeEditorRoot: Root | null = null;
-
-const selectOptionLabels: Record<string, string> = {
-  button: "Boton",
-  link: "Enlace",
-  primary: "Principal",
-  secondary: "Secundario",
-  positive: "Positivo",
-  neutral: "Neutral",
-  negative: "Negativo",
-  monitor: "Computadora",
-  wifi: "Internet",
-  user: "Usuario",
-  clock: "Reloj",
-  email: "Correo",
-  clipboard: "Portapapeles",
-  share: "Compartir",
-  school: "Escuela",
-  brain: "Pensamiento",
-  icon: "Icono",
-  image: "Imagen",
-  number: "Numero",
-  none: "Ninguno",
-  guacamayo: "Guacamayo",
-  capibara: "Capibara",
-  titi: "Titi",
-  jucumari: "Jucumari",
-  yaguarete: "Yaguarete",
-};
-
-
 
 function FieldInput({
   field,
@@ -108,18 +79,14 @@ function FieldInput({
 
   if (field.type === "select") {
     return (
-      <select
+      <SelectField
+        key={`${field.path}:${String(value ?? "")}`}
         id={`field-${field.path}`}
-        className="form-select"
         value={String(value ?? "")}
-        onChange={(e) => onFieldChange(field.path, e.target.value)}
-      >
-        {(field.options || []).map((opt) => (
-          <option key={opt} value={opt}>
-            {selectOptionLabels[opt] || opt}
-          </option>
-        ))}
-      </select>
+        options={field.options || []}
+        onChange={(next) => onFieldChange(field.path, next)}
+        ariaLabel={field.label}
+      />
     );
   }
 
