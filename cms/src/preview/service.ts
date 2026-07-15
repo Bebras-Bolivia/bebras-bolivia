@@ -149,6 +149,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
     let startupOutput = "";
     let resolvedReady = false;
     const timeout = setTimeout(() => {
+      if (devProcess !== child || intentionallyStoppedProcesses.has(child)) return;
       if (!devServerReady) {
         const message = `Dev server timed out after 30s. Output:\n${startupOutput}`;
         if (config.isDev) {
