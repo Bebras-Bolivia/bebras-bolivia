@@ -2457,6 +2457,7 @@ a:hover { text-decoration: underline; }
 /* Publish button and editor save button in the main header:
    force the same 32 px height and centre every child. */
 #header-publish-btn,
+#editor-schedule,
 #editor-save {
   height: 32px;
   padding-top: 0;
@@ -2468,6 +2469,7 @@ a:hover { text-decoration: underline; }
 
 /* SVG-bearing spans inside header action buttons */
 #header-publish-btn > span,
+#editor-schedule > span,
 #editor-save > span {
   display: inline-flex;
   align-items: center;
@@ -3991,6 +3993,7 @@ a:hover { text-decoration: underline; }
 
   /* Publish button and save button: square icon-only on mobile */
   #header-publish-btn,
+  #editor-schedule,
   #editor-save {
     width: 32px !important;
     height: 32px !important;
