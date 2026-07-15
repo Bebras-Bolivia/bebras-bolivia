@@ -12,8 +12,20 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
   "docentes.json": { label: "Maestros", desc: "Pagina de maestros (secciones)", icon: "briefcase" },
   "blog-ui.json": { label: "Textos de la página", desc: "Textos de la interfaz de noticias", icon: "file-text" },
   "page-composition.json": { label: "Composicion de paginas", desc: "Orden y posicion de subsecciones hijas", icon: "move" },
-  "navigation.json": { label: "Pie de página", desc: "Redes sociales, enlaces y textos legales del pie", icon: "link" },
+  "navigation.json": {
+    label: "Configuración global",
+    desc: "Navegación, llamado a la acción, redes sociales y pie de página",
+    icon: "link",
+  },
 };
+
+const navigationSections = [
+  { key: "links", label: "Navegación principal" },
+  { key: "cta", label: "Llamado a la acción" },
+  { key: "socialLinks", label: "Redes sociales" },
+  { key: "internationalLinks", label: "Enlaces internacionales" },
+  { key: "footer", label: "Pie de página" },
+];
 
 const hiddenContentFiles = new Set([
   "categories.json",
@@ -23,7 +35,12 @@ const hiddenContentFiles = new Set([
   "blog-ui.json",
 ]);
 
-const contentHierarchy = [
+const contentHierarchy: Array<{
+  label: string;
+  parent: string;
+  children: string[];
+  sections?: Array<{ key: string; label: string }>;
+}> = [
   { label: "Inicio", parent: "home.json", children: [] },
   { label: "Estudiantes", parent: "estudiantes.json", children: [] },
   { label: "Maestros", parent: "docentes.json", children: [] },
@@ -31,7 +48,7 @@ const contentHierarchy = [
   { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
-  { label: "Pie de página", parent: "navigation.json", children: [] },
+  { label: "Configuración global", parent: "navigation.json", children: [], sections: navigationSections },
 ];
 
 function contentFileFromRoute(value: string) {
@@ -155,14 +172,22 @@ const App = {
     try {
       const contentData = await window.API.listContent();
       const tree = this.getContentTree(contentData.files || []);
-      const nodes = tree.map((node: { parent: string; children: string[] }) => {
+      const nodes = tree.map((node) => {
         const parentMeta = contentMeta[node.parent] || { label: node.parent, icon: "edit" };
+        const fileChildren = node.children.map((child: string) => ({
+          key: child,
+          label: contentMeta[child]?.label || child,
+          path: `/editor/${encodeURIComponent(child)}`,
+        }));
+        const sectionChildren = node.sections.map((section) => ({
+          ...section,
+          path: `/editor/${encodeURIComponent(node.parent)}/${encodeURIComponent(section.key)}`,
+        }));
         return {
           parent: node.parent,
-          children: node.children,
           parentLabel: parentMeta.label || node.parent,
           parentIcon: parentMeta.icon || "edit",
-          childrenMeta: node.children.map((child: string) => ({ key: child, label: contentMeta[child]?.label || child })),
+          childrenMeta: [...fileChildren, ...sectionChildren],
         };
       });
       container.innerHTML = '<div id="react-sidebar-tree-root"></div>';
@@ -192,9 +217,18 @@ const App = {
       const meta = contentMeta[filename];
       this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
     } else if (path.startsWith("/editor/")) {
-      const filename = contentFileFromRoute(decodeURIComponent(path.replace("/editor/", "")));
+      const [routeFile, routeSection] = path.replace("/editor/", "").split("/").map(decodeURIComponent);
+      const filename = contentFileFromRoute(routeFile);
+      const section = filename === "navigation.json"
+        ? navigationSections.find((item) => item.key === routeSection)
+        : undefined;
       const meta = contentMeta[filename];
-      this.showPage(meta ? `Editar: ${meta.label}` : `Editar: ${filename}`, () => window.Editor.render(filename));
+      const title = section
+        ? `${meta?.label || filename}: ${section.label}`
+        : meta
+          ? `Editar: ${meta.label}`
+          : `Editar: ${filename}`;
+      this.showPage(title, () => window.Editor.render(filename, section?.key, section?.label));
     } else if (path === "/blog") this.showPage("Noticias", () => window.Blog.renderList());
     else if (path === "/blog/new") this.showPage("Nueva publicacion", () => window.Blog.renderEditor(null));
     else if (path.startsWith("/blog/edit/")) {
@@ -236,9 +270,11 @@ const App = {
       seen.add(entry.parent);
       const children = entry.children.filter((child) => existing.has(child));
       children.forEach((child) => seen.add(child));
-      return { parent: entry.parent, children };
+      return { parent: entry.parent, children, sections: entry.sections || [] };
     });
-    files.filter((file) => !hiddenContentFiles.has(file) && !seen.has(file)).forEach((file) => nodes.push({ parent: file, children: [] }));
+    files
+      .filter((file) => !hiddenContentFiles.has(file) && !seen.has(file))
+      .forEach((file) => nodes.push({ parent: file, children: [], sections: [] }));
     return nodes;
   },
 

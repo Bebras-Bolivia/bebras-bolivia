@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 
 type Node = {
   parent: string;
-  children: string[];
   parentLabel: string;
   parentIcon: string;
-  childrenMeta: Array<{ key: string; label: string }>;
+  childrenMeta: Array<{ key: string; label: string; path: string }>;
 };
 
 interface Props {
@@ -22,41 +21,80 @@ function editorPathFor(file: string) {
   return `/editor/${encodeURIComponent(file === "docentes.json" ? "maestros.json" : file)}`;
 }
 
+function SidebarTreeNode({
+  node,
+  icons,
+  onNavigate,
+}: {
+  node: Node;
+  icons: Record<string, string>;
+  onNavigate: (path: string) => void;
+}) {
+  const [open, setOpen] = useState(
+    window.location.pathname.includes(`/editor/${encodeURIComponent(node.parent)}/`),
+  );
+
+  if (node.childrenMeta.length === 0) {
+    const path = editorPathFor(node.parent);
+    return (
+      <a
+        className="sidebar-tree-parent"
+        data-nav={path}
+        href={path}
+        onClick={(e) => {
+          e.preventDefault();
+          onNavigate(path);
+        }}
+      >
+        <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>
+        <span>{node.parentLabel}</span>
+      </a>
+    );
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        className="sidebar-tree-parent sidebar-tree-toggle"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>
+        <span>{node.parentLabel}</span>
+        <span className="sidebar-tree-chevron" dangerouslySetInnerHTML={iconHtml(icons, "chevron")}></span>
+      </button>
+      <div className={`sidebar-tree-collapse${open ? " open" : ""}`} aria-hidden={!open}>
+        <div className="sidebar-tree-collapse-content">
+          <div className="sidebar-tree-children">
+            {node.childrenMeta.map((child) => (
+              <a
+                className="sidebar-tree-child"
+                data-nav={child.path}
+                href={child.path}
+                key={child.key}
+                tabIndex={open ? undefined : -1}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate(child.path);
+                }}
+              >
+                {child.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export default function SidebarContentTreeView({ nodes, icons, onNavigate }: Props) {
   return (
     <>
       {nodes.map((node) => (
         <div className="sidebar-tree-group" key={node.parent}>
-          <a
-            className="sidebar-tree-parent"
-            data-nav={editorPathFor(node.parent)}
-            href={editorPathFor(node.parent)}
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate(editorPathFor(node.parent));
-            }}
-          >
-            <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>
-            <span>{node.parentLabel}</span>
-          </a>
-          {node.children.length > 0 && (
-            <div className="sidebar-tree-children">
-              {node.childrenMeta.map((child) => (
-                <a
-                  className="sidebar-tree-child"
-                  data-nav={`/editor/${child.key}`}
-                  href={`/editor/${child.key}`}
-                  key={child.key}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onNavigate(`/editor/${encodeURIComponent(child.key)}`);
-                  }}
-                >
-                  {child.label}
-                </a>
-              ))}
-            </div>
-          )}
+          <SidebarTreeNode node={node} icons={icons} onNavigate={onNavigate} />
         </div>
       ))}
     </>

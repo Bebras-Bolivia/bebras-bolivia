@@ -4,6 +4,8 @@ type SafeAny = any;
 
 const Editor = {
   currentFile: null as string | null,
+  currentSection: null as string | null,
+  currentSectionLabel: null as string | null,
   currentData: null as SafeAny,
   dirty: false,
   devServerReady: false,
@@ -64,11 +66,13 @@ const Editor = {
     }
   },
 
-  async render(filename: string) {
+  async render(filename: string, section: string | null = null, sectionLabel: string | null = null) {
     const main = document.getElementById("main-content");
     if (!main) return;
 
     this.currentFile = filename;
+    this.currentSection = section;
+    this.currentSectionLabel = sectionLabel;
     this.dirty = false;
 
     try {
@@ -83,10 +87,15 @@ const Editor = {
   },
 
   mountReactPrimitives(root: Element, title: string, filename: string) {
-      window.CMSEditor.mountPrimitives(root, {
-      title,
+    const fields = this.extractPrimitiveFields(this.currentData, "", false);
+    const complexNodes = this.buildComplexNodes(this.currentData, "");
+    const section = this.currentSection;
+    window.CMSEditor.mountPrimitives(root, {
+      title: this.currentSectionLabel || title,
       filename,
-      fields: this.extractPrimitiveFields(this.currentData, "", false),
+      fields: section
+        ? fields.filter((field: SafeAny) => field.path === section || field.path.startsWith(`${section}.`))
+        : fields,
       icons: window.App.icons,
       onSave: () => this.save(),
       onReset: () => this.reset(),
@@ -97,7 +106,7 @@ const Editor = {
       },
       onInitPreview: () => this.ensureDevServer(),
       onInitComplex: () => {},
-      complexNodes: this.buildComplexNodes(this.currentData, ""),
+      complexNodes: section ? complexNodes.filter((node: SafeAny) => node.path === section) : complexNodes,
       onAddArrayItem: (path: string, selectedType: string | null, componentPicker?: boolean) => {
         const currentArr = this.getNestedValue(this.currentData, path);
         if (!Array.isArray(currentArr)) return false;

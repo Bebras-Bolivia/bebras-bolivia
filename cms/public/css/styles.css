@@ -873,6 +873,14 @@ a:hover { text-decoration: underline; }
   user-select: none;
 }
 
+.sidebar-tree-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+}
+
 .sidebar-tree-parent:hover {
   background: var(--bg-hover);
   color: var(--text);
@@ -881,6 +889,10 @@ a:hover { text-decoration: underline; }
 
 .sidebar-tree-parent.active {
   background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.sidebar-tree-group:has(.sidebar-tree-child.active) > .sidebar-tree-toggle {
   color: var(--accent);
 }
 
@@ -893,6 +905,39 @@ a:hover { text-decoration: underline; }
 
 .sidebar-tree-parent.active svg {
   opacity: 1;
+}
+
+.sidebar-tree-chevron {
+  margin-left: auto;
+  transition: transform var(--transition);
+}
+
+.sidebar-tree-chevron svg {
+  width: 14px;
+  height: 14px;
+}
+
+.sidebar-tree-toggle[aria-expanded="true"] .sidebar-tree-chevron {
+  transform: rotate(180deg);
+}
+
+.sidebar-tree-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 240ms ease,
+    opacity 180ms ease;
+}
+
+.sidebar-tree-collapse.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.sidebar-tree-collapse-content {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar-tree-children {
@@ -940,6 +985,13 @@ a:hover { text-decoration: underline; }
 
 .sidebar-tree-child.active::before {
   background: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-tree-collapse,
+  .sidebar-tree-chevron {
+    transition: none;
+  }
 }
 
 .content-tree-item {
