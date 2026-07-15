@@ -4,7 +4,7 @@ type SafeAny = any;
 
 const Editor = {
   currentFile: null as string | null,
-  currentSection: null as string | null,
+  currentSection: null as string[] | null,
   currentSectionLabel: null as string | null,
   currentData: null as SafeAny,
   dirty: false,
@@ -29,6 +29,9 @@ const Editor = {
   getFieldType(path: string, value: unknown) { return this.lib.getFieldType(path, value); },
   getFieldLabel(path: string, key: string) {
     if (path === "header.subtitle") return "Descripcion visible";
+    if (path === "footer.copyrightText") {
+      return `Texto de copyright (se antepone © ${new Date().getFullYear()})`;
+    }
     return this.formatLabel(key);
   },
   isAutoNumberField(path: string) { return this.lib.isAutoNumberField(path, this.currentData); },
@@ -67,7 +70,7 @@ const Editor = {
     }
   },
 
-  async render(filename: string, section: string | null = null, sectionLabel: string | null = null) {
+  async render(filename: string, section: string[] | null = null, sectionLabel: string | null = null) {
     const main = document.getElementById("main-content");
     if (!main) return;
 
@@ -95,7 +98,7 @@ const Editor = {
       title: this.currentSectionLabel || title,
       filename,
       fields: section
-        ? fields.filter((field: SafeAny) => field.path === section || field.path.startsWith(`${section}.`))
+        ? fields.filter((field: SafeAny) => section.some((path) => field.path === path || field.path.startsWith(`${path}.`)))
         : fields,
       icons: window.App.icons,
       onSave: () => this.save(),
@@ -107,7 +110,7 @@ const Editor = {
       },
       onInitPreview: () => this.ensureDevServer(),
       onInitComplex: () => {},
-      complexNodes: section ? complexNodes.filter((node: SafeAny) => node.path === section) : complexNodes,
+      complexNodes: section ? complexNodes.filter((node: SafeAny) => section.includes(node.path)) : complexNodes,
       onAddArrayItem: (path: string, selectedType: string | null, componentPicker?: boolean) => {
         const currentArr = this.getNestedValue(this.currentData, path);
         if (!Array.isArray(currentArr)) return false;

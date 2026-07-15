@@ -20,11 +20,9 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
 };
 
 const navigationSections = [
-  { key: "links", label: "Navegación principal" },
-  { key: "cta", label: "Llamado a la acción" },
-  { key: "socialLinks", label: "Redes sociales" },
-  { key: "internationalLinks", label: "Enlaces internacionales" },
-  { key: "footer", label: "Pie de página" },
+  { key: "navigation", label: "Navegación principal", fields: ["links", "cta"] },
+  { key: "internationalLinks", label: "Enlaces internacionales", fields: ["internationalLinks"] },
+  { key: "footer", label: "Pie de página", fields: ["socialLinks", "footer"] },
 ];
 
 const hiddenContentFiles = new Set([
@@ -39,7 +37,7 @@ const contentHierarchy: Array<{
   label: string;
   parent: string;
   children: string[];
-  sections?: Array<{ key: string; label: string }>;
+  sections?: Array<{ key: string; label: string; fields: string[] }>;
 }> = [
   { label: "Inicio", parent: "home.json", children: [] },
   { label: "Estudiantes", parent: "estudiantes.json", children: [] },
@@ -228,7 +226,7 @@ const App = {
         : meta
           ? `Editar: ${meta.label}`
           : `Editar: ${filename}`;
-      this.showPage(title, () => window.Editor.render(filename, section?.key, section?.label));
+      this.showPage(title, () => window.Editor.render(filename, section?.fields, section?.label));
     } else if (path === "/blog") this.showPage("Noticias", () => window.Blog.renderList());
     else if (path === "/blog/new") this.showPage("Nueva publicacion", () => window.Blog.renderEditor(null));
     else if (path.startsWith("/blog/edit/")) {
