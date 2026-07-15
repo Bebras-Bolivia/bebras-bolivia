@@ -29,9 +29,6 @@ const Editor = {
   getFieldType(path: string, value: unknown) { return this.lib.getFieldType(path, value); },
   getFieldLabel(path: string, key: string) {
     if (path === "header.subtitle") return "Descripcion visible";
-    if (path === "footer.copyrightText") {
-      return `Texto de copyright (se antepone © ${new Date().getFullYear()})`;
-    }
     return this.formatLabel(key);
   },
   isAutoNumberField(path: string) { return this.lib.isAutoNumberField(path, this.currentData); },
