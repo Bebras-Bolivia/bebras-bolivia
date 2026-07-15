@@ -97,7 +97,7 @@ function load(editor: SafeAny, forceReload = false): void {
   const iframe = document.getElementById("preview-frame") as HTMLIFrameElement | null;
   if (!iframe) return;
 
-  const pagePath = editor.fileToPage[editor.currentFile] || "/";
+  const pagePath = editor.currentPreviewPath || editor.fileToPage[editor.currentFile] || "/";
   const base = window.App.appUrl(`/preview-site${pagePath}`);
   const scrollPosition = getIframeScrollPosition(iframe);
 

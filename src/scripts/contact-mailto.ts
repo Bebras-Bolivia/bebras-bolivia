@@ -12,7 +12,7 @@ function buildMailtoUrl(to: string, form: HTMLFormElement): string {
     role && `Rol: ${role}`,
     "",
     message,
-  ].filter((line): line is string => line !== false);
+  ].filter((line): line is string => typeof line === "string");
 
   return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
 }

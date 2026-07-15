@@ -33,7 +33,7 @@ const PageMetaSchema = z.object({
   pageDescription: z.string().optional(),
 });
 
-const SharedPageComponentSchema = z.discriminatedUnion("type", [
+export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("organizerInstitution"),
     accent: BrandColorSchema.optional(),
@@ -298,6 +298,59 @@ const SharedPageComponentSchema = z.discriminatedUnion("type", [
     buttonHref: z.string(),
   }),
 ]);
+
+export const RESERVED_CUSTOM_PAGE_SLUGS = [
+  "api",
+  "blog",
+  "contacto",
+  "docentes",
+  "estudiantes",
+  "faq",
+  "images",
+  "maestros",
+  "prueba",
+  "registro",
+  "sponsors",
+] as const;
+
+const CustomPageComponentSchema = SharedPageComponentSchema.refine(
+  (component) => !["blogIndex", "blogPostUi"].includes(component.type),
+  "Este componente solo puede usarse en el blog",
+);
+
+export const customPagesSchema = z.object({
+  pages: z.array(
+    z.object({
+      id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      title: z.string().trim().min(1),
+      slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      header: z.object({
+        tag: z.string(),
+        heading: z.string(),
+        subtitle: z.string(),
+      }),
+      components: z.array(CustomPageComponentSchema),
+    }),
+  ),
+}).superRefine(({ pages }, ctx) => {
+  const ids = new Set<string>();
+  const slugs = new Set<string>();
+  const reservedSlugs = new Set<string>(RESERVED_CUSTOM_PAGE_SLUGS);
+
+  pages.forEach((page, index) => {
+    if (page.id !== page.slug) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pages", index, "id"], message: "El ID debe coincidir con el slug" });
+    }
+    if (ids.has(page.id)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pages", index, "id"], message: "El ID debe ser único" });
+    }
+    if (slugs.has(page.slug) || reservedSlugs.has(page.slug)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pages", index, "slug"], message: "El slug debe ser único y no estar reservado" });
+    }
+    ids.add(page.id);
+    slugs.add(page.slug);
+  });
+});
 
 // ── Home page ─────────────────────────────────────────────
 
@@ -575,6 +628,7 @@ export const contentSchemas: Record<string, z.ZodType> = {
   "blog-ui.json": blogUiSchema,
   "page-composition.json": pageCompositionSchema,
   "navigation.json": navigationSchema,
+  "custom-pages.json": customPagesSchema,
 };
 
 /** All valid content file names */

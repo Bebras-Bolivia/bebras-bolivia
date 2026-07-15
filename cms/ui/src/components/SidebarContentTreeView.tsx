@@ -59,7 +59,7 @@ function SidebarTreeNode({
         type="button"
         className="sidebar-tree-parent sidebar-tree-toggle"
         aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
+        onClick={() => setOpen((current: boolean) => !current)}
       >
         <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>
         <span>{node.parentLabel}</span>

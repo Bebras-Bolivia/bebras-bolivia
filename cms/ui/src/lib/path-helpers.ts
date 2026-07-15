@@ -245,15 +245,3 @@ const specialLabels: Record<string, string> = {
   docentes: "Docentes",
   estudiantes: "Estudiantes",
 };
-
-/**
- * Generate a slug that doesn't collide with existing page slugs.
- */
-export function generateUniqueSlug(data: SafeAny, base: string): string {
-  const pages = Array.isArray(data?.pages) ? data.pages : [];
-  const used = new Set(pages.map((p: SafeAny) => p.slug));
-  if (!used.has(base)) return base;
-  let i = 2;
-  while (used.has(`${base}-${i}`)) i++;
-  return `${base}-${i}`;
-}

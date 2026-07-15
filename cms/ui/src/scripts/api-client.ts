@@ -73,6 +73,12 @@ const API = {
   listContent() { return this.get("/api/content"); },
   getContent(filename: string) { return this.get(`/api/content/${encodeURIComponent(filename)}`); },
   saveContent(filename: string, data: unknown) { return this.put(`/api/content/${encodeURIComponent(filename)}`, data); },
+  createCustomPage(title: string) {
+    return this.post("/api/content/custom-pages/create", { title });
+  },
+  saveCustomPage(id: string, page: unknown) {
+    return this.put(`/api/content/custom-pages/${encodeURIComponent(id)}`, page);
+  },
 
   listBlog() { return this.get("/api/blog"); },
   getBlog(slug: string) { return this.get(`/api/blog/${encodeURIComponent(slug)}`); },

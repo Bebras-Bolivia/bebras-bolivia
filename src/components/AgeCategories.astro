@@ -30,7 +30,7 @@ interface Props {
 }
 
 const props = Astro.props as Props;
-const source = props.data || catData;
+const source: NonNullable<Props["data"]> = props.data || catData;
 const { sectionTag, heading, subtitle, categories, cardPalette } = source;
 
 const dotColor: Record<string, string> = {

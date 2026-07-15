@@ -6,7 +6,11 @@ const Editor = {
   currentFile: null as string | null,
   currentSection: null as string[] | null,
   currentSectionLabel: null as string | null,
+  currentRootPath: null as string | null,
+  currentCustomPageId: null as string | null,
+  currentPreviewPath: null as string | null,
   currentData: null as SafeAny,
+  customPagePaths: new Set<string>(),
   dirty: false,
   devServerReady: false,
   devServerStarting: false,
@@ -74,10 +78,18 @@ const Editor = {
     this.currentFile = filename;
     this.currentSection = section;
     this.currentSectionLabel = sectionLabel;
+    this.currentRootPath = null;
+    this.currentCustomPageId = null;
+    this.currentPreviewPath = null;
     this.dirty = false;
 
     try {
       this.currentData = await window.API.getContent(filename);
+      this.customPagePaths = new Set();
+      if (filename === "navigation.json") {
+        const customPages = await window.API.getContent("custom-pages.json");
+        this.customPagePaths = new Set((customPages.pages || []).map((page: SafeAny) => `/${page.slug}`));
+      }
       const meta = window.App.contentMeta[filename] || { label: filename };
       main.innerHTML = '<div id="react-editor-primitives-root"></div>';
       const root = document.getElementById("react-editor-primitives-root");
@@ -87,9 +99,42 @@ const Editor = {
     }
   },
 
+  async renderCustomPage(pageId: string) {
+    const main = document.getElementById("main-content");
+    if (!main) return;
+
+    this.currentFile = "custom-pages.json";
+    this.currentSection = null;
+    this.currentSectionLabel = null;
+    this.currentRootPath = null;
+    this.currentCustomPageId = pageId;
+    this.currentPreviewPath = null;
+    this.dirty = false;
+
+    try {
+      this.currentData = await window.API.getContent("custom-pages.json");
+      const pageIndex = this.currentData.pages?.findIndex((page: SafeAny) => page.id === pageId) ?? -1;
+      if (pageIndex < 0) throw new Error("La página solicitada no existe");
+      const page = this.currentData.pages[pageIndex];
+      const headerTitle = document.getElementById("header-title");
+      if (headerTitle) headerTitle.textContent = `Editar: ${page.title}`;
+      this.currentRootPath = `pages[${pageIndex}]`;
+      this.currentPreviewPath = `/${page.slug}`;
+      main.innerHTML = '<div id="react-editor-primitives-root"></div>';
+      const root = document.getElementById("react-editor-primitives-root");
+      if (root) this.mountReactPrimitives(root, page.title, "custom-pages.json");
+    } catch (err: SafeAny) {
+      main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
+    }
+  },
+
   mountReactPrimitives(root: Element, title: string, filename: string) {
-    const fields = this.extractPrimitiveFields(this.currentData, "", false);
-    const complexNodes = this.buildComplexNodes(this.currentData, "");
+    const rootData = this.currentRootPath
+      ? this.getNestedValue(this.currentData, this.currentRootPath)
+      : this.currentData;
+    const rootPath = this.currentRootPath || "";
+    const fields = this.extractPrimitiveFields(rootData, rootPath, false);
+    const complexNodes = this.buildComplexNodes(rootData, rootPath);
     const section = this.currentSection;
     window.CMSEditor.mountPrimitives(root, {
       title: this.currentSectionLabel || title,
@@ -109,6 +154,9 @@ const Editor = {
       onInitComplex: () => {},
       complexNodes: section ? complexNodes.filter((node: SafeAny) => section.includes(node.path)) : complexNodes,
       onAddArrayItem: (path: string, selectedType: string | null, componentPicker?: boolean) => {
+        if (this.currentFile === "navigation.json" && path === "links") {
+          return this.createCustomPage();
+        }
         const currentArr = this.getNestedValue(this.currentData, path);
         if (!Array.isArray(currentArr)) return false;
         if (componentPicker) {
@@ -130,7 +178,10 @@ const Editor = {
     const root = document.getElementById("react-editor-primitives-root");
     if (!root || !this.currentFile) return;
     const meta = window.App.contentMeta[this.currentFile] || { label: this.currentFile };
-    this.mountReactPrimitives(root, meta.label, this.currentFile);
+    const rootTitle = this.currentRootPath
+      ? this.getNestedValue(this.currentData, this.currentRootPath)?.title
+      : null;
+    this.mountReactPrimitives(root, rootTitle || meta.label, this.currentFile);
   },
 
   buildComplexNodes(obj: SafeAny, path = "") {
@@ -177,7 +228,9 @@ const Editor = {
       label: this.formatLabel(key),
       addOptions,
       componentPicker: usePicker,
+      buttonLabel: this.currentFile === "navigation.json" && path === "links" ? "Crear página" : "Agregar",
       locked: this.isLockedArray(path),
+      removable: !(this.currentFile === "navigation.json" && path === "links"),
       items: arr.map((item, idx) => {
         const itemPath = `${path}[${idx}]`;
         const itemIsObject = item && typeof item === "object" && !Array.isArray(item);
@@ -244,8 +297,42 @@ const Editor = {
       type: editorType,
       value,
       options: editorType === "select" ? this.getSelectOptions(path, key) : undefined,
-      readOnly: editorType === "number" && this.isAutoNumberField(path),
+      readOnly:
+        (editorType === "number" && this.isAutoNumberField(path))
+        || (this.currentFile === "navigation.json" && /^links\[\d+\]\.href$/.test(path))
+        || (this.currentFile === "navigation.json" && this.isCustomPageNavigationLabel(path))
+        || (this.currentFile === "custom-pages.json" && /\.slug$/.test(path)),
     };
+  },
+
+  isCustomPageNavigationLabel(path: string) {
+    const match = path.match(/^links\[(\d+)\]\.label$/);
+    if (!match) return false;
+    return this.customPagePaths.has(this.currentData?.links?.[Number(match[1])]?.href);
+  },
+
+  async createCustomPage() {
+    const title = await window.CMSModal.openInput({
+      title: "Crear página",
+      subtitle: "La página se añadirá a la navegación y podrás construirla con componentes.",
+      label: "Nombre de la página",
+      placeholder: "Ej. Recursos para docentes",
+      confirmLabel: "Crear página",
+      cancelLabel: "Cancelar",
+      maxLength: 80,
+    });
+    if (!title?.trim()) return false;
+
+    try {
+      const result = await window.API.createCustomPage(title.trim());
+      await window.App.renderSidebarContentTree();
+      window.Toast.success("Página creada y añadida a la navegación");
+      window.App.navigate(`/editor/custom-pages.json/${encodeURIComponent(result.page.id)}`);
+      return true;
+    } catch (err: SafeAny) {
+      window.Toast.error(err?.message || "No se pudo crear la página");
+      return false;
+    }
   },
 
   addArrayItem(path: string, currentArr: SafeAny[], selectedType: string | null = null) {
@@ -319,7 +406,9 @@ const Editor = {
   async openAddComponentModal(path: string, currentArr: SafeAny[]) {
     // Shared components have their own rich option list; typed arrays (e.g. home
     // sections) carry their options — with descriptions — via getAddTypeOptions.
-    const componentOptions = this.lib.getComponentOptions(path);
+    const componentOptions = this.lib.getComponentOptions(path).filter(
+      (option: SafeAny) => this.currentFile !== "custom-pages.json" || !["blogIndex", "blogPostUi"].includes(option.value),
+    );
     const options = componentOptions.length ? componentOptions : this.getAddTypeOptions(path);
     if (!options.length || !window.CMSModal?.openPicker) return false;
     const selected = await window.CMSModal.openPicker({
@@ -333,7 +422,16 @@ const Editor = {
 
   async save() {
     try {
-      await window.API.saveContent(this.currentFile, this.currentData);
+      if (this.currentFile === "custom-pages.json" && this.currentCustomPageId && this.currentRootPath) {
+        const page = this.getNestedValue(this.currentData, this.currentRootPath);
+        await window.API.saveCustomPage(this.currentCustomPageId, page);
+        await window.App.renderSidebarContentTree();
+        const headerTitle = document.getElementById("header-title");
+        if (headerTitle) headerTitle.textContent = `Editar: ${page.title}`;
+        this.rerenderEditorForm();
+      } else {
+        await window.API.saveContent(this.currentFile, this.currentData);
+      }
       this.dirty = false;
       if (this.devServerReady) {
         await this.waitForPreviewUpdate();

@@ -28,6 +28,8 @@ export type ComplexNode =
       label: string;
       addOptions: Array<{ value: string; label: string }>;
       componentPicker?: boolean;
+      buttonLabel?: string;
+      removable?: boolean;
       /**
        * When true, the array's structure is fixed — no add, remove, or reorder.
        * Used for arrays whose items map to physical site files (e.g. nav links
@@ -347,7 +349,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                     setDraftValue={props.setDraftValue}
                   />
                 )}
-                {!locked ? (
+                {!locked && node.removable !== false ? (
                   <ArrayItemActionsView trashIcon={icons.trash || ""} onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
                 ) : null}
               </div>
@@ -432,7 +434,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                     />
                   ) : null}
                 </span>
-                {item.collapsible && !locked ? (
+                {item.collapsible && !locked && node.removable !== false ? (
                   <span className="array-item-header-right">
                     <ArrayItemActionsView trashIcon={icons.trash || ""} inline onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
                   </span>
@@ -474,7 +476,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                 </div>
               </div>
 
-              {!item.collapsible && !locked ? (
+              {!item.collapsible && !locked && node.removable !== false ? (
                 <ArrayItemActionsView trashIcon={icons.trash || ""} onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
               ) : null}
             </div>
@@ -485,7 +487,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
         <ArrayActionsView
           options={node.addOptions}
           showSelect={!node.componentPicker && node.addOptions.length > 0}
-          buttonLabel="Agregar"
+          buttonLabel={node.buttonLabel || "Agregar"}
           onAdd={(selectedType) => onAddArrayItem(node.path, selectedType, node.componentPicker)}
         />
       )}

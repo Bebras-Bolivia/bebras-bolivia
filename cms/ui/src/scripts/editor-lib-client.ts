@@ -10,7 +10,6 @@ import {
   escapeForPre,
   toHexColor,
   formatLabel,
-  generateUniqueSlug,
   // templates
   fileToPage,
   fieldHints,
@@ -47,7 +46,6 @@ const lib = {
   escapeForPre,
   toHexColor,
   formatLabel,
-  generateUniqueSlug,
   // templates & config
   fileToPage,
   fieldHints,

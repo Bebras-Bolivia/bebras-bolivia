@@ -1,0 +1,32 @@
+---
+import StandardContentPage from "@/components/StandardContentPage.astro";
+import customPagesData from "@/data/custom-pages.json";
+
+interface CustomPage {
+  id: string;
+  title: string;
+  slug: string;
+  header: {
+    tag: string;
+    heading: string;
+    subtitle: string;
+  };
+  components: any[];
+}
+
+export function getStaticPaths() {
+  return (customPagesData.pages as CustomPage[]).map((page) => ({
+    params: { customPage: page.slug },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props as { page: CustomPage };
+---
+
+<StandardContentPage
+  title={page.title}
+  description={page.header.subtitle}
+  header={page.header}
+  components={page.components}
+/>

@@ -5,10 +5,9 @@ import SidebarContentTreeView from "../components/SidebarContentTreeView";
 type Payload = {
   nodes: Array<{
     parent: string;
-    children: string[];
     parentLabel: string;
     parentIcon: string;
-    childrenMeta: Array<{ key: string; label: string }>;
+    childrenMeta: Array<{ key: string; label: string; path: string }>;
   }>;
   icons: Record<string, string>;
   onNavigate: (path: string) => void;

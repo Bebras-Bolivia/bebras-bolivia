@@ -22,7 +22,7 @@ const paths = {
 };
 
 const bunBin = process.platform === "win32" ? "bun.exe" : "bun";
-const obsoleteDataFiles = new Set(["custom-pages.json", "site.json", "navigation.json"]);
+const obsoleteDataFiles = new Set(["site.json"]);
 
 function needsShell(command) {
   return process.platform === "win32" && /\.(cmd|bat)$/i.test(command);

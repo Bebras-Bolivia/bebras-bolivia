@@ -17,6 +17,11 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
     desc: "Navegación, llamado a la acción, redes sociales y pie de página",
     icon: "link",
   },
+  "custom-pages.json": {
+    label: "Páginas",
+    desc: "Páginas creadas con componentes reutilizables",
+    icon: "layers",
+  },
 };
 
 const navigationSections = [
@@ -45,6 +50,7 @@ const contentHierarchy: Array<{
   { label: "Patrocinadores", parent: "sponsors.json", children: [] },
   { label: "Contacto", parent: "contact.json", children: [] },
   { label: "Registro", parent: "registro.json", children: [] },
+  { label: "Páginas", parent: "custom-pages.json", children: [] },
   { label: "Configuración global", parent: "navigation.json", children: [], sections: navigationSections },
 ];
 
@@ -168,25 +174,37 @@ const App = {
     if (!container) return;
     try {
       const contentData = await window.API.listContent();
+      const customPagesData = contentData.files?.includes("custom-pages.json")
+        ? await window.API.getContent("custom-pages.json")
+        : { pages: [] };
       const tree = this.getContentTree(contentData.files || []);
-      const nodes = tree.map((node) => {
-        const parentMeta = contentMeta[node.parent] || { label: node.parent, icon: "edit" };
-        const fileChildren = node.children.map((child: string) => ({
-          key: child,
-          label: contentMeta[child]?.label || child,
-          path: `/editor/${encodeURIComponent(child)}`,
-        }));
-        const sectionChildren = node.sections.map((section) => ({
-          ...section,
-          path: `/editor/${encodeURIComponent(node.parent)}/${encodeURIComponent(section.key)}`,
-        }));
-        return {
-          parent: node.parent,
-          parentLabel: parentMeta.label || node.parent,
-          parentIcon: parentMeta.icon || "edit",
-          childrenMeta: [...fileChildren, ...sectionChildren],
-        };
-      });
+      const nodes = tree
+        .filter((node) => node.parent !== "custom-pages.json" || customPagesData.pages?.length > 0)
+        .map((node) => {
+          const parentMeta = contentMeta[node.parent] || { label: node.parent, icon: "edit" };
+          const fileChildren = node.children.map((child: string) => ({
+            key: child,
+            label: contentMeta[child]?.label || child,
+            path: `/editor/${encodeURIComponent(child)}`,
+          }));
+          const sectionChildren = node.sections.map((section) => ({
+            ...section,
+            path: `/editor/${encodeURIComponent(node.parent)}/${encodeURIComponent(section.key)}`,
+          }));
+          const customPageChildren = node.parent === "custom-pages.json"
+            ? (customPagesData.pages || []).map((page: { id: string; title: string }) => ({
+                key: page.id,
+                label: page.title,
+                path: `/editor/custom-pages.json/${encodeURIComponent(page.id)}`,
+              }))
+            : [];
+          return {
+            parent: node.parent,
+            parentLabel: parentMeta.label || node.parent,
+            parentIcon: parentMeta.icon || "edit",
+            childrenMeta: [...fileChildren, ...sectionChildren, ...customPageChildren],
+          };
+        });
       container.innerHTML = '<div id="react-sidebar-tree-root"></div>';
       const root = document.getElementById("react-sidebar-tree-root");
       if (root) {
@@ -219,6 +237,10 @@ const App = {
       const section = filename === "navigation.json"
         ? navigationSections.find((item) => item.key === routeSection)
         : undefined;
+      if (filename === "custom-pages.json" && routeSection) {
+        this.showPage("Editar página", () => window.Editor.renderCustomPage(routeSection));
+        return;
+      }
       const meta = contentMeta[filename];
       const title = section
         ? `${meta?.label || filename}: ${section.label}`
