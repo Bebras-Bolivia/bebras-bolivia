@@ -21,7 +21,6 @@ const contentMeta: Record<string, { label: string; desc: string; icon: string }>
 
 const navigationSections = [
   { key: "navigation", label: "Navegación principal", fields: ["links", "cta"] },
-  { key: "internationalLinks", label: "Enlaces internacionales", fields: ["internationalLinks"] },
   { key: "footer", label: "Pie de página", fields: ["socialLinks", "footer"] },
 ];
 

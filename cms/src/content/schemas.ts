@@ -550,14 +550,6 @@ export const navigationSchema = z.object({
       icon: SocialIconSchema,
     })
   ),
-  internationalLinks: z
-    .array(
-      z.object({
-        label: z.string(),
-        href: z.string(),
-      })
-    )
-    .default([]),
   footer: z
     .object({
       copyrightText: z.string(),

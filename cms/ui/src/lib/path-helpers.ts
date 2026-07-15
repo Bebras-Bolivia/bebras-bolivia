@@ -120,7 +120,6 @@ const specialLabels: Record<string, string> = {
   info: "Información",
   brand: "Marca",
   footerColumns: "Columnas del pie de página",
-  internationalLinks: "Enlaces internacionales",
   international: "Internacional",
   socialLinks: "Redes sociales",
   links: "Enlaces",

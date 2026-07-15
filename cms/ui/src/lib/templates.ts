@@ -228,7 +228,7 @@ export function isAutoNumberField(path: string, currentData: unknown): boolean {
 }
 
 export function isCollapsibleArray(path: string): boolean {
-  return ["components", "sections", "pages", "blocks", "links", "footerColumns", "socialLinks", "internationalLinks"].includes(path)
+  return ["components", "sections", "pages", "blocks", "links", "footerColumns", "socialLinks"].includes(path)
     || path.endsWith(".components")
     || path.endsWith(".sections")
     || path.endsWith(".pages")
@@ -416,10 +416,7 @@ export function createEmptyArrayItem(
     return { label: "", href: "", description: "" };
   }
 
-  if (
-    normalizedPath.endsWith("internationalLinks") ||
-    normalizedPath.endsWith("footerColumns[].links")
-  ) {
+  if (normalizedPath.endsWith("footerColumns[].links")) {
     return { label: "", href: "" };
   }
 
