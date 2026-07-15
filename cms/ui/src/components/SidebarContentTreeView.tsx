@@ -4,6 +4,7 @@ type Node = {
   parent: string;
   parentLabel: string;
   parentIcon: string;
+  path?: string;
   childrenMeta: Array<{ key: string; label: string; path: string }>;
 };
 
@@ -36,7 +37,7 @@ function SidebarTreeNode({
   );
 
   if (node.childrenMeta.length === 0) {
-    const path = editorPathFor(node.parent);
+    const path = node.path || editorPathFor(node.parent);
     return (
       <a
         className={`sidebar-tree-parent${currentPath === path ? " active" : ""}`}

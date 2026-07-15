@@ -277,6 +277,12 @@ const Editor = {
     Object.entries(obj).forEach(([key, value]) => {
       const fieldPath = path ? `${path}.${key}` : key;
       if (this.lib.shouldHideField(key)) return;
+      if (
+        this.currentFile === "custom-pages.json"
+        && this.currentRootPath
+        && ["title", "slug"].includes(key)
+        && path === this.currentRootPath
+      ) return;
       if (this.isAutoNumberField(fieldPath)) return;
       if (value === null || value === undefined || Array.isArray(value)) return;
       if (typeof value === "object") {
