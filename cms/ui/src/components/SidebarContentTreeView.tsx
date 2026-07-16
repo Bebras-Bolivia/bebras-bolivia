@@ -48,7 +48,7 @@ function SidebarTreeNode({
           onNavigate(path);
         }}
       >
-        {node.parentIcon ? <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon)}></span> : null}
+        <span aria-hidden="true" dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "")}></span>
         <span>{node.parentLabel}</span>
       </a>
     );
@@ -62,7 +62,7 @@ function SidebarTreeNode({
         aria-expanded={open}
         onClick={() => setOpen((current: boolean) => !current)}
       >
-        {node.parentIcon ? <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon)}></span> : null}
+        <span aria-hidden="true" dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "")}></span>
         <span>{node.parentLabel}</span>
         <span className="sidebar-tree-chevron" dangerouslySetInnerHTML={iconHtml(icons, "chevron")}></span>
       </button>
