@@ -39,11 +39,6 @@
       "label": "Recursos",
       "href": "/recursos",
       "active": true
-    },
-    {
-      "label": "Esternoleidomastoideo",
-      "href": "/esternoleidomastoideo",
-      "active": true
     }
   ],
   "cta": {

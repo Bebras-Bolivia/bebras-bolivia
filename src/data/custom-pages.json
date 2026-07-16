@@ -4,22 +4,10 @@
       "id": "recursos",
       "title": "Recursos",
       "slug": "recursos",
-      "active": false,
-      "header": {
-        "tag": "Página",
-        "heading": "Recursos",
-        "subtitle": "Agrega una descripción para esta página."
-      },
-      "components": []
-    },
-    {
-      "id": "esternoleidomastoideo",
-      "title": "Esternoleidomastoideo",
-      "slug": "esternoleidomastoideo",
       "active": true,
       "header": {
         "tag": "Página",
-        "heading": "Esternoleidomastoideo",
+        "heading": "Recursos",
         "subtitle": "Agrega una descripción para esta página."
       },
       "components": []
