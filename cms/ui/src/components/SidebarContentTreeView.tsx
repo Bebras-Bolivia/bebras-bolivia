@@ -3,7 +3,7 @@ import React, { useState } from "react";
 type Node = {
   parent: string;
   parentLabel: string;
-  parentIcon: string;
+  parentIcon?: string;
   path?: string;
   childrenMeta: Array<{ key: string; label: string; path: string }>;
 };
@@ -48,7 +48,7 @@ function SidebarTreeNode({
           onNavigate(path);
         }}
       >
-        <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>
+        {node.parentIcon ? <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon)}></span> : null}
         <span>{node.parentLabel}</span>
       </a>
     );
@@ -62,7 +62,7 @@ function SidebarTreeNode({
         aria-expanded={open}
         onClick={() => setOpen((current: boolean) => !current)}
       >
-        <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon || "edit")}></span>
+        {node.parentIcon ? <span dangerouslySetInnerHTML={iconHtml(icons, node.parentIcon)}></span> : null}
         <span>{node.parentLabel}</span>
         <span className="sidebar-tree-chevron" dangerouslySetInnerHTML={iconHtml(icons, "chevron")}></span>
       </button>

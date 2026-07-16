@@ -17,11 +17,13 @@ interface CustomPage {
 export function getStaticPaths() {
   return (customPagesData.pages as CustomPage[]).map((page) => ({
     params: { customPage: page.slug },
-    props: { page },
   }));
 }
 
-const { page } = Astro.props as { page: CustomPage };
+const page = (customPagesData.pages as CustomPage[]).find(
+  (item) => item.slug === Astro.params.customPage,
+);
+if (!page) throw new Error(`Página personalizada no encontrada: ${Astro.params.customPage}`);
 ---
 
 <StandardContentPage

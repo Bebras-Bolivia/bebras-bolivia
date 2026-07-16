@@ -178,7 +178,6 @@ const App = {
           return (customPagesData.pages || []).map((page: { id: string; title: string }) => ({
             parent: `custom-page:${page.id}`,
             parentLabel: page.title,
-            parentIcon: "edit",
             path: `/editor/custom-pages.json/${encodeURIComponent(page.id)}`,
             childrenMeta: [],
           }));
