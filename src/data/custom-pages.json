@@ -4,6 +4,7 @@
       "id": "recursos",
       "title": "Recursos",
       "slug": "recursos",
+      "active": false,
       "header": {
         "tag": "Página",
         "heading": "Recursos",
