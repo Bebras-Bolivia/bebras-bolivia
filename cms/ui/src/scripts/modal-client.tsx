@@ -37,8 +37,10 @@ type InputPayload = {
   placeholder?: string;
   defaultValue?: string;
   maxLength?: number;
+  requiredValue?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  tone?: "danger" | "default";
 };
 
 
@@ -430,6 +432,7 @@ function ConfirmModal({ payload, onClose }: { payload: ConfirmPayload; onClose: 
 function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (value: string | null) => void }) {
   const [value, setValue] = React.useState(payload.defaultValue || "");
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const canSubmit = value.trim().length > 0 && (payload.requiredValue === undefined || value === payload.requiredValue);
 
   React.useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
@@ -459,6 +462,7 @@ function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (val
           className="editor-input-form"
           onSubmit={(e) => {
             e.preventDefault();
+            if (!canSubmit) return;
             onClose(value);
           }}
         >
@@ -471,6 +475,9 @@ function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (val
               value={value}
               maxLength={payload.maxLength || 120}
               placeholder={payload.placeholder}
+              autoComplete="off"
+              autoCapitalize={payload.requiredValue !== undefined ? "none" : undefined}
+              spellCheck={payload.requiredValue !== undefined ? false : undefined}
               onChange={(e) => setValue(e.target.value)}
             />
             <div className="form-hint">{value.length}/{payload.maxLength || 120}</div>
@@ -479,7 +486,11 @@ function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (val
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => onClose(null)}>
               {payload.cancelLabel || "Cancelar"}
             </button>
-            <button type="submit" className="btn btn-primary btn-sm">
+            <button
+              type="submit"
+              className={`btn ${payload.tone === "danger" ? "btn-danger" : "btn-primary"} btn-sm`}
+              disabled={!canSubmit}
+            >
               {payload.confirmLabel || "Aceptar"}
             </button>
           </div>

@@ -1,16 +1,3 @@
 {
-  "pages": [
-    {
-      "id": "recursos",
-      "title": "Recursos",
-      "slug": "recursos",
-      "active": true,
-      "header": {
-        "tag": "Página",
-        "heading": "Recursos",
-        "subtitle": "Agrega una descripción para esta página."
-      },
-      "components": []
-    }
-  ]
+  "pages": []
 }

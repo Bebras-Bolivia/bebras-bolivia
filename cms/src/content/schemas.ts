@@ -311,9 +311,9 @@ const CustomPageComponentSchema = SharedPageComponentSchema.refine(
 export const customPagesSchema = z.object({
   pages: z.array(
     z.object({
-      id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-      title: z.string().trim().min(1),
-      slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      id: z.string().max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      title: z.string().trim().min(1).max(80),
+      slug: z.string().max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
       active: z.boolean().default(true),
       header: z.object({
         tag: z.string(),

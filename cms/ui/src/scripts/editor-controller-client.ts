@@ -269,7 +269,7 @@ const Editor = {
           statusLabel: isNavigationPage && !active ? "Inactiva" : undefined,
           actions: isNavigationPage
             ? [
-                { id: "toggle-page", label: `${active ? "Desactivar" : "Activar"} ${actionSubject}`, icon: active ? "eye-off" : "eye" },
+                { id: "toggle-page", label: `${active ? "Desactivar" : "Activar"} ${actionSubject}`, icon: active ? "eye" : "eye-off" },
                 ...(customPage ? [{ id: "delete-page", label: `Eliminar ${actionSubject}`, icon: "trash", tone: "danger" }] : []),
               ]
             : undefined,
@@ -319,14 +319,19 @@ const Editor = {
 
     if (action === "delete-page") {
       if (!page) return;
-      const confirmed = await window.CMSModal.openConfirm({
+      const requiredValue = page.title.toLocaleLowerCase("es");
+      const confirmation = await window.CMSModal.openInput({
         title: `Eliminar ${page.title}`,
-        message: "Se eliminarán la página y su enlace de navegación. Esta acción solo puede recuperarse desde un respaldo.",
+        subtitle: `Esta acción solo puede recuperarse desde un respaldo. Escribe “${requiredValue}” para confirmar.`,
+        label: "Nombre de la página en minúsculas",
+        placeholder: requiredValue,
+        requiredValue,
+        maxLength: 80,
         confirmLabel: "Eliminar página",
         cancelLabel: "Cancelar",
         tone: "danger",
       });
-      if (!confirmed) return;
+      if (confirmation !== requiredValue) return;
 
       try {
         const result = await window.API.deleteCustomPage(page.id);
@@ -417,7 +422,19 @@ const Editor = {
     if (!title?.trim()) return false;
 
     try {
-      const result = await window.API.createCustomPage(title.trim());
+      const normalizedTitle = title.normalize("NFC").trim().replace(/\s+/g, " ");
+      const result = await window.API.createCustomPage(normalizedTitle);
+      const previewStatus = await window.API.previewStatus().catch(() => null);
+      if (previewStatus?.running) {
+        try {
+          await window.API.stopPreview();
+          this.devServerReady = false;
+          this.devServerStarting = false;
+          this.previewMode = null;
+        } catch (previewError) {
+          console.warn("No se pudo reiniciar la vista previa para la nueva página:", previewError);
+        }
+      }
       await window.App.renderSidebarContentTree();
       window.Toast.success("Página creada y añadida a la navegación");
       window.App.navigate(`/editor/custom-pages.json/${encodeURIComponent(result.page.id)}`);
