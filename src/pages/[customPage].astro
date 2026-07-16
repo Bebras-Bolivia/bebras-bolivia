@@ -6,6 +6,7 @@ interface CustomPage {
   id: string;
   title: string;
   slug: string;
+  active?: boolean;
   header: {
     tag: string;
     heading: string;
@@ -15,9 +16,11 @@ interface CustomPage {
 }
 
 export function getStaticPaths() {
-  return (customPagesData.pages as CustomPage[]).map((page) => ({
-    params: { customPage: page.slug },
-  }));
+  return (customPagesData.pages as CustomPage[])
+    .filter((page) => import.meta.env.DEV || page.active !== false)
+    .map((page) => ({
+      params: { customPage: page.slug },
+    }));
 }
 
 const page = (customPagesData.pages as CustomPage[]).find(

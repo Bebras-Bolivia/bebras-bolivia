@@ -11,6 +11,7 @@ const Editor = {
   currentPreviewPath: null as string | null,
   currentData: null as SafeAny,
   customPagePaths: new Set<string>(),
+  customPagesByPath: new Map<string, { id: string; title: string; active: boolean }>(),
   dirty: false,
   devServerReady: false,
   devServerStarting: false,
@@ -86,9 +87,14 @@ const Editor = {
     try {
       this.currentData = await window.API.getContent(filename);
       this.customPagePaths = new Set();
+      this.customPagesByPath = new Map();
       if (filename === "navigation.json") {
         const customPages = await window.API.getContent("custom-pages.json");
         this.customPagePaths = new Set((customPages.pages || []).map((page: SafeAny) => `/${page.slug}`));
+        this.customPagesByPath = new Map((customPages.pages || []).map((page: SafeAny) => [
+          `/${page.slug}`,
+          { id: page.id, title: page.title, active: page.active !== false },
+        ]));
       }
       const meta = window.App.contentMeta[filename] || { label: filename };
       main.innerHTML = '<div id="react-editor-primitives-root"></div>';
@@ -171,6 +177,7 @@ const Editor = {
         else this.collapsedItems.add(itemPath);
       },
       onMoveArrayItem: (path: string, fromIdx: number, toIdx: number) => this.moveArrayItem(path, fromIdx, toIdx),
+      onItemAction: (path: string, idx: number, action: string) => this.handleArrayItemAction(path, idx, action),
     });
   },
 
@@ -245,6 +252,12 @@ const Editor = {
         // group so a non-technical editor sees only content by default.
         const itemType = itemIsObject ? item.type : undefined;
         const { content, advanced } = this.splitFieldsByGroup(itemType, allFields);
+        const customPage = this.currentFile === "navigation.json" && path === "links"
+          ? this.customPagesByPath.get(item?.href)
+          : undefined;
+        const isNavigationPage = this.currentFile === "navigation.json" && path === "links";
+        const active = customPage ? customPage.active : item?.active !== false;
+        const actionSubject = customPage?.title || item?.label || `página ${idx + 1}`;
         return {
           idx,
           itemPath,
@@ -253,10 +266,83 @@ const Editor = {
           expanded,
           fields: content,
           advancedFields: advanced,
+          statusLabel: isNavigationPage && !active ? "Inactiva" : undefined,
+          actions: isNavigationPage
+            ? [
+                { id: "toggle-page", label: `${active ? "Desactivar" : "Activar"} ${actionSubject}`, icon: active ? "eye-off" : "eye" },
+                ...(customPage ? [{ id: "delete-page", label: `Eliminar ${actionSubject}`, icon: "trash", tone: "danger" }] : []),
+              ]
+            : undefined,
           children: itemIsObject ? this.buildComplexNodes(item, itemPath) : [],
         };
       }),
     };
+  },
+
+  async handleArrayItemAction(path: string, idx: number, action: string) {
+    if (this.currentFile !== "navigation.json" || path !== "links") return;
+    const link = this.currentData?.links?.[idx];
+    const page = link ? this.customPagesByPath.get(link.href) : null;
+    if (!link) return;
+
+    if (action === "toggle-page") {
+      const active = page ? !page.active : link.active === false;
+      const title = page?.title || link.label;
+      const confirmed = await window.CMSModal.openConfirm({
+        title: `${active ? "Activar" : "Desactivar"} ${title}`,
+        message: active
+          ? "La página volverá a estar disponible en el sitio y en la navegación pública."
+          : page
+            ? "La página dejará de estar disponible en el sitio público, pero conservará todo su contenido."
+            : "La página se ocultará de la navegación pública, pero conservará su contenido y su URL.",
+        confirmLabel: active ? "Activar" : "Desactivar",
+        cancelLabel: "Cancelar",
+      });
+      if (!confirmed) return;
+
+      try {
+        if (page) {
+          await window.API.setCustomPageActive(page.id, active);
+          this.customPagesByPath.set(link.href, { ...page, active });
+        } else {
+          await window.API.setNavigationLinkActive(link.href, active);
+          link.active = active;
+        }
+        this.rerenderEditorForm();
+        await window.App.renderSidebarContentTree();
+        window.Toast.success(active ? "Página activada" : "Página desactivada");
+      } catch (err: SafeAny) {
+        window.Toast.error(err?.message || "No se pudo cambiar el estado de la página");
+      }
+      return;
+    }
+
+    if (action === "delete-page") {
+      if (!page) return;
+      const confirmed = await window.CMSModal.openConfirm({
+        title: `Eliminar ${page.title}`,
+        message: "Se eliminarán la página y su enlace de navegación. Esta acción solo puede recuperarse desde un respaldo.",
+        confirmLabel: "Eliminar página",
+        cancelLabel: "Cancelar",
+        tone: "danger",
+      });
+      if (!confirmed) return;
+
+      try {
+        const result = await window.API.deleteCustomPage(page.id);
+        this.currentData.links = this.currentData.links.filter((item: SafeAny) => item.href !== link.href);
+        if (!result.navigation?.cta && this.currentData.cta?.href === link.href) {
+          delete this.currentData.cta;
+        }
+        this.customPagePaths.delete(link.href);
+        this.customPagesByPath.delete(link.href);
+        this.rerenderEditorForm();
+        await window.App.renderSidebarContentTree();
+        window.Toast.success("Página eliminada");
+      } catch (err: SafeAny) {
+        window.Toast.error(err?.message || "No se pudo eliminar la página");
+      }
+    }
   },
 
   toPrimitiveArrayField(path: string, key: string, value: unknown, idx: number) {
@@ -277,10 +363,11 @@ const Editor = {
     Object.entries(obj).forEach(([key, value]) => {
       const fieldPath = path ? `${path}.${key}` : key;
       if (this.lib.shouldHideField(key)) return;
+      if (this.currentFile === "navigation.json" && key === "active" && /^links\[\d+\]$/.test(path)) return;
       if (
         this.currentFile === "custom-pages.json"
         && this.currentRootPath
-        && ["title", "slug"].includes(key)
+        && ["title", "slug", "active"].includes(key)
         && path === this.currentRootPath
       ) return;
       if (this.isAutoNumberField(fieldPath)) return;

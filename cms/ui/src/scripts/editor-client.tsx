@@ -26,6 +26,7 @@ type PrimitivesPayload = {
   onRemoveArrayItem?: (path: string, idx: number) => boolean | void;
   onToggleArrayCollapse?: (itemPath: string, expanded: boolean) => void;
   onMoveArrayItem?: (path: string, fromIdx: number, toIdx: number) => boolean | void;
+  onItemAction?: (path: string, idx: number, action: string) => void | Promise<void>;
   complexNodes?: ComplexNode[];
 };
 
@@ -136,6 +137,7 @@ function EditorPrimitivesView({
   onRemoveArrayItem,
   onToggleArrayCollapse,
   onMoveArrayItem,
+  onItemAction,
   complexNodes = [],
 }: PrimitivesPayload) {
   const complexRef = React.useRef<HTMLDivElement | null>(null);
@@ -257,6 +259,7 @@ function EditorPrimitivesView({
                   const changed = onMoveArrayItem?.(path, fromIdx, toIdx);
                   if (changed !== false) markChanged();
                 }}
+                onItemAction={onItemAction || (() => {})}
               />
             ) : null}
           </div>

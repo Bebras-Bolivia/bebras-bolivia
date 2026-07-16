@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import castorCircle from "@/assets/castor-circle.png";
 import navData from "@/data/navigation.json";
+import customPagesData from "@/data/custom-pages.json";
 import MobileMenu from "./MobileMenu";
 
 interface Props {
@@ -142,7 +143,15 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
     return currentPath === href || currentPath.startsWith(href + "/");
   };
 
-  const allLinks = navData.links;
+  const inactiveCustomPaths = new Set(
+    (customPagesData.pages as Array<{ slug: string; active?: boolean }>)
+      .filter((page) => page.active === false)
+      .map((page) => `/${page.slug}`),
+  );
+  const allLinks = (navData.links as Array<{ label: string; href: string; active?: boolean }>).filter(
+    (link) => link.active !== false && !inactiveCustomPaths.has(link.href),
+  );
+  const visibleCta = navData.cta && !inactiveCustomPaths.has(navData.cta.href) ? navData.cta : undefined;
 
   return (
     <header ref={headerShellRef} className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4 md:px-6">
@@ -181,27 +190,27 @@ export default function BebrasHeader({ currentPath: initialPath = "/" }: Props) 
                 {link.label}
               </a>
             ))}
-            {navData.cta && (
+            {visibleCta && (
               <a
-                href={navData.cta.href}
+                href={visibleCta.href}
                 className="shrink-0 rounded-2xl bg-bebras-red px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-bebras-red/20 transition-all duration-200 hover:bg-bebras-red-dark min-[1180px]:px-4"
               >
-                {navData.cta.label}
+                {visibleCta.label}
               </a>
             )}
           </nav>
 
-          {navData.cta && (
+          {visibleCta && (
             <a
-              href={navData.cta.href}
+              href={visibleCta.href}
               className="mr-2 hidden rounded-2xl bg-bebras-red px-3 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-bebras-red-dark min-[560px]:inline-flex lg:hidden"
             >
-              {navData.cta.label}
+              {visibleCta.label}
             </a>
           )}
 
           {/* Mobile menu */}
-          <MobileMenu links={allLinks} currentPath={currentPath} cta={navData.cta} />
+          <MobileMenu links={allLinks} currentPath={currentPath} cta={visibleCta} />
         </div>
       </div>
     </header>

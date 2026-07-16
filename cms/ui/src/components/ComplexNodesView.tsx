@@ -42,9 +42,11 @@ export type ComplexNode =
         label: string;
         collapsible: boolean;
         expanded: boolean;
-        fields: EditorField[];
-        advancedFields?: EditorField[];
-        children: ComplexNode[];
+         fields: EditorField[];
+         advancedFields?: EditorField[];
+         statusLabel?: string;
+         actions?: Array<{ id: string; label: string; icon?: string; tone?: "default" | "danger" }>;
+         children: ComplexNode[];
       }>;
     };
 
@@ -56,6 +58,7 @@ interface Props {
   onRemoveArrayItem: (path: string, idx: number) => void;
   onToggleArrayCollapse: (itemPath: string, expanded: boolean) => void;
   onMoveArrayItem: (path: string, fromIdx: number, toIdx: number) => void;
+  onItemAction: (path: string, idx: number, action: string) => void | Promise<void>;
 }
 
 type RendererProps = Props & {
@@ -302,7 +305,7 @@ function collectExpandedState(nodes: ComplexNode[], state = new Map<string, bool
 }
 
 function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "array" }> }) {
-  const { node, icons, onAddArrayItem, onRemoveArrayItem, onToggleArrayCollapse, onMoveArrayItem, expandedItems, setExpandedItems } = props;
+  const { node, icons, onAddArrayItem, onRemoveArrayItem, onToggleArrayCollapse, onMoveArrayItem, onItemAction, expandedItems, setExpandedItems } = props;
   const [dragFrom, setDragFrom] = React.useState<number | null>(null);
 
   const locked = node.locked === true;
@@ -407,6 +410,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                     draftValues={props.draftValues}
                     setDraftValue={props.setDraftValue}
                   />
+                  {item.statusLabel ? <span className="badge badge-warning">{item.statusLabel}</span> : null}
                   {item.collapsible ? (
                     <ArrayCollapseToggleView
                       arrowIcon={icons.chevron || icons.arrow || ""}
@@ -434,9 +438,26 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
                     />
                   ) : null}
                 </span>
-                {item.collapsible && !locked && node.removable !== false ? (
+                {(item.actions?.length || (item.collapsible && !locked && node.removable !== false)) ? (
                   <span className="array-item-header-right">
-                    <ArrayItemActionsView trashIcon={icons.trash || ""} inline onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
+                    {item.actions?.map((action) => (
+                      <button
+                        type="button"
+                        aria-label={action.label}
+                        title={action.label}
+                        className={`btn ${action.tone === "danger" ? "btn-danger" : "btn-ghost"} btn-sm${action.icon ? " btn-icon-only" : ""}`}
+                        key={action.id}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void onItemAction(node.path, item.idx, action.id);
+                        }}
+                      >
+                        {action.icon ? <span dangerouslySetInnerHTML={{ __html: icons[action.icon] || "" }}></span> : action.label}
+                      </button>
+                    ))}
+                    {item.collapsible && !locked && node.removable !== false ? (
+                      <ArrayItemActionsView trashIcon={icons.trash || ""} inline onRemove={() => onRemoveArrayItem(node.path, item.idx)} />
+                    ) : null}
                   </span>
                 ) : null}
               </div>

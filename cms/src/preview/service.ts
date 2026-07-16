@@ -472,6 +472,9 @@ export async function syncSnapshotToLanding(dirName: string): Promise<void> {
       await cp(src, join(config.landingDataDir, file));
     }
   }
+  if (!existsSync(join(snapshotDataDir, "custom-pages.json"))) {
+    await writeFile(join(config.landingDataDir, "custom-pages.json"), '{\n  "pages": []\n}\n', "utf-8");
+  }
 
   await mkdir(config.landingBlogDir, { recursive: true });
   try {

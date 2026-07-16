@@ -7,6 +7,10 @@ const LinkSchema = z.object({
   href: z.string(),
 });
 
+const NavigationLinkSchema = LinkSchema.extend({
+  active: z.boolean().default(true),
+});
+
 const BrandColorSchema = z.enum([
   "yellow",
   "red",
@@ -299,20 +303,6 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-export const RESERVED_CUSTOM_PAGE_SLUGS = [
-  "api",
-  "blog",
-  "contacto",
-  "docentes",
-  "estudiantes",
-  "faq",
-  "images",
-  "maestros",
-  "prueba",
-  "registro",
-  "sponsors",
-] as const;
-
 const CustomPageComponentSchema = SharedPageComponentSchema.refine(
   (component) => !["blogIndex", "blogPostUi"].includes(component.type),
   "Este componente solo puede usarse en el blog",
@@ -324,6 +314,7 @@ export const customPagesSchema = z.object({
       id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
       title: z.string().trim().min(1),
       slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      active: z.boolean().default(true),
       header: z.object({
         tag: z.string(),
         heading: z.string(),
@@ -335,7 +326,6 @@ export const customPagesSchema = z.object({
 }).superRefine(({ pages }, ctx) => {
   const ids = new Set<string>();
   const slugs = new Set<string>();
-  const reservedSlugs = new Set<string>(RESERVED_CUSTOM_PAGE_SLUGS);
 
   pages.forEach((page, index) => {
     if (page.id !== page.slug) {
@@ -344,8 +334,8 @@ export const customPagesSchema = z.object({
     if (ids.has(page.id)) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pages", index, "id"], message: "El ID debe ser único" });
     }
-    if (slugs.has(page.slug) || reservedSlugs.has(page.slug)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pages", index, "slug"], message: "El slug debe ser único y no estar reservado" });
+    if (slugs.has(page.slug)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pages", index, "slug"], message: "El slug debe ser único" });
     }
     ids.add(page.id);
     slugs.add(page.slug);
@@ -594,7 +584,7 @@ const SocialIconSchema = z.enum([
 ]);
 
 export const navigationSchema = z.object({
-  links: z.array(LinkSchema),
+  links: z.array(NavigationLinkSchema),
   cta: LinkSchema.optional(),
   socialLinks: z.array(
     z.object({

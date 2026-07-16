@@ -5,6 +5,7 @@ import { config } from "../config.js";
 import { getDb, type SnapshotRow } from "../db/index.js";
 import { CONTENT_FILES } from "../content/schemas.js";
 import { copyUtf8TextFile } from "../lib/utf8-files.js";
+import { withContentMutation } from "../content/mutation-lock.js";
 
 export interface SnapshotMeta {
   id: number;
@@ -75,7 +76,14 @@ async function nextSnapshotId(): Promise<number> {
  * Create a snapshot of the current content state.
  * Copies all data/ and blog/ files into a numbered snapshot directory.
  */
-export async function createSnapshot(
+export function createSnapshot(
+  description: string,
+  author: string
+): Promise<SnapshotMeta> {
+  return withContentMutation(() => createSnapshotUnlocked(description, author));
+}
+
+async function createSnapshotUnlocked(
   description: string,
   author: string
 ): Promise<SnapshotMeta> {
@@ -307,7 +315,11 @@ export async function importSnapshotArchive(buffer: Buffer, author: string): Pro
 /**
  * Restore a snapshot — copy its files back to the current working directory.
  */
-export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
+export function restoreSnapshot(id: number): Promise<SnapshotMeta> {
+  return withContentMutation(() => restoreSnapshotUnlocked(id));
+}
+
+async function restoreSnapshotUnlocked(id: number): Promise<SnapshotMeta> {
   const db = getDb();
   const row = db
     .query("SELECT * FROM snapshots WHERE id = ?")
@@ -342,6 +354,12 @@ export async function restoreSnapshot(id: number): Promise<SnapshotMeta> {
       }
     }
   } catch {}
+
+  try {
+    await readFile(join(snapshotDataDir, "custom-pages.json"), "utf-8");
+  } catch {
+    await writeFile(join(config.currentDataDir, "custom-pages.json"), '{\n  "pages": []\n}\n', "utf-8");
+  }
 
   try {
     for (const file of CONTENT_FILES) {

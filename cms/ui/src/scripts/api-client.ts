@@ -79,6 +79,15 @@ const API = {
   saveCustomPage(id: string, page: unknown) {
     return this.put(`/api/content/custom-pages/${encodeURIComponent(id)}`, page);
   },
+  setCustomPageActive(id: string, active: boolean) {
+    return this.put(`/api/content/custom-pages/${encodeURIComponent(id)}/status`, { active });
+  },
+  deleteCustomPage(id: string) {
+    return this.del(`/api/content/custom-pages/${encodeURIComponent(id)}`);
+  },
+  setNavigationLinkActive(href: string, active: boolean) {
+    return this.put("/api/content/navigation-links/status", { href, active });
+  },
 
   listBlog() { return this.get("/api/blog"); },
   getBlog(slug: string) { return this.get(`/api/blog/${encodeURIComponent(slug)}`); },
