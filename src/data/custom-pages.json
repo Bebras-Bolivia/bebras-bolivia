@@ -1,3 +1,15 @@
 {
-  "pages": []
+  "pages": [
+    {
+      "id": "recursos",
+      "title": "Recursos",
+      "slug": "recursos",
+      "header": {
+        "tag": "Página",
+        "heading": "Recursos",
+        "subtitle": "Agrega una descripción para esta página."
+      },
+      "components": []
+    }
+  ]
 }

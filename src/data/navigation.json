@@ -2,31 +2,43 @@
   "links": [
     {
       "label": "Inicio",
-      "href": "/"
+      "href": "/",
+      "active": true
     },
     {
       "label": "Estudiantes",
-      "href": "/estudiantes"
+      "href": "/estudiantes",
+      "active": true
     },
     {
       "label": "Maestros",
-      "href": "/maestros"
+      "href": "/maestros",
+      "active": false
     },
     {
       "label": "Preguntas",
-      "href": "/faq"
+      "href": "/faq",
+      "active": true
     },
     {
       "label": "Noticias",
-      "href": "/blog"
+      "href": "/blog",
+      "active": true
     },
     {
       "label": "Patrocinadores",
-      "href": "/sponsors"
+      "href": "/sponsors",
+      "active": true
     },
     {
       "label": "Contacto",
-      "href": "/contacto"
+      "href": "/contacto",
+      "active": true
+    },
+    {
+      "label": "Recursos",
+      "href": "/recursos",
+      "active": true
     }
   ],
   "cta": {
