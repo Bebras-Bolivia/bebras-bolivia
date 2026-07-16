@@ -11,6 +11,18 @@
         "subtitle": "Agrega una descripción para esta página."
       },
       "components": []
+    },
+    {
+      "id": "esternoleidomastoideo",
+      "title": "Esternoleidomastoideo",
+      "slug": "esternoleidomastoideo",
+      "active": true,
+      "header": {
+        "tag": "Página",
+        "heading": "Esternoleidomastoideo",
+        "subtitle": "Agrega una descripción para esta página."
+      },
+      "components": []
     }
   ]
 }
