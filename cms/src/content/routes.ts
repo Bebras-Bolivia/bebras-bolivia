@@ -27,6 +27,10 @@ function slugifyPageTitle(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+function normalizePageTitle(value: unknown): string {
+  return String(value || "").normalize("NFC").trim().replace(/\s+/g, " ");
+}
+
 function siteRouteExists(slug: string): boolean {
   const pagesDir = join(config.landingDir, "src", "pages");
   return [
@@ -82,9 +86,11 @@ contentRouter.get("/", (_req: Request, res: Response) => {
 
 contentRouter.post("/custom-pages/create", async (req: Request, res: Response) => {
   try {
-    const title = String(req.body?.title || "").trim();
+    const title = normalizePageTitle(req.body?.title);
     const slug = slugifyPageTitle(title);
     if (!title || !slug) throw new ContentError("El nombre de la página no es válido", 400);
+    if (title.length > 80) throw new ContentError("El nombre de la página no puede superar 80 caracteres", 400);
+    if (/[\u0000-\u001f\u007f]/.test(title)) throw new ContentError("El nombre de la página contiene caracteres no válidos", 400);
     if (siteRouteExists(slug)) throw new ContentError("Esa ruta está reservada por una página existente", 409);
 
     const { page } = await withContentMutation(async () => {
