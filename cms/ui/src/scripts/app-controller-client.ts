@@ -119,6 +119,10 @@ const App = {
     document.querySelector(".sidebar-nav")?.addEventListener("click", (e: Event) => {
       const target = (e.target as HTMLElement | null)?.closest("[data-nav]");
       if (!target) return;
+      if (e.defaultPrevented) {
+        this.closeMobileSidebar();
+        return;
+      }
       e.preventDefault();
       const navPath = target.getAttribute("data-nav");
       if (navPath) {
