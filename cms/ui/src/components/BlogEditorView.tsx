@@ -86,6 +86,8 @@ function titleToSlug(value: string): string {
 
 export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, onBack, onSave }: Props) {
   const formSlug = slug || "";
+  const preservedAuthor = frontmatter.author?.trim() || "Bebras Bolivia";
+  const preservedImage = frontmatter.image?.trim() || undefined;
   const [title, setTitle] = useState(frontmatter.title || "");
   const [description, setDescription] = useState(frontmatter.description || "");
   const [date, setDate] = useState(frontmatter.date || new Date().toISOString().split("T")[0]);
@@ -116,18 +118,24 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
   const [savedSnapshot, setSavedSnapshot] = useState(currentSnapshot);
   const hasPendingChanges = currentSnapshot !== savedSnapshot;
 
+  useEffect(() => {
+    window.App?.setBlogEditorDirty?.(hasPendingChanges);
+    return () => window.App?.setBlogEditorDirty?.(false);
+  }, [hasPendingChanges]);
+
   const previewPayload = useMemo(() => ({
     slug: currentFormSlug.trim(),
     frontmatter: {
       title: title.trim(),
       description: description.trim(),
       date,
-      author: "Bebras Bolivia",
+      author: preservedAuthor,
+      image: preservedImage,
       ctaLabel: ctaLabel.trim(),
       ctaHref: ctaHref.trim(),
     },
     body: markdown,
-  }), [currentFormSlug, title, description, date, ctaLabel, ctaHref, markdown]);
+  }), [currentFormSlug, title, description, date, preservedAuthor, preservedImage, ctaLabel, ctaHref, markdown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -213,7 +221,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
           title: title.trim(),
           description: description.trim(),
           date,
-          author: "Bebras Bolivia",
+          author: preservedAuthor,
+          image: preservedImage,
           ctaLabel: ctaLabel.trim(),
           ctaHref: ctaHref.trim(),
         },
@@ -495,7 +504,6 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
                 title="Vista previa del post"
                 className="blog-preview-frame"
                 src={previewFrameSrc}
-                sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
                 onLoad={() => {
                   const position = pendingPreviewScroll.current;
                   if (!position) return;

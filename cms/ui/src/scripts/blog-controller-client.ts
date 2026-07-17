@@ -9,12 +9,20 @@ function formatDate(dateVal: string): string {
 }
 
 const Blog = {
+  renderRevision: 0,
+
+  cancelPendingWork() {
+    this.renderRevision += 1;
+  },
+
   async renderList() {
     const main = document.getElementById("main-content");
     if (!main) return;
+    const revision = ++this.renderRevision;
 
     try {
       const data = await window.API.listBlog();
+      if (revision !== this.renderRevision) return;
       const posts = data.posts || [];
 
       main.innerHTML = '<div id="react-blog-list-root"></div>';
@@ -29,6 +37,7 @@ const Blog = {
         onDelete: (slug: string) => this.handleDelete(slug),
       });
     } catch (err: unknown) {
+      if (revision !== this.renderRevision) return;
       const errMsg = err instanceof Error ? err.message : String(err);
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(errMsg)}</p></div>`;
     }
@@ -57,6 +66,7 @@ const Blog = {
   async renderEditor(slug: string | null) {
     const main = document.getElementById("main-content");
     if (!main) return;
+    const revision = ++this.renderRevision;
 
     const isNew = !slug;
     let post: { frontmatter?: { title?: string; description?: string; date?: string; author?: string; image?: string; ctaLabel?: string; ctaHref?: string }; body?: string } | null = null;
@@ -64,7 +74,9 @@ const Blog = {
     if (!isNew) {
       try {
         post = await window.API.getBlog(slug);
+        if (revision !== this.renderRevision) return;
       } catch (err: unknown) {
+        if (revision !== this.renderRevision) return;
         const errMsg = err instanceof Error ? err.message : String(err);
         main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(errMsg)}</p></div>`;
         return;
@@ -76,6 +88,7 @@ const Blog = {
       : { title: "", description: "", date: new Date().toISOString().split("T")[0], author: "Bebras Bolivia", image: "" };
     const body = post ? post.body || "" : "";
     const currentSlug = slug || "";
+    if (revision !== this.renderRevision) return;
 
     main.innerHTML = '<div id="react-blog-editor-root"></div>';
     const root = document.getElementById("react-blog-editor-root");
@@ -126,7 +139,7 @@ const Blog = {
           if (isNew) {
             await window.API.createBlog(nextSlug, nextFrontmatter, nextBody);
             window.Toast.success("Publicacion creada");
-            window.App.navigate(`/blog/edit/${encodeURIComponent(nextSlug)}`);
+            await window.App.navigate(`/blog/edit/${encodeURIComponent(nextSlug)}`, true);
             return true;
           } else {
             await window.API.updateBlog(currentSlug, nextFrontmatter, nextBody);

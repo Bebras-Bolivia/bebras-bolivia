@@ -21,6 +21,7 @@ const Editor = {
   previewSyncQueued: false,
   collapsedItems: new Set<string>(),
   itemExpandedState: new Map<string, boolean>(),
+  renderRevision: 0,
 
   get lib() { return window.CMSEditorLib; },
   get fileToPage() { return this.lib.fileToPage; },
@@ -57,11 +58,12 @@ const Editor = {
 
     return dependencyMap[filename] || [];
   },
-  async syncPreviewDependencies() {
-    if (!this.currentFile) return;
+  async syncPreviewDependencies(activeFile: string | null = null) {
+    const sourceFile = activeFile ?? this.currentFile;
+    if (!sourceFile) return;
 
-    for (const filename of this.getPreviewDependencyFiles(this.currentFile)) {
-      if (filename === this.currentFile) continue;
+    for (const filename of this.getPreviewDependencyFiles(sourceFile)) {
+      if (filename === sourceFile) continue;
       try {
         const data = await window.API.getContent(filename);
         await window.API.syncPreviewDraft(filename, data);
@@ -75,6 +77,7 @@ const Editor = {
   async render(filename: string, section: string[] | null = null, sectionLabel: string | null = null) {
     const main = document.getElementById("main-content");
     if (!main) return;
+    const revision = ++this.renderRevision;
 
     this.currentFile = filename;
     this.currentSection = section;
@@ -85,22 +88,26 @@ const Editor = {
     this.dirty = false;
 
     try {
-      this.currentData = await window.API.getContent(filename);
+      const nextData = await window.API.getContent(filename);
+      if (revision !== this.renderRevision || this.currentFile !== filename) return;
       this.customPagePaths = new Set();
       this.customPagesByPath = new Map();
       if (filename === "navigation.json") {
         const customPages = await window.API.getContent("custom-pages.json");
+        if (revision !== this.renderRevision || this.currentFile !== filename) return;
         this.customPagePaths = new Set((customPages.pages || []).map((page: SafeAny) => `/${page.slug}`));
         this.customPagesByPath = new Map((customPages.pages || []).map((page: SafeAny) => [
           `/${page.slug}`,
           { id: page.id, title: page.title, active: page.active !== false },
         ]));
       }
+      this.currentData = nextData;
       const meta = window.App.contentMeta[filename] || { label: filename };
       main.innerHTML = '<div id="react-editor-primitives-root"></div>';
       const root = document.getElementById("react-editor-primitives-root");
       if (root) this.mountReactPrimitives(root, meta.label, filename);
     } catch (err: SafeAny) {
+      if (revision !== this.renderRevision) return;
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
     }
   },
@@ -108,6 +115,7 @@ const Editor = {
   async renderCustomPage(pageId: string) {
     const main = document.getElementById("main-content");
     if (!main) return;
+    const revision = ++this.renderRevision;
 
     this.currentFile = "custom-pages.json";
     this.currentSection = null;
@@ -118,10 +126,12 @@ const Editor = {
     this.dirty = false;
 
     try {
-      this.currentData = await window.API.getContent("custom-pages.json");
-      const pageIndex = this.currentData.pages?.findIndex((page: SafeAny) => page.id === pageId) ?? -1;
+      const nextData = await window.API.getContent("custom-pages.json");
+      if (revision !== this.renderRevision || this.currentCustomPageId !== pageId) return;
+      const pageIndex = nextData.pages?.findIndex((page: SafeAny) => page.id === pageId) ?? -1;
       if (pageIndex < 0) throw new Error("La página solicitada no existe");
-      const page = this.currentData.pages[pageIndex];
+      const page = nextData.pages[pageIndex];
+      this.currentData = nextData;
       const headerTitle = document.getElementById("header-title");
       if (headerTitle) headerTitle.textContent = `Editar: ${page.title}`;
       this.currentRootPath = `pages[${pageIndex}]`;
@@ -130,6 +140,7 @@ const Editor = {
       const root = document.getElementById("react-editor-primitives-root");
       if (root) this.mountReactPrimitives(root, page.title, "custom-pages.json");
     } catch (err: SafeAny) {
+      if (revision !== this.renderRevision) return;
       main.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${window.App.escapeHtml(err.message)}</p></div>`;
     }
   },
@@ -563,20 +574,36 @@ const Editor = {
     }
     this.previewSyncQueued = false;
     if (this.previewDraftTimer) clearTimeout(this.previewDraftTimer);
+    const revision = this.renderRevision;
+    const filename = this.currentFile;
+    const data = this.currentData;
     // 600ms debounce: long enough to coalesce typing bursts, short enough
     // that pausing for a beat shows the change in the iframe.
     this.previewDraftTimer = setTimeout(async () => {
       this.previewDraftTimer = null;
+      if (revision !== this.renderRevision) return;
       try {
-        await this.syncPreviewDependencies();
-        await window.API.syncPreviewDraft(this.currentFile, this.currentData);
+        await this.syncPreviewDependencies(filename);
+        if (revision !== this.renderRevision) return;
+        await window.API.syncPreviewDraft(filename, data);
+        if (revision !== this.renderRevision) return;
         await this.waitForPreviewUpdate();
+        if (revision !== this.renderRevision) return;
         this.loadPreviewIframe(true);
       } catch {
         // Stay silent — toasting every failed preview push during typing is noisy.
         // The user will see issues at save time, where errors are surfaced explicitly.
       }
     }, 600);
+  },
+
+  cancelPendingWork() {
+    this.renderRevision += 1;
+    if (this.previewDraftTimer) {
+      clearTimeout(this.previewDraftTimer);
+      this.previewDraftTimer = null;
+    }
+    this.previewSyncQueued = false;
   },
 
   async reset() {

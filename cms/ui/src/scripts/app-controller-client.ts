@@ -74,6 +74,7 @@ const icons: Record<string, string> = {
 
 const App = {
   currentPage: null as string | null,
+  blogEditorDirty: false,
   user: null as { name: string; email: string } | null,
   basePath: (window.CMS_BASE_PATH || "").replace(/\/$/, ""),
   contentMeta,
@@ -106,7 +107,12 @@ const App = {
     await this.renderSidebarContentTree();
     this.setupMobileSidebar();
     this.route();
-    window.addEventListener("popstate", () => this.route());
+    window.addEventListener("popstate", () => void this.handlePopState());
+    window.addEventListener("beforeunload", (event) => {
+      if (!this.hasUnsavedChanges()) return;
+      event.preventDefault();
+      Reflect.set(event, "returnValue", "");
+    });
   },
 
   setupNav() {
@@ -122,15 +128,21 @@ const App = {
     });
     document.getElementById("logout-btn")?.addEventListener("click", async (e) => {
       e.preventDefault();
+      const hasUnsavedChanges = this.hasUnsavedChanges();
       const confirmed = await window.CMSModal.openConfirm({
         title: "Cerrar sesión",
-        message: "¿Estás seguro de que quieres cerrar sesión?",
+        message: hasUnsavedChanges
+          ? "Hay cambios sin guardar. Si cierras sesión, esos cambios se perderán."
+          : "¿Estás seguro de que quieres cerrar sesión?",
         confirmLabel: "Cerrar sesión",
         cancelLabel: "Cancelar",
         tone: "danger",
         image: this.appUrl("/favicon.png"),
       });
-      if (confirmed) window.API.logout();
+      if (confirmed) {
+        this.clearUnsavedChanges();
+        window.API.logout();
+      }
     });
     document.getElementById("header-publish-btn")?.addEventListener("click", () => this.navigate("/publish"));
   },
@@ -160,8 +172,51 @@ const App = {
     document.getElementById("sidebar-overlay")?.classList.remove("active");
   },
 
-  navigate(path: string) {
+  hasUnsavedChanges() {
+    return Boolean(window.Editor?.dirty || this.blogEditorDirty);
+  },
+
+  setBlogEditorDirty(dirty: boolean) {
+    this.blogEditorDirty = dirty;
+  },
+
+  clearUnsavedChanges() {
+    if (window.Editor) window.Editor.dirty = false;
+    this.blogEditorDirty = false;
+  },
+
+  async confirmDiscardChanges() {
+    return window.CMSModal.openConfirm({
+      title: "Cambios sin guardar",
+      message: "Si abandonas esta sección, los cambios que todavía no guardaste se perderán.",
+      confirmLabel: "Descartar cambios",
+      cancelLabel: "Seguir editando",
+      tone: "danger",
+    });
+  },
+
+  async handlePopState() {
+    const nextPath = this.appPathname();
+    const previousPath = this.currentPage;
+    if (previousPath && nextPath !== previousPath && this.hasUnsavedChanges()) {
+      const confirmed = await this.confirmDiscardChanges();
+      if (!confirmed) {
+        history.pushState(null, "", this.appUrl(previousPath));
+        return;
+      }
+      this.clearUnsavedChanges();
+    }
+    this.route();
+  },
+
+  async navigate(path: string, skipUnsavedGuard = false) {
     if (this.appPathname() === path) return;
+    if (skipUnsavedGuard) this.clearUnsavedChanges();
+    if (!skipUnsavedGuard && this.hasUnsavedChanges()) {
+      const confirmed = await this.confirmDiscardChanges();
+      if (!confirmed) return;
+      this.clearUnsavedChanges();
+    }
     history.pushState(null, "", this.appUrl(path));
     this.route();
   },
@@ -219,6 +274,7 @@ const App = {
 
   route() {
     const path = this.appPathname();
+    this.currentPage = path;
     document.querySelectorAll("[data-nav]").forEach((el) => el.classList.toggle("active", el.getAttribute("data-nav") === path));
 
     const publishBtn = document.getElementById("header-publish-btn");
@@ -263,6 +319,8 @@ const App = {
   showPage(title: string, renderFn: () => void) {
     // Clear any editor action buttons that were portalled into the header by a
     // previous editor view, so they don't linger on Blog/Snapshots pages.
+    window.Editor?.cancelPendingWork?.();
+    window.Blog?.cancelPendingWork?.();
     window.CMSEditor?.unmountPrimitives?.();
     window.CMSBlog?.unmount?.();
     window.CMSSnapshots?.unmount?.();
