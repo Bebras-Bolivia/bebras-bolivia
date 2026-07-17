@@ -266,8 +266,8 @@ function getPreviewItem(value: string, fallback: PickerOption): PreviewItem {
     },
     blogPostUi: {
       title: "Detalle del blog",
-      description: "Textos de navegacion y llamado a la accion para posts.",
-      chips: ["Volver", "CTA"],
+      description: "Texto de navegacion para volver al listado de noticias.",
+      chips: ["Volver"],
       tone: "blue",
       kind: "blog",
     },

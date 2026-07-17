@@ -242,7 +242,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("blogPostUi"),
     backLabel: z.string(),
-  }),
+  }).strict(),
   z.object({
     type: z.literal("contactClassic"),
     accent: BrandColorSchema.optional(),

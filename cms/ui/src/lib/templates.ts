@@ -157,7 +157,7 @@ const componentOptionsList: ComponentOption[] = [
   { value: "tabsGuide", label: "Guia en Tabs", description: "Contenido por pestanas" },
   { value: "formContact", label: "Formulario", description: "Formulario de contacto editable" },
   { value: "blogIndex", label: "Listado del blog", description: "Estado vacio y texto Leer mas" },
-  { value: "blogPostUi", label: "Detalle del blog", description: "Textos de volver y llamado a la accion" },
+  { value: "blogPostUi", label: "Detalle del blog", description: "Texto para volver al listado de noticias" },
   { value: "contactClassic", label: "Contacto Clasico", description: "Bloque completo como diseno anterior" },
   { value: "cta", label: "CTA", description: "Bloque de titulo, texto y boton" },
 ];

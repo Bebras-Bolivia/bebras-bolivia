@@ -15,8 +15,7 @@
     },
     {
       "type": "blogPostUi",
-      "backLabel": "Volver a noticias",
-      "ctaLabel": "Inscribirse al desafío"
+      "backLabel": "Volver a noticias"
     }
   ]
 }

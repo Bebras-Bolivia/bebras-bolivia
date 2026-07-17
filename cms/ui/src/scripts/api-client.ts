@@ -132,7 +132,7 @@ const API = {
     fd.append("file", file);
     return this.upload("/api/media/upload", fd);
   },
-  deleteMedia(filename: string) { return this.del(`/api/media/file/${encodeURIComponent(filename)}`); },
+  deleteMedia(filename: string) { return this.del(`/api/media/${encodeURIComponent(filename)}`); },
 };
 
 const Toast = {

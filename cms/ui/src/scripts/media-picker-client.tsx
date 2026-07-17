@@ -39,11 +39,6 @@ function CloseIcon() {
   );
 }
 
-function cmsUrl(path: string): string {
-  const basePath = (window.CMS_BASE_PATH || "").replace(/\/$/, "");
-  return `${basePath}${path}`;
-}
-
 function displayFilename(filename: string): string {
   return filename.replace(/^\d+-/, "");
 }
@@ -68,9 +63,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(cmsUrl("/api/media"));
-      if (!res.ok) throw new Error("No se pudo cargar la galeria");
-      const data = await res.json();
+      const data = await window.API.listMedia();
       setFiles(Array.isArray(data.files) ? data.files : []);
     } catch (err: SafeAny) {
       setError(err.message || "No se pudo cargar la galeria");
@@ -98,16 +91,12 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
     setUploading(true);
     setError("");
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch(cmsUrl("/api/media/upload"), { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo subir el archivo");
+      const data = await window.API.uploadMedia(file);
       await loadFiles();
       const created = {
         filename: data.filename,
         size: file.size,
-        url: data.url || cmsUrl(`/api/media/file/${data.filename}`),
+        url: data.url || window.App.appUrl(`/api/media/file/${data.filename}`),
       } satisfies MediaFile;
 
       if (!markdownMode) {
@@ -139,9 +128,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
     setDeleting(filename);
     setError("");
     try {
-      const res = await fetch(cmsUrl(`/api/media/${encodeURIComponent(filename)}`), { method: "DELETE" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo eliminar el archivo");
+      await window.API.deleteMedia(filename);
       await loadFiles();
     } catch (err: SafeAny) {
       setError(err.message || "No se pudo eliminar el archivo");
