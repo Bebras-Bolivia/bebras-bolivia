@@ -141,7 +141,7 @@ export async function startDevServer(): Promise<StartPreviewResult> {
     const child = spawn(command.cmd, args, {
       cwd: config.landingDir,
       stdio: ["pipe", "pipe", "pipe"],
-      env: { ...process.env, NODE_OPTIONS: "" },
+      env: { ...process.env, CMS_PREVIEW: "1", NODE_OPTIONS: "" },
       shell: process.platform === "win32",
     });
     devProcess = child;

@@ -273,7 +273,6 @@ function EditorPrimitivesView({
           <iframe
             id="preview-frame"
             src="about:blank"
-            sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
           ></iframe>
         </div>
       </div>

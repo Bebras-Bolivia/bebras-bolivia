@@ -250,7 +250,6 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
                 title={`Vista previa del respaldo ${previewId}`}
                 className="snapshots-preview-frame"
                 src={previewSrc}
-                sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
               />
             )}
           </aside>

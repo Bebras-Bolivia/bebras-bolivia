@@ -40,7 +40,7 @@ function rewritePreviewHtml(html: string): string {
   if (!config.basePath) return html;
 
   return html
-    .replace(/(\s(?:src|href)=['"])(\/(?:_astro\/|@vite\/|@fs\/|node_modules\/|images\/|favicon\.svg))/g, `$1${config.basePath}$2`)
+    .replace(/(\s(?:src|href)=['"])(\/(?:_astro\/|@vite\/|@id\/|@fs\/|@react-refresh(?=['"]|\?)|src\/|node_modules\/|images\/|favicon\.svg))/g, `$1${config.basePath}$2`)
     .replace(/(url\(['"]?)(\/(?:_astro\/|images\/))/g, `$1${config.basePath}$2`);
 }
 
@@ -206,10 +206,47 @@ app.use("/@vite", requireAuth, async (req, res, next) => {
   } catch { next(); }
 });
 
+app.use("/@id", requireAuth, async (req, res, next) => {
+  if (!isDevServerRunning()) return next();
+  try {
+    const proxyRes = await fetch(`${getDevServerUrl()}/@id${req.url}`);
+    res.status(proxyRes.status);
+    proxyRes.headers.forEach((v, k) => {
+      if (k.toLowerCase() !== "transfer-encoding") res.setHeader(k, v);
+    });
+    res.end(Buffer.from(await proxyRes.arrayBuffer()));
+  } catch { next(); }
+});
+
+app.use("/@react-refresh", requireAuth, async (req, res, next) => {
+  if (!isDevServerRunning()) return next();
+  try {
+    const suffix = req.url === "/" ? "" : req.url;
+    const proxyRes = await fetch(`${getDevServerUrl()}/@react-refresh${suffix}`);
+    res.status(proxyRes.status);
+    proxyRes.headers.forEach((v, k) => {
+      if (k.toLowerCase() !== "transfer-encoding") res.setHeader(k, v);
+    });
+    res.end(Buffer.from(await proxyRes.arrayBuffer()));
+  } catch { next(); }
+});
+
 app.use("/@fs", requireAuth, async (req, res, next) => {
   if (!isDevServerRunning()) return next();
   try {
     const proxyRes = await fetch(`${getDevServerUrl()}/@fs${req.url}`);
+    res.status(proxyRes.status);
+    proxyRes.headers.forEach((v, k) => {
+      if (k.toLowerCase() !== "transfer-encoding") res.setHeader(k, v);
+    });
+    res.end(Buffer.from(await proxyRes.arrayBuffer()));
+  } catch { next(); }
+});
+
+app.use("/src", requireAuth, async (req, res, next) => {
+  if (!isDevServerRunning()) return next();
+  try {
+    const proxyRes = await fetch(`${getDevServerUrl()}/src${req.url}`);
     res.status(proxyRes.status);
     proxyRes.headers.forEach((v, k) => {
       if (k.toLowerCase() !== "transfer-encoding") res.setHeader(k, v);
