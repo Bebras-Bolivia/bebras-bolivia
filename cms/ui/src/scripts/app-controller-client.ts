@@ -189,6 +189,16 @@ const App = {
     this.blogEditorDirty = false;
   },
 
+  discardUnsavedChanges() {
+    const restore = window.Editor?.dirty
+      ? window.Editor.restoreDiscardedDraft?.()
+      : null;
+    this.clearUnsavedChanges();
+    void restore?.catch((error: unknown) => {
+      console.error("Failed to restore discarded preview draft", error);
+    });
+  },
+
   async confirmDiscardChanges() {
     return window.CMSModal.openConfirm({
       title: "Cambios sin guardar",
@@ -208,7 +218,7 @@ const App = {
         history.pushState(null, "", this.appUrl(previousPath));
         return;
       }
-      this.clearUnsavedChanges();
+      this.discardUnsavedChanges();
     }
     this.route();
   },
@@ -219,7 +229,7 @@ const App = {
     if (!skipUnsavedGuard && this.hasUnsavedChanges()) {
       const confirmed = await this.confirmDiscardChanges();
       if (!confirmed) return;
-      this.clearUnsavedChanges();
+      this.discardUnsavedChanges();
     }
     history.pushState(null, "", this.appUrl(path));
     this.route();

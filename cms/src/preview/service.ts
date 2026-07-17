@@ -400,6 +400,20 @@ export async function syncDraftToLanding(
   await writeFile(dest, JSON.stringify(result.data, null, 2) + "\n", "utf-8");
 }
 
+export async function restoreDraftPreview(filename: string): Promise<void> {
+  if (!CONTENT_FILES.includes(filename)) {
+    throw new PreviewError(`Unknown content file: ${filename}`, 404);
+  }
+
+  const source = join(config.currentDataDir, filename);
+  if (!existsSync(source)) {
+    throw new PreviewError(`Content file not found: ${filename}`, 404);
+  }
+
+  await mkdir(config.landingDataDir, { recursive: true });
+  await cp(source, join(config.landingDataDir, filename));
+}
+
 export async function syncBlogDraftToLanding(
   slug: string,
   frontmatter: unknown,

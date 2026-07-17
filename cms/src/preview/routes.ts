@@ -5,6 +5,7 @@ import {
   getPreviewStatus,
   syncContentToLanding,
   syncDraftToLanding,
+  restoreDraftPreview,
   syncBlogDraftToLanding,
   cleanupBlogDraftPreview,
   syncSnapshotToLanding,
@@ -126,6 +127,25 @@ previewRouter.post("/draft", async (req: Request, res: Response) => {
       res.status(err.status).json({ error: err.message });
     } else {
       console.error("Error syncing draft preview:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+previewRouter.post("/draft/cleanup", async (req: Request, res: Response) => {
+  try {
+    const { filename } = req.body ?? {};
+    if (!filename) {
+      return res.status(400).json({ error: "filename is required" });
+    }
+
+    await restoreDraftPreview(String(filename));
+    res.json({ ok: true });
+  } catch (err) {
+    if (err instanceof PreviewError) {
+      res.status(err.status).json({ error: err.message });
+    } else {
+      console.error("Error restoring draft preview:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   }

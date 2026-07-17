@@ -18,6 +18,7 @@ const Editor = {
   devServerPort: null as number | null,
   previewMode: null as string | null,
   previewDraftTimer: null as ReturnType<typeof setTimeout> | null,
+  previewDraftPromise: null as Promise<void> | null,
   previewSyncQueued: false,
   collapsedItems: new Set<string>(),
   itemExpandedState: new Map<string, boolean>(),
@@ -579,21 +580,28 @@ const Editor = {
     const data = this.currentData;
     // 600ms debounce: long enough to coalesce typing bursts, short enough
     // that pausing for a beat shows the change in the iframe.
-    this.previewDraftTimer = setTimeout(async () => {
+    this.previewDraftTimer = setTimeout(() => {
       this.previewDraftTimer = null;
-      if (revision !== this.renderRevision) return;
-      try {
-        await this.syncPreviewDependencies(filename);
+      const previousPreview = this.previewDraftPromise ?? Promise.resolve();
+      const previewWork = previousPreview.catch(() => undefined).then(async () => {
         if (revision !== this.renderRevision) return;
-        await window.API.syncPreviewDraft(filename, data);
-        if (revision !== this.renderRevision) return;
-        await this.waitForPreviewUpdate();
-        if (revision !== this.renderRevision) return;
-        this.loadPreviewIframe(true);
-      } catch {
-        // Stay silent — toasting every failed preview push during typing is noisy.
-        // The user will see issues at save time, where errors are surfaced explicitly.
-      }
+        try {
+          await this.syncPreviewDependencies(filename);
+          if (revision !== this.renderRevision) return;
+          await window.API.syncPreviewDraft(filename, data);
+          if (revision !== this.renderRevision) return;
+          await this.waitForPreviewUpdate();
+          if (revision !== this.renderRevision) return;
+          this.loadPreviewIframe(true);
+        } catch {
+          // Stay silent — toasting every failed preview push during typing is noisy.
+          // The user will see issues at save time, where errors are surfaced explicitly.
+        }
+      });
+      this.previewDraftPromise = previewWork;
+      void previewWork.finally(() => {
+        if (this.previewDraftPromise === previewWork) this.previewDraftPromise = null;
+      });
     }, 600);
   },
 
@@ -604,6 +612,25 @@ const Editor = {
       this.previewDraftTimer = null;
     }
     this.previewSyncQueued = false;
+  },
+
+  restoreDiscardedDraft() {
+    const filename = this.currentFile;
+    const pendingPreview = this.previewDraftPromise;
+    this.cancelPendingWork();
+    if (!filename) return Promise.resolve();
+
+    const restoreWork = (pendingPreview ?? Promise.resolve())
+      .catch(() => undefined)
+      .then(async () => {
+        await window.API.restorePreviewDraft(filename);
+      });
+    this.previewDraftPromise = restoreWork;
+    const clearRestoreWork = () => {
+      if (this.previewDraftPromise === restoreWork) this.previewDraftPromise = null;
+    };
+    void restoreWork.then(clearRestoreWork, clearRestoreWork);
+    return restoreWork;
   },
 
   async reset() {
