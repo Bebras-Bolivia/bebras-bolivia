@@ -63,6 +63,20 @@ function assertValidSlug(slug: string): void {
   }
 }
 
+function isFileNotFoundError(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await readFile(filePath, "utf-8");
+    return true;
+  } catch (error) {
+    if (isFileNotFoundError(error)) return false;
+    throw error;
+  }
+}
+
 /**
  * List all blog posts (frontmatter only, sorted by date desc).
  */
@@ -193,11 +207,13 @@ export async function updatePost(
   assertValidSlug(slug);
   const filePath = join(getBlogDir(), `${slug}.md`);
 
-  // Check exists (in CMS dir or landing dir)
-  try {
-    await readFile(filePath, "utf-8");
-  } catch {
-    // Maybe it exists in landing dir — we'll write to CMS dir anyway
+  const landingPath = join(getLandingBlogDir(), `${slug}.md`);
+  const [existsInCms, existsInLanding] = await Promise.all([
+    fileExists(filePath),
+    fileExists(landingPath),
+  ]);
+  if (!existsInCms && !existsInLanding) {
+    throw new BlogError(`Post not found: ${slug}`, 404);
   }
 
   const parsed = blogFrontmatterSchema.safeParse(frontmatter);
