@@ -12,6 +12,7 @@ import {
   PreviewError,
 } from "./service.js";
 import { getSnapshot } from "../snapshots/service.js";
+import { parseSnapshotId } from "../snapshots/id.js";
 
 export const previewRouter = Router();
 
@@ -89,8 +90,8 @@ previewRouter.post("/snapshot/cleanup", async (_req: Request, res: Response) => 
 
 previewRouter.post("/snapshot/:id", async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
-    if (Number.isNaN(id)) {
+    const id = parseSnapshotId(req.params.id);
+    if (id === null) {
       return res.status(400).json({ error: "Invalid snapshot ID" });
     }
 

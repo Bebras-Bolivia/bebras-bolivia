@@ -1,9 +1,8 @@
-import { readdir, mkdir, readFile, rm, writeFile } from "fs/promises";
-import { join } from "path";
+import { access, readdir, mkdir, readFile, rename, rm, writeFile } from "fs/promises";
+import { dirname, join } from "path";
 import { gzipSync, gunzipSync } from "zlib";
 import { config } from "../config.js";
 import { getDb, type SnapshotRow } from "../db/index.js";
-import { CONTENT_FILES } from "../content/schemas.js";
 import { copyUtf8TextFile } from "../lib/utf8-files.js";
 import { withContentMutation } from "../content/mutation-lock.js";
 
@@ -30,6 +29,91 @@ const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
 function isSnapshotBlogFile(file: string): boolean {
   return file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME;
+}
+
+function isJsonFile(file: string): boolean {
+  return file.endsWith(".json");
+}
+
+function isFileNotFoundError(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch (error) {
+    if (isFileNotFoundError(error)) return false;
+    throw error;
+  }
+}
+
+async function copyMatchingTextFiles(
+  sourceDir: string,
+  targetDir: string,
+  predicate: (file: string) => boolean,
+  allowMissingSource = false
+): Promise<void> {
+  await mkdir(targetDir, { recursive: true });
+
+  let files: string[];
+  try {
+    files = (await readdir(sourceDir)).filter(predicate);
+  } catch (error) {
+    if (allowMissingSource && isFileNotFoundError(error)) return;
+    throw error;
+  }
+
+  for (const file of files) {
+    await copyUtf8TextFile(join(sourceDir, file), join(targetDir, file));
+  }
+}
+
+async function validateSnapshotFiles(snapshotDir: string): Promise<void> {
+  const dataDir = join(snapshotDir, "data");
+  const blogDir = join(snapshotDir, "blog");
+  const [dataFiles, blogFiles] = await Promise.all([
+    readdir(dataDir),
+    readdir(blogDir),
+  ]);
+
+  for (const file of dataFiles.filter(isJsonFile)) {
+    JSON.parse(await readFile(join(dataDir, file), "utf-8"));
+  }
+  for (const file of blogFiles.filter(isSnapshotBlogFile)) {
+    await readFile(join(blogDir, file), "utf-8");
+  }
+}
+
+async function registerPreparedSnapshot(
+  temporaryDir: string,
+  snapshotDir: string,
+  meta: SnapshotMeta
+): Promise<void> {
+  await writeFile(
+    join(temporaryDir, "meta.json"),
+    JSON.stringify(meta, null, 2) + "\n",
+    "utf-8"
+  );
+  await validateSnapshotFiles(temporaryDir);
+  await rename(temporaryDir, snapshotDir);
+
+  try {
+    getDb()
+      .query("INSERT INTO snapshots (id, description, author, dir_name) VALUES (?, ?, ?, ?)")
+      .run(meta.id, meta.description, meta.author, meta.dirName);
+  } catch (error) {
+    await rm(snapshotDir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+class RestoreSwapError extends Error {
+  constructor(message: string, readonly keepRecoveryFiles: boolean) {
+    super(message);
+    this.name = "RestoreSwapError";
+  }
 }
 
 async function readSnapshotMetaFromDisk(dirName: string): Promise<SnapshotMeta | null> {
@@ -87,53 +171,13 @@ async function createSnapshotUnlocked(
   description: string,
   author: string
 ): Promise<SnapshotMeta> {
-  const db = getDb();
   const id = await nextSnapshotId();
   const dirName = `snapshot-${String(id).padStart(4, "0")}`;
-
-  db.query(
-    "INSERT INTO snapshots (id, description, author, dir_name) VALUES (?, ?, ?, ?)"
-  ).run(id, description, author, dirName);
-
   const snapshotDir = join(config.snapshotsDir, dirName);
-  const snapshotDataDir = join(snapshotDir, "data");
-  const snapshotBlogDir = join(snapshotDir, "blog");
-
-  await mkdir(snapshotDataDir, { recursive: true });
-  await mkdir(snapshotBlogDir, { recursive: true });
-
-  // Copy current data files
-  try {
-    for (const file of CONTENT_FILES) {
-      try {
-        await copyUtf8TextFile(
-          join(config.currentDataDir, file),
-          join(snapshotDataDir, file)
-        );
-      } catch {
-        // Missing optional working-copy file; skip it.
-      }
-    }
-  } catch {
-    // No data files yet — that's fine
-  }
-
-  // Copy current blog files
-  try {
-    const blogFiles = await readdir(config.currentBlogDir);
-    for (const file of blogFiles) {
-      if (isSnapshotBlogFile(file)) {
-        await copyUtf8TextFile(
-          join(config.currentBlogDir, file),
-          join(snapshotBlogDir, file)
-        );
-      }
-    }
-  } catch {
-    // No blog files yet — that's fine
-  }
-
-  // Write meta.json into the snapshot
+  const temporaryDir = join(
+    config.snapshotsDir,
+    `.${dirName}.tmp-${process.pid}-${Date.now()}`
+  );
   const meta: SnapshotMeta = {
     id,
     description,
@@ -141,13 +185,29 @@ async function createSnapshotUnlocked(
     dirName,
     createdAt: new Date().toISOString(),
   };
-  await writeFile(
-    join(snapshotDir, "meta.json"),
-    JSON.stringify(meta, null, 2) + "\n",
-    "utf-8"
-  );
 
-  return meta;
+  await mkdir(config.snapshotsDir, { recursive: true });
+  await rm(temporaryDir, { recursive: true, force: true });
+  try {
+    await Promise.all([
+      copyMatchingTextFiles(
+        config.currentDataDir,
+        join(temporaryDir, "data"),
+        isJsonFile,
+        true
+      ),
+      copyMatchingTextFiles(
+        config.currentBlogDir,
+        join(temporaryDir, "blog"),
+        isSnapshotBlogFile,
+        true
+      ),
+    ]);
+    await registerPreparedSnapshot(temporaryDir, snapshotDir, meta);
+    return meta;
+  } finally {
+    await rm(temporaryDir, { recursive: true, force: true });
+  }
 }
 
 /**
@@ -263,7 +323,11 @@ export async function exportSnapshotArchive(id: number): Promise<{ filename: str
   };
 }
 
-export async function importSnapshotArchive(buffer: Buffer, author: string): Promise<SnapshotMeta> {
+export function importSnapshotArchive(buffer: Buffer, author: string): Promise<SnapshotMeta> {
+  return withContentMutation(() => importSnapshotArchiveUnlocked(buffer, author));
+}
+
+async function importSnapshotArchiveUnlocked(buffer: Buffer, author: string): Promise<SnapshotMeta> {
   let archive: SnapshotArchive;
   try {
     archive = JSON.parse(gunzipSync(buffer).toString("utf-8")) as SnapshotArchive;
@@ -278,28 +342,16 @@ export async function importSnapshotArchive(buffer: Buffer, author: string): Pro
   validateArchiveFiles(archive.files.data, ".json");
   validateArchiveFiles(archive.files.blog, ".md");
 
-  const db = getDb();
   const description = archive.meta?.description
     ? `Importado: ${archive.meta.description}`
     : "Importado desde archivo";
   const id = await nextSnapshotId();
   const dirName = `snapshot-${String(id).padStart(4, "0")}`;
-  db.query("INSERT INTO snapshots (id, description, author, dir_name) VALUES (?, ?, ?, ?)").run(id, description, author, dirName);
-
   const snapshotDir = join(config.snapshotsDir, dirName);
-  const snapshotDataDir = join(snapshotDir, "data");
-  const snapshotBlogDir = join(snapshotDir, "blog");
-  await mkdir(snapshotDataDir, { recursive: true });
-  await mkdir(snapshotBlogDir, { recursive: true });
-
-  for (const [file, content] of Object.entries(archive.files.data)) {
-    await writeFile(join(snapshotDataDir, file), content, "utf-8");
-  }
-
-  for (const [file, content] of Object.entries(archive.files.blog)) {
-    await writeFile(join(snapshotBlogDir, file), content, "utf-8");
-  }
-
+  const temporaryDir = join(
+    config.snapshotsDir,
+    `.${dirName}.tmp-${process.pid}-${Date.now()}`
+  );
   const meta: SnapshotMeta = {
     id,
     description,
@@ -307,9 +359,86 @@ export async function importSnapshotArchive(buffer: Buffer, author: string): Pro
     dirName,
     createdAt: new Date().toISOString(),
   };
-  await writeFile(join(snapshotDir, "meta.json"), JSON.stringify(meta, null, 2) + "\n", "utf-8");
 
-  return meta;
+  await mkdir(config.snapshotsDir, { recursive: true });
+  await rm(temporaryDir, { recursive: true, force: true });
+  try {
+    const snapshotDataDir = join(temporaryDir, "data");
+    const snapshotBlogDir = join(temporaryDir, "blog");
+    await Promise.all([
+      mkdir(snapshotDataDir, { recursive: true }),
+      mkdir(snapshotBlogDir, { recursive: true }),
+    ]);
+
+    for (const [file, content] of Object.entries(archive.files.data)) {
+      await writeFile(join(snapshotDataDir, file), content, "utf-8");
+    }
+    for (const [file, content] of Object.entries(archive.files.blog)) {
+      await writeFile(join(snapshotBlogDir, file), content, "utf-8");
+    }
+
+    await registerPreparedSnapshot(temporaryDir, snapshotDir, meta);
+    return meta;
+  } finally {
+    await rm(temporaryDir, { recursive: true, force: true });
+  }
+}
+
+async function swapRestoredContent(stagedRoot: string, recoveryRoot: string): Promise<void> {
+  const stagedDataDir = join(stagedRoot, "data");
+  const stagedBlogDir = join(stagedRoot, "blog");
+  const backupDataDir = join(recoveryRoot, "previous-data");
+  const backupBlogDir = join(recoveryRoot, "previous-blog");
+  let dataBackedUp = false;
+  let blogBackedUp = false;
+  let dataInstalled = false;
+  let blogInstalled = false;
+
+  await mkdir(dirname(config.currentDataDir), { recursive: true });
+
+  try {
+    if (await pathExists(config.currentDataDir)) {
+      await rename(config.currentDataDir, backupDataDir);
+      dataBackedUp = true;
+    }
+    await rename(stagedDataDir, config.currentDataDir);
+    dataInstalled = true;
+
+    if (await pathExists(config.currentBlogDir)) {
+      await rename(config.currentBlogDir, backupBlogDir);
+      blogBackedUp = true;
+    }
+    await rename(stagedBlogDir, config.currentBlogDir);
+    blogInstalled = true;
+  } catch (error) {
+    const rollbackErrors: string[] = [];
+
+    try {
+      if (blogInstalled) {
+        await rm(config.currentBlogDir, { recursive: true, force: true });
+      }
+      if (blogBackedUp) await rename(backupBlogDir, config.currentBlogDir);
+    } catch (rollbackError) {
+      rollbackErrors.push(`blog: ${String(rollbackError)}`);
+    }
+
+    try {
+      if (dataInstalled) {
+        await rm(config.currentDataDir, { recursive: true, force: true });
+      }
+      if (dataBackedUp) await rename(backupDataDir, config.currentDataDir);
+    } catch (rollbackError) {
+      rollbackErrors.push(`data: ${String(rollbackError)}`);
+    }
+
+    const rollbackDetail = rollbackErrors.length
+      ? ` Rollback incompleto (${rollbackErrors.join("; ")}). Los archivos de recuperación se conservaron en ${recoveryRoot}.`
+      : " El contenido anterior fue restaurado correctamente.";
+    throw new RestoreSwapError(
+      `No se pudo activar el respaldo: ${String(error)}.${rollbackDetail}`,
+      rollbackErrors.length > 0
+    );
+  }
 }
 
 /**
@@ -343,67 +472,68 @@ async function restoreSnapshotUnlocked(id: number): Promise<SnapshotMeta> {
   const snapshotDir = join(config.snapshotsDir, meta.dirName);
   const snapshotDataDir = join(snapshotDir, "data");
   const snapshotBlogDir = join(snapshotDir, "blog");
+  const recoveryRoot = join(
+    config.contentDir,
+    `.restore-${id}-${process.pid}-${Date.now()}`
+  );
+  const stagedRoot = join(recoveryRoot, "staged");
+  let keepRecoveryFiles = false;
 
-  // Clear current data dir and copy snapshot data
-  await mkdir(config.currentDataDir, { recursive: true });
+  await rm(recoveryRoot, { recursive: true, force: true });
   try {
-    const currentDataFiles = await readdir(config.currentDataDir);
-    for (const file of currentDataFiles) {
-      if (file.endsWith(".json")) {
-        await rm(join(config.currentDataDir, file));
-      }
+    await Promise.all([
+      copyMatchingTextFiles(
+        config.currentDataDir,
+        join(stagedRoot, "data"),
+        isJsonFile,
+        true
+      ),
+      copyMatchingTextFiles(
+        config.currentBlogDir,
+        join(stagedRoot, "blog"),
+        isSnapshotBlogFile,
+        true
+      ),
+    ]);
+
+    // Overlay the selected snapshot. Files missing from legacy snapshots remain
+    // available from the current state instead of being deleted.
+    await Promise.all([
+      copyMatchingTextFiles(
+        snapshotDataDir,
+        join(stagedRoot, "data"),
+        isJsonFile
+      ),
+      copyMatchingTextFiles(
+        snapshotBlogDir,
+        join(stagedRoot, "blog"),
+        isSnapshotBlogFile
+      ),
+    ]);
+    await validateSnapshotFiles(stagedRoot);
+    await swapRestoredContent(stagedRoot, recoveryRoot);
+
+    return {
+      id: meta.id,
+      description: meta.description,
+      author: meta.author,
+      dirName: meta.dirName,
+      createdAt: meta.createdAt,
+    };
+  } catch (error) {
+    if (error instanceof RestoreSwapError) {
+      keepRecoveryFiles = error.keepRecoveryFiles;
+      throw new SnapshotError(error.message, 500);
     }
-  } catch {}
-
-  try {
-    await readFile(join(snapshotDataDir, "custom-pages.json"), "utf-8");
-  } catch {
-    await writeFile(join(config.currentDataDir, "custom-pages.json"), '{\n  "pages": []\n}\n', "utf-8");
+    throw new SnapshotError(
+      `No se pudo preparar el respaldo sin modificar el contenido actual: ${String(error)}`,
+      500
+    );
+  } finally {
+    if (!keepRecoveryFiles) {
+      await rm(recoveryRoot, { recursive: true, force: true });
+    }
   }
-
-  try {
-    for (const file of CONTENT_FILES) {
-      try {
-        await copyUtf8TextFile(
-          join(snapshotDataDir, file),
-          join(config.currentDataDir, file)
-        );
-      } catch {
-        // Older snapshots may not contain every current content file.
-      }
-    }
-  } catch {}
-
-  // Clear current blog dir and copy snapshot blog
-  await mkdir(config.currentBlogDir, { recursive: true });
-  try {
-    const currentBlogFiles = await readdir(config.currentBlogDir);
-    for (const file of currentBlogFiles) {
-      if (file.endsWith(".md")) {
-        await rm(join(config.currentBlogDir, file));
-      }
-    }
-  } catch {}
-
-  try {
-    const blogFiles = await readdir(snapshotBlogDir);
-    for (const file of blogFiles) {
-      if (isSnapshotBlogFile(file)) {
-        await copyUtf8TextFile(
-          join(snapshotBlogDir, file),
-          join(config.currentBlogDir, file)
-        );
-      }
-    }
-  } catch {}
-
-  return {
-    id: meta.id,
-    description: meta.description,
-    author: meta.author,
-    dirName: meta.dirName,
-    createdAt: meta.createdAt,
-  };
 }
 
 /**

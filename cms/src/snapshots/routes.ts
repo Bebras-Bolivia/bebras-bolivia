@@ -11,6 +11,7 @@ import {
   SnapshotError,
 } from "./service.js";
 import { syncContentToLanding } from "../preview/service.js";
+import { parseSnapshotId } from "./id.js";
 
 export const snapshotRouter = Router();
 const upload = multer({
@@ -75,8 +76,8 @@ snapshotRouter.post("/upload", upload.single("file"), async (req: Request, res: 
 
 snapshotRouter.get("/:id/download", async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
-    if (isNaN(id)) {
+    const id = parseSnapshotId(req.params.id);
+    if (id === null) {
       res.status(400).json({ error: "Invalid snapshot ID" });
       return;
     }
@@ -100,8 +101,8 @@ snapshotRouter.get("/:id/download", async (req: Request, res: Response) => {
  */
 snapshotRouter.get("/:id", async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
-    if (isNaN(id)) {
+    const id = parseSnapshotId(req.params.id);
+    if (id === null) {
       res.status(400).json({ error: "Invalid snapshot ID" });
       return;
     }
@@ -123,8 +124,8 @@ snapshotRouter.get("/:id", async (req: Request, res: Response) => {
  */
 snapshotRouter.post("/:id/restore", async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
-    if (isNaN(id)) {
+    const id = parseSnapshotId(req.params.id);
+    if (id === null) {
       res.status(400).json({ error: "Invalid snapshot ID" });
       return;
     }
@@ -147,8 +148,8 @@ snapshotRouter.post("/:id/restore", async (req: Request, res: Response) => {
  */
 snapshotRouter.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
-    if (isNaN(id)) {
+    const id = parseSnapshotId(req.params.id);
+    if (id === null) {
       res.status(400).json({ error: "Invalid snapshot ID" });
       return;
     }
