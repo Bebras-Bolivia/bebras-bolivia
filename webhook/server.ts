@@ -204,7 +204,9 @@ async function syncCmsCurrentToLanding(): Promise<void> {
 }
 
 function shouldRebuildCmsUi(changedFiles: string[]): boolean {
-  return changedFiles.some((file) => file.startsWith("cms/ui/"));
+  return changedFiles.some(
+    (file) => file.startsWith("cms/ui/") || file.startsWith("cms/public/")
+  );
 }
 
 function shouldRestartCms(changedFiles: string[]): boolean {
