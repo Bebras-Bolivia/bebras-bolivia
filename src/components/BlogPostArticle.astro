@@ -1,5 +1,6 @@
 ---
 import InternalPageHero from "@/components/InternalPageHero.astro";
+import { toSafeHref } from "@/lib/safe-url";
 
 interface Props {
   title: string;
@@ -65,7 +66,7 @@ const heroTag = author ? `${formattedDate} · ${author}` : formattedDate;
         </a>
         {showCta && (
           <a
-            href={ctaHref}
+            href={toSafeHref(ctaHref)}
             class="group inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90"
           >
             {ctaLabel}

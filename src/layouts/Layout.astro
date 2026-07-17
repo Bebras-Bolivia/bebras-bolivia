@@ -33,6 +33,14 @@ const {
 const fullTitle = title === "Inicio" ? siteData.siteName : `${title} | ${siteData.siteName}`;
 const canonicalUrl = new URL(currentPath, siteUrl).href;
 const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-placeholder.svg", siteUrl).href;
+const organizationJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": siteData.siteName,
+  "url": siteUrl,
+  "logo": new URL("/images/logo-placeholder.svg", siteUrl).href,
+  "description": description,
+}).replace(/</g, "\\u003c");
 ---
 
 <!doctype html>
@@ -59,14 +67,7 @@ const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-pla
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <script is:inline type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": siteData.siteName,
-      "url": siteUrl,
-      "logo": new URL("/images/logo-placeholder.svg", siteUrl).href,
-      "description": description,
-    })} />
+    <script is:inline type="application/ld+json" set:html={organizationJsonLd} />
 
     <title>{fullTitle}</title>
     <ClientRouter />

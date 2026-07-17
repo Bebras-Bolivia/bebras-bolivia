@@ -1,6 +1,7 @@
 ---
 import { ArrowRight } from "lucide-react";
 import { normalizeBrandColor } from "@/lib/brand-styles";
+import { toSafeHref } from "@/lib/safe-url";
 
 interface Props {
   tag?: string;
@@ -22,7 +23,7 @@ const cardClass = `brand-card brand-card-${accentColor}`;
       {tag && <p class="brand-card-muted text-sm uppercase tracking-[0.25em] font-bold mb-3">{tag}</p>}
       <h2 class="text-4xl sm:text-5xl font-bold mb-4 tracking-tight">{heading}</h2>
       <p class="brand-card-muted text-xl mb-7 max-w-2xl mx-auto leading-relaxed">{text}</p>
-      <a href={buttonHref} class="group inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-lg font-bold !text-bebras-ink transition-all duration-300 hover:scale-[1.03] hover:bg-white/90">
+      <a href={toSafeHref(buttonHref)} class="group inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-lg font-bold !text-bebras-ink transition-all duration-300 hover:scale-[1.03] hover:bg-white/90">
         {buttonLabel}
         <ArrowRight className="ml-3 size-6 transition-transform group-hover:translate-x-2" strokeWidth={3} aria-hidden="true" />
       </a>

@@ -6,6 +6,7 @@ import jukumariImage from "@/assets/jukumari.jpg";
 import guacamayoImage from "@/assets/guacamayo.jpg";
 import capibaraImage from "@/assets/capibara.jpg";
 import titiImage from "@/assets/titi.jpg";
+import { toSafeHref } from "@/lib/safe-url";
 import {
   Dialog,
   DialogClose,
@@ -146,7 +147,7 @@ export function BebrasBeaverShowcase({ categories }: ShowcaseProps = {}) {
                       )}
                       {item.fuente && (
                         <a
-                          href={item.fuente}
+                          href={toSafeHref(item.fuente)}
                           target="_blank"
                           rel="noreferrer noopener"
                           className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"

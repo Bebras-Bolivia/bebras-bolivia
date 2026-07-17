@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { isSafeHref } from "./lib/safe-url";
 
 const blog = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
@@ -10,7 +11,7 @@ const blog = defineCollection({
     image: z.string().optional(),
     author: z.string().default("Bebras Bolivia"),
     ctaLabel: z.string().optional(),
-    ctaHref: z.string().optional(),
+    ctaHref: z.string().refine(isSafeHref, "CTA href uses an unsupported protocol").optional(),
   }).superRefine((data, ctx) => {
     const hasLabel = Boolean(data.ctaLabel?.trim());
     const hasHref = Boolean(data.ctaHref?.trim());

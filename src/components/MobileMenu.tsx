@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
+import { toSafeHref } from "@/lib/safe-url";
 
 interface NavLink {
   label: string;
@@ -160,7 +161,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                   return (
                     <a
                       key={link.href}
-                      href={link.href}
+                      href={toSafeHref(link.href)}
                       className={`flex min-h-11 items-center rounded-2xl px-4 py-2.5 text-[clamp(1.25rem,6vw,1.85rem)] font-medium leading-none transition-all duration-300 sm:min-h-12 ${
                         isActive
                           ? "text-primary"
@@ -184,7 +185,7 @@ export default function MobileMenu({ links, currentPath: initialPath, cta }: Pro
                 {cta && (
                   <div className="border-t border-border/70 p-3">
                     <a
-                      href={cta.href}
+                      href={toSafeHref(cta.href)}
                       className="flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/10 transition-all duration-200 hover:bg-primary/90"
                       onClick={closeMenu}
                     >

@@ -3,6 +3,7 @@ import { join } from "path";
 import matter from "gray-matter";
 import { z } from "zod";
 import { config } from "../config.js";
+import { isSafeHref } from "../lib/safe-url.js";
 
 // ── Blog frontmatter schema ──────────────────────────────
 
@@ -13,7 +14,7 @@ export const blogFrontmatterSchema = z.object({
   image: z.string().optional(),
   author: z.string().default("Bebras Bolivia"),
   ctaLabel: z.string().optional(),
-  ctaHref: z.string().optional(),
+  ctaHref: z.string().refine(isSafeHref, "CTA href uses an unsupported protocol").optional(),
 }).superRefine((data, ctx) => {
   const hasLabel = Boolean(data.ctaLabel?.trim());
   const hasHref = Boolean(data.ctaHref?.trim());

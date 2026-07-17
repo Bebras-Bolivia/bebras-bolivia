@@ -2,6 +2,7 @@
 import { ClipboardList, Mail, Share2 } from "lucide-react";
 import { getBrandCardClass } from "@/lib/brand-styles";
 import siteData from "@/data/site.json";
+import { isSafeHref, toSafeHref } from "@/lib/safe-url";
 
 interface SocialLink {
   label: string;
@@ -57,9 +58,10 @@ const contactIconMap = {
 function normalizeContactHref(href?: string): string | undefined {
   if (!href) return href;
   const value = href.trim();
-  if (/^([a-z][a-z0-9+.-]*:|\/|#)/i.test(value)) return value;
+  if (isSafeHref(value) && /^([a-z][a-z0-9+.-]*:|\/|#)/i.test(value)) return value;
   const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  return looksLikeEmail ? `mailto:${value}` : value;
+  if (looksLikeEmail) return `mailto:${value}`;
+  return isSafeHref(value) ? value : undefined;
 }
 
 function extractEmail(href?: string): string | null {
@@ -118,7 +120,7 @@ const formEmail =
                       {card.socialLinks.map((social, idx) => (
                         <>
                           {idx > 0 && <span class="brand-card-muted">|</span>}
-                          <a href={social.href} target="_blank" rel="noopener noreferrer" class="brand-card-muted text-base hover:underline font-bold">{social.label}</a>
+                          <a href={toSafeHref(social.href)} target="_blank" rel="noopener noreferrer" class="brand-card-muted text-base hover:underline font-bold">{social.label}</a>
                         </>
                       ))}
                     </div>
@@ -136,7 +138,7 @@ const formEmail =
           <ul class="space-y-4">
             {data.international.links.map((link, i) => (
               <li>
-                <a href={link.href} target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-4 text-base text-foreground font-medium hover:text-primary transition-colors">
+                <a href={toSafeHref(link.href)} target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-4 text-base text-foreground font-medium hover:text-primary transition-colors">
                   <span class="font-mono text-xs text-primary/60 font-bold">{String(i + 1).padStart(2, "0")}</span>
                   <span class="group-hover:translate-x-2 transition-transform">{link.label}</span>
                 </a>

@@ -1,10 +1,13 @@
 import { z } from "zod";
+import { isSafeHref } from "../lib/safe-url.js";
 
 // ── Reusable sub-schemas ──────────────────────────────────
 
+const SafeHrefSchema = z.string().refine(isSafeHref, "El enlace usa un protocolo no permitido");
+
 const LinkSchema = z.object({
   label: z.string(),
-  href: z.string(),
+  href: SafeHrefSchema,
 });
 
 const NavigationLinkSchema = LinkSchema.extend({
@@ -49,7 +52,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
     description: z.string(),
     image: z.string(),
     linkLabel: z.string(),
-    linkHref: z.string(),
+    linkHref: SafeHrefSchema,
   }),
   z.object({
     type: z.literal("sectionRichText"),
@@ -59,7 +62,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
     paragraphs: z.array(z.string()).optional(),
     tip: z.string().optional(),
     linkLabel: z.string().optional(),
-    linkHref: z.string().optional(),
+    linkHref: SafeHrefSchema.optional(),
   }),
   z.object({
     type: z.literal("itemsGrid"),
@@ -78,12 +81,12 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
         image: z.string().optional(),
         number: z.string().optional(),
         linkLabel: z.string().optional(),
-        linkHref: z.string().optional(),
+        linkHref: SafeHrefSchema.optional(),
         socialLinks: z
           .array(
             z.object({
               label: z.string(),
-              href: z.string(),
+              href: SafeHrefSchema,
             })
           )
           .optional(),
@@ -99,7 +102,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
     links: z.array(
       z.object({
         label: z.string(),
-        href: z.string(),
+        href: SafeHrefSchema,
         description: z.string().optional(),
       })
     ),
@@ -253,12 +256,12 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
           title: z.string(),
           description: z.string(),
           linkLabel: z.string().optional(),
-          linkHref: z.string().optional(),
+          linkHref: SafeHrefSchema.optional(),
           socialLinks: z
             .array(
               z.object({
                 label: z.string(),
-                href: z.string(),
+                href: SafeHrefSchema,
               })
             )
             .optional(),
@@ -270,7 +273,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
       links: z.array(
         z.object({
           label: z.string(),
-          href: z.string(),
+          href: SafeHrefSchema,
           description: z.string(),
         })
       ),
@@ -299,7 +302,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
     heading: z.string(),
     text: z.string(),
     buttonLabel: z.string(),
-    buttonHref: z.string(),
+    buttonHref: SafeHrefSchema,
   }),
 ]);
 
@@ -362,7 +365,7 @@ const HomeAgeCategoriesSectionSchema = z.object({
   asideText: z.string(),
   heading: z.string(),
   linkLabel: z.string(),
-  linkHref: z.string(),
+  linkHref: SafeHrefSchema,
   items: z.array(
     z.object({
       name: z.string(),
@@ -373,7 +376,7 @@ const HomeAgeCategoriesSectionSchema = z.object({
       // imageKey (que selecciona una de las fotos incluidas en el sitio).
       imageUrl: z.string().optional(),
       author: z.string(),
-      authorUrl: z.string(),
+      authorUrl: SafeHrefSchema,
     })
   ),
 });
@@ -389,7 +392,7 @@ const HomeDualCtaSectionSchema = z.object({
       headingEmphasis: z.string(),
       headingSuffix: z.string(),
       linkLabel: z.string(),
-      href: z.string(),
+      href: SafeHrefSchema,
     })
   ),
 });
@@ -418,7 +421,7 @@ export const homeSchema = z.object({
     subtitlePrimary: z.string(),
     subtitleSecondary: z.string(),
     buttonLabel: z.string(),
-    buttonHref: z.string(),
+    buttonHref: SafeHrefSchema,
   }),
   sections: z.array(HomeSectionSchema),
   components: z.array(SharedPageComponentSchema).optional(),
@@ -589,7 +592,7 @@ export const navigationSchema = z.object({
   socialLinks: z.array(
     z.object({
       label: z.string(),
-      href: z.string(),
+      href: SafeHrefSchema,
       icon: SocialIconSchema,
     })
   ),
@@ -597,7 +600,7 @@ export const navigationSchema = z.object({
     .object({
       copyrightText: z.string(),
       trademarkNote: z.string(),
-      trademarkUrl: z.string(),
+      trademarkUrl: SafeHrefSchema,
     })
     .optional(),
 });

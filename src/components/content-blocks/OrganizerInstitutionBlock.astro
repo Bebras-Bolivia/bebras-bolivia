@@ -1,5 +1,6 @@
 ---
 import { normalizeBrandColor } from "@/lib/brand-styles";
+import { toSafeHref } from "@/lib/safe-url";
 
 interface Props {
   tag?: string;
@@ -72,7 +73,7 @@ const cardColorClass = normalizedAccent
             {linkHref && (
               <div class="mt-5">
                 <a
-                  href={linkHref}
+                  href={toSafeHref(linkHref)}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center justify-center rounded-2xl bg-white/18 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/24"

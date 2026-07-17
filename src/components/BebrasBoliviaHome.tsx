@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { BebrasBeaverShowcase, type ShowcaseCategory } from "@/components/BebrasBeaverShowcase";
+import { toSafeHref } from "@/lib/safe-url";
 
 type HomeHeroData = {
   eyebrow?: string;
@@ -146,7 +147,7 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCateg
                 asChild
               >
                 <a
-                  href={hero.buttonHref || "/registro"}
+                  href={toSafeHref(hero.buttonHref, "/registro")}
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap leading-none"
                 >
                   <span>{hero.buttonLabel || "Inscribirme"}</span>
@@ -187,7 +188,7 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCateg
         {latestNews && (
           <div data-hero-item className="pointer-events-none absolute inset-x-4 bottom-2 z-20 flex justify-center sm:bottom-4 lg:inset-x-auto lg:left-8 lg:justify-start">
             <a
-              href={latestNews.href}
+              href={toSafeHref(latestNews.href)}
               className="pointer-events-auto relative flex max-w-[min(28rem,100%)] items-center gap-2.5 rounded-full bg-white/88 px-3.5 py-2 text-bebras-ink shadow-[0_12px_26px_-22px_rgba(0,0,0,0.45)] ring-1 ring-white/70 backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white"
             >
               <span className="relative flex shrink-0 items-center justify-center" aria-hidden="true">

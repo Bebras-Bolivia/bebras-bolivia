@@ -2,6 +2,7 @@
 import { Clock, Mail, Monitor, Users, Wifi } from "lucide-react";
 import { getBrandCardClass } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
+import { toSafeHref } from "@/lib/safe-url";
 
 interface GridItem {
   title?: string;
@@ -84,12 +85,12 @@ function getColsClass(cols: number) {
             {item.title && <p class="text-xl font-bold mb-3">{item.title}</p>}
             {item.description && <p class="brand-card-muted text-base leading-relaxed" set:html={formatInlineRichText(item.description)} />}
             {item.linkLabel && item.linkHref && (
-              <a href={item.linkHref} class="inline-flex mt-4 text-sm font-semibold hover:underline">{item.linkLabel}</a>
+              <a href={toSafeHref(item.linkHref)} class="inline-flex mt-4 text-sm font-semibold hover:underline">{item.linkLabel}</a>
             )}
             {item.socialLinks && item.socialLinks.length > 0 && (
               <div class="mt-4 flex flex-wrap gap-3">
                 {item.socialLinks.map((social) => (
-                  <a href={social.href} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold hover:underline">
+                  <a href={toSafeHref(social.href)} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold hover:underline">
                     {social.label}
                   </a>
                 ))}

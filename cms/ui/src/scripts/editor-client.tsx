@@ -270,7 +270,11 @@ function EditorPrimitivesView({
             <div className="spinner"></div>
             <span id="preview-overlay-text">Cargando la vista previa de tu página...</span>
           </div>
-          <iframe id="preview-frame" src="about:blank"></iframe>
+          <iframe
+            id="preview-frame"
+            src="about:blank"
+            sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
+          ></iframe>
         </div>
       </div>
     </>

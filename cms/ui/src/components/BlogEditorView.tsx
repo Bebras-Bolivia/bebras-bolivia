@@ -495,6 +495,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
                 title="Vista previa del post"
                 className="blog-preview-frame"
                 src={previewFrameSrc}
+                sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
                 onLoad={() => {
                   const position = pendingPreviewScroll.current;
                   if (!position) return;

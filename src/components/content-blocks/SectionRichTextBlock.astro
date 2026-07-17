@@ -2,6 +2,7 @@
 import { ArrowRight } from "lucide-react";
 import { normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
+import { toSafeHref } from "@/lib/safe-url";
 
 interface Props {
   tag?: string;
@@ -32,7 +33,7 @@ const tipCardClass = `brand-card brand-card-${accentColor}`;
         )}
         {linkLabel && linkHref && (
           <p class="mt-6">
-            <a href={linkHref} class="inline-flex items-center text-primary font-bold group text-xl transition-all">
+            <a href={toSafeHref(linkHref)} class="inline-flex items-center text-primary font-bold group text-xl transition-all">
               {linkLabel}
               <ArrowRight className="ml-2 size-6 transition-transform group-hover:translate-x-1" strokeWidth={2.5} aria-hidden="true" />
             </a>

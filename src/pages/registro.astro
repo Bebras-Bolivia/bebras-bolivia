@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import InternalPageHero from "@/components/InternalPageHero.astro";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import data from "@/data/registro.json";
+import { toSafeHref } from "@/lib/safe-url";
 
 const components: any[] = Array.isArray((data as any).components) ? (data as any).components : [];
 ---
@@ -28,7 +29,7 @@ const components: any[] = Array.isArray((data as any).components) ? (data as any
           {data.disabledButton}
         </span>
         <a
-          href={data.backButton.href}
+          href={toSafeHref(data.backButton.href)}
           class="group inline-flex items-center justify-center rounded-2xl border border-border bg-transparent px-6 py-3.5 text-sm font-semibold text-foreground transition-all duration-300 hover:border-primary/30 hover:text-primary"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 transition-transform group-hover:-translate-x-1"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>

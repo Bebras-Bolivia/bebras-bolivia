@@ -6,6 +6,7 @@ import { BadgeCheck, Brain, School } from "lucide-react";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import homeData from "@/data/home.json";
 import { formatInlineRichText } from "@/lib/rich-text";
+import { toSafeHref } from "@/lib/safe-url";
 import guacamayoImage from "@/assets/guacamayo.jpg";
 import capibaraImage from "@/assets/capibara.jpg";
 import titiImage from "@/assets/titi.jpg";
@@ -224,7 +225,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 														<div class="relative aspect-[4/3] overflow-hidden bg-muted">
 															<img src={g.image} alt={g.name} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
 															<div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-																<a href={g.authorUrl} target="_blank" rel="noreferrer noopener" class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground">Autor: {g.author}</a>
+														<a href={toSafeHref(g.authorUrl)} target="_blank" rel="noreferrer noopener" class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground">Autor: {g.author}</a>
 															</div>
 														</div>
 														<div class="p-5">
@@ -238,7 +239,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 													</div>
 												))}
 											</div>
-											<div class="mt-6"><a href={section.linkHref || "/estudiantes"} class:list={["link-underline inline-flex items-center gap-2 text-base font-semibold", ac.link]}>{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
+											<div class="mt-6"><a href={toSafeHref(section.linkHref, "/estudiantes")} class:list={["link-underline inline-flex items-center gap-2 text-base font-semibold", ac.link]}>{section.linkLabel || "Ver información detallada para estudiantes"}<span aria-hidden="true">→</span></a></div>
 										</div>
 									</div>
 								</section>
@@ -250,7 +251,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 										{(section.cards || []).map((card: any) => {
 											const ui = getHomeCtaCardClasses(card.style);
 											const Icon = card.icon === "school" ? School : Brain;
-											return <a href={card.href || "/"} class={ui.wrapper}><div class="flex items-start justify-between gap-4 mb-10"><p class={ui.audience}>{card.audience || "Seccion"}</p><Icon className={ui.iconClass} strokeWidth={1.8} aria-hidden="true" /></div><p class="serif-display text-3xl sm:text-4xl leading-[1.05]">{card.headingPrefix || "Titulo"} <em class={ui.emphasisClass}>{card.headingEmphasis || "destacado"}</em>{ui.breakLine ? <br /> : null}{card.headingSuffix || ""}</p><div class={ui.link}>{card.linkLabel || "Ver mas"}<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span></div></a>;
+											return <a href={toSafeHref(card.href, "/")} class={ui.wrapper}><div class="flex items-start justify-between gap-4 mb-10"><p class={ui.audience}>{card.audience || "Seccion"}</p><Icon className={ui.iconClass} strokeWidth={1.8} aria-hidden="true" /></div><p class="serif-display text-3xl sm:text-4xl leading-[1.05]">{card.headingPrefix || "Titulo"} <em class={ui.emphasisClass}>{card.headingEmphasis || "destacado"}</em>{ui.breakLine ? <br /> : null}{card.headingSuffix || ""}</p><div class={ui.link}>{card.linkLabel || "Ver mas"}<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span></div></a>;
 										})}
 									</div>
 								</section>

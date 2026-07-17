@@ -1,5 +1,6 @@
 ---
 import { getBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
+import { toSafeHref } from "@/lib/safe-url";
 import catData from "@/data/categories.json";
 import guacamayoImage from "@/assets/guacamayo.jpg";
 import capibaraImage from "@/assets/capibara.jpg";
@@ -130,7 +131,7 @@ function getCategoryCardClass(cat: Category, index: number) {
               {getCategoryAuthor(cat) && getCategoryAuthorUrl(cat) && (
                 <div class="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/55 via-black/24 to-transparent px-4 pb-3 pt-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                   <a
-                    href={getCategoryAuthorUrl(cat)}
+                    href={toSafeHref(getCategoryAuthorUrl(cat))}
                     target="_blank"
                     rel="noreferrer noopener"
                     class="inline bg-[linear-gradient(currentColor,currentColor)] bg-[length:0_1px] bg-left-bottom bg-no-repeat text-xs font-bold text-white transition-[background-size,color] duration-300 hover:bg-[length:100%_1px] hover:text-primary-foreground"
