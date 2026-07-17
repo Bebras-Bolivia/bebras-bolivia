@@ -23,6 +23,7 @@ const paths = {
 
 const bunBin = isWindows() ? "bun.exe" : "bun";
 const obsoleteDataFiles = new Set(["site.json"]);
+const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
 let syncTimer = null;
 let shuttingDown = false;
@@ -86,13 +87,19 @@ async function syncDirectory(sourceDir, targetDir, predicate) {
   );
 }
 
-async function syncCmsToLanding() {
+async function syncCmsToLanding(removePreview = false) {
+  if (removePreview) {
+    await rm(join(paths.landingBlogDir, BLOG_PREVIEW_FILENAME), { force: true });
+  }
   await Promise.all([
     syncDirectory(paths.currentDataDir, paths.landingDataDir, (file) => {
       const name = file.split(/[\\/]/).pop() || "";
       return file.endsWith(".json") && !obsoleteDataFiles.has(name);
     }),
-    syncDirectory(paths.currentBlogDir, paths.landingBlogDir, (file) => file.endsWith(".md")),
+    syncDirectory(paths.currentBlogDir, paths.landingBlogDir, (file) => {
+      const name = file.split(/[\\/]/).pop() || "";
+      return file.endsWith(".md") && name !== BLOG_PREVIEW_FILENAME;
+    }),
     syncDirectory(paths.mediaDir, paths.landingUploadsDir, () => true),
   ]);
 
@@ -214,7 +221,7 @@ function startWatchers() {
 process.on("SIGINT", () => shutdown(0));
 process.on("SIGTERM", () => shutdown(0));
 
-await syncCmsToLanding();
+await syncCmsToLanding(true);
 await runCommand(
   "cms-ui-build",
   bunBin,

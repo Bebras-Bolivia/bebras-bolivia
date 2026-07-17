@@ -23,6 +23,7 @@ const paths = {
 
 const bunBin = process.platform === "win32" ? "bun.exe" : "bun";
 const obsoleteDataFiles = new Set(["site.json"]);
+const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
 function needsShell(command) {
   return process.platform === "win32" && /\.(cmd|bat)$/i.test(command);
@@ -76,12 +77,16 @@ async function syncDirectory(sourceDir, targetDir, predicate) {
 }
 
 async function syncCmsToLanding() {
+  await rm(join(paths.landingBlogDir, BLOG_PREVIEW_FILENAME), { force: true });
   await Promise.all([
     syncDirectory(paths.currentDataDir, paths.landingDataDir, (file) => {
       const name = file.split(/[\\/]/).pop() || "";
       return file.endsWith(".json") && !obsoleteDataFiles.has(name);
     }),
-    syncDirectory(paths.currentBlogDir, paths.landingBlogDir, (file) => file.endsWith(".md")),
+    syncDirectory(paths.currentBlogDir, paths.landingBlogDir, (file) => {
+      const name = file.split(/[\\/]/).pop() || "";
+      return file.endsWith(".md") && name !== BLOG_PREVIEW_FILENAME;
+    }),
     syncDirectory(paths.mediaDir, paths.landingUploadsDir, () => true),
   ]);
 

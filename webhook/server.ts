@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
-import { cp, mkdir, readdir } from "node:fs/promises";
+import { cp, mkdir, readdir, rm } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 
@@ -16,6 +16,7 @@ const cmsSnapshotsDir = resolve(cmsDir, "content", "snapshots");
 const landingDataDir = resolve(repoDir, "src", "data");
 const landingBlogDir = resolve(repoDir, "src", "content", "blog");
 const landingUploadsDir = resolve(repoDir, "public", "images", "uploads");
+const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
 let deployRunning = false;
 let deployQueued = false;
@@ -182,7 +183,9 @@ async function syncCmsCurrentToLanding(): Promise<void> {
   }
 
   try {
-    const blogFiles = (await readdir(cmsCurrentBlogDir)).filter((file) => file.endsWith(".md"));
+    const blogFiles = (await readdir(cmsCurrentBlogDir)).filter(
+      (file) => file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME
+    );
     for (const file of blogFiles) {
       await cp(resolve(cmsCurrentBlogDir, file), resolve(landingBlogDir, file));
     }
@@ -299,6 +302,7 @@ async function deployLatest(): Promise<void> {
 
   await runCommand("git", ["pull", "--ff-only", "origin", branch], repoDir);
   await syncCmsCurrentToLanding();
+  await rm(resolve(landingBlogDir, BLOG_PREVIEW_FILENAME), { force: true });
 
   const build = getAstroBuildCommand();
   await runCommand(build.cmd, build.args, repoDir);

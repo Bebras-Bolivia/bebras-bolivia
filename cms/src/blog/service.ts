@@ -61,6 +61,9 @@ function assertValidSlug(slug: string): void {
       400
     );
   }
+  if (slug === PREVIEW_SLUG) {
+    throw new BlogError("This slug is reserved for CMS previews", 400);
+  }
 }
 
 function isFileNotFoundError(error: unknown): boolean {

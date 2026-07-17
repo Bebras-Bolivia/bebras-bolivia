@@ -18,6 +18,7 @@ let autoPublishTimer: ReturnType<typeof setTimeout> | null = null;
 let autoPublishPending = false;
 let autoPublishAuthor = "CMS auto-publish";
 const AUTO_PUBLISH_DELAY_MS = 2_000;
+const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
 /**
  * Debounce CMS writes into a single background publish. If a manual publish is
@@ -109,7 +110,9 @@ export async function getUnpublishedChanges(): Promise<PublishChanges> {
   const blogFiles = Array.from(new Set([
     ...(await listFiles(config.currentBlogDir, ".md")),
     ...(await listFiles(config.landingBlogDir, ".md")),
-  ])).sort((a, b) => a.localeCompare(b, "es"));
+  ]))
+    .filter((file) => file !== BLOG_PREVIEW_FILENAME)
+    .sort((a, b) => a.localeCompare(b, "es"));
   const blogItems = await compareKnownFiles({
     type: "blog",
     files: blogFiles,
@@ -244,8 +247,13 @@ export async function publish(author: string): Promise<PublishLogRow> {
 
     // Step 3: Copy blog MD files to landing/src/content/blog/
     await mkdir(config.landingBlogDir, { recursive: true });
-    const blogFiles = (await readdir(config.currentBlogDir)).filter((file) => file.endsWith(".md"));
-    const publishedBlogFiles = (await readdir(config.landingBlogDir)).filter((file) => file.endsWith(".md"));
+    await rm(join(config.landingBlogDir, BLOG_PREVIEW_FILENAME), { force: true });
+    const blogFiles = (await readdir(config.currentBlogDir)).filter(
+      (file) => file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME
+    );
+    const publishedBlogFiles = (await readdir(config.landingBlogDir)).filter(
+      (file) => file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME
+    );
 
     // Mirror deletions as well as additions/updates. Previously, deleted posts
     // remained in Astro's source directory and were rebuilt indefinitely.

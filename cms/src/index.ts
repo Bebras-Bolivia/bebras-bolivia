@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { resolve } from "path";
-import { mkdir, cp, readdir, stat } from "fs/promises";
+import { mkdir, cp, readdir, rm, stat } from "fs/promises";
 import { existsSync } from "fs";
 import { config } from "./config.js";
 import { getDb } from "./db/index.js";
@@ -20,6 +20,7 @@ import { startDailyBackupScheduler, stopDailyBackupScheduler } from "./snapshots
 import { CONTENT_FILES } from "./content/schemas.js";
 
 const app = express();
+const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
 function stripBasePath(req: express.Request, _res: express.Response, next: express.NextFunction) {
   const { basePath } = config;
@@ -80,6 +81,11 @@ async function syncWorkingCopiesFromLanding() {
   let syncedContent = 0;
   let syncedBlog = 0;
 
+  await Promise.all([
+    rm(resolve(config.currentBlogDir, BLOG_PREVIEW_FILENAME), { force: true }),
+    rm(resolve(config.landingBlogDir, BLOG_PREVIEW_FILENAME), { force: true }),
+  ]);
+
   for (const filename of CONTENT_FILES) {
     const updated = await copyIfSourceIsNewer(
       resolve(config.landingDataDir, filename),
@@ -89,7 +95,9 @@ async function syncWorkingCopiesFromLanding() {
   }
 
   try {
-    const blogFiles = (await readdir(config.landingBlogDir)).filter((file) => file.endsWith(".md"));
+    const blogFiles = (await readdir(config.landingBlogDir)).filter(
+      (file) => file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME
+    );
     for (const filename of blogFiles) {
       const updated = await copyIfSourceIsNewer(
         resolve(config.landingBlogDir, filename),
