@@ -5,6 +5,7 @@ import { formatInlineRichText } from "@/lib/rich-text";
 interface Item {
   title: string;
   desc: string;
+  color?: string;
 }
 
 interface Props {
@@ -30,7 +31,7 @@ const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
         {intro && <p set:html={formatInlineRichText(intro)} />}
         <ul class="mt-8 grid gap-5 md:grid-cols-2">
           {items.map((item, i) => (
-            <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", getBrandCardClass(i, cardPalette)]}>
+            <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", item.color ? getBrandCardClass(0, [item.color]) : getBrandCardClass(i, cardPalette)]}>
               <span class="brand-card-icon mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-2xl font-mono text-base font-bold tabular-nums transition-transform duration-300 group-hover:scale-105">
                 {String(i + 1).padStart(2, "0")}
               </span>

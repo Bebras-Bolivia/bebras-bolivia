@@ -163,7 +163,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("featureList"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     tag: z.string().optional(),
     heading: z.string().optional(),
     intro: z.string().optional(),
@@ -171,6 +171,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
       z.object({
         title: z.string(),
         desc: z.string(),
+        color: BrandColorSchema.optional(),
       })
     ),
     outro: z.string().optional(),

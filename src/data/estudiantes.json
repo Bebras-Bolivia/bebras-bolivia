@@ -29,32 +29,30 @@
     },
     {
       "type": "featureList",
-      "accent": "blue",
-      "cardPalette": [
-        "blue",
-        "red",
-        "yellow",
-        "green"
-      ],
+      "accent": "green",
       "tag": "Habilidades clave",
       "heading": "¿Qué es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
       "items": [
         {
           "title": "Descomposición:",
-          "desc": "dividir un problema grande en partes más pequeñas."
+          "desc": "dividir un problema grande en partes más pequeñas.",
+          "color": "blue"
         },
         {
           "title": "Reconocimiento de patrones:",
-          "desc": "identificar similitudes y tendencias."
+          "desc": "identificar similitudes y tendencias.",
+          "color": "red"
         },
         {
           "title": "Abstracción:",
-          "desc": "enfocarse en lo importante e ignorar los detalles irrelevantes."
+          "desc": "enfocarse en lo importante e ignorar los detalles irrelevantes.",
+          "color": "yellow"
         },
         {
           "title": "Diseño de algoritmos:",
-          "desc": "crear pasos ordenados para resolver un problema."
+          "desc": "crear pasos ordenados para resolver un problema.",
+          "color": "green"
         }
       ],
       "outro": "Estas habilidades son útiles en la vida cotidiana, no solo en la informática."

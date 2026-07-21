@@ -471,7 +471,7 @@ export function createTypedArrayItem(
   }
 
   if (selectedType === "featureItem") {
-    return { title: "Nueva habilidad", desc: "Descripcion" };
+    return { title: "Nueva habilidad", desc: "Descripcion", color: "blue" };
   }
 
   if (selectedType === "ageCategoryItem") {
@@ -602,8 +602,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     featureList: () => ({
       type: "featureList", accent: "blue", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio",
-      cardPalette: ["blue", "red", "yellow", "green"],
-      items: [{ title: "Punto 1", desc: "Descripcion" }], outro: "Texto de cierre",
+      items: [{ title: "Punto 1", desc: "Descripcion", color: "blue" }], outro: "Texto de cierre",
     }),
     statsGrid: () => ({
       type: "statsGrid", accent: "blue", tag: "Estadisticas", heading: "Titulo de estadisticas", columns: 3,
