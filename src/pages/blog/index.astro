@@ -8,6 +8,7 @@ import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 const posts = (await getCollection("blog"))
   .filter((post) => post.id.replace(/\.md$/, "") !== "cms-preview")
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const priorityImagePostId = posts.find((post) => Boolean(post.data.image))?.id;
 
 const uiData = blogUi as any;
 const header = uiData.header || {};
@@ -44,6 +45,9 @@ const indexUi = components.find((c) => c.type === "blogIndex") || {
                         <img
                           src={post.data.image}
                           alt={post.data.title}
+                          loading={post.id === priorityImagePostId ? "eager" : "lazy"}
+                          decoding="async"
+                          fetchpriority={post.id === priorityImagePostId ? "high" : undefined}
                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
                       </div>

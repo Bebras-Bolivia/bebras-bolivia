@@ -46,6 +46,9 @@ const heroTag = author ? `${formattedDate} · ${author}` : formattedDate;
         <img
           src={image}
           alt={title}
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
           class="w-full aspect-video object-cover"
         />
       </div>
