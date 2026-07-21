@@ -1,5 +1,5 @@
 ---
-import { getBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
+import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
 interface Item {
@@ -39,7 +39,7 @@ function getColsClass(cols: number) {
         {intro && <p set:html={formatInlineRichText(intro)} />}
         <ul class:list={["mt-8 grid gap-5", getColsClass(columns)]}>
           {items.map((item, i) => (
-            <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", item.color ? getBrandCardClass(0, [item.color]) : getBrandCardClass(i, cardPalette)]}>
+            <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", getItemBrandCardClass(item.color, i, cardPalette)]}>
               <span class="brand-card-icon mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-2xl font-mono text-base font-bold tabular-nums transition-transform duration-300 group-hover:scale-105">
                 {String(i + 1).padStart(2, "0")}
               </span>

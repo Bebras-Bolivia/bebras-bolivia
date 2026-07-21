@@ -1,4 +1,5 @@
 {
+  "accent": "green",
   "sectionTag": "Puntuación",
   "heading": "Sistema de puntuación",
   "subtitle": "Cada tarea pertenece a una categoría de dificultad. Inicias con 45 puntos.",
@@ -40,11 +41,13 @@
   "summaryCards": [
     {
       "value": "45",
-      "label": "Puntaje inicial"
+      "label": "Puntaje inicial",
+      "color": "red"
     },
     {
       "value": "180",
-      "label": "Puntaje máximo"
+      "label": "Puntaje máximo",
+      "color": "yellow"
     }
   ],
   "summaryColumns": 2

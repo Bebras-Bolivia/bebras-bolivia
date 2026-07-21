@@ -1,6 +1,6 @@
 ---
 import { ClipboardList, Mail, Share2 } from "lucide-react";
-import { getBrandCardClass } from "@/lib/brand-styles";
+import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import siteData from "@/data/site.json";
 import { isSafeHref, toSafeHref } from "@/lib/safe-url";
 
@@ -16,9 +16,11 @@ interface ContactCard {
   linkLabel?: string;
   linkHref?: string;
   socialLinks?: SocialLink[];
+  color?: string;
 }
 
 interface ContactClassicData {
+  accent?: string;
   info: {
     tag: string;
     heading: string;
@@ -48,6 +50,10 @@ interface Props {
 }
 
 const { data } = Astro.props;
+const accentColor = normalizeBrandColor(data.accent || "green");
+const accentTextClass = `text-bebras-${accentColor}`;
+const accentButtonClass = `bg-bebras-${accentColor}`;
+const accentButtonTextClass = accentColor === "yellow" || accentColor === "gray" ? "text-bebras-ink" : "text-white";
 
 const contactIconMap = {
   email: Mail,
@@ -80,7 +86,7 @@ const formEmail =
   <div class="editorial-section">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
       <div>
-        <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{data.info.tag}</p>
+        <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-4", accentTextClass]}>{data.info.tag}</p>
         <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{data.info.heading}</h2>
 
         <div class="space-y-4">
@@ -88,7 +94,7 @@ const formEmail =
             const Icon = contactIconMap[card.icon as keyof typeof contactIconMap];
 
             return (
-            <div class:list={["p-6", getBrandCardClass(i, data.cardPalette)]}>
+            <div class:list={["p-6", getItemBrandCardClass(card.color, i, data.cardPalette)]}>
               <div class="flex items-start gap-6">
                 <div class="brand-card-icon flex items-center justify-center size-12 shrink-0 rounded-2xl">
                   {Icon && <Icon className="size-6" strokeWidth={2.2} aria-hidden="true" />}
@@ -151,7 +157,7 @@ const formEmail =
 
       <div>
         <div class="editorial-callout px-6 py-6 lg:px-8 lg:py-8 h-full">
-          <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{data.form.tag}</p>
+          <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-4", accentTextClass]}>{data.form.tag}</p>
           <h2 class="text-3xl font-bold text-foreground mb-8 tracking-tight">{data.form.heading}</h2>
           <form class="space-y-4" data-mailto={formEmail}>
             <div>
@@ -175,7 +181,7 @@ const formEmail =
               <label for="message" class="block text-xs uppercase tracking-[0.15em] font-bold text-muted-foreground mb-3">{data.form.fields.message.label}</label>
               <textarea id="message" name="message" rows="5" placeholder={data.form.fields.message.placeholder} class="w-full rounded-2xl border border-border bg-white px-5 py-4 text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-medium resize-y"></textarea>
             </div>
-            <button type="submit" class="group w-full mt-4 inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-5 text-lg font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90">
+            <button type="submit" class:list={["group w-full mt-4 inline-flex items-center justify-center rounded-2xl px-8 py-5 text-lg font-bold transition-all duration-300 hover:scale-[1.02] hover:opacity-90", accentButtonClass, accentButtonTextClass]}>
               {data.form.submitLabel}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </button>

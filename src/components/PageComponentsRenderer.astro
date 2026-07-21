@@ -32,6 +32,7 @@ const { components = [] } = Astro.props;
         intro={component.intro}
         columns={component.columns}
         mediaType={component.mediaType}
+        accent={component.accent}
         cardPalette={component.cardPalette}
         items={component.items}
       />
@@ -74,7 +75,7 @@ const { components = [] } = Astro.props;
   }
 
   if (component.type === "statsGrid") {
-    return <StatsGridBlock tag={component.tag} heading={component.heading} columns={component.columns} stats={component.stats} paragraphs={component.paragraphs} cardPalette={component.cardPalette} />;
+    return <StatsGridBlock tag={component.tag} heading={component.heading} columns={component.columns} stats={component.stats} paragraphs={component.paragraphs} accent={component.accent} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "studentsAgeCategories") {
@@ -108,7 +109,7 @@ const { components = [] } = Astro.props;
   }
 
   if (component.type === "linksList") {
-    return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} cardPalette={component.cardPalette} />;
+    return <LinksListBlock tag={component.tag} heading={component.heading} links={component.links} accent={component.accent} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "faqAccordion" || component.type === "faqQuestions") {
@@ -116,7 +117,7 @@ const { components = [] } = Astro.props;
   }
 
   if (component.type === "tabsGuide") {
-    return <TeacherInstructionsTabsBlock sectionTag={component.sectionTag} heading={component.heading} subtitle={component.subtitle} tabs={component.tabs} cardPalette={component.cardPalette} />;
+    return <TeacherInstructionsTabsBlock sectionTag={component.sectionTag} heading={component.heading} subtitle={component.subtitle} tabs={component.tabs} accent={component.accent} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "formContact") {

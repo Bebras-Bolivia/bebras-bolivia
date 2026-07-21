@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { normalizePalette, type BrandColor } from "@/lib/brand-styles";
+import { normalizeBrandColor, normalizePalette, type BrandColor } from "@/lib/brand-styles";
 
 interface InstructionItem {
   title?: string;
@@ -12,6 +12,7 @@ interface Tab {
   label: string;
   heading: string;
   items: InstructionItem[];
+  color?: string;
 }
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
   heading: string;
   subtitle: string;
   tabs: Tab[];
+  accent?: string;
   cardPalette?: string[];
 }
 
@@ -62,14 +64,16 @@ export default function TeacherInstructions({
   heading,
   subtitle,
   tabs,
+  accent = "green",
   cardPalette,
 }: Props) {
   const palette = normalizePalette(cardPalette);
+  const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
 
   return (
     <section className="reveal-section editorial-section mx-auto w-full max-w-6xl px-4 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        <p className="mb-4 text-sm font-bold uppercase tracking-[0.25em] text-primary">
+        <p className={`mb-4 text-sm font-bold uppercase tracking-[0.25em] ${accentTextClass}`}>
           {sectionTag}
         </p>
         <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -82,7 +86,7 @@ export default function TeacherInstructions({
         <Tabs defaultValue={tabs[0]?.id}>
           <TabsList className="mb-8 flex h-auto w-full flex-wrap justify-start gap-3 rounded-none bg-transparent p-0">
             {tabs.map((tab, index) => {
-              const color = palette[index % palette.length] || "green";
+              const color = tab.color ? normalizeBrandColor(tab.color) : palette[index % palette.length] || "green";
               const s = STYLES[color];
               return (
                 <TabsTrigger
@@ -100,7 +104,7 @@ export default function TeacherInstructions({
           </TabsList>
 
           {tabs.map((tab, tabIndex) => {
-            const color = palette[tabIndex % palette.length] || "green";
+            const color = tab.color ? normalizeBrandColor(tab.color) : palette[tabIndex % palette.length] || "green";
             const s = STYLES[color];
             return (
               <TabsContent

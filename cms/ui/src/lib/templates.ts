@@ -127,7 +127,7 @@ export function getSelectOptions(path: string, key: string, filename: string | n
 // ── Hidden fields ────────────────────────────────────────
 // `type` is the block/section discriminator (introEditorial, itemsGrid, …) —
 // editing it would break the section, so it's never shown. `id` likewise.
-export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription", "emoji", "mediaType"]);
+export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription", "cardPalette", "emoji", "mediaType"]);
 
 // ── Component option type ────────────────────────────────
 export type ComponentOption = {
@@ -392,11 +392,31 @@ export function createEmptyArrayItem(
     const parentPath = String(path).replace(/\.items$/, "");
     const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
-      const base = { title: "", description: "", linkLabel: "", linkHref: "", socialLinks: [] };
+      const base = { title: "", description: "", linkLabel: "", linkHref: "", socialLinks: [], color: "blue" };
       if (parent.mediaType === "icon") return { ...base, icon: "monitor" };
       if (parent.mediaType === "image") return { ...base, image: "/images/sponsor-placeholder.svg" };
       if (parent.mediaType === "number") return { ...base, number: "" };
       return base;
+    }
+  }
+
+  if (normalizedPath.endsWith(".stats")) {
+    const parentPath = String(path).replace(/\.stats$/, "");
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
+    if (parent?.type === "statsGrid") return { value: "0", label: "Estadistica", color: "blue" };
+  }
+
+  if (normalizedPath.endsWith(".links")) {
+    const parentPath = String(path).replace(/\.links$/, "");
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
+    if (parent?.type === "linksList") return { label: "Nuevo enlace", href: "", description: "", color: "blue" };
+  }
+
+  if (normalizedPath.endsWith(".info.cards")) {
+    const parentPath = String(path).replace(/\.info\.cards$/, "");
+    const parent: SafeAny = getNestedValue(currentData, parentPath);
+    if (parent?.type === "contactClassic") {
+      return { icon: "email", title: "Contacto", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "blue" };
     }
   }
 
@@ -450,6 +470,7 @@ export function createTypedArrayItem(
       id: `tab-${Date.now()}`,
       label: "Nueva pestana",
       heading: "Titulo de pestana",
+      color: "blue",
       items: [{ title: "Nuevo punto", desc: "Descripcion" }],
     };
   }
@@ -462,12 +483,12 @@ export function createTypedArrayItem(
     const parentPath = path.replace(/\.items$/, "");
     const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "itemsGrid") {
-      const base = { title: "Nuevo item", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] };
+      const base = { title: "Nuevo item", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "blue" };
       if (parent.mediaType === "icon") return { ...base, icon: "monitor" };
       if (parent.mediaType === "image") return { ...base, image: "/images/sponsor-placeholder.svg" };
       if (parent.mediaType === "number") return { ...base, number: "" };
     }
-    return { title: "Nuevo item", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] };
+    return { title: "Nuevo item", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "blue" };
   }
 
   if (selectedType === "featureItem") {
@@ -483,7 +504,7 @@ export function createTypedArrayItem(
   }
 
   if (selectedType === "scoringSummary") {
-    return { value: "0", label: "Resumen" };
+    return { value: "0", label: "Resumen", color: "blue" };
   }
 
   return null;
@@ -558,47 +579,47 @@ function _componentTemplate(type: string): unknown | null {
     }),
     itemsGrid: () => ({
       type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Titulo de tarjetas", intro: "Texto introductorio opcional",
-      columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
+      columns: 3, mediaType: "icon",
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor", linkLabel: "", linkHref: "", socialLinks: [] },
-        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor", linkLabel: "", linkHref: "", socialLinks: [], color: "red" },
+        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi", linkLabel: "", linkHref: "", socialLinks: [], color: "yellow" },
       ],
     }),
     itemsGridIcon: () => ({
       type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Cuadricula con iconos", intro: "Seccion de tarjetas con iconos.",
-      columns: 3, mediaType: "icon", cardPalette: ["red", "yellow", "green", "blue"],
+      columns: 3, mediaType: "icon",
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor", linkLabel: "", linkHref: "", socialLinks: [] },
-        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 1", description: "Descripcion", icon: "monitor", linkLabel: "", linkHref: "", socialLinks: [], color: "red" },
+        { title: "Tarjeta 2", description: "Descripcion", icon: "wifi", linkLabel: "", linkHref: "", socialLinks: [], color: "yellow" },
       ],
     }),
     itemsGridImage: () => ({
       type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Cuadricula con imagenes", intro: "Seccion de tarjetas con imagen.",
-      columns: 3, mediaType: "image", cardPalette: ["red", "yellow", "green", "blue"],
+      columns: 3, mediaType: "image",
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg", linkLabel: "", linkHref: "", socialLinks: [] },
-        { title: "Tarjeta 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 1", description: "Descripcion", image: "/images/sponsor-placeholder.svg", linkLabel: "", linkHref: "", socialLinks: [], color: "red" },
+        { title: "Tarjeta 2", description: "Descripcion", image: "/images/sponsor-placeholder.svg", linkLabel: "", linkHref: "", socialLinks: [], color: "yellow" },
       ],
     }),
     itemsGridNumber: () => ({
       type: "itemsGrid", accent: "blue", tag: "Pasos", heading: "Cuadricula numerada", intro: "Seccion de pasos numerados.",
-      columns: 3, mediaType: "number", cardPalette: ["red", "yellow", "green", "blue"],
+      columns: 3, mediaType: "number",
       items: [
-        { number: "1", title: "Paso 1", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
-        { number: "2", title: "Paso 2", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
+        { number: "1", title: "Paso 1", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "red" },
+        { number: "2", title: "Paso 2", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "yellow" },
       ],
     }),
     itemsGridSimple: () => ({
       type: "itemsGrid", accent: "blue", tag: "Tarjetas", heading: "Cuadricula simple", intro: "Seccion de tarjetas sin media.",
-      columns: 3, mediaType: "none", cardPalette: ["red", "yellow", "green", "blue"],
+      columns: 3, mediaType: "none",
       items: [
-        { title: "Tarjeta 1", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
-        { title: "Tarjeta 2", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [] },
+        { title: "Tarjeta 1", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "red" },
+        { title: "Tarjeta 2", description: "Descripcion", linkLabel: "", linkHref: "", socialLinks: [], color: "yellow" },
       ],
     }),
     linksList: () => ({
-      type: "linksList", accent: "blue", tag: "Enlaces", heading: "Recursos", cardPalette: ["blue", "red", "yellow", "green"],
-      links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
+      type: "linksList", accent: "blue", tag: "Enlaces", heading: "Recursos",
+      links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial", color: "blue" }],
     }),
     featureList: () => ({
       type: "featureList", accent: "blue", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio", columns: 2,
@@ -606,13 +627,11 @@ function _componentTemplate(type: string): unknown | null {
     }),
     statsGrid: () => ({
       type: "statsGrid", accent: "blue", tag: "Estadisticas", heading: "Titulo de estadisticas", columns: 3,
-      cardPalette: ["green", "yellow", "red", "blue"],
-      stats: [{ value: "15", label: "Preguntas" }, { value: "45", label: "Minutos" }],
+      stats: [{ value: "15", label: "Preguntas", color: "green" }, { value: "45", label: "Minutos", color: "yellow" }],
       paragraphs: ["Descripcion del bloque."],
     }),
     studentsAgeCategories: () => ({
       type: "studentsAgeCategories", accent: "blue", sectionTag: "Niveles", heading: "Categorias por Edad",
-      cardPalette: ["red", "yellow", "green", "blue", "gray"],
       subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
       categories: [
         { name: "Guacamayo", age: "5-8 anos", imageUrl: "", color: "red", desc: "Primeros pasos en el pensamiento logico" },
@@ -625,21 +644,19 @@ function _componentTemplate(type: string): unknown | null {
     studentsScoringTable: () => ({
       type: "studentsScoringTable", accent: "blue", sectionTag: "Puntuacion", heading: "Sistema de Puntuacion",
       subtitle: "Cada tarea pertenece a una categoria de dificultad. Inicias con 45 puntos.",
-      cardPalette: ["red", "yellow", "green", "blue"],
       tableHeaders: ["Resultado", "Cat. A", "Cat. B", "Cat. C"],
       rows: [
         { label: "Correcta", values: ["+6", "+9", "+12"], status: "positive" },
         { label: "Sin respuesta", values: ["0", "0", "0"], status: "neutral" },
         { label: "Incorrecta", values: ["-2", "-3", "-4"], status: "negative" },
       ],
-      summaryCards: [{ value: "45", label: "Puntaje inicial" }, { value: "180", label: "Puntaje maximo" }],
+      summaryCards: [{ value: "45", label: "Puntaje inicial", color: "red" }, { value: "180", label: "Puntaje maximo", color: "yellow" }],
       summaryColumns: 2,
     }),
     tabsGuide: () => ({
       type: "tabsGuide", accent: "blue", sectionTag: "Guia", heading: "Instrucciones", subtitle: "Pasos por etapa",
-      cardPalette: ["blue", "red", "yellow"],
       tabs: [{
-        id: "antes", label: "Antes", heading: "Antes del desafio",
+        id: "antes", label: "Antes", heading: "Antes del desafio", color: "blue",
         items: [{ title: "Paso", desc: "Descripcion" }],
       }],
     }),
@@ -669,12 +686,11 @@ function _componentTemplate(type: string): unknown | null {
     contactClassic: () => ({
       type: "contactClassic",
       accent: "blue",
-      cardPalette: ["blue", "red", "yellow", "green"],
       info: {
         tag: "Informacion", heading: "Informacion de Contacto",
         cards: [{
           icon: "email", title: "Correo electronico", description: "Escribenos para cualquier consulta",
-          linkLabel: "info@bebras.bo", linkHref: "mailto:info@bebras.bo",
+          linkLabel: "info@bebras.bo", linkHref: "mailto:info@bebras.bo", color: "blue",
         }],
       },
       international: {

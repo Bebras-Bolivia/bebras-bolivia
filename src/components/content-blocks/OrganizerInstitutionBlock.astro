@@ -32,12 +32,13 @@ const normalizedAccent = accent ? normalizeBrandColor(accent) : undefined;
 const cardColorClass = normalizedAccent
   ? `brand-card-${normalizedAccent}`
   : tag?.toLowerCase().includes("aliada") ? "brand-card-green" : "brand-card-blue";
+const accentTextClass = normalizedAccent ? `text-bebras-${normalizedAccent}` : "text-primary";
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section">
     <div class="mx-auto max-w-6xl">
-      {tag && <p class="mb-4 text-sm font-bold uppercase tracking-[0.25em] text-primary">{tag}</p>}
+      {tag && <p class:list={["mb-4 text-sm font-bold uppercase tracking-[0.25em]", accentTextClass]}>{tag}</p>}
 
       <article class:list={["brand-card overflow-hidden p-0 text-left", cardColorClass]}>
         <div class="grid items-stretch gap-0 md:grid-cols-[0.82fr_1.18fr]">

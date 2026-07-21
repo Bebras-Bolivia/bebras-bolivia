@@ -60,26 +60,25 @@
     },
     {
       "type": "statsGrid",
-      "cardPalette": [
-        "green",
-        "yellow",
-        "red"
-      ],
+      "accent": "green",
       "tag": "El formato",
       "heading": "¿Qué involucra el desafío?",
       "columns": 3,
       "stats": [
         {
           "value": "15",
-          "label": "Preguntas"
+          "label": "Preguntas",
+          "color": "green"
         },
         {
           "value": "45",
-          "label": "Minutos"
+          "label": "Minutos",
+          "color": "yellow"
         },
         {
           "value": "100%",
-          "label": "En línea"
+          "label": "En línea",
+          "color": "red"
         }
       ],
       "paragraphs": [
@@ -89,10 +88,7 @@
     },
     {
       "type": "studentsScoringTable",
-      "cardPalette": [
-        "red",
-        "yellow"
-      ],
+      "accent": "green",
       "sectionTag": "Puntuación",
       "heading": "Sistema de puntuación",
       "subtitle": "Cada tarea pertenece a una categoría de dificultad. Inicias con 45 puntos.",
@@ -136,13 +132,7 @@
     },
     {
       "type": "studentsAgeCategories",
-      "cardPalette": [
-        "red",
-        "yellow",
-        "green",
-        "blue",
-        "blue"
-      ],
+      "accent": "blue",
       "sectionTag": "Niveles",
       "heading": "Categorías por edad",
       "subtitle": "Cinco niveles diseñados para desafiar a cada grupo de edad.",
@@ -189,34 +179,32 @@
     {
       "type": "linksList",
       "accent": "blue",
-      "cardPalette": [
-        "blue",
-        "red",
-        "yellow",
-        "green"
-      ],
       "tag": "Recursos",
       "heading": "Recursos para practicar",
       "links": [
         {
           "label": "Tareas Bebras UK",
           "href": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
-          "description": "Tareas Bebras de Bebras UK "
+          "description": "Tareas Bebras de Bebras UK ",
+          "color": "blue"
         },
         {
           "label": "Tareas Bebras UK (Respuestas)",
           "href": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
-          "description": "Respuestas a las tareas Bebras UK"
+          "description": "Respuestas a las tareas Bebras UK",
+          "color": "red"
         },
         {
           "label": "Tareas Bebras Uruguay",
           "href": "https://www.uprm.edu/bebras/wp-content/uploads/sites/39/2023/09/Tarjetas-Bebras_Desafios-2023_UY.pdf",
-          "description": "Material de entrenamiento Bebras Uruguay"
+          "description": "Material de entrenamiento Bebras Uruguay",
+          "color": "yellow"
         },
         {
           "label": "Recursos Bebras de Mexico",
           "href": "https://bebras.mx/generales",
-          "description": "Un gran conjunto de taeras para practicar preparado por Bebras Mexico"
+          "description": "Un gran conjunto de taeras para practicar preparado por Bebras Mexico",
+          "color": "green"
         }
       ]
     },

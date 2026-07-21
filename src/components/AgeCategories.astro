@@ -26,13 +26,15 @@ interface Props {
     heading: string;
     subtitle: string;
     categories: Category[];
+    accent?: string;
     cardPalette?: string[];
   };
 }
 
 const props = Astro.props as Props;
 const source: NonNullable<Props["data"]> = props.data || catData;
-const { sectionTag, heading, subtitle, categories, cardPalette } = source;
+const { sectionTag, heading, subtitle, categories, accent = "green", cardPalette } = source;
+const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
 
 const dotColor: Record<string, string> = {
   red: "bg-white",
@@ -105,7 +107,7 @@ function getCategoryCardClass(cat: Category, index: number) {
   <div class="mx-auto max-w-6xl">
     <!-- Section header -->
     <div data-animate class="mb-14 text-center sm:text-left">
-      <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{sectionTag}</p>
+      <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-3", accentTextClass]}>{sectionTag}</p>
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
           {heading}

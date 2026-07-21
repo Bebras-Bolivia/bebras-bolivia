@@ -1,10 +1,11 @@
 ---
-import { getBrandCardClass } from "@/lib/brand-styles";
+import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
 interface Stat {
   value: string;
   label: string;
+  color?: string;
 }
 
 interface Props {
@@ -13,10 +14,12 @@ interface Props {
   columns?: number;
   stats: Stat[];
   paragraphs?: string[];
+  accent?: string;
   cardPalette?: string[];
 }
 
-const { tag, heading, columns = 3, stats = [], paragraphs = [], cardPalette } = Astro.props;
+const { tag, heading, columns = 3, stats = [], paragraphs = [], accent = "green", cardPalette } = Astro.props;
+const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
 
 function getColsClass(cols: number) {
   if (cols <= 1) return "grid-cols-1";
@@ -30,11 +33,11 @@ function getColsClass(cols: number) {
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section overflow-hidden">
     <div class="mx-auto max-w-6xl relative z-10">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
+      {tag && <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-4", accentTextClass]}>{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-6 tracking-tight">{heading}</h2>}
       <div class:list={["grid gap-5 mb-7", getColsClass(columns)]}>
         {stats.map((stat, i) => (
-          <div class:list={["p-8 text-center", getBrandCardClass(i, cardPalette)]}>
+          <div class:list={["p-8 text-center", getItemBrandCardClass(stat.color, i, cardPalette)]}>
             <p class="font-mono text-5xl font-extrabold mb-3">{stat.value}</p>
             <p class="brand-card-muted text-sm uppercase tracking-widest font-bold">{stat.label}</p>
           </div>

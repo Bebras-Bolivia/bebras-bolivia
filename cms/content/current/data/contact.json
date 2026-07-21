@@ -7,11 +7,7 @@
   "components": [
     {
       "type": "contactClassic",
-      "cardPalette": [
-        "red",
-        "yellow",
-        "green"
-      ],
+      "accent": "green",
       "info": {
         "tag": "Información",
         "heading": "Información de contacto",
@@ -21,19 +17,22 @@
             "title": "Email",
             "description": "Escríbenos para cualquier consulta.",
             "linkLabel": "Bebras Bolivia",
-            "linkHref": "mailto:v.costas@umss.edu"
+            "linkHref": "mailto:v.costas@umss.edu",
+            "color": "red"
           },
           {
             "icon": "clipboard",
             "title": "Registro",
             "description": "Inscribe a tu escuela en el desafío.",
             "linkLabel": "Inscribirse al desafío →",
-            "linkHref": "/registro"
+            "linkHref": "/registro",
+            "color": "yellow"
           },
           {
             "icon": "share",
             "title": "Redes sociales",
             "description": "Síguenos para novedades.",
+            "color": "green",
             "socialLinks": [
               {
                 "label": "Facebook",

@@ -33,6 +33,7 @@ const BrandPaletteSchema = z.array(BrandColorSchema).optional();
 const StatSchema = z.object({
   value: z.string(),
   label: z.string(),
+  color: BrandColorSchema.optional(),
 });
 
 const PageMetaSchema = z.object({
@@ -67,7 +68,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("itemsGrid"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     tag: z.string().optional(),
     heading: z.string().optional(),
     intro: z.string().optional(),
@@ -90,13 +91,14 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
             })
           )
           .optional(),
+        color: BrandColorSchema.optional(),
       })
     ),
   }),
   z.object({
     type: z.literal("linksList"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     tag: z.string().optional(),
     heading: z.string().optional(),
     links: z.array(
@@ -104,6 +106,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
         label: z.string(),
         href: SafeHrefSchema,
         description: z.string().optional(),
+        color: BrandColorSchema.optional(),
       })
     ),
   }),
@@ -133,6 +136,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
         id: z.string(),
         label: z.string(),
         heading: z.string(),
+        color: BrandColorSchema.optional(),
         items: z.array(
           z.object({
             title: z.string(),
@@ -180,7 +184,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("statsGrid"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     tag: z.string().optional(),
     heading: z.string().optional(),
     columns: z.number().int().min(1).max(4).optional(),
@@ -188,6 +192,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
       z.object({
         value: z.string(),
         label: z.string(),
+        color: BrandColorSchema.optional(),
       })
     ),
     paragraphs: z.array(z.string()).optional(),
@@ -195,7 +200,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("studentsAgeCategories"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -205,7 +210,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
         age: z.string(),
         emoji: z.string().optional(),
         imageUrl: z.string().optional(),
-        color: z.string(),
+        color: BrandColorSchema,
         desc: z.string(),
       })
     ),
@@ -213,7 +218,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("studentsScoringTable"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -229,6 +234,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
       z.object({
         value: z.string(),
         label: z.string(),
+        color: BrandColorSchema.optional(),
       })
     ),
     summaryColumns: z.number().int().min(1).max(4).optional(),
@@ -248,7 +254,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("contactClassic"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema,
+    cardPalette: BrandPaletteSchema.optional(),
     info: z.object({
       tag: z.string(),
       heading: z.string(),
@@ -267,6 +273,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
               })
             )
             .optional(),
+          color: BrandColorSchema.optional(),
         })
       ),
     }),
@@ -436,11 +443,12 @@ const AgeCategoryItemSchema = z.object({
   age: z.string(),
   emoji: z.string().optional(),
   imageUrl: z.string().optional(),
-  color: z.string(),
+  color: BrandColorSchema,
   desc: z.string(),
 });
 
 export const categoriesSchema = z.object({
+  accent: BrandColorSchema.optional(),
   sectionTag: z.string(),
   heading: z.string(),
   subtitle: z.string(),
@@ -450,6 +458,7 @@ export const categoriesSchema = z.object({
 // ── 3. scoring.json ──────────────────────────────────────
 
 export const scoringSchema = z.object({
+  accent: BrandColorSchema.optional(),
   sectionTag: z.string(),
   heading: z.string(),
   subtitle: z.string(),

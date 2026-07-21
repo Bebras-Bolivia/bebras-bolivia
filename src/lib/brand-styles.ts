@@ -30,3 +30,7 @@ export function getBrandCardClass(index: number, palette?: string[]) {
   const color = colors[index % colors.length];
   return `brand-card brand-card-${color}`;
 }
+
+export function getItemBrandCardClass(color: string | undefined, index: number, palette?: string[]) {
+  return color ? getBrandCardClass(0, [color]) : getBrandCardClass(index, palette);
+}

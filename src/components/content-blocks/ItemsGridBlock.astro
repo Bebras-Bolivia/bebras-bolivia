@@ -1,6 +1,6 @@
 ---
 import { Clock, Mail, Monitor, Users, Wifi } from "lucide-react";
-import { getBrandCardClass } from "@/lib/brand-styles";
+import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 import { toSafeHref } from "@/lib/safe-url";
 
@@ -13,6 +13,7 @@ interface GridItem {
   linkLabel?: string;
   linkHref?: string;
   socialLinks?: { label: string; href: string }[];
+  color?: string;
 }
 
 interface Props {
@@ -21,11 +22,13 @@ interface Props {
   intro?: string;
   columns?: number;
   mediaType?: "icon" | "image" | "number" | "none";
+  accent?: string;
   cardPalette?: string[];
   items: GridItem[];
 }
 
-const { tag, heading, intro, columns = 3, mediaType = "none", cardPalette, items = [] } = Astro.props;
+const { tag, heading, intro, columns = 3, mediaType = "none", accent = "green", cardPalette, items = [] } = Astro.props;
+const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
 
 function normalizedMediaType(type: string) {
   if (type === "icon" || type === "image" || type === "number" || type === "none") return type;
@@ -54,7 +57,7 @@ function getColsClass(cols: number) {
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section">
     <div class="mx-auto max-w-6xl">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{tag}</p>}
+      {tag && <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-3", accentTextClass]}>{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-5 tracking-tight">{heading}</h2>}
       {intro && <p class="text-xl text-muted-foreground leading-relaxed mb-6" set:html={formatInlineRichText(intro)} />}
       <div class:list={["grid gap-5", getColsClass(columns)]}>
@@ -62,7 +65,7 @@ function getColsClass(cols: number) {
           const Icon = iconMap[item.icon as keyof typeof iconMap];
 
           return (
-          <div class:list={["p-5 text-left", getBrandCardClass(i, cardPalette)]}>
+          <div class:list={["p-5 text-left", getItemBrandCardClass(item.color, i, cardPalette)]}>
             {effectiveMediaType !== "none" && (
               <div class="mb-4">
                 {effectiveMediaType === "number" && (

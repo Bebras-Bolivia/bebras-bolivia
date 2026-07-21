@@ -7,11 +7,7 @@
   "components": [
     {
       "type": "itemsGrid",
-      "cardPalette": [
-        "red",
-        "yellow",
-        "green"
-      ],
+      "accent": "red",
       "tag": "Registro",
       "heading": "¿Cómo inscribir a sus estudiantes?",
       "intro": "El proceso de inscripción es simple y gratuito. Un maestro o representante de la escuela actúa como coordinador y se encarga de registrar a los estudiantes.",
@@ -21,28 +17,26 @@
         {
           "title": "Registro del coordinador",
           "description": "Crear cuenta en la plataforma Bebras Bolivia con los datos de la escuela.",
-          "number": "1"
+          "number": "1",
+          "color": "red"
         },
         {
           "title": "Inscripción de estudiantes",
           "description": "Agregar a los estudiantes organizados por categorías de edad, de Guacamayo a Kuntur.",
-          "number": "2"
+          "number": "2",
+          "color": "yellow"
         },
         {
           "title": "Día del desafío",
           "description": "Supervisar la sesión en la escuela durante el desafío.",
-          "number": "3"
+          "number": "3",
+          "color": "green"
         }
       ]
     },
     {
       "type": "itemsGrid",
-      "cardPalette": [
-        "blue",
-        "red",
-        "yellow",
-        "green"
-      ],
+      "accent": "blue",
       "tag": "Requisitos",
       "heading": "¿Qué necesita la escuela?",
       "columns": 2,
@@ -51,22 +45,26 @@
         {
           "title": "Computadoras con navegador web",
           "description": "Chrome, Firefox, Edge o Safari actualizados.",
-          "icon": "monitor"
+          "icon": "monitor",
+          "color": "blue"
         },
         {
           "title": "Conexión a internet",
           "description": "Estable durante los 45 minutos del desafío.",
-          "icon": "wifi"
+          "icon": "wifi",
+          "color": "red"
         },
         {
           "title": "Un coordinador registrado",
           "description": "Maestro o representante que supervise la sesión.",
-          "icon": "user"
+          "icon": "user",
+          "color": "yellow"
         },
         {
           "title": "Tiempo para el desafío",
           "description": "El tiempo necesário para el desafio en la hora y fecha programada.",
-          "icon": "clock"
+          "icon": "clock",
+          "color": "green"
         }
       ]
     },
@@ -83,11 +81,7 @@
     },
     {
       "type": "tabsGuide",
-      "cardPalette": [
-        "blue",
-        "red",
-        "yellow"
-      ],
+      "accent": "blue",
       "sectionTag": "Guía para coordinadores",
       "heading": "Instrucciones para coordinadores",
       "subtitle": "Guía paso a paso para antes, durante y después del desafío.",
@@ -96,6 +90,7 @@
           "id": "antes",
           "label": "Antes",
           "heading": "Antes del desafío",
+          "color": "blue",
           "items": [
             {
               "title": "Registrarse como coordinador",
@@ -119,6 +114,7 @@
           "id": "durante",
           "label": "Durante",
           "heading": "Durante el desafío",
+          "color": "red",
           "items": [
             {
               "title": "Supervisión",
@@ -142,6 +138,7 @@
           "id": "despues",
           "label": "Después",
           "heading": "Después del desafío",
+          "color": "yellow",
           "items": [
             {
               "title": "Resultados",
