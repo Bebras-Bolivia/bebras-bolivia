@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import BebrasBoliviaHome from "../components/BebrasBoliviaHome";
 import { getCollection } from "astro:content";
-import { BadgeCheck, Brain, School } from "lucide-react";
+import { BadgeCheck, Brain, ClipboardList, Clock, Mail, Monitor, School, Share2, Users, Wifi } from "lucide-react";
 import PageComponentsRenderer from "@/components/PageComponentsRenderer.astro";
 import homeData from "@/data/home.json";
 import { formatInlineRichText } from "@/lib/rich-text";
@@ -19,6 +19,18 @@ const imageMap: Record<string, string> = {
 	titi: titiImage.src,
 	jucumari: jukumariImage.src,
 	yaguarete: yaguareteImage.src,
+};
+
+const homeCtaIconMap = {
+	monitor: Monitor,
+	wifi: Wifi,
+	user: Users,
+	clock: Clock,
+	email: Mail,
+	clipboard: ClipboardList,
+	share: Share2,
+	school: School,
+	brain: Brain,
 };
 
 const sections: any[] = Array.isArray((homeData as any).sections) ? (homeData as any).sections : [];
@@ -250,7 +262,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 									<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
 										{(section.cards || []).map((card: any) => {
 											const ui = getHomeCtaCardClasses(card.style);
-											const Icon = card.icon === "school" ? School : Brain;
+											const Icon = homeCtaIconMap[card.icon as keyof typeof homeCtaIconMap] || Brain;
 											return <a href={toSafeHref(card.href, "/")} class={ui.wrapper}><div class="flex items-start justify-between gap-4 mb-10"><p class={ui.audience}>{card.audience || "Seccion"}</p><Icon className={ui.iconClass} strokeWidth={1.8} aria-hidden="true" /></div><p class="serif-display text-3xl sm:text-4xl leading-[1.05]">{card.headingPrefix || "Titulo"} <em class={ui.emphasisClass}>{card.headingEmphasis || "destacado"}</em>{ui.breakLine ? <br /> : null}{card.headingSuffix || ""}</p><div class={ui.link}>{card.linkLabel || "Ver mas"}<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span></div></a>;
 										})}
 									</div>
