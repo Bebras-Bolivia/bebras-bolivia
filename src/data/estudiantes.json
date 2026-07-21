@@ -127,8 +127,7 @@
           "status": "negative"
         }
       ],
-      "summaryCards": [],
-      "summaryColumns": 2
+      "summaryCards": []
     },
     {
       "type": "studentsAgeCategories",
