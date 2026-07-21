@@ -205,6 +205,7 @@ export function getFieldType(keyOrPath: string, value: unknown): string {
   const path = String(keyOrPath);
   if (/(^|\.)cardPalette(\[\d+\])?$/.test(path)) return "brand-color";
   const key = path.split(".").pop() || "";
+  if (key === "columns" || key === "summaryColumns") return "column-count";
   if (typeof value === "boolean") return "boolean";
   if (typeof value === "number") return "number";
   if (selectOptions[key]) return "select";

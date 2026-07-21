@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { createPortal } from "react-dom";
 import ComplexNodesView, { type ComplexNode } from "../components/ComplexNodesView";
 import BrandColorSwatch from "../components/BrandColorSwatch";
+import ColumnCountPicker from "../components/ColumnCountPicker";
 import SelectField, { type SelectOption } from "../components/SelectField";
 
 type PrimitivesPayload = {
@@ -11,7 +12,7 @@ type PrimitivesPayload = {
   fields: Array<{
     path: string;
     label: string;
-    type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
+    type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color" | "column-count";
     value: string | number | boolean;
     options?: SelectOption[];
     readOnly?: boolean;
@@ -96,6 +97,17 @@ function FieldInput({
       <BrandColorSwatch
         id={`field-${field.path}`}
         path={field.path}
+        label={field.label}
+        value={value}
+        onChange={(next) => onFieldChange(field.path, next)}
+      />
+    );
+  }
+
+  if (field.type === "column-count") {
+    return (
+      <ColumnCountPicker
+        id={`field-${field.path}`}
         label={field.label}
         value={value}
         onChange={(next) => onFieldChange(field.path, next)}

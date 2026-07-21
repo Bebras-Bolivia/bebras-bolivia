@@ -3,12 +3,13 @@ import ArrayActionsView from "./ArrayActionsView";
 import ArrayCollapseToggleView from "./ArrayCollapseToggleView";
 import ArrayItemActionsView from "./ArrayItemActionsView";
 import BrandColorSwatch from "./BrandColorSwatch";
+import ColumnCountPicker from "./ColumnCountPicker";
 import SelectField, { type SelectOption } from "./SelectField";
 
 export type EditorField = {
   path: string;
   label: string;
-  type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color";
+  type: "text" | "textarea" | "number" | "boolean" | "url" | "select" | "brand-color" | "column-count";
   value: string | number | boolean;
   options?: SelectOption[];
   readOnly?: boolean;
@@ -132,6 +133,17 @@ function FieldInput({
       <BrandColorSwatch
         id={`field-${field.path}`}
         path={field.path}
+        label={field.label}
+        value={value}
+        onChange={(next) => onFieldChange(field.path, next)}
+      />
+    );
+  }
+
+  if (field.type === "column-count") {
+    return (
+      <ColumnCountPicker
+        id={`field-${field.path}`}
         label={field.label}
         value={value}
         onChange={(next) => onFieldChange(field.path, next)}
