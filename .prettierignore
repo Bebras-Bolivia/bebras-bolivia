@@ -1,3 +1,10 @@
 dist
+cms/dist
+cms/ui-dist
 node_modules
 .astro
+cms/ui/.astro
+.deployments
+cms/content/.restore-*
+cms/content/snapshots/.snapshot-*.tmp-*
+CMS_AUDIT_TRACKER.md
