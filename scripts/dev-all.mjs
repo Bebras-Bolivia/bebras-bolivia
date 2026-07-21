@@ -25,19 +25,27 @@ const bunBin = isWindows() ? "bun.exe" : "bun";
 const obsoleteDataFiles = new Set(["site.json"]);
 const BLOG_PREVIEW_FILENAME = "cms-preview.md";
 
+/** @type {ReturnType<typeof setTimeout> | null} */
 let syncTimer = null;
 let shuttingDown = false;
+/** @type {import("node:fs").FSWatcher[]} */
 const watchers = [];
+/** @type {Set<import("node:child_process").ChildProcess>} */
 const children = new Set();
 
 function isWindows() {
   return process.platform === "win32";
 }
 
+/** @param {string} command */
 function needsShell(command) {
   return isWindows() && /\.(cmd|bat)$/i.test(command);
 }
 
+/**
+ * @param {string} dir
+ * @returns {Promise<string[]>}
+ */
 async function listFiles(dir) {
   if (!existsSync(dir)) return [];
 
@@ -55,6 +63,11 @@ async function listFiles(dir) {
   return files.flat();
 }
 
+/**
+ * @param {string} sourceDir
+ * @param {string} targetDir
+ * @param {(file: string) => boolean} predicate
+ */
 async function syncDirectory(sourceDir, targetDir, predicate) {
   await mkdir(targetDir, { recursive: true });
 
@@ -87,6 +100,7 @@ async function syncDirectory(sourceDir, targetDir, predicate) {
   );
 }
 
+/** @param {boolean} [removePreview] */
 async function syncCmsToLanding(removePreview = false) {
   if (removePreview) {
     await rm(join(paths.landingBlogDir, BLOG_PREVIEW_FILENAME), { force: true });
@@ -115,6 +129,11 @@ function scheduleSync() {
   }, 150);
 }
 
+/**
+ * @param {import("node:stream").Readable} stream
+ * @param {string} prefix
+ * @param {(line: string) => void} writer
+ */
 function prefixStream(stream, prefix, writer) {
   stream.setEncoding("utf8");
   stream.on("data", (chunk) => {
@@ -127,6 +146,7 @@ function prefixStream(stream, prefix, writer) {
   });
 }
 
+/** @param {import("node:child_process").ChildProcess} child */
 function terminateChild(child) {
   if (!child.pid) return;
 
@@ -141,6 +161,7 @@ function terminateChild(child) {
   child.kill("SIGTERM");
 }
 
+/** @param {number} [exitCode] */
 function shutdown(exitCode = 0) {
   if (shuttingDown) return;
   shuttingDown = true;
@@ -151,6 +172,12 @@ function shutdown(exitCode = 0) {
   setTimeout(() => process.exit(exitCode), 250);
 }
 
+/**
+ * @param {string} label
+ * @param {string} command
+ * @param {string[]} args
+ * @param {string} cwd
+ */
 function spawnService(label, command, args, cwd) {
   const child = spawn(command, args, {
     cwd,
@@ -181,6 +208,13 @@ function spawnService(label, command, args, cwd) {
   return child;
 }
 
+/**
+ * @param {string} label
+ * @param {string} command
+ * @param {string[]} args
+ * @param {string} cwd
+ * @returns {Promise<void>}
+ */
 function runCommand(label, command, args, cwd) {
   return new Promise((resolvePromise, rejectPromise) => {
     const child = spawn(command, args, {

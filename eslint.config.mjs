@@ -1,3 +1,4 @@
+import js from '@eslint/js';
 import eslintPluginAstro from 'eslint-plugin-astro';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
@@ -8,7 +9,28 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', '.astro/**', 'cms/ui/.astro/**', 'cms/ui-dist/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '.astro/**',
+      '.deployments/**',
+      'cms/ui/.astro/**',
+      'cms/ui-dist/**',
+    ],
+  },
+  {
+    ...js.configs.recommended,
+    files: ['**/*.{js,mjs,cjs}'],
+    languageOptions: {
+      globals: {
+        Buffer: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        URL: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+      },
+    },
   },
   // Astro files
   ...eslintPluginAstro.configs.recommended,
@@ -33,6 +55,16 @@ export default [
       ...tseslint.configs.recommended.rules,
       ...reactPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      ...Object.fromEntries(
+        Object.entries(jsxA11y.flatConfigs.recommended.rules).map(([rule, setting]) => {
+          if (setting === 'off' || setting === 0) return [rule, 'off'];
+          if (Array.isArray(setting)) {
+            if (setting[0] === 'off' || setting[0] === 0) return [rule, 'off'];
+            return [rule, ['warn', ...setting.slice(1)]];
+          }
+          return [rule, 'warn'];
+        }),
+      ),
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',

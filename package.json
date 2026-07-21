@@ -12,6 +12,12 @@
     "astro": "bunx astro",
     "lint": "bunx eslint .",
     "lint:fix": "bunx eslint . --fix",
+    "typecheck": "bun run typecheck:site && bun run typecheck:cms && bun run typecheck:cms-ui && bun run typecheck:webhook && bun run typecheck:scripts",
+    "typecheck:site": "bunx astro check",
+    "typecheck:cms": "bunx tsc --noEmit -p cms/tsconfig.json",
+    "typecheck:cms-ui": "bunx tsc --noEmit -p cms/ui/tsconfig.json",
+    "typecheck:webhook": "bunx tsc --noEmit -p tsconfig.webhook.json",
+    "typecheck:scripts": "bunx tsc --noEmit -p tsconfig.scripts.json",
     "format": "bunx prettier --write .",
     "format:check": "bunx prettier --check ."
   },
@@ -48,6 +54,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@astrojs/check": "^0.9.9",
     "@types/sanitize-html": "^2.16.1",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
