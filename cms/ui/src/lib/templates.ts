@@ -601,7 +601,7 @@ function _componentTemplate(type: string): unknown | null {
       links: [{ label: "Bebras Internacional", href: "https://www.bebras.org/", description: "Sitio oficial" }],
     }),
     featureList: () => ({
-      type: "featureList", accent: "blue", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio",
+      type: "featureList", accent: "blue", tag: "Habilidades", heading: "Titulo de listado", intro: "Texto introductorio", columns: 2,
       items: [{ title: "Punto 1", desc: "Descripcion", color: "blue" }], outro: "Texto de cierre",
     }),
     statsGrid: () => ({

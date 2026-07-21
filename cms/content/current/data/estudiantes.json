@@ -33,6 +33,7 @@
       "tag": "Habilidades clave",
       "heading": "¿Qué es el pensamiento computacional?",
       "intro": "El pensamiento computacional es un conjunto de habilidades que nos ayudan a resolver problemas de forma eficiente:",
+      "columns": 2,
       "items": [
         {
           "title": "Descomposición:",

@@ -167,6 +167,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
     tag: z.string().optional(),
     heading: z.string().optional(),
     intro: z.string().optional(),
+    columns: z.number().int().min(1).max(4).optional(),
     items: z.array(
       z.object({
         title: z.string(),

@@ -70,7 +70,7 @@ const { components = [] } = Astro.props;
   }
 
   if (component.type === "featureList") {
-    return <FeatureListBlock tag={component.tag} heading={component.heading} intro={component.intro} items={component.items} outro={component.outro} accent={component.accent} cardPalette={component.cardPalette} />;
+    return <FeatureListBlock tag={component.tag} heading={component.heading} intro={component.intro} columns={component.columns} items={component.items} outro={component.outro} accent={component.accent} cardPalette={component.cardPalette} />;
   }
 
   if (component.type === "statsGrid") {

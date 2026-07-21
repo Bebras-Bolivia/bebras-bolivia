@@ -12,14 +12,22 @@ interface Props {
   tag?: string;
   heading?: string;
   intro?: string;
+  columns?: number;
   items: Item[];
   outro?: string;
   accent?: string;
   cardPalette?: string[];
 }
 
-const { tag, heading, intro, items = [], outro, accent = "blue", cardPalette } = Astro.props;
+const { tag, heading, intro, columns = 2, items = [], outro, accent = "blue", cardPalette } = Astro.props;
 const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
+
+function getColsClass(cols: number) {
+  if (cols <= 1) return "grid-cols-1";
+  if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (cols === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+}
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
@@ -29,7 +37,7 @@ const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       <div class="max-w-5xl space-y-4 text-xl text-muted-foreground leading-relaxed">
         {intro && <p set:html={formatInlineRichText(intro)} />}
-        <ul class="mt-8 grid gap-5 md:grid-cols-2">
+        <ul class:list={["mt-8 grid gap-5", getColsClass(columns)]}>
           {items.map((item, i) => (
             <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", item.color ? getBrandCardClass(0, [item.color]) : getBrandCardClass(i, cardPalette)]}>
               <span class="brand-card-icon mt-0.5 flex size-12 shrink-0 items-center justify-center rounded-2xl font-mono text-base font-bold tabular-nums transition-transform duration-300 group-hover:scale-105">
