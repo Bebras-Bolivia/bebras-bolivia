@@ -16,13 +16,14 @@ interface Props {
 
 const { tag, heading, paragraphs = [], tip, linkLabel, linkHref, accent = "blue" } = Astro.props;
 const accentColor = normalizeBrandColor(accent);
+const accentTextClass = `text-bebras-${accentColor}`;
 const tipCardClass = `brand-card brand-card-${accentColor}`;
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section">
     <div class="mx-auto max-w-6xl">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-3">{tag}</p>}
+      {tag && <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-3", accentTextClass]}>{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-5 tracking-tight">{heading}</h2>}
       <div class="space-y-4 text-xl text-muted-foreground leading-relaxed">
         {paragraphs.map((p) => <p set:html={formatInlineRichText(p)} />)}
@@ -33,7 +34,7 @@ const tipCardClass = `brand-card brand-card-${accentColor}`;
         )}
         {linkLabel && linkHref && (
           <p class="mt-6">
-            <a href={toSafeHref(linkHref)} class="inline-flex items-center text-primary font-bold group text-xl transition-all">
+            <a href={toSafeHref(linkHref)} class:list={["inline-flex items-center font-bold group text-xl transition-all", accentTextClass]}>
               {linkLabel}
               <ArrowRight className="ml-2 size-6 transition-transform group-hover:translate-x-1" strokeWidth={2.5} aria-hidden="true" />
             </a>
