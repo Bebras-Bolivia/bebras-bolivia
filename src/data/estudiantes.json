@@ -29,6 +29,7 @@
     },
     {
       "type": "featureList",
+      "accent": "blue",
       "cardPalette": [
         "blue",
         "red",

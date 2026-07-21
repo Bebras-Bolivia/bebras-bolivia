@@ -1,5 +1,5 @@
 ---
-import { getBrandCardClass } from "@/lib/brand-styles";
+import { getBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 
 interface Item {
@@ -13,16 +13,18 @@ interface Props {
   intro?: string;
   items: Item[];
   outro?: string;
+  accent?: string;
   cardPalette?: string[];
 }
 
-const { tag, heading, intro, items = [], outro, cardPalette } = Astro.props;
+const { tag, heading, intro, items = [], outro, accent = "blue", cardPalette } = Astro.props;
+const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
 ---
 
 <section class="reveal-section w-full mx-auto max-w-6xl px-4 sm:px-6 mb-8 lg:mb-10">
   <div class="editorial-section">
     <div class="mx-auto max-w-6xl">
-      {tag && <p class="text-sm uppercase tracking-[0.25em] font-bold text-primary mb-4">{tag}</p>}
+      {tag && <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-4", accentTextClass]}>{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
       <div class="max-w-5xl space-y-4 text-xl text-muted-foreground leading-relaxed">
         {intro && <p set:html={formatInlineRichText(intro)} />}

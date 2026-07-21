@@ -127,7 +127,7 @@ export function getSelectOptions(path: string, key: string, filename: string | n
 // ── Hidden fields ────────────────────────────────────────
 // `type` is the block/section discriminator (introEditorial, itemsGrid, …) —
 // editing it would break the section, so it's never shown. `id` likewise.
-export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription", "cardPalette", "emoji", "mediaType"]);
+export const hiddenFields = new Set(["id", "type", "pageTitle", "pageDescription", "emoji", "mediaType"]);
 
 // ── Component option type ────────────────────────────────
 export type ComponentOption = {
@@ -698,4 +698,3 @@ function _componentTemplate(type: string): unknown | null {
   const factory = map[type];
   return factory ? factory() : null;
 }
-
