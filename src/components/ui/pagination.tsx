@@ -51,6 +51,8 @@ function PaginationLink({
       size={size}
       className={cn(className)}
     >
+      {/* Children are supplied through the typed anchor props spread below. */}
+      {/* eslint-disable-next-line jsx-a11y/anchor-has-content */}
       <a
         aria-current={isActive ? "page" : undefined}
         data-slot="pagination-link"

@@ -23,6 +23,8 @@ export default function LoginView({ basePath = "" }: Props) {
       <form id="login-form">
         <div className="form-group">
           <label htmlFor="email">Correo electrónico</label>
+          {/* The dedicated login screen starts with the primary field ready for typing. */}
+          {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
           <input type="email" id="email" className="form-input" placeholder="admin@bebras.bo" required autoComplete="email" autoFocus />
         </div>
         <div className="form-group">

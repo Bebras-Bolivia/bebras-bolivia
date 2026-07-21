@@ -85,6 +85,8 @@ function PickerModal({
 
   if (!hasPreview) {
     return (
+      // The backdrop is dismissible by pointer; the dialog also provides Escape and a close button.
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
       <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
         <div className="editor-modal" role="dialog" aria-modal="true" aria-labelledby="editor-picker-title">
           <div className="editor-modal-header">
@@ -108,6 +110,8 @@ function PickerModal({
   }
 
   return (
+    // The backdrop is dismissible by pointer; the dialog also provides Escape and a close button.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div className="editor-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
       <div className="editor-modal editor-component-picker-modal" role="dialog" aria-modal="true" aria-labelledby="editor-component-picker-title">
         <div className="editor-modal-header">
@@ -118,7 +122,7 @@ function PickerModal({
         </div>
         {payload.subtitle ? <p className="editor-modal-subtitle">{payload.subtitle}</p> : null}
         <div className="editor-component-picker-layout">
-          <div className="editor-modal-list editor-component-option-list" role="listbox" aria-label="Componentes disponibles">
+          <div className="editor-modal-list editor-component-option-list" aria-label="Componentes disponibles">
             {payload.options.map((opt) => {
               const selected = opt.value === selectedOption?.value;
               return (
@@ -126,7 +130,6 @@ function PickerModal({
                   <button
                     type="button"
                     className={`editor-modal-option editor-component-option${selected ? " is-selected" : ""}`}
-                    aria-selected={selected}
                     onMouseEnter={() => { if (!isTouchLikeViewport()) setSelectedValue(opt.value); }}
                     onFocus={() => { if (!isTouchLikeViewport()) setSelectedValue(opt.value); }}
                     onClick={() => onClose(opt.value)}
@@ -304,7 +307,9 @@ function ComponentPreview({ option }: { option: PickerOption }) {
         <span>Vista previa</span>
         <span>{option.label}</span>
       </div>
-      <RealComponentPreview option={option} preview={preview} />
+      <div aria-hidden="true">
+        <RealComponentPreview option={option} preview={preview} />
+      </div>
       <div className="component-preview-copy">
         <h4>{preview.title}</h4>
         <p>{preview.description}</p>
@@ -323,7 +328,7 @@ function RealComponentPreview({ option, preview }: { option: PickerOption; previ
     return (
       <div className="real-preview real-institution">
         <div className="real-logo">OBI</div>
-        <div><p className="real-kicker">Institucion organizadora</p><h5>Olimpiada Boliviana de Informatica</h5><p>Coordina el desafio y articula iniciativas educativas en Bolivia.</p><a>obi.org.bo</a></div>
+        <div><p className="real-kicker">Institucion organizadora</p><h5>Olimpiada Boliviana de Informatica</h5><p>Coordina el desafio y articula iniciativas educativas en Bolivia.</p><span className="preview-action">obi.org.bo</span></div>
       </div>
     );
   }
@@ -342,11 +347,11 @@ function RealComponentPreview({ option, preview }: { option: PickerOption; previ
   }
 
   if (option.value === "sectionRichText") {
-    return <div className="real-preview real-rich-text"><p className="real-kicker">Seccion</p><h5>Titulo de seccion</h5><p>Bebras promueve el pensamiento computacional mediante problemas logicos y accesibles.</p><blockquote>Consejo opcional para destacar informacion importante.</blockquote><a>Ver mas</a></div>;
+    return <div className="real-preview real-rich-text"><p className="real-kicker">Seccion</p><h5>Titulo de seccion</h5><p>Bebras promueve el pensamiento computacional mediante problemas logicos y accesibles.</p><blockquote>Consejo opcional para destacar informacion importante.</blockquote><span className="preview-action">Ver mas</span></div>;
   }
 
   if (option.value === "linksList") {
-    return <div className="real-preview real-links"><p className="real-kicker">Recursos</p><h5>Enlaces utiles</h5>{["Bebras Internacional", "Problemas de practica", "Guia para docentes"].map((label) => <a key={label}>{label}<span>→</span></a>)}</div>;
+    return <div className="real-preview real-links"><p className="real-kicker">Recursos</p><h5>Enlaces utiles</h5>{["Bebras Internacional", "Problemas de practica", "Guia para docentes"].map((label) => <span className="preview-action" key={label}>{label}<span>→</span></span>)}</div>;
   }
 
   if (option.value === "featureList") {
@@ -366,19 +371,19 @@ function RealComponentPreview({ option, preview }: { option: PickerOption; previ
   }
 
   if (option.value === "formContact") {
-    return <div className="real-preview real-form"><p className="real-kicker">Formulario</p><h5>Envianos un mensaje</h5><label>Nombre</label><span></span><label>Correo</label><span></span><button>Enviar mensaje</button></div>;
+    return <div className="real-preview real-form"><p className="real-kicker">Formulario</p><h5>Envianos un mensaje</h5><span>Nombre</span><span></span><span>Correo</span><span></span><span className="preview-action">Enviar mensaje</span></div>;
   }
 
   if (option.value === "contactClassic") {
-    return <div className="real-preview real-contact"><section><p className="real-kicker">Informacion</p><h5>Contacto</h5><article>Email<br /><strong>info@bebras.bo</strong></article><article>Registro<br /><strong>/registro</strong></article></section><section><p className="real-kicker">Formulario</p><span></span><span></span><button>Enviar</button></section></div>;
+    return <div className="real-preview real-contact"><section><p className="real-kicker">Informacion</p><h5>Contacto</h5><article>Email<br /><strong>info@bebras.bo</strong></article><article>Registro<br /><strong>/registro</strong></article></section><section><p className="real-kicker">Formulario</p><span></span><span></span><span className="preview-action">Enviar</span></section></div>;
   }
 
   if (option.value === "blogIndex" || option.value === "blogPostUi") {
-    return <div className="real-preview real-blog"><p className="real-kicker">Noticias</p><article><time>Nov 2026</time><h5>Nueva publicacion</h5><p>Resumen de la noticia o recurso publicado.</p><a>Leer mas →</a></article></div>;
+    return <div className="real-preview real-blog"><p className="real-kicker">Noticias</p><article><time>Nov 2026</time><h5>Nueva publicacion</h5><p>Resumen de la noticia o recurso publicado.</p><span className="preview-action">Leer mas →</span></article></div>;
   }
 
   if (option.value === "cta") {
-    return <div className="real-preview real-cta"><p className="real-kicker">Colabora</p><h5>¿Listo para participar?</h5><p>Un llamado destacado con texto corto y boton principal.</p><button>Ir a registro</button></div>;
+    return <div className="real-preview real-cta"><p className="real-kicker">Colabora</p><h5>¿Listo para participar?</h5><p>Un llamado destacado con texto corto y boton principal.</p><span className="preview-action">Ir a registro</span></div>;
   }
 
   if (option.value === "studentsAgeCategories") {
@@ -402,6 +407,8 @@ function ConfirmModal({ payload, onClose }: { payload: ConfirmPayload; onClose: 
   }, [onClose]);
 
   return (
+    // The backdrop is dismissible by pointer; the dialog also provides Escape and a close button.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div className="editor-modal-overlay editor-modal-overlay-center" onClick={(e) => e.target === e.currentTarget && onClose(false)}>
       <div className="editor-modal editor-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="editor-confirm-title">
         <div className="editor-modal-header">
@@ -449,6 +456,8 @@ function InputModal({ payload, onClose }: { payload: InputPayload; onClose: (val
   }, [onClose]);
 
   return (
+    // The backdrop is dismissible by pointer; the dialog also provides Escape and a close button.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div className="editor-modal-overlay editor-modal-overlay-center" onClick={(e) => e.target === e.currentTarget && onClose(null)}>
       <div className="editor-modal editor-input-modal" role="dialog" aria-modal="true" aria-labelledby="editor-input-title">
         <div className="editor-modal-header">

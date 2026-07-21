@@ -272,6 +272,7 @@ function EditorPrimitivesView({
           </div>
           <iframe
             id="preview-frame"
+            title="Vista previa de la página"
             src="about:blank"
           ></iframe>
         </div>

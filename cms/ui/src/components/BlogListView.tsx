@@ -88,7 +88,13 @@ export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: 
           const date = formatPostDate(post.frontmatter?.date);
 
           return (
-            <div className="blog-item" key={slug} style={{ cursor: "pointer" }} onClick={() => onEdit(slug)}>
+            <div className="blog-item" key={slug}>
+              <button
+                type="button"
+                className="blog-item-open"
+                aria-label={`Editar ${title}`}
+                onClick={() => onEdit(slug)}
+              />
               <div className="meta">
                 <div className="title">{title}</div>
                 <div className="info">
@@ -96,17 +102,13 @@ export default function BlogListView({ posts, icons, onNew, onEdit, onDelete }: 
                 </div>
               </div>
               <div className="actions">
-                <button
-                  className="btn btn-ghost btn-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(slug);
-                  }}
-                >
+                <span className="btn btn-ghost btn-sm" aria-hidden="true">
                   <span dangerouslySetInnerHTML={iconHtml(icons, "edit")}></span> Editar
-                </button>
+                </span>
                 <button
+                  type="button"
                   className="btn btn-danger btn-sm"
+                  aria-label={`Eliminar ${title}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(slug);

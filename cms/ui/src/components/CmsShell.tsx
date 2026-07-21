@@ -37,10 +37,10 @@ export default function CmsShell() {
         </nav>
 
         <div className="sidebar-footer">
-          <a className="sidebar-link" id="logout-btn" href="#" style={{ color: "var(--text-muted)" }}>
+          <button type="button" className="sidebar-link" id="logout-btn" style={{ color: "var(--text-muted)" }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16,17 21,12 16,7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             Cerrar sesion
-          </a>
+          </button>
         </div>
       </aside>
 

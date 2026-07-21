@@ -8,7 +8,7 @@ interface Props {
 
 export default function ArrayItemActionsView({ trashIcon, onRemove, inline = false }: Props) {
   return (
-    <button className={`remove-btn${inline ? " inline-remove-btn" : ""}`} title="Eliminar" onClick={onRemove} type="button">
+    <button className={`remove-btn${inline ? " inline-remove-btn" : ""}`} aria-label="Eliminar" title="Eliminar" onClick={onRemove} type="button">
       <span dangerouslySetInnerHTML={{ __html: trashIcon }}></span>
     </button>
   );

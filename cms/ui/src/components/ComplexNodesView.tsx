@@ -177,6 +177,7 @@ function getPrimaryLabelField(fields: EditorField[]): EditorField | undefined {
   return fields.find((field) => /\.(label|title|name|heading|tag)$/.test(field.path));
 }
 
+/* eslint-disable jsx-a11y/no-autofocus -- Editing a label must focus the temporary input. */
 function EditableItemLabel({
   fallbackLabel,
   primaryField,
@@ -243,6 +244,7 @@ function EditableItemLabel({
     </button>
   );
 }
+/* eslint-enable jsx-a11y/no-autofocus */
 
 function FieldGroup({
   field,

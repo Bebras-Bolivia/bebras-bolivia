@@ -12,6 +12,7 @@ export default function ArrayCollapseToggleView({ arrowIcon, expanded, onToggle 
       type="button"
       className={`array-collapse-btn ${expanded ? "expanded" : "collapsed"}`}
       aria-expanded={expanded ? "true" : "false"}
+      aria-label={expanded ? "Minimizar" : "Expandir"}
       title={expanded ? "Minimizar" : "Expandir"}
       onClick={onToggle}
     >

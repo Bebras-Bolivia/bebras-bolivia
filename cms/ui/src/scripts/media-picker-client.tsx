@@ -163,6 +163,8 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
   };
 
   return (
+    // The backdrop is dismissible by pointer; the dialog also provides Escape and a close button.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div className={`editor-modal-overlay${markdownMode ? " editor-modal-overlay-center" : ""}`} onClick={(e) => e.target === e.currentTarget && onClose(null)}>
       <div className="editor-modal" style={{ maxWidth: "760px" }} role="dialog" aria-modal="true" aria-labelledby="media-picker-title">
         <div className="editor-modal-header">
@@ -261,13 +263,14 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
               <img src={selectedFile.url} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
             </div>
             <div className="form-group">
-              <label>Tamaño de la imagen</label>
-              <div className="media-size-grid">
+              <p id="media-size-label">Tamaño de la imagen</p>
+              <div className="media-size-grid" role="group" aria-labelledby="media-size-label">
                 {IMAGE_SIZE_OPTIONS.map((option) => (
                   <button
                     key={option.value}
                     type="button"
                     className={`media-size-option${size === option.value ? " is-selected" : ""}`}
+                    aria-pressed={size === option.value}
                     style={{ "--media-size-preview-width": option.previewWidth } as React.CSSProperties}
                     onClick={() => setSize(option.value)}
                   >
