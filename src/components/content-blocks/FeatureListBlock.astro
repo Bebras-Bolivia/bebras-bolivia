@@ -35,8 +35,8 @@ function getColsClass(cols: number) {
     <div class="mx-auto max-w-6xl">
       {tag && <p class:list={["text-sm uppercase tracking-[0.25em] font-bold mb-4", accentTextClass]}>{tag}</p>}
       {heading && <h2 class="text-4xl sm:text-5xl font-bold text-foreground mb-8 tracking-tight">{heading}</h2>}
-      <div class="max-w-5xl space-y-4 text-xl text-muted-foreground leading-relaxed">
-        {intro && <p set:html={formatInlineRichText(intro)} />}
+      <div class="space-y-4 text-xl text-muted-foreground leading-relaxed">
+        {intro && <p class="max-w-5xl" set:html={formatInlineRichText(intro)} />}
         <ul class:list={["mt-8 grid gap-5", getColsClass(columns)]}>
           {items.map((item, i) => (
             <li class:list={["group flex min-h-44 items-start gap-5 overflow-hidden p-6 sm:p-7", getItemBrandCardClass(item.color, i, cardPalette)]}>
@@ -50,7 +50,7 @@ function getColsClass(cols: number) {
             </li>
           ))}
         </ul>
-        {outro && <p class="pt-6 font-medium text-foreground/80" set:html={formatInlineRichText(outro)} />}
+        {outro && <p class="max-w-5xl pt-6 font-medium text-foreground/80" set:html={formatInlineRichText(outro)} />}
       </div>
     </div>
   </div>
