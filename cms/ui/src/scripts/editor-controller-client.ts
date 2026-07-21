@@ -400,7 +400,9 @@ const Editor = {
   },
 
   toPrimitiveField(path: string, key: string, value: SafeAny) {
-    const type = this.getFieldType(path, value);
+    const type = key === "columns" || key === "summaryColumns"
+      ? "column-count"
+      : this.getFieldType(path, value);
     const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color", "column-count"].includes(type) ? type : "text";
     return {
       path,
