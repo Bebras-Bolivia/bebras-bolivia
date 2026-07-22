@@ -1,5 +1,5 @@
 ---
-import { Clock, Mail, Monitor, Users, Wifi } from "lucide-react";
+import { Brain, ClipboardList, Clock, Mail, Monitor, School, Share2, Users, Wifi } from "lucide-react";
 import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import { formatInlineRichText } from "@/lib/rich-text";
 import { toSafeHref } from "@/lib/safe-url";
@@ -43,6 +43,10 @@ const iconMap = {
   user: Users,
   clock: Clock,
   email: Mail,
+  clipboard: ClipboardList,
+  share: Share2,
+  school: School,
+  brain: Brain,
 };
 
 function getColsClass(cols: number) {
