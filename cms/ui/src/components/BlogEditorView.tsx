@@ -69,6 +69,19 @@ function restoreIframeScrollPosition(iframe: HTMLIFrameElement | null, position:
   tryRestore();
 }
 
+function restoreMarkdownEditor(
+  textarea: HTMLTextAreaElement,
+  selectionStart: number,
+  selectionEnd: number,
+  scrollTop: number,
+  scrollLeft: number,
+): void {
+  textarea.focus({ preventScroll: true });
+  textarea.setSelectionRange(selectionStart, selectionEnd);
+  textarea.scrollTop = scrollTop;
+  textarea.scrollLeft = scrollLeft;
+}
+
 function titleToSlug(value: string): string {
   return value
     .normalize("NFD")
@@ -243,13 +256,13 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
     const start = textarea.selectionStart ?? markdown.length;
     const end = textarea.selectionEnd ?? markdown.length;
+    const { scrollTop, scrollLeft } = textarea;
     const nextValue = `${markdown.slice(0, start)}${text}${markdown.slice(end)}`;
     setMarkdown(nextValue);
 
     window.requestAnimationFrame(() => {
-      textarea.focus();
       const caret = start + text.length;
-      textarea.setSelectionRange(caret, caret);
+      restoreMarkdownEditor(textarea, caret, caret, scrollTop, scrollLeft);
     });
   };
 
@@ -257,6 +270,8 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
     const textarea = markdownRef.current;
     const start = textarea?.selectionStart ?? markdown.length;
     const end = textarea?.selectionEnd ?? markdown.length;
+    const scrollTop = textarea?.scrollTop ?? 0;
+    const scrollLeft = textarea?.scrollLeft ?? 0;
     const selected = markdown.slice(start, end);
     const result = transform(selected);
     const nextValue = `${markdown.slice(0, start)}${result.text}${markdown.slice(end)}`;
@@ -264,10 +279,9 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
 
     window.requestAnimationFrame(() => {
       if (!textarea) return;
-      textarea.focus();
       const nextStart = start + (result.selectStart ?? result.text.length);
       const nextEnd = start + (result.selectEnd ?? result.text.length);
-      textarea.setSelectionRange(nextStart, nextEnd);
+      restoreMarkdownEditor(textarea, nextStart, nextEnd, scrollTop, scrollLeft);
     });
   };
 
@@ -469,6 +483,7 @@ export default function BlogEditorView({ isNew, slug, frontmatter, body, icons, 
                         className="md-tool-btn"
                         title={action.title}
                         aria-label={action.title}
+                        onMouseDown={(event) => event.preventDefault()}
                         onClick={action.onClick}
                       >
                         <span className="md-tool-icon">{action.icon}</span>
