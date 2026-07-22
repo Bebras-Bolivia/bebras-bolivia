@@ -240,7 +240,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
         {markdownMode && selectedFile && currentStep === 2 ? (
           <div className="media-wizard-panel">
             <div className="media-wizard-preview">
-              <img src={selectedFile.url} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
+              <img src={window.App.appUrl(selectedFile.url)} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
             </div>
             <div className="form-group">
               <label htmlFor="media-alt-text">Nombre visible / alt</label>
@@ -260,7 +260,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
         {markdownMode && selectedFile && currentStep === 3 ? (
           <div className="media-wizard-panel">
             <div className="media-wizard-preview">
-              <img src={selectedFile.url} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
+              <img src={window.App.appUrl(selectedFile.url)} alt={displayFilename(selectedFile.filename)} className="media-card-thumb" />
             </div>
             <div className="form-group">
               <p id="media-size-label">Tamaño de la imagen</p>
@@ -323,7 +323,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
                     setWizardStep(3);
                   }}
                 >
-                  <img src={file.url} alt={displayFilename(file.filename)} className="media-card-thumb" />
+                  <img src={window.App.appUrl(file.url)} alt={displayFilename(file.filename)} className="media-card-thumb" />
                   <span className="title">{displayFilename(file.filename)}</span>
                 </button>
                 <button type="button" className="btn btn-danger btn-sm media-card-delete" aria-label={`Eliminar ${file.filename}`} disabled={deleting === file.filename} onClick={() => deleteFile(file.filename)}>

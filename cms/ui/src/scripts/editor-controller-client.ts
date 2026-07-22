@@ -399,10 +399,14 @@ const Editor = {
   },
 
   toPrimitiveField(path: string, key: string, value: SafeAny) {
+    const parentPath = key === "image" ? path.replace(/\.image$/, "") : "";
+    const parent = parentPath ? this.getNestedValue(this.currentData, parentPath) : null;
     const type = key === "columns"
       ? "column-count"
+      : key === "image" && parent?.type === "organizerInstitution"
+        ? "image"
       : this.getFieldType(path, value);
-    const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color", "column-count"].includes(type) ? type : "text";
+    const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color", "column-count", "image"].includes(type) ? type : "text";
     return {
       path,
       label: this.getFieldLabel(path, key),
