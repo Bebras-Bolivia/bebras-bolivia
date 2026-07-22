@@ -183,6 +183,13 @@
           "imageUrl": "https://publicdomainvectors.org/photos/condor.png",
           "color": "gray",
           "desc": ""
+        },
+        {
+          "name": "Nueva categoria",
+          "age": "0-0 anos",
+          "imageUrl": "",
+          "color": "blue",
+          "desc": "Descripcion"
         }
       ]
     },
