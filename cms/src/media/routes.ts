@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from "express";
 import multer from "multer";
 import { resolve } from "path";
 import { config } from "../config.js";
-import { listMedia, deleteMedia, validateUpload, MediaError } from "./service.js";
+import { listMedia, deleteMedia, validateUpload, MediaError, SPONSOR_MEDIA_PREFIX } from "./service.js";
 import { syncContentToLanding } from "../preview/service.js";
 
 // Configure multer to save to the media directory
@@ -10,11 +10,12 @@ const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, config.mediaDir);
   },
-  filename: (_req, file, cb) => {
+  filename: (req, file, cb) => {
     // Prefix with timestamp to avoid name collisions
     const timestamp = Date.now();
     const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");
-    cb(null, `${timestamp}-${safeName}`);
+    const scopePrefix = req.query.scope === "sponsors" ? SPONSOR_MEDIA_PREFIX : "";
+    cb(null, `${scopePrefix}${timestamp}-${safeName}`);
   },
 });
 

@@ -12,6 +12,7 @@ const ALLOWED_EXTENSIONS = new Set([
   ".gif",
 ]);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+export const SPONSOR_MEDIA_PREFIX = "sponsor__";
 
 export interface MediaFile {
   filename: string;
@@ -34,6 +35,8 @@ export async function listMedia(): Promise<MediaFile[]> {
 
   const media: MediaFile[] = [];
   for (const file of files) {
+    // Sponsor uploads share storage but are intentionally hidden from the blog gallery.
+    if (file.startsWith(SPONSOR_MEDIA_PREFIX)) continue;
     const ext = file.substring(file.lastIndexOf(".")).toLowerCase();
     if (!ALLOWED_EXTENSIONS.has(ext)) continue;
 

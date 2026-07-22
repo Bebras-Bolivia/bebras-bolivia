@@ -91,7 +91,7 @@ function MediaPickerModal({ onClose, markdownMode = false }: { onClose: (value: 
     setUploading(true);
     setError("");
     try {
-      const data = await window.API.uploadMedia(file);
+      const data = await window.API.uploadMedia(file, "blog");
       await loadFiles();
       const created = {
         filename: data.filename,

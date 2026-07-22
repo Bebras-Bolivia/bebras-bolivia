@@ -66,7 +66,7 @@ export default function ImageField({ id, label, value, onChange }: Props) {
     if (mountedRef.current) setUploading(true);
     const uploadFieldId = id;
     try {
-      const result = await window.API.uploadMedia(file);
+      const result = await window.API.uploadMedia(file, "sponsors");
       const nextUrl = String(result?.url || "");
       if (!nextUrl) throw new Error("La carga no devolvio una ruta de imagen");
       updateImage(nextUrl, uploadFieldId);

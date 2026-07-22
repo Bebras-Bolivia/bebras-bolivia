@@ -128,10 +128,10 @@ const API = {
   cleanupSnapshotPreview() { return this.post("/api/preview/snapshot/cleanup"); },
 
   listMedia() { return this.get("/api/media"); },
-  uploadMedia(file: File) {
+  uploadMedia(file: File, scope: "blog" | "sponsors" = "blog") {
     const fd = new FormData();
     fd.append("file", file);
-    return this.upload("/api/media/upload", fd);
+    return this.upload(`/api/media/upload?scope=${scope}`, fd);
   },
   deleteMedia(filename: string) { return this.del(`/api/media/${encodeURIComponent(filename)}`); },
 };
