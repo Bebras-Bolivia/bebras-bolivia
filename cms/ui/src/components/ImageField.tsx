@@ -127,14 +127,14 @@ export default function ImageField({ id, label, value, onChange }: Props) {
         <strong>{uploading ? "Subiendo imagen..." : "Arrastra una imagen aqui"}</strong>
         <span>JPG, PNG, WebP o GIF. Maximo 5 MB.</span>
         <div className="image-field-actions">
-          <button type="button" className="btn btn-secondary btn-sm" disabled={uploading} onClick={() => void openGallery()}>
-            Elegir de galeria
+          <button type="button" className="btn btn-secondary btn-sm" aria-label="Elegir de la galeria" title="Elegir de la galeria" disabled={uploading} onClick={() => void openGallery()}>
+            Galeria
           </button>
-          <button type="button" className="btn btn-ghost btn-sm" disabled={uploading} onClick={() => inputRef.current?.click()}>
-            Subir archivo
+          <button type="button" className="btn btn-ghost btn-sm" aria-label="Subir un archivo" title="Subir un archivo" disabled={uploading} onClick={() => inputRef.current?.click()}>
+            Subir
           </button>
           {imageUrl ? (
-            <button type="button" className="btn btn-ghost btn-sm image-field-remove" disabled={uploading} onClick={() => updateImage("")}>
+            <button type="button" className="btn btn-ghost btn-sm image-field-remove" aria-label="Quitar la imagen" title="Quitar la imagen" disabled={uploading} onClick={() => updateImage("")}>
               Quitar
             </button>
           ) : null}
