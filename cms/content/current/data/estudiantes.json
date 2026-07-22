@@ -180,16 +180,9 @@
         {
           "name": "Kuntur",
           "age": "17 - 18 años",
-          "imageUrl": "https://publicdomainvectors.org/photos/condor.png",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b9/AndeanCondorMale.jpg",
           "color": "gray",
           "desc": ""
-        },
-        {
-          "name": "Nueva categoria",
-          "age": "0-0 anos",
-          "imageUrl": "",
-          "color": "blue",
-          "desc": "Descripcion"
         }
       ]
     },
