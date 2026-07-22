@@ -10,6 +10,7 @@
       "categories": [
         {
           "title": "General",
+          "color": "blue",
           "items": [
             {
               "question": "¿Qué es Bebras?",
@@ -31,6 +32,7 @@
         },
         {
           "title": "Estudiantes",
+          "color": "red",
           "items": [
             {
               "question": "¿Necesito saber programar?",
@@ -56,6 +58,7 @@
         },
         {
           "title": "Maestros",
+          "color": "yellow",
           "items": [
             {
               "question": "¿Cómo registro mi escuela?",
@@ -77,6 +80,7 @@
         },
         {
           "title": "Técnicas",
+          "color": "green",
           "items": [
             {
               "question": "¿Qué navegadores son compatibles?",
@@ -100,6 +104,7 @@
     },
     {
       "type": "cta",
+      "accent": "red",
       "tag": "",
       "heading": "No encontraste lo que buscabas?",
       "text": "Contactanos y con gusto resolveremos tus dudas.",

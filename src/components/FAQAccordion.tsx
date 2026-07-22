@@ -4,6 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { normalizeBrandColor, type BrandColor } from "@/lib/brand-styles";
 
 interface FAQItem {
   question: string;
@@ -13,6 +14,7 @@ interface FAQItem {
 interface FAQCategory {
   title: string;
   items: FAQItem[];
+  color?: string;
 }
 
 interface Props {
@@ -20,14 +22,23 @@ interface Props {
 }
 
 export default function FAQAccordion({ categories }: Props) {
-  const categoryColors = ["bg-bebras-blue", "bg-bebras-red", "bg-bebras-yellow", "bg-bebras-green"];
+  const defaultColors: BrandColor[] = ["blue", "red", "yellow", "green"];
+  const categoryColorStyles: Record<BrandColor, string> = {
+    yellow: "bg-bebras-yellow text-bebras-ink",
+    red: "bg-bebras-red text-white",
+    green: "bg-bebras-green text-white",
+    blue: "bg-bebras-blue text-white",
+    gray: "bg-bebras-gray text-bebras-ink",
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl py-4 lg:py-6">
-      {categories.map((category, catIdx) => (
+      {categories.map((category, catIdx) => {
+        const color = category.color ? normalizeBrandColor(category.color) : defaultColors[catIdx % defaultColors.length];
+        return (
         <div key={catIdx} className={catIdx > 0 ? "mt-10 lg:mt-12" : ""}>
           <div className="mb-5 flex items-center gap-4">
-            <span className={`inline-flex size-11 items-center justify-center rounded-2xl text-sm font-bold uppercase tracking-wider text-white ${categoryColors[catIdx % categoryColors.length]}`}>
+            <span className={`inline-flex size-11 items-center justify-center rounded-2xl text-sm font-bold uppercase tracking-wider ${categoryColorStyles[color]}`}>
               {String(catIdx + 1).padStart(2, "0")}
             </span>
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -50,7 +61,8 @@ export default function FAQAccordion({ categories }: Props) {
             ))}
           </Accordion>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

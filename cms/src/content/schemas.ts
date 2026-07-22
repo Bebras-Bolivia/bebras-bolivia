@@ -109,6 +109,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
     categories: z.array(
       z.object({
         title: z.string(),
+        color: BrandColorSchema.optional(),
         items: z.array(
           z.object({
             question: z.string(),

@@ -325,6 +325,9 @@ export function getAddTypeOptions(
   if (/\.categories$/.test(path)) {
     const parentPath = path.replace(/\.categories$/, "");
     const parent: SafeAny = getNestedValue(currentData, parentPath);
+    if (parent && (parent.type === "faqAccordion" || parent.type === "faqQuestions")) {
+      return [{ value: "faqCategory", label: "Categoria de preguntas" }];
+    }
     if (parent && parent.type === "studentsAgeCategories") {
       return [{ value: "ageCategoryItem", label: "Categoria" }];
     }
@@ -491,6 +494,10 @@ export function createTypedArrayItem(
     return { name: "Nueva categoria", age: "0-0 anos", imageUrl: "", color: "blue", desc: "Descripcion" };
   }
 
+  if (selectedType === "faqCategory") {
+    return { title: "Nueva categoria", color: "blue", items: [] };
+  }
+
   if (selectedType === "scoringRow") {
     return { label: "Nueva fila", values: ["0", "0", "0"], status: "neutral" };
   }
@@ -546,7 +553,7 @@ function _componentTemplate(type: string): unknown | null {
   const map: Record<string, () => unknown> = {
     faqAccordion: () => ({
       type: "faqAccordion",
-      categories: [{ title: "Nueva seccion de preguntas frecuentes", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
+      categories: [{ title: "Nueva seccion de preguntas frecuentes", color: "blue", items: [{ question: "Nueva pregunta", answer: "Nueva respuesta" }] }],
     }),
     sectionRichText: () => ({
       type: "sectionRichText", accent: "blue", tag: "Seccion", heading: "Titulo de seccion",
