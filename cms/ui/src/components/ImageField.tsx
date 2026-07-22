@@ -79,16 +79,6 @@ export default function ImageField({ id, label, value, onChange }: Props) {
     }
   }
 
-  async function openGallery() {
-    const galleryFieldId = id;
-    try {
-      const selected = await window.CMSMediaPicker.open();
-      if (selected) updateImage(selected, galleryFieldId);
-    } catch (error) {
-      window.Toast.error(error instanceof Error ? error.message : "No se pudo abrir la galeria");
-    }
-  }
-
   function stopDragEvent(event: React.DragEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -127,10 +117,7 @@ export default function ImageField({ id, label, value, onChange }: Props) {
         <strong>{uploading ? "Subiendo imagen..." : "Arrastra una imagen aqui"}</strong>
         <span>JPG, PNG, WebP o GIF. Maximo 5 MB.</span>
         <div className="image-field-actions">
-          <button type="button" className="btn btn-secondary btn-sm" aria-label="Elegir de la galeria" title="Elegir de la galeria" disabled={uploading} onClick={() => void openGallery()}>
-            Galeria
-          </button>
-          <button type="button" className="btn btn-ghost btn-sm" aria-label="Subir un archivo" title="Subir un archivo" disabled={uploading} onClick={() => inputRef.current?.click()}>
+          <button type="button" className="btn btn-secondary btn-sm" aria-label="Subir un archivo" title="Subir un archivo" disabled={uploading} onClick={() => inputRef.current?.click()}>
             Subir
           </button>
           {imageUrl ? (
