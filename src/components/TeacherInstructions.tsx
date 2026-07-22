@@ -71,7 +71,7 @@ export default function TeacherInstructions({
   const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
 
   return (
-    <section className="reveal-section editorial-section mx-auto w-full max-w-6xl px-4 sm:px-6">
+    <section className="editorial-section">
       <div className="mx-auto max-w-6xl">
         <p className={`mb-4 text-sm font-bold uppercase tracking-[0.25em] ${accentTextClass}`}>
           {sectionTag}
