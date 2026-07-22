@@ -290,9 +290,9 @@
   .brand-card-blueDark { background-color: var(--color-bebras-blue-dark); }
 
   .editorial-callout {
-    border: 1px solid color-mix(in oklch, var(--primary) 18%, transparent);
+    border: 1px solid color-mix(in oklch, var(--callout-accent, var(--primary)) 18%, transparent);
     border-radius: 1.5rem;
-    background: color-mix(in oklch, var(--primary) 7%, var(--color-bebras-paper));
+    background: color-mix(in oklch, var(--callout-accent, var(--primary)) 7%, var(--color-bebras-paper));
   }
 
   /* Numerical display — oversized geometric numeral */
