@@ -84,7 +84,7 @@ export default function TeacherInstructions({
         </p>
 
         <Tabs defaultValue={tabs[0]?.id}>
-          <TabsList className="mb-8 flex h-auto w-full flex-wrap justify-start gap-3 rounded-none bg-transparent p-0">
+          <TabsList className="mb-8 flex h-auto w-full flex-wrap justify-start gap-3 rounded-none bg-transparent p-0 group-data-horizontal/tabs:h-auto">
             {tabs.map((tab, index) => {
               const color = tab.color ? normalizeBrandColor(tab.color) : palette[index % palette.length] || "green";
               const s = STYLES[color];
