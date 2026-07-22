@@ -30,12 +30,6 @@ const BrandColorSchema = z.enum([
 ]);
 const BrandPaletteSchema = z.array(BrandColorSchema).optional();
 
-const StatSchema = z.object({
-  value: z.string(),
-  label: z.string(),
-  color: BrandColorSchema.optional(),
-});
-
 const PageMetaSchema = z.object({
   pageTitle: z.string().optional(),
   pageDescription: z.string().optional(),
@@ -218,7 +212,6 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("studentsScoringTable"),
     accent: BrandColorSchema.optional(),
-    cardPalette: BrandPaletteSchema.optional(),
     sectionTag: z.string(),
     heading: z.string(),
     subtitle: z.string(),
@@ -230,14 +223,6 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
         status: z.string(),
       })
     ),
-    summaryCards: z.array(
-      z.object({
-        value: z.string(),
-        label: z.string(),
-        color: BrandColorSchema.optional(),
-      })
-    ),
-    summaryColumns: z.number().int().min(1).max(4).optional(),
   }),
   z.object({
     type: z.literal("blogIndex"),
@@ -470,8 +455,6 @@ export const scoringSchema = z.object({
       status: z.string(),
     })
   ),
-  summaryCards: z.array(StatSchema),
-  summaryColumns: z.number().int().min(1).max(4).optional(),
 });
 
 // ── 4. faq.json ──────────────────────────────────────────

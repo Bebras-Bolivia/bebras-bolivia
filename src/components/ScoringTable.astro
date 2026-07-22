@@ -1,17 +1,11 @@
 ---
-import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
+import { normalizeBrandColor } from "@/lib/brand-styles";
 import scoringData from "@/data/scoring.json";
 
 interface ScoringRow {
   label: string;
   values: string[];
   status: string;
-}
-
-interface ScoringStat {
-  value: string;
-  label: string;
-  color?: string;
 }
 
 interface Props {
@@ -21,26 +15,14 @@ interface Props {
     subtitle: string;
     tableHeaders: string[];
     rows: ScoringRow[];
-    summaryCards: ScoringStat[];
     accent?: string;
-    summaryColumns?: number;
-    cardPalette?: string[];
   };
 }
 
 const props = Astro.props as Props;
 const source: NonNullable<Props["data"]> = props.data || scoringData;
-const { sectionTag, heading, subtitle, tableHeaders, rows, summaryCards, summaryColumns = 2, accent = "green", cardPalette } = source;
+const { sectionTag, heading, subtitle, tableHeaders, rows, accent = "green" } = source;
 const accentTextClass = `text-bebras-${normalizeBrandColor(accent)}`;
-
-function getSummaryColsClass(columns: number) {
-  if (columns <= 1) return "grid-cols-1";
-  if (columns === 2) return "grid-cols-1 sm:grid-cols-2";
-  if (columns === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
-  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
-}
-
-const summaryColsClass = getSummaryColsClass(summaryColumns);
 
 const statusStyles: Record<string, { icon: string; cellClass: string }> = {
   positive: { icon: "&#10003;", cellClass: "font-bold text-emerald-600" },
@@ -107,14 +89,6 @@ const statusIconStyles: Record<string, string> = {
       </table>
     </div>
 
-    <div data-animate class:list={["mt-6 grid gap-5", summaryColsClass]}>
-      {summaryCards.map((card, i) => (
-        <div class:list={["p-6 text-center", getItemBrandCardClass(card.color, i, cardPalette)]}>
-          <p class="font-mono text-4xl sm:text-5xl font-extrabold mb-2">{card.value}</p>
-          <p class="brand-card-muted text-xs sm:text-sm uppercase tracking-widest font-bold">{card.label}</p>
-        </div>
-      ))}
-    </div>
     </div>
   </div>
 </section>

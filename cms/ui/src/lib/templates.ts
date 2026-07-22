@@ -205,7 +205,7 @@ export function getFieldType(keyOrPath: string, value: unknown): string {
   const path = String(keyOrPath);
   if (/(^|\.)cardPalette(\[\d+\])?$/.test(path)) return "brand-color";
   const key = path.split(".").pop() || "";
-  if (key === "columns" || key === "summaryColumns") return "column-count";
+  if (key === "columns") return "column-count";
   if (typeof value === "boolean") return "boolean";
   if (typeof value === "number") return "number";
   if (selectOptions[key]) return "select";
@@ -240,7 +240,6 @@ export function isCollapsibleArray(path: string): boolean {
     || path.endsWith(".stats")
     || path.endsWith(".categories")
     || path.endsWith(".rows")
-    || path.endsWith(".summaryCards")
     || path.endsWith(".slides")
     || path.endsWith(".tabs");
 }
@@ -336,14 +335,6 @@ export function getAddTypeOptions(
     const parent: SafeAny = getNestedValue(currentData, parentPath);
     if (parent && parent.type === "studentsScoringTable") {
       return [{ value: "scoringRow", label: "Fila de tabla" }];
-    }
-  }
-
-  if (/\.summaryCards$/.test(path)) {
-    const parentPath = path.replace(/\.summaryCards$/, "");
-    const parent: SafeAny = getNestedValue(currentData, parentPath);
-    if (parent && parent.type === "studentsScoringTable") {
-      return [{ value: "scoringSummary", label: "Resumen" }];
     }
   }
 
@@ -504,10 +495,6 @@ export function createTypedArrayItem(
     return { label: "Nueva fila", values: ["0", "0", "0"], status: "neutral" };
   }
 
-  if (selectedType === "scoringSummary") {
-    return { value: "0", label: "Resumen", color: "blue" };
-  }
-
   return null;
 }
 function _homeSection(type: string): unknown | null {
@@ -651,8 +638,6 @@ function _componentTemplate(type: string): unknown | null {
         { label: "Sin respuesta", values: ["0", "0", "0"], status: "neutral" },
         { label: "Incorrecta", values: ["-2", "-3", "-4"], status: "negative" },
       ],
-      summaryCards: [{ value: "45", label: "Puntaje inicial", color: "red" }, { value: "180", label: "Puntaje maximo", color: "yellow" }],
-      summaryColumns: 2,
     }),
     tabsGuide: () => ({
       type: "tabsGuide", accent: "blue", sectionTag: "Guia", heading: "Instrucciones", subtitle: "Pasos por etapa",

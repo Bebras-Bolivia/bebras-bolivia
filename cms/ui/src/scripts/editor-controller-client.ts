@@ -389,7 +389,6 @@ const Editor = {
       ) return;
       if (this.isAutoNumberField(fieldPath)) return;
       if (value === null || value === undefined || Array.isArray(value)) return;
-      if (key === "summaryColumns" && Array.isArray(obj.summaryCards) && obj.summaryCards.length === 0) return;
       if (typeof value === "object") {
         if (deep) out.push(...this.extractPrimitiveFields(value, fieldPath, true));
         return;
@@ -400,7 +399,7 @@ const Editor = {
   },
 
   toPrimitiveField(path: string, key: string, value: SafeAny) {
-    const type = key === "columns" || key === "summaryColumns"
+    const type = key === "columns"
       ? "column-count"
       : this.getFieldType(path, value);
     const editorType = ["textarea", "boolean", "number", "url", "select", "brand-color", "column-count"].includes(type) ? type : "text";

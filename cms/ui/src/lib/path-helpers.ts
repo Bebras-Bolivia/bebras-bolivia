@@ -237,8 +237,6 @@ const specialLabels: Record<string, string> = {
   steps: "Pasos",
   requirements: "Requisitos",
   tableHeaders: "Encabezados de tabla",
-  summaryCards: "Tarjetas de resumen",
-  summaryColumns: "Columnas del resumen",
 
   // ── Other ───────────────────────────────────────
   id: "ID",

@@ -37,18 +37,5 @@
       ],
       "status": "negative"
     }
-  ],
-  "summaryCards": [
-    {
-      "value": "45",
-      "label": "Puntaje inicial",
-      "color": "red"
-    },
-    {
-      "value": "180",
-      "label": "Puntaje máximo",
-      "color": "yellow"
-    }
-  ],
-  "summaryColumns": 2
+  ]
 }

@@ -98,14 +98,8 @@ const { components = [] } = Astro.props;
       ...(component || {}),
       tableHeaders: Array.isArray(component?.tableHeaders) ? component.tableHeaders : scoringData.tableHeaders,
       rows: Array.isArray(component?.rows) ? component.rows : scoringData.rows,
-      summaryCards: Array.isArray(component?.summaryCards) ? component.summaryCards : scoringData.summaryCards,
-      cardPalette: component?.cardPalette || (scoringData as any).cardPalette,
     };
-    return (
-      <div class="reveal-section w-full mx-auto max-w-6xl mb-8 lg:mb-10 px-4 sm:px-6">
-        <ScoringTable data={scoringPayload} />
-      </div>
-    );
+    return <ScoringTable data={scoringPayload} />;
   }
 
   if (component.type === "linksList") {
