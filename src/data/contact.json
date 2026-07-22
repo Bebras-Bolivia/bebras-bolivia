@@ -32,7 +32,6 @@
             "icon": "share",
             "title": "Redes sociales",
             "description": "Síguenos para novedades.",
-            "color": "green",
             "socialLinks": [
               {
                 "label": "Facebook",
@@ -46,12 +45,12 @@
                 "label": "TikTok",
                 "href": "https://tiktok.com/@bebrasbolivia"
               }
-            ]
+            ],
+            "color": "green"
           }
         ]
       },
       "international": {
-        "color": "green",
         "tag": "Comunidad internacional",
         "links": [
           {
@@ -59,10 +58,10 @@
             "href": "https://www.bebras.org/",
             "description": "Sitio oficial de la iniciativa mundial Bebras."
           }
-        ]
+        ],
+        "color": "green"
       },
       "form": {
-        "color": "green",
         "tag": "Formulario",
         "heading": "Envíanos un mensaje",
         "fields": {
@@ -90,7 +89,8 @@
           }
         },
         "submitLabel": "Enviar mensaje",
-        "disclaimer": "Al enviar se abrirá tu aplicación de correo con el mensaje listo para enviar."
+        "disclaimer": "Al enviar se abrirá tu aplicación de correo con el mensaje listo para enviar.",
+        "color": "green"
       }
     }
   ]

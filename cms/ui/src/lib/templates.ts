@@ -687,12 +687,11 @@ function _componentTemplate(type: string): unknown | null {
         }],
       },
       international: {
-        color: "green",
         tag: "Comunidad Internacional",
         links: [{ label: "Bebras Internacional ->", href: "https://www.bebras.org/", description: "Sitio oficial Bebras" }],
+        color: "green",
       },
       form: {
-        color: "green",
         tag: "Formulario", heading: "Envianos un Mensaje",
         fields: {
           name: { label: "Nombre completo", placeholder: "Tu nombre" },
@@ -701,6 +700,7 @@ function _componentTemplate(type: string): unknown | null {
           message: { label: "Mensaje", placeholder: "Escribe tu mensaje..." },
         },
         submitLabel: "Enviar mensaje", disclaimer: "Este formulario es solo una vista previa.",
+        color: "green",
       },
     }),
   };
