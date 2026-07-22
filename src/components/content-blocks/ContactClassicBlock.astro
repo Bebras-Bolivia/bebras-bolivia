@@ -1,5 +1,5 @@
 ---
-import { ClipboardList, Mail, Share2 } from "lucide-react";
+import { Brain, ClipboardList, Clock, Mail, Monitor, School, Share2, Users, Wifi } from "lucide-react";
 import { getItemBrandCardClass, normalizeBrandColor } from "@/lib/brand-styles";
 import siteData from "@/data/site.json";
 import { isSafeHref, toSafeHref } from "@/lib/safe-url";
@@ -56,9 +56,15 @@ const accentButtonClass = `bg-bebras-${accentColor}`;
 const accentButtonTextClass = accentColor === "yellow" || accentColor === "gray" ? "text-bebras-ink" : "text-white";
 
 const contactIconMap = {
+  monitor: Monitor,
+  wifi: Wifi,
+  user: Users,
+  clock: Clock,
   email: Mail,
   clipboard: ClipboardList,
   share: Share2,
+  school: School,
+  brain: Brain,
 };
 
 function normalizeContactHref(href?: string): string | undefined {
