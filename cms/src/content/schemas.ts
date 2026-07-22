@@ -264,6 +264,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
       ),
     }),
     international: z.object({
+      color: BrandColorSchema.optional(),
       tag: z.string(),
       links: z.array(
         z.object({
@@ -274,6 +275,7 @@ export const SharedPageComponentSchema = z.discriminatedUnion("type", [
       ),
     }),
     form: z.object({
+      color: BrandColorSchema.optional(),
       tag: z.string(),
       heading: z.string(),
       fields: z.object({

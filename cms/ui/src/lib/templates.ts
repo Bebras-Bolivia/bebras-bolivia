@@ -687,10 +687,12 @@ function _componentTemplate(type: string): unknown | null {
         }],
       },
       international: {
+        color: "green",
         tag: "Comunidad Internacional",
         links: [{ label: "Bebras Internacional ->", href: "https://www.bebras.org/", description: "Sitio oficial Bebras" }],
       },
       form: {
+        color: "green",
         tag: "Formulario", heading: "Envianos un Mensaje",
         fields: {
           name: { label: "Nombre completo", placeholder: "Tu nombre" },
