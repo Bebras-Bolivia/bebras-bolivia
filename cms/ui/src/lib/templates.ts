@@ -627,7 +627,7 @@ function _componentTemplate(type: string): unknown | null {
     }),
     studentsAgeCategories: () => ({
       type: "studentsAgeCategories", accent: "blue", sectionTag: "Niveles", heading: "Categorias por Edad",
-      subtitle: "Cinco niveles disenados para desafiar a cada grupo de edad",
+      subtitle: "Seis niveles disenados para desafiar a cada grupo de edad",
       categories: [
         { name: "Guacamayo", age: "5-8 anos", imageUrl: "", color: "red", desc: "Primeros pasos en el pensamiento logico" },
         { name: "Capibara", age: "8-10 anos", imageUrl: "", color: "yellow", desc: "Descubriendo patrones y secuencias" },

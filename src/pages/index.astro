@@ -60,7 +60,7 @@ function getIntroParagraphs(introSection: any) {
 	return Array.isArray(introSection?.paragraphs) && introSection.paragraphs.length > 0
 		? introSection.paragraphs
 		: [
-			"Bebras es una competencia internacional de pensamiento computacional para estudiantes de 6 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.",
+			"Bebras es una competencia internacional de pensamiento computacional para estudiantes de 5 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.",
 			"La competencia es gratuita y se realiza en tu propia unidad educativa. Cada estudiante cuenta con 45 minutos para resolver las tareas de su categoría.",
 		];
 }
@@ -224,7 +224,7 @@ function splitHeading(section: any, fallback: string): { prefix: string; emphasi
 										<aside class="col-span-12 lg:col-span-4">
 											<div class="lg:sticky lg:top-28">
 												<span class:list={["block display-numeral text-[5.5rem] sm:text-[7rem] lg:text-[8.5rem] leading-[0.8]", ac.numeral]}>{section.number || "02"}</span>
-												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Cinco niveles"}</p>
+												<p class="font-mono text-[10px] uppercase tracking-[0.32em] text-muted-foreground mt-3">{section.kicker || "Seis niveles"}</p>
 												<div class="mt-4 h-px w-16 bg-foreground/20"></div>
 												<p class="mt-4 font-mono text-xs text-muted-foreground max-w-[20ch] leading-relaxed">{section.asideText || "Cada nivel tiene tareas diseñadas para su grupo de edad."}</p>
 											</div>

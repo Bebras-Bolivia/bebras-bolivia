@@ -16,7 +16,7 @@
       "asideText": "Una iniciativa de 60+ países que llega a Bolivia.",
       "heading": "Sobre el desafío",
       "paragraphs": [
-        "Bebras es una competencia internacional de pensamiento computacional para estudiantes de 6 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.",
+        "Bebras es una competencia internacional de pensamiento computacional para estudiantes de 5 a 18 años. Los participantes resuelven tareas cortas y lógicas que no requieren conocimientos previos de informática.",
         "La competencia es **gratuita** y se realiza en tu propia unidad educativa. Cada estudiante cuenta con **45 minutos** para resolver las tareas de su categoría."
       ]
     },
@@ -24,7 +24,7 @@
       "type": "homeAgeCategories",
       "accent": "yellow",
       "number": "02",
-      "kicker": "Cinco niveles",
+      "kicker": "Seis niveles",
       "asideText": "Cada nivel tiene tareas diseñadas para su grupo de edad.",
       "heading": "Categorías por edad",
       "linkLabel": "Ver información detallada para estudiantes",
@@ -35,6 +35,7 @@
           "range": "5 a 8 años",
           "color": "red",
           "imageKey": "guacamayo",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Ara_ararauna_en_los_llanos_de_Moxos.jpg",
           "author": "Borochirebelde",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Ara_ararauna_en_los_llanos_de_Moxos.jpg"
         },
@@ -43,6 +44,7 @@
           "range": "8 a 10 años",
           "color": "yellow",
           "imageKey": "capibara",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg",
           "author": "Ludwinsiles",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg"
         },
@@ -51,6 +53,7 @@
           "range": "10 a 12 años",
           "color": "green",
           "imageKey": "titi",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Plecturocebus_donacophilus_143025465.jpg",
           "author": "Kozue Kawakami",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Plecturocebus_donacophilus_143025465.jpg"
         },
@@ -59,6 +62,7 @@
           "range": "12 a 14 años",
           "color": "blue",
           "imageKey": "jucumari",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Tremarctos_ornatus_165975083.jpg",
           "author": "Jonathan Candil Mendez",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Tremarctos_ornatus_165975083.jpg"
         },
@@ -67,6 +71,7 @@
           "range": "14 a 16 años",
           "color": "blue",
           "imageKey": "yaguarete",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/27/Kubai_Jaguar_%28Panthera_onca%29.jpg",
           "author": "MauMirror",
           "authorUrl": "https://commons.wikimedia.org/wiki/File:Kubai_Jaguar_(Panthera_onca).jpg"
         },
