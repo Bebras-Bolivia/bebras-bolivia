@@ -2696,6 +2696,12 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
 }
 
+.field-section-description {
+  margin: -0.25rem 0 0.875rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
 .field-section-lock {
   display: inline-flex;
   align-items: center;

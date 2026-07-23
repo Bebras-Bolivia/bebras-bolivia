@@ -31,6 +31,7 @@ export type ComplexNode =
       addOptions: Array<{ value: string; label: string }>;
       componentPicker?: boolean;
       buttonLabel?: string;
+      description?: string;
       removable?: boolean;
       /**
        * When true, the array's structure is fixed — no add, remove, or reorder.
@@ -345,6 +346,7 @@ function ArrayNode(props: RendererProps & { node: Extract<ComplexNode, { kind: "
           <span className="field-section-lock" title="Estructura fija: solo se pueden editar los campos existentes.">Fijo</span>
         ) : null}
       </div>
+      {node.description ? <p className="field-section-description">{node.description}</p> : null}
       <div className="array-field" data-array-path={node.path}>
         {node.items.map((item) => {
           const itemExpanded = expandedItems.get(item.itemPath) ?? item.expanded;

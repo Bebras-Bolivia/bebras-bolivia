@@ -363,19 +363,21 @@ const HomeAgeCategoriesSectionSchema = z.object({
   heading: z.string(),
   linkLabel: z.string(),
   linkHref: SafeHrefSchema,
-  items: z.array(
-    z.object({
-      name: z.string(),
-      range: z.string(),
-      color: BrandColorSchema,
-      imageKey: z.string(),
-      // URL de imagen externa opcional. Si se define, tiene prioridad sobre
-      // imageKey (que selecciona una de las fotos incluidas en el sitio).
-      imageUrl: z.string().optional(),
-      author: z.string(),
-      authorUrl: SafeHrefSchema,
-    })
-  ),
+  items: z
+    .array(
+      z.object({
+        name: z.string(),
+        range: z.string(),
+        color: BrandColorSchema,
+        imageKey: z.string(),
+        // URL de imagen externa opcional. Si se define, tiene prioridad sobre
+        // imageKey (que selecciona una de las fotos incluidas en el sitio).
+        imageUrl: z.string().optional(),
+        author: z.string(),
+        authorUrl: SafeHrefSchema,
+      })
+    )
+    .min(1, "Debe existir al menos una categoría de edad"),
 });
 
 const HomeDualCtaSectionSchema = z.object({

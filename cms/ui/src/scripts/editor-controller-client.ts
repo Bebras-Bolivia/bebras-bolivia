@@ -238,6 +238,9 @@ const Editor = {
 
   buildArrayNode(arr: SafeAny[], path: string, key: string) {
     const addOptions = this.getAddTypeOptions(path);
+    const parentPath = path.endsWith(".items") ? path.slice(0, -".items".length) : "";
+    const isHomeAgeCategoryItems = this.currentFile === "home.json"
+      && this.getNestedValue(this.currentData, parentPath)?.type === "homeAgeCategories";
     // Use the rich modal picker (name + description) when adding shared
     // components, or when the typed options carry descriptions (home sections).
     const usePicker = this.isComponentsPath(path) || addOptions.some((o: SafeAny) => o.description);
@@ -248,8 +251,12 @@ const Editor = {
       addOptions,
       componentPicker: usePicker,
       buttonLabel: this.currentFile === "navigation.json" && path === "links" ? "Crear página" : "Agregar",
+      description: isHomeAgeCategoryItems
+        ? "Estas imágenes también aparecen alrededor del castor de la portada."
+        : undefined,
       locked: this.isLockedArray(path),
-      removable: !(this.currentFile === "navigation.json" && path === "links"),
+      removable: !(this.currentFile === "navigation.json" && path === "links")
+        && !(isHomeAgeCategoryItems && arr.length <= 1),
       items: arr.map((item, idx) => {
         const itemPath = `${path}[${idx}]`;
         const itemIsObject = item && typeof item === "object" && !Array.isArray(item);
@@ -380,6 +387,11 @@ const Editor = {
     Object.entries(obj).forEach(([key, value]) => {
       const fieldPath = path ? `${path}.${key}` : key;
       if (this.lib.shouldHideField(key)) return;
+      if (
+        this.currentFile === "home.json"
+        && key === "imageKey"
+        && /^sections\[\d+\]\.items\[\d+\]$/.test(path)
+      ) return;
       if (this.currentFile === "navigation.json" && key === "active" && /^links\[\d+\]$/.test(path)) return;
       if (
         this.currentFile === "custom-pages.json"
