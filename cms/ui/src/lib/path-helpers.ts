@@ -208,6 +208,7 @@ const specialLabels: Record<string, string> = {
   // ── Visuals ─────────────────────────────────────
   icon: "Icono",
   image: "Imagen",
+  imageUrl: "URL de imagen",
   src: "Imagen",
   alt: "Texto alternativo",
   logo: "Logo",

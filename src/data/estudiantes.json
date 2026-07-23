@@ -138,30 +138,35 @@
         {
           "name": "Guacamayo",
           "age": "5-8 años",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Ara_ararauna_en_los_llanos_de_Moxos.jpg",
           "color": "red",
           "desc": ""
         },
         {
           "name": "Capibara",
           "age": "8-10 años",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Familia_de_capibaras_al_borde_del_rio_en_el_parque_Nacional_Madidi.jpg",
           "color": "yellow",
           "desc": ""
         },
         {
           "name": "Titi",
           "age": "10-12 años",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Plecturocebus_donacophilus_143025465.jpg",
           "color": "green",
           "desc": ""
         },
         {
           "name": "Jucumari",
           "age": "12-14 años",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Tremarctos_ornatus_165975083.jpg",
           "color": "blue",
           "desc": ""
         },
         {
           "name": "Yaguarete",
           "age": "14-16 años",
+          "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/27/Kubai_Jaguar_%28Panthera_onca%29.jpg",
           "color": "blue",
           "desc": ""
         },
