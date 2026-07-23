@@ -230,13 +230,6 @@ export default function ImageField({
             {urlDraft.trim() && !isValidExternalUrl(urlDraft.trim()) ? (
               <span className="image-url-status">Completa una URL http o https para actualizar la imagen.</span>
             ) : null}
-            {imageUrl && currentSource === "url" ? (
-              <div className="image-field-actions">
-                <button type="button" className="btn btn-ghost btn-sm image-field-remove" aria-label="Quitar la URL" title="Quitar la URL" disabled={uploading} onClick={() => updateImage("", id, "url")}>
-                  Quitar URL
-                </button>
-              </div>
-            ) : null}
           </>
         )}
       </div>
