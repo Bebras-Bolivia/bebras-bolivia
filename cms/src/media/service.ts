@@ -1,18 +1,35 @@
-import { readdir, unlink, stat } from "fs/promises";
+import { readFile, readdir, stat, unlink, writeFile } from "fs/promises";
 import { join } from "path";
+import createDOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
 import { config } from "../config.js";
 
-// SVG intentionally excluded: SVG files can contain inline <script> tags that
-// execute when loaded same-origin, enabling stored XSS.
 const ALLOWED_EXTENSIONS = new Set([
   ".jpg",
   ".jpeg",
   ".png",
   ".webp",
   ".gif",
+  ".svg",
 ]);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 export const SPONSOR_MEDIA_PREFIX = "sponsor__";
+
+const svgWindow = new JSDOM("").window;
+const svgSanitizer = createDOMPurify(svgWindow);
+
+svgSanitizer.addHook("uponSanitizeAttribute", (_node, data) => {
+  const name = data.attrName.toLowerCase();
+  const value = data.attrValue.trim();
+
+  if ((name === "href" || name === "xlink:href") && !value.startsWith("#")) {
+    data.keepAttr = false;
+  }
+
+  if (/url\s*\(\s*(?!["']?#)/i.test(value)) {
+    data.keepAttr = false;
+  }
+});
 
 export interface MediaFile {
   filename: string;
@@ -93,6 +110,36 @@ export function validateUpload(file: {
   if (file.size > MAX_FILE_SIZE) {
     throw new MediaError(`File too large. Maximum: ${MAX_FILE_SIZE / 1024 / 1024}MB`, 400);
   }
+}
+
+export function sanitizeSvg(source: string): string {
+  const clean = String(
+    svgSanitizer.sanitize(source, {
+      USE_PROFILES: { svg: true, svgFilters: true },
+      FORBID_TAGS: ["script", "foreignObject", "iframe", "object", "embed", "style"],
+      FORBID_ATTR: ["style"],
+    })
+  ).trim();
+
+  if (!/^<svg(?:\s|>)/i.test(clean)) {
+    throw new MediaError("El archivo no contiene un SVG válido", 400);
+  }
+
+  return clean;
+}
+
+export async function prepareUpload(file: {
+  originalname: string;
+  size: number;
+  path: string;
+}): Promise<void> {
+  validateUpload(file);
+
+  if (!file.originalname.toLowerCase().endsWith(".svg")) return;
+
+  const source = await readFile(file.path, "utf-8");
+  const clean = sanitizeSvg(source);
+  await writeFile(file.path, clean, "utf-8");
 }
 
 export class MediaError extends Error {

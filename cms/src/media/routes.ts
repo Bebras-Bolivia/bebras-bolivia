@@ -1,8 +1,9 @@
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
+import { unlink } from "fs/promises";
 import { resolve } from "path";
 import { config } from "../config.js";
-import { listMedia, deleteMedia, validateUpload, MediaError, SPONSOR_MEDIA_PREFIX } from "./service.js";
+import { listMedia, deleteMedia, prepareUpload, MediaError, SPONSOR_MEDIA_PREFIX } from "./service.js";
 import { syncContentToLanding } from "../preview/service.js";
 
 // Configure multer to save to the media directory
@@ -19,7 +20,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const ALLOWED_UPLOAD_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
+const ALLOWED_UPLOAD_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"]);
 
 const upload = multer({
   storage,
@@ -71,7 +72,7 @@ mediaRouter.post(
         return;
       }
 
-      validateUpload(file);
+      await prepareUpload(file);
 
       try {
         await syncContentToLanding();
@@ -85,6 +86,9 @@ mediaRouter.post(
         url: `/images/uploads/${file.filename}`,
       });
     } catch (err) {
+      const file = (req as Request & { file?: Express.Multer.File }).file;
+      if (file) await unlink(file.path).catch(() => undefined);
+
       if (err instanceof MediaError) {
         res.status(err.status).json({ error: err.message });
       } else {
