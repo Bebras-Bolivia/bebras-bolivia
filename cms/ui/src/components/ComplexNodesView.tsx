@@ -14,6 +14,8 @@ export type EditorField = {
   value: string | number | boolean;
   options?: SelectOption[];
   readOnly?: boolean;
+  allowExternalUrl?: boolean;
+  uploadScope?: "blog" | "content" | "sponsors";
 };
 
 export type ComplexNode =
@@ -159,6 +161,8 @@ function FieldInput({
         id={`field-${field.path}`}
         label={field.label}
         value={value}
+        allowExternalUrl={field.allowExternalUrl}
+        uploadScope={field.uploadScope}
         onChange={(next) => onFieldChange(field.path, next)}
       />
     );

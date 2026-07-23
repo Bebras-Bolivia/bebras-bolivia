@@ -128,7 +128,7 @@ const API = {
   cleanupSnapshotPreview() { return this.post("/api/preview/snapshot/cleanup"); },
 
   listMedia() { return this.get("/api/media"); },
-  uploadMedia(file: File, scope: "blog" | "sponsors" = "blog") {
+  uploadMedia(file: File, scope: "blog" | "content" | "sponsors" = "blog") {
     const fd = new FormData();
     fd.append("file", file);
     return this.upload(`/api/media/upload?scope=${scope}`, fd);

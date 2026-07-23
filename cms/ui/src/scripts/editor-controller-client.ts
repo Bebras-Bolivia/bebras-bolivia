@@ -413,8 +413,15 @@ const Editor = {
   toPrimitiveField(path: string, key: string, value: SafeAny) {
     const parentPath = key === "image" ? path.replace(/\.image$/, "") : "";
     const parent = parentPath ? this.getNestedValue(this.currentData, parentPath) : null;
+    const isCategoryImageUrl = key === "imageUrl"
+      && (
+        (this.currentFile === "home.json" && /^sections\[\d+\]\.items\[\d+\]\.imageUrl$/.test(path))
+        || (this.currentFile === "estudiantes.json" && /^components\[\d+\]\.categories\[\d+\]\.imageUrl$/.test(path))
+      );
     const type = key === "columns"
       ? "column-count"
+      : isCategoryImageUrl
+        ? "image"
       : key === "image" && parent?.type === "organizerInstitution"
         ? "image"
       : this.getFieldType(path, value);
@@ -425,6 +432,8 @@ const Editor = {
       type: editorType,
       value,
       options: editorType === "select" ? this.getSelectOptions(path, key) : undefined,
+      allowExternalUrl: isCategoryImageUrl,
+      uploadScope: isCategoryImageUrl ? "content" : undefined,
       readOnly:
         (editorType === "number" && this.isAutoNumberField(path))
         || (this.currentFile === "navigation.json" && /^links\[\d+\]\.href$/.test(path))
