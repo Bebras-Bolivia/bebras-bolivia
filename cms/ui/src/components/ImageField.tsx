@@ -4,6 +4,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", "svg"]);
 
 export type ImageUploadScope = "blog" | "content" | "sponsors";
+type ImageSource = "url" | "upload";
 
 interface Props {
   id?: string;
@@ -25,6 +26,18 @@ function externalUrlValue(value: string): string {
   return /^https?:\/\//i.test(value) ? value : "";
 }
 
+function isValidExternalUrl(value: string): boolean {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
+function sourceFromValue(value: string): ImageSource {
+  return externalUrlValue(value) ? "url" : "upload";
+}
+
 export default function ImageField({
   id,
   label,
@@ -42,12 +55,16 @@ export default function ImageField({
   const externalUrl = String(value ?? "").trim();
   const [imageUrl, setImageUrl] = React.useState(externalUrl);
   const [urlDraft, setUrlDraft] = React.useState(externalUrlValue(externalUrl));
+  const [source, setSource] = React.useState<ImageSource>(sourceFromValue(externalUrl));
   const previewUrl = imageUrl ? window.App.appUrl(imageUrl) : "";
+  const activeSource = allowExternalUrl ? source : "upload";
+  const currentSource = sourceFromValue(imageUrl);
 
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setImageUrl(externalUrl);
     setUrlDraft(externalUrlValue(externalUrl));
+    if (externalUrl) setSource(sourceFromValue(externalUrl));
   }, [externalUrl]);
 
   React.useEffect(() => {
@@ -61,26 +78,23 @@ export default function ImageField({
     fieldIdRef.current = id;
   }, [id]);
 
-  function updateImage(nextUrl: string, expectedId = id) {
+  function updateImage(nextUrl: string, expectedId = id, nextSource = sourceFromValue(nextUrl)) {
     if (!mountedRef.current || fieldIdRef.current !== expectedId) return;
     setImageUrl(nextUrl);
     setUrlDraft(externalUrlValue(nextUrl));
+    setSource(nextSource);
     onChange(nextUrl);
   }
 
-  function applyExternalUrl() {
-    const nextUrl = urlDraft.trim();
-    if (!nextUrl) return;
-
-    try {
-      const parsed = new URL(nextUrl);
-      if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
-    } catch {
-      window.Toast.error("Ingresa una URL http o https válida");
+  function changeExternalUrl(nextDraft: string) {
+    setUrlDraft(nextDraft);
+    const nextUrl = nextDraft.trim();
+    if (!nextUrl) {
+      updateImage("", id, "url");
       return;
     }
 
-    updateImage(nextUrl);
+    if (isValidExternalUrl(nextUrl)) updateImage(nextUrl, id, "url");
   }
 
   async function uploadFile(file: File) {
@@ -123,6 +137,7 @@ export default function ImageField({
       onPointerDown={(event) => event.stopPropagation()}
       onDragEnter={(event) => {
         stopDragEvent(event);
+        if (activeSource !== "upload") return;
         setDragActive(true);
       }}
       onDragOver={stopDragEvent}
@@ -134,10 +149,37 @@ export default function ImageField({
       onDrop={(event) => {
         stopDragEvent(event);
         setDragActive(false);
+        if (activeSource !== "upload") return;
         const file = event.dataTransfer.files[0];
         if (file) void uploadFile(file);
       }}
     >
+      {allowExternalUrl ? (
+        <div className="image-source-tabs" role="tablist" aria-label="Fuente de la imagen">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeSource === "url"}
+            className={activeSource === "url" ? "is-active" : ""}
+            onClick={() => {
+              setDragActive(false);
+              setSource("url");
+            }}
+          >
+            URL externa
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeSource === "upload"}
+            className={activeSource === "upload" ? "is-active" : ""}
+            onClick={() => setSource("upload")}
+          >
+            Subir archivo
+          </button>
+        </div>
+      ) : null}
+
       <div className="image-field-preview" aria-live="polite">
         {previewUrl ? (
           <img src={previewUrl} alt={label || "Vista previa"} draggable={false} />
@@ -147,22 +189,32 @@ export default function ImageField({
       </div>
 
       <div className="image-field-content">
-        <strong>{uploading ? "Subiendo imagen..." : "Arrastra una imagen aqui"}</strong>
-        <span>JPG, PNG, WebP, GIF o SVG. Máximo 5 MB.</span>
-        <div className="image-field-actions">
-          <button type="button" className="btn btn-secondary btn-sm" aria-label="Subir un archivo" title="Subir un archivo" disabled={uploading} onClick={() => inputRef.current?.click()}>
-            Subir
-          </button>
-          {imageUrl ? (
-            <button type="button" className="btn btn-ghost btn-sm image-field-remove" aria-label="Quitar la imagen" title="Quitar la imagen" disabled={uploading} onClick={() => updateImage("")}>
-              Quitar
-            </button>
-          ) : null}
-        </div>
-        {imageUrl ? <code className="image-field-path">{imageUrl}</code> : null}
-        {allowExternalUrl ? (
-          <div className="image-field-url">
-            <span>o usa una URL externa</span>
+        {activeSource === "upload" ? (
+          <>
+            <strong>{uploading ? "Subiendo imagen..." : "Arrastra una imagen aquí"}</strong>
+            <span>JPG, PNG, WebP, GIF o SVG. Máximo 5 MB.</span>
+            {imageUrl && currentSource === "url" ? (
+              <span className="image-source-note">La URL actual se mantendrá hasta completar una nueva carga.</span>
+            ) : null}
+            <div className="image-field-actions">
+              <button type="button" className="btn btn-secondary btn-sm" aria-label="Subir un archivo" title="Subir un archivo" disabled={uploading} onClick={() => inputRef.current?.click()}>
+                Seleccionar archivo
+              </button>
+              {imageUrl && currentSource === "upload" ? (
+                <button type="button" className="btn btn-ghost btn-sm image-field-remove" aria-label="Quitar el archivo" title="Quitar el archivo" disabled={uploading} onClick={() => updateImage("")}>
+                  Quitar archivo
+                </button>
+              ) : null}
+            </div>
+            {imageUrl && currentSource === "upload" ? <code className="image-field-path">{imageUrl}</code> : null}
+          </>
+        ) : (
+          <>
+            <strong>URL externa</strong>
+            <span>Pega el enlace directo a una imagen pública.</span>
+            {imageUrl && currentSource === "upload" ? (
+              <span className="image-source-note">El archivo actual se mantendrá hasta ingresar una URL válida.</span>
+            ) : null}
             <div className="image-field-url-row">
               <input
                 className="form-input"
@@ -172,19 +224,21 @@ export default function ImageField({
                 placeholder="https://ejemplo.com/imagen.svg"
                 value={urlDraft}
                 disabled={uploading}
-                onChange={(event) => setUrlDraft(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter") return;
-                  event.preventDefault();
-                  applyExternalUrl();
-                }}
+                onChange={(event) => changeExternalUrl(event.target.value)}
               />
-              <button type="button" className="btn btn-secondary btn-sm" disabled={uploading || !urlDraft.trim() || urlDraft.trim() === imageUrl} onClick={applyExternalUrl}>
-                Usar URL
-              </button>
             </div>
-          </div>
-        ) : null}
+            {urlDraft.trim() && !isValidExternalUrl(urlDraft.trim()) ? (
+              <span className="image-url-status">Completa una URL http o https para actualizar la imagen.</span>
+            ) : null}
+            {imageUrl && currentSource === "url" ? (
+              <div className="image-field-actions">
+                <button type="button" className="btn btn-ghost btn-sm image-field-remove" aria-label="Quitar la URL" title="Quitar la URL" disabled={uploading} onClick={() => updateImage("", id, "url")}>
+                  Quitar URL
+                </button>
+              </div>
+            ) : null}
+          </>
+        )}
       </div>
 
       <input
