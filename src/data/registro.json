@@ -1,7 +1,7 @@
 {
   "tag": "Inscripciones",
   "heading": "Próximamente",
-  "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.\n\n<a = href=\"\">Formulario de Registro</a>",
+  "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.\n\n",
   "disabledButton": "Ir al botón inscribirse.",
   "backButton": {
     "label": "Volver al inicio",
@@ -14,5 +14,18 @@
     "email": "v.costas@umss.edu.bo",
     "suffix": "y te avisaremos cuando las inscripciones estén abiertas."
   },
-  "components": []
+  "components": [
+    {
+      "type": "sectionRichText",
+      "accent": "blue",
+      "tag": "",
+      "heading": "Registrate",
+      "paragraphs": [
+        ""
+      ],
+      "tip": "",
+      "linkLabel": "Registrate",
+      "linkHref": "https://forms.gle/tKWix6GEbQKPjMa76"
+    }
+  ]
 }
