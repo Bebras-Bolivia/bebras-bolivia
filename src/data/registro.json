@@ -1,7 +1,7 @@
 {
   "tag": "Inscripciones",
   "heading": "Próximamente",
-  "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.",
+  "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.\n\n<a = href=\"\">Formulario de Registro</a>",
   "disabledButton": "Ir al botón inscribirse.",
   "backButton": {
     "label": "Volver al inicio",
