@@ -2,9 +2,9 @@
   "tag": "Inscripciones",
   "heading": "Próximamente",
   "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.\n\n",
-  "disabledButton": "",
+  "disabledButton": "Isncribe a tu UE y envia lista de estudiantes",
   "backButton": {
-    "label": "Volver al inicio",
+    "label": "Inscribir a mi UE",
     "href": "https://forms.gle/tKWix6GEbQKPjMa76"
   },
   "notification": {
@@ -14,18 +14,5 @@
     "email": "v.costas@umss.edu.bo",
     "suffix": "y te avisaremos cuando las inscripciones estén abiertas."
   },
-  "components": [
-    {
-      "type": "sectionRichText",
-      "accent": "blue",
-      "tag": "",
-      "heading": "Registrate",
-      "paragraphs": [
-        ""
-      ],
-      "tip": "",
-      "linkLabel": "Registrate",
-      "linkHref": "https://forms.gle/tKWix6GEbQKPjMa76"
-    }
-  ]
+  "components": []
 }
