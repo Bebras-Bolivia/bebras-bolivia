@@ -2,7 +2,7 @@
   "tag": "Inscripciones",
   "heading": "Próximamente",
   "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.",
-  "disabledButton": "",
+  "disabledButton": "Ir al botón inscribirse.",
   "backButton": {
     "label": "Volver al inicio",
     "href": "/"
