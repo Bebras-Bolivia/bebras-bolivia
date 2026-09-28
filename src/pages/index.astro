@@ -46,13 +46,6 @@ const latestNews = latestPost
 		description: latestPost.data.description,
 		author: latestPost.data.author,
 		href: `/blog/${latestPost.id.replace(/\.md$/, "")}`,
-		dateTime: latestPost.data.date.toISOString(),
-		dateLabel: latestPost.data.date.toLocaleDateString("es-BO", {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-			timeZone: "UTC",
-		}),
 	}
 	: null;
 

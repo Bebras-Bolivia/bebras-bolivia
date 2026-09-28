@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { BebrasBeaverShowcase, type ShowcaseCategory } from "@/components/BebrasBeaverShowcase";
@@ -20,8 +20,6 @@ type LatestNewsData = {
   description?: string;
   author?: string;
   href: string;
-  dateTime: string;
-  dateLabel: string;
 };
 
 // Render a plain title string while auto-styling the brand words: "Bebras"
@@ -189,23 +187,23 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCateg
           <div data-hero-item className="pointer-events-none absolute inset-x-4 bottom-2 z-20 flex justify-center sm:bottom-4 lg:inset-x-auto lg:left-8 lg:justify-start">
             <a
               href={toSafeHref(latestNews.href)}
-              className="pointer-events-auto relative flex max-w-[min(28rem,100%)] items-center gap-2.5 rounded-full bg-white/88 px-3.5 py-2 text-bebras-ink shadow-[0_12px_26px_-22px_rgba(0,0,0,0.45)] ring-1 ring-white/70 backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white"
+              className="group pointer-events-auto relative flex max-w-[min(30rem,100%)] items-center gap-3 rounded-full bg-white/92 p-1.5 text-bebras-ink shadow-[0_14px_30px_-18px_rgba(0,0,0,0.5)] ring-1 ring-black/5 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_18px_34px_-18px_rgba(0,0,0,0.55)]"
             >
-              <span className="relative flex shrink-0 items-center justify-center" aria-hidden="true">
-                <span className="absolute inline-flex size-2.5 rounded-full bg-bebras-red opacity-70 animate-ping"></span>
-                <span className="relative inline-flex size-1.5 rounded-full bg-bebras-red"></span>
-              </span>
-              <span className="hidden shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-bebras-red sm:inline">
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-bebras-red px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white">
+                <span className="relative flex size-1.5" aria-hidden="true">
+                  <span className="absolute inline-flex size-full rounded-full bg-white opacity-75 animate-ping"></span>
+                  <span className="relative inline-flex size-1.5 rounded-full bg-white"></span>
+                </span>
                 Noticia
               </span>
               <span className="min-w-0 flex-1 truncate text-xs font-semibold sm:text-sm">
                 {latestNews.title}
               </span>
-              <time className="hidden shrink-0 text-[11px] font-semibold text-bebras-ink/50 md:inline" dateTime={latestNews.dateTime}>
-                {latestNews.dateLabel}
-              </time>
-              <span className="shrink-0 text-xs font-bold text-bebras-green">
-                <span aria-hidden="true">→</span>
+              <span
+                className="flex size-7 shrink-0 items-center justify-center rounded-full bg-bebras-green/10 text-bebras-green transition-colors duration-300 group-hover:bg-bebras-green group-hover:text-white"
+                aria-hidden="true"
+              >
+                <ChevronRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.5} />
               </span>
             </a>
           </div>
