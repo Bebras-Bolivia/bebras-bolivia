@@ -612,6 +612,25 @@ export const navigationSchema = z.object({
     .optional(),
 });
 
+// ── certificate.json ────────────────────────────────────
+
+const CertificateLogoSrcSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .refine((value) => /^\/(?!\/)[^\s]*$/.test(value) || /^https:\/\/[^\s]+$/.test(value), "Imagen no válida");
+
+const CertificateLogoSchema = z.object({
+  id: z.string().min(1).max(40),
+  src: CertificateLogoSrcSchema,
+  alt: z.string().max(120),
+  height: z.number().min(2).max(12),
+});
+
+export const certificateSchema = z.object({
+  logos: z.array(CertificateLogoSchema).max(8),
+});
+
 // ── Schema registry (filename → schema) ──────────────────
 
 export const contentSchemas: Record<string, z.ZodType> = {
@@ -629,6 +648,7 @@ export const contentSchemas: Record<string, z.ZodType> = {
   "page-composition.json": pageCompositionSchema,
   "navigation.json": navigationSchema,
   "custom-pages.json": customPagesSchema,
+  "certificate.json": certificateSchema,
 };
 
 /** All valid content file names */

@@ -1,4 +1,4 @@
-import { access, readdir, mkdir, readFile, rename, rm, writeFile } from "fs/promises";
+import { access, cp, readdir, mkdir, readFile, rename, rm, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { gzipSync, gunzipSync } from "zlib";
 import { config } from "../config.js";
@@ -12,6 +12,7 @@ export interface SnapshotMeta {
   author: string;
   dirName: string;
   createdAt: string;
+  automatic?: boolean;
 }
 
 type SnapshotArchive = {
@@ -26,6 +27,21 @@ type SnapshotArchive = {
 };
 
 const BLOG_PREVIEW_FILENAME = "cms-preview.md";
+const LEGACY_AUTOMATIC_DESCRIPTIONS = new Set(["Auto-snapshot before publish"]);
+
+function isAutomaticSnapshot(snapshot: SnapshotMeta): boolean {
+  if (typeof snapshot.automatic === "boolean") return snapshot.automatic;
+  return snapshot.author === "Sistema" || LEGACY_AUTOMATIC_DESCRIPTIONS.has(snapshot.description);
+}
+
+function sqliteDateToIso(value: string): string {
+  return /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) ? `${value.replace(" ", "T")}Z` : value;
+}
+
+function isValidDate(value: string): boolean {
+  const time = new Date(value).getTime();
+  return !Number.isNaN(time) && time > 0;
+}
 
 function isSnapshotBlogFile(file: string): boolean {
   return file.endsWith(".md") && file !== BLOG_PREVIEW_FILENAME;
@@ -37,6 +53,27 @@ function isJsonFile(file: string): boolean {
 
 function isFileNotFoundError(error: unknown): boolean {
   return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+const LOCKED_ERROR_CODES = new Set(["EPERM", "EACCES", "EBUSY"]);
+
+async function renameDir(from: string, to: string): Promise<void> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await rename(from, to);
+      return;
+    } catch (error) {
+      const code = error instanceof Error && "code" in error ? String(error.code) : "";
+      if (!LOCKED_ERROR_CODES.has(code)) throw error;
+      if (attempt < 6) {
+        await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+        continue;
+      }
+      await cp(from, to, { recursive: true, errorOnExist: true, force: false });
+      await rm(from, { recursive: true, force: true });
+      return;
+    }
+  }
 }
 
 async function pathExists(path: string): Promise<boolean> {
@@ -97,7 +134,7 @@ async function registerPreparedSnapshot(
     "utf-8"
   );
   await validateSnapshotFiles(temporaryDir);
-  await rename(temporaryDir, snapshotDir);
+  await renameDir(temporaryDir, snapshotDir);
 
   try {
     getDb()
@@ -129,6 +166,7 @@ async function readSnapshotMetaFromDisk(dirName: string): Promise<SnapshotMeta |
       author: typeof meta.author === "string" ? meta.author : "Unknown",
       dirName,
       createdAt: typeof meta.createdAt === "string" ? meta.createdAt : new Date(0).toISOString(),
+      ...(typeof meta.automatic === "boolean" ? { automatic: meta.automatic } : {}),
     };
   } catch {
     return null;
@@ -162,14 +200,16 @@ async function nextSnapshotId(): Promise<number> {
  */
 export function createSnapshot(
   description: string,
-  author: string
+  author: string,
+  options: { automatic?: boolean } = {}
 ): Promise<SnapshotMeta> {
-  return withContentMutation(() => createSnapshotUnlocked(description, author));
+  return withContentMutation(() => createSnapshotUnlocked(description, author, options.automatic ?? false));
 }
 
 async function createSnapshotUnlocked(
   description: string,
-  author: string
+  author: string,
+  automatic: boolean
 ): Promise<SnapshotMeta> {
   const id = await nextSnapshotId();
   const dirName = `snapshot-${String(id).padStart(4, "0")}`;
@@ -184,6 +224,7 @@ async function createSnapshotUnlocked(
     author,
     dirName,
     createdAt: new Date().toISOString(),
+    automatic,
   };
 
   await mkdir(config.snapshotsDir, { recursive: true });
@@ -229,11 +270,13 @@ export async function listSnapshots(): Promise<SnapshotMeta[]> {
       ...snapshot,
       description: row.description || snapshot.description,
       author: row.author || snapshot.author,
-      createdAt: row.created_at || snapshot.createdAt,
+      createdAt: isValidDate(snapshot.createdAt) ? snapshot.createdAt : sqliteDateToIso(row.created_at),
     };
   });
 
-  return snapshots.sort((a, b) => b.id - a.id);
+  return snapshots
+    .map((snapshot) => ({ ...snapshot, automatic: isAutomaticSnapshot(snapshot) }))
+    .sort((a, b) => b.id - a.id);
 }
 
 /**
@@ -358,6 +401,7 @@ async function importSnapshotArchiveUnlocked(buffer: Buffer, author: string): Pr
     author,
     dirName,
     createdAt: new Date().toISOString(),
+    automatic: false,
   };
 
   await mkdir(config.snapshotsDir, { recursive: true });
@@ -398,17 +442,17 @@ async function swapRestoredContent(stagedRoot: string, recoveryRoot: string): Pr
 
   try {
     if (await pathExists(config.currentDataDir)) {
-      await rename(config.currentDataDir, backupDataDir);
+      await renameDir(config.currentDataDir, backupDataDir);
       dataBackedUp = true;
     }
-    await rename(stagedDataDir, config.currentDataDir);
+    await renameDir(stagedDataDir, config.currentDataDir);
     dataInstalled = true;
 
     if (await pathExists(config.currentBlogDir)) {
-      await rename(config.currentBlogDir, backupBlogDir);
+      await renameDir(config.currentBlogDir, backupBlogDir);
       blogBackedUp = true;
     }
-    await rename(stagedBlogDir, config.currentBlogDir);
+    await renameDir(stagedBlogDir, config.currentBlogDir);
     blogInstalled = true;
   } catch (error) {
     const rollbackErrors: string[] = [];
@@ -417,7 +461,7 @@ async function swapRestoredContent(stagedRoot: string, recoveryRoot: string): Pr
       if (blogInstalled) {
         await rm(config.currentBlogDir, { recursive: true, force: true });
       }
-      if (blogBackedUp) await rename(backupBlogDir, config.currentBlogDir);
+      if (blogBackedUp) await renameDir(backupBlogDir, config.currentBlogDir);
     } catch (rollbackError) {
       rollbackErrors.push(`blog: ${String(rollbackError)}`);
     }
@@ -426,7 +470,7 @@ async function swapRestoredContent(stagedRoot: string, recoveryRoot: string): Pr
       if (dataInstalled) {
         await rm(config.currentDataDir, { recursive: true, force: true });
       }
-      if (dataBackedUp) await rename(backupDataDir, config.currentDataDir);
+      if (dataBackedUp) await renameDir(backupDataDir, config.currentDataDir);
     } catch (rollbackError) {
       rollbackErrors.push(`data: ${String(rollbackError)}`);
     }
@@ -580,10 +624,11 @@ function yearKey(date: Date): string {
 }
 
 function selectSnapshotsToKeep(snapshots: SnapshotMeta[], now: Date): Set<number> {
-  const keep = new Set<number>();
-  if (snapshots.length === 0) return keep;
+  const keep = new Set<number>(snapshots.filter((snapshot) => !isAutomaticSnapshot(snapshot)).map((snapshot) => snapshot.id));
+  const automatic = snapshots.filter(isAutomaticSnapshot);
+  if (automatic.length === 0) return keep;
 
-  const sorted = [...snapshots].sort(
+  const sorted = [...automatic].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
@@ -664,7 +709,8 @@ export async function runDailyBackup(now: Date = new Date()): Promise<SnapshotMe
   if (!hasSnapshotForDay(snapshots, now)) {
     created = await createSnapshot(
       `Respaldo automático ${dayKey(now)}`,
-      "Sistema"
+      "Sistema",
+      { automatic: true }
     );
     console.log(`[Backup] Created daily snapshot #${created.id} (${created.dirName})`);
   }

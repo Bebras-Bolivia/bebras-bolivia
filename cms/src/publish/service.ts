@@ -232,7 +232,7 @@ export async function publish(author: string): Promise<PublishLogRow> {
 
   try {
     // Step 1: Create snapshot
-    await createSnapshot("Auto-snapshot before publish", author);
+    await createSnapshot("Antes de publicar", author, { automatic: true });
 
     // Step 2: Copy JSON files to landing/src/data/
     await mkdir(config.landingDataDir, { recursive: true });

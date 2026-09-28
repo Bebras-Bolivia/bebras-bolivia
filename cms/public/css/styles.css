@@ -1,7 +1,7 @@
 /* ── Bebras CMS — Admin Panel Styles ─────────────────────── */
 /* Design: Warm dark theme. Neutral greys, amber accent, friendly contrast. */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap');
 
 /* ── Variables ──────────────────────────────────────────── */
 :root {
@@ -3257,27 +3257,25 @@ a:hover { text-decoration: underline; }
   top: 0;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   height: calc(100vh - var(--header-h) - 3rem);
+}
+
+.snapshots-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.snapshots-preview-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--bg-surface);
-}
-
-.snapshots-preview-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.625rem 0.875rem;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.snapshots-preview-title {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-secondary);
 }
 
 .snapshots-preview-frame {

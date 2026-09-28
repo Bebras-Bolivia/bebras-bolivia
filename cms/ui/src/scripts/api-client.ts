@@ -111,6 +111,9 @@ const API = {
   saveCertificatesSource(url: string) { return this.put("/api/certificates/source", { url }); },
   syncCertificates() { return this.post("/api/certificates/sync"); },
   removeCertificatesContest(id: string) { return this.del(`/api/certificates/contests/${encodeURIComponent(id)}`); },
+  addManualCertificate(data: unknown) { return this.post("/api/certificates/manual", data); },
+  removeManualCertificate(code: string) { return this.del(`/api/certificates/manual/${encodeURIComponent(code)}`); },
+  searchCertificateSchools(q: string, dep: string) { return this.get(`/api/certificates/schools?${new URLSearchParams({ q, dep })}`); },
 
   publish() { return this.post("/api/publish"); },
   publishStatus() { return this.get("/api/publish/status"); },

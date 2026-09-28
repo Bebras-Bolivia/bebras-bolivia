@@ -32,6 +32,7 @@ export type Certificate = {
   questions: number;
   rank: number | null;
   rankOf: number | null;
+  distinction?: "merit" | "participation";
 };
 
 /** Busca y descifra los certificados de un código; `null` si no hay ninguno. */

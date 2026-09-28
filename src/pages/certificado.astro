@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import InternalPageHero from "@/components/InternalPageHero.astro";
 import CertificateLookup from "@/components/CertificateLookup";
 import castor from "@/assets/castor-circle.png";
+import certificateData from "@/data/certificate.json";
 ---
 
 <Layout title="Tu certificado" description="Descarga tu certificado de participación en el Desafío Bebras Bolivia con tu código personal.">
@@ -14,7 +15,7 @@ import castor from "@/assets/castor-circle.png";
     />
 
     <main class="relative z-10 w-full min-h-[60vh] bg-bebras-paper pt-10 pb-20 lg:pt-14 dark:bg-zinc-950">
-      <CertificateLookup client:load castorSrc={castor.src} />
+      <CertificateLookup client:load castorSrc={castor.src} logos={certificateData.logos} />
     </main>
   </div>
 </Layout>

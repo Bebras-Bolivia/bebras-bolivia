@@ -7,6 +7,7 @@ type Snapshot = {
   author?: string;
   createdAt?: string;
   date?: string;
+  automatic?: boolean;
 };
 
 interface Props {
@@ -94,6 +95,15 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
       window.API.cleanupSnapshotPreview().catch(() => {});
     };
   }, []);
+
+  useEffect(() => {
+    if (previewId === null) return;
+    const cleanupOnLeave = () => {
+      navigator.sendBeacon(window.API.url("/api/preview/snapshot/cleanup"));
+    };
+    window.addEventListener("pagehide", cleanupOnLeave);
+    return () => window.removeEventListener("pagehide", cleanupOnLeave);
+  }, [previewId]);
 
   const openPreview = async (id: number) => {
     const revision = ++previewRevision.current;
@@ -198,14 +208,18 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
                 return (
                   <div className={`snapshot-item${isActive ? " is-active" : ""}`} key={snap.id}>
                     <div className="meta">
-                      <div className="id">Respaldo #{snap.id}</div>
-                      <div className="desc">{snap.description || "Sin descripcion"}</div>
+                      <div className="id">
+                        Respaldo #{snap.id} {snap.automatic ? <span className="badge badge-info">Automático</span> : null}
+                      </div>
+                      <div className="desc">
+                        {snap.description === "Auto-snapshot before publish" ? "Antes de publicar" : snap.description || "Sin descripcion"}
+                      </div>
                       <div className="date">
                         {date} &mdash; por {snap.author || "Desconocido"}
                       </div>
                     </div>
                     <div className="actions flex gap-sm">
-                      <button className="btn btn-ghost btn-sm btn-icon-only" aria-label={`Ver respaldo #${snap.id}`} title="Ver" onClick={() => openPreview(snap.id)}>
+                      <button className="btn btn-ghost btn-sm btn-icon-only" aria-label={`Ver respaldo #${snap.id}`} title="Ver" onClick={() => (isActive ? closePreview() : openPreview(snap.id))}>
                         <EyeIcon />
                       </button>
                       <button className="btn btn-ghost btn-sm" onClick={() => onRestore(snap.id)}>
@@ -227,31 +241,30 @@ export default function SnapshotsView({ snapshots, icons, onCreate, onUpload, on
 
         {previewId !== null && (
           <aside className="snapshots-preview">
-            <div className="snapshots-preview-toolbar">
-              <div className="snapshots-preview-title">
-                Vista previa &mdash; Respaldo #{previewId}
-              </div>
+            <div className="snapshots-preview-actions">
               <button className="btn btn-ghost btn-sm" onClick={closePreview} aria-label="Cerrar vista previa">
                 Cerrar
               </button>
             </div>
-            {previewError ? (
-              <div className="snapshots-preview-fallback">
-                <h3>No se pudo cargar la vista previa</h3>
-                <p>{previewError}</p>
-              </div>
-            ) : previewLoading || !previewSrc ? (
-              <div className="snapshots-preview-fallback">
-                <div className="spinner"></div>
-                <p>Generando la vista previa del respaldo...</p>
-              </div>
-            ) : (
-              <iframe
-                title={`Vista previa del respaldo ${previewId}`}
-                className="snapshots-preview-frame"
-                src={previewSrc}
-              />
-            )}
+            <div className="snapshots-preview-body">
+              {previewError ? (
+                <div className="snapshots-preview-fallback">
+                  <h3>No se pudo cargar la vista previa</h3>
+                  <p>{previewError}</p>
+                </div>
+              ) : previewLoading || !previewSrc ? (
+                <div className="snapshots-preview-fallback">
+                  <div className="spinner"></div>
+                  <p>Generando la vista previa del respaldo...</p>
+                </div>
+              ) : (
+                <iframe
+                  title={`Vista previa del respaldo ${previewId}`}
+                  className="snapshots-preview-frame"
+                  src={previewSrc}
+                />
+              )}
+            </div>
           </aside>
         )}
       </div>

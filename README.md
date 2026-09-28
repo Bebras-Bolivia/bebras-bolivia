@@ -113,6 +113,7 @@ Variables de entorno importantes:
 | `ADMIN_EMAIL` | `admin@bebras.bo` | Usuario administrador inicial. |
 | `ADMIN_PASSWORD` | `admin123` | Password inicial. Obligatorio en produccion. |
 | `ADMIN_NAME` | `Admin` | Nombre del administrador inicial. |
+| `SITE_URL` | vacio, `dev:all` usa `http://localhost:4321` | Direccion del sitio de contenido; la usan los enlaces de los certificados. Vacio = la misma del CMS. |
 
 En produccion, define al menos `JWT_SECRET` y `ADMIN_PASSWORD`.
 

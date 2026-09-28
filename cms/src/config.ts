@@ -62,6 +62,7 @@ export const config = {
   nodeEnv: env("NODE_ENV", "development"),
   isDev: env("NODE_ENV", "development") === "development",
   basePath: normalizeBasePath(env("CMS_BASE_PATH", "")),
+  siteUrl: env("SITE_URL", "").replace(/\/+$/, ""),
 
   // Content directories
   contentDir: resolve(CMS_ROOT, env("CONTENT_DIR", "./content")),

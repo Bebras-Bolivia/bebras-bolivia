@@ -64,6 +64,14 @@ function initSchema(db: Database): void {
       PRIMARY KEY (contest_id, code)
     );
 
+    CREATE TABLE IF NOT EXISTS manual_certificates (
+      code       TEXT PRIMARY KEY,
+      data       TEXT NOT NULL,
+      file_id    TEXT NOT NULL,
+      secret     TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
     CREATE TABLE IF NOT EXISTS scheduled_publishes (
       id             INTEGER PRIMARY KEY AUTOINCREMENT,
       run_at         TEXT    NOT NULL,

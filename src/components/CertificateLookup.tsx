@@ -5,6 +5,8 @@ import { findCertificates, normalizeCode, type Certificate } from "@/lib/certifi
 
 type Sheet = { name: string; code: string; certificate: Certificate };
 
+export type CertificateLogo = { id: string; src: string; alt: string; height: number };
+
 function ordinal(value: number) {
   return value === 1 || value === 3 ? `${value}.er` : `${value}.º`;
 }
@@ -15,7 +17,7 @@ function issuedLabel(certificate: Certificate) {
   return `Otorgado por Bebras Bolivia el ${date.toLocaleDateString("es-BO", { day: "numeric", month: "long", year: "numeric" })}`;
 }
 
-export default function CertificateLookup({ castorSrc }: { castorSrc: string }) {
+export default function CertificateLookup({ castorSrc, logos }: { castorSrc: string; logos: CertificateLogo[] }) {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "searching" | "missing" | "error">("idle");
   const [sheets, setSheets] = useState<Sheet[]>([]);
@@ -131,7 +133,7 @@ export default function CertificateLookup({ castorSrc }: { castorSrc: string }) 
             </div>
           ) : null}
 
-          <CertificateSheet sheet={sheet} castorSrc={castorSrc} />
+          <CertificateSheet sheet={sheet} castorSrc={castorSrc} logos={logos} />
 
           <div className="certificate-no-print flex flex-col items-center gap-2">
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -222,6 +224,7 @@ type Distinction =
 function distinctionOf(certificate: Certificate): Distinction {
   const { rank, rankOf } = certificate;
   if (rank && rank <= 3) return { kind: "podium", rank };
+  if (certificate.distinction) return { kind: certificate.distinction };
   if (rank && rankOf && rankOf >= 10 && rank <= Math.ceil(rankOf * 0.1)) return { kind: "merit" };
   return { kind: "participation" };
 }
@@ -285,7 +288,7 @@ function Seal({ distinction, year, category }: { distinction: Distinction; year:
   );
 }
 
-function CertificateSheet({ sheet, castorSrc }: { sheet: Sheet; castorSrc: string }) {
+function CertificateSheet({ sheet, castorSrc, logos }: { sheet: Sheet; castorSrc: string; logos: CertificateLogo[] }) {
   const { certificate, name } = sheet;
   const distinction = distinctionOf(certificate);
   const department = certificate.department && DEPARTMENTS[certificate.department] ? certificate.department : null;
@@ -310,16 +313,17 @@ function CertificateSheet({ sheet, castorSrc }: { sheet: Sheet; castorSrc: strin
       <div className="relative grid h-full grid-cols-[1fr_30cqi] gap-[2cqi] py-[7.5cqi] pr-[7cqi] pl-[9cqi]">
         <div className="flex flex-col items-start justify-center text-left">
           <div className="flex items-center gap-[1.6cqi]">
-            <div className="flex items-center gap-[1.1cqi]">
+            <div className="flex shrink-0 items-center gap-[1.1cqi]">
               <img src={castorSrc} alt="" className="h-[6.6cqi] w-auto" />
               <p className="font-display text-[2.35cqi] leading-[0.9] font-bold uppercase text-[#1B8F60]">
                 <span className="block">Bebras</span>
                 <span className="block">Bolivia</span>
               </p>
             </div>
-            <span className="h-[5.8cqi] w-[0.12cqi] bg-[#2B211C]/15" />
-            <img src="/images/certificado/obi.webp" alt="Olimpiada Boliviana de Informática" className="h-[5.6cqi] w-auto shrink-0" />
-            <img src="/images/certificado/umss.webp" alt="Universidad Mayor de San Simón" className="h-[5.6cqi] w-auto shrink-0" />
+            {logos.length > 0 ? <span className="h-[5.8cqi] w-[0.12cqi] shrink-0 bg-[#2B211C]/15" /> : null}
+            {logos.map((logo) => (
+              <img key={logo.id} src={logo.src} alt={logo.alt} className="w-auto shrink-0" style={{ height: `${logo.height}cqi` }} />
+            ))}
           </div>
 
           <h2 className="mt-[1.8cqi] font-display text-[5.4cqi] leading-none font-bold tracking-tight text-[#324C87]">Certificado</h2>

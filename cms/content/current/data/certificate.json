@@ -1,0 +1,16 @@
+{
+  "logos": [
+    {
+      "id": "obi",
+      "src": "/images/certificado/obi.webp",
+      "alt": "Olimpiada Boliviana de Informática",
+      "height": 5.6
+    },
+    {
+      "id": "umss",
+      "src": "/images/certificado/umss.webp",
+      "alt": "Universidad Mayor de San Simón",
+      "height": 5.6
+    }
+  ]
+}

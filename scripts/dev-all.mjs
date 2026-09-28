@@ -10,6 +10,7 @@ const cmsRoot = resolve(repoRoot, "cms");
 const childEnv = {
   ...process.env,
   CMS_BASE_PATH: process.env.CMS_BASE_PATH || "/admbb",
+  SITE_URL: process.env.SITE_URL || "http://localhost:4321",
 };
 
 const paths = {

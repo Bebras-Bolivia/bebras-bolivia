@@ -30,6 +30,7 @@ const hiddenContentFiles = new Set([
   "teacher-instructions.json",
   "page-composition.json",
   "blog-ui.json",
+  "certificate.json",
 ]);
 
 const contentHierarchy: Array<{
