@@ -57,9 +57,8 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
     "@eslint/js": "^9.39.4",
-    "@types/qrcode": "^1.5.6",
+    "@astrojs/check": "^0.9.9",
     "@types/sanitize-html": "^2.16.1",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
     "@typescript-eslint/parser": "^8.59.1",
