@@ -1,3 +1,61 @@
 {
-  "pages": []
+  "pages": [
+    {
+      "id": "ejemplos",
+      "title": "Ejemplos",
+      "slug": "ejemplos",
+      "active": true,
+      "header": {
+        "tag": "Página",
+        "heading": "Ejemplos",
+        "subtitle": "Aqui encuentras ejemplos de retos en un Desafío Bebras.  "
+      },
+      "components": [
+        {
+          "type": "linksList",
+          "accent": "blue",
+          "tag": "",
+          "heading": "Retos por categoría",
+          "links": [
+            {
+              "label": "Guacamayo",
+              "href": "https://ville.utu.fi/?demo=start&dk=B6RfCCXmS5rp",
+              "description": "",
+              "color": "blue"
+            },
+            {
+              "label": "Capibara",
+              "href": "https://ville.utu.fi/?demo=start&dk=Acth6tRdFogC",
+              "description": "",
+              "color": "blue"
+            },
+            {
+              "label": "Titi",
+              "href": "https://ville.utu.fi/?demo=start&dk=m382q3B3d32G",
+              "description": "",
+              "color": "blue"
+            },
+            {
+              "label": "Jucumari",
+              "href": "https://ville.utu.fi/?demo=start&dk=qLbbQgw4zB9r",
+              "description": "",
+              "color": "blue"
+            },
+            {
+              "label": "Yaguarete",
+              "href": "https://ville.utu.fi/?demo=start&dk=oTe9RamoZK9v",
+              "description": "",
+              "color": "blue"
+            },
+            {
+              "label": "Kuntur",
+              "href": "https://ville.utu.fi/?demo=start&dk=uKeKZQsEnLhM",
+              "description": "",
+              "color": "blue"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
