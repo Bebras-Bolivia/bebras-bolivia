@@ -5,6 +5,13 @@ type Logo = { id: string; src: string; alt: string; height: number };
 const MIN_HEIGHT = 2;
 const MAX_HEIGHT = 12;
 const DEFAULT_HEIGHT = 5.6;
+const LOGO_GAP = 1.6;
+const DIVIDER_WIDTH = 0.12;
+const SEAL_LEFT = 70.5;
+const SEAL_GAP = 2;
+const SEAL_MAX_SHIFT = 8;
+const ROW_LIMIT = SEAL_LEFT + SEAL_MAX_SHIFT - SEAL_GAP;
+const NO_ROOM = "Ya no entra otro logo sin chocar con el sello. Achica o quita alguno.";
 
 function clampHeight(value: number) {
   return Math.round(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, value)) * 10) / 10;
@@ -22,6 +29,26 @@ function previewSrc(src: string) {
   return src.startsWith("/") ? window.App.appUrl(src) : src;
 }
 
+function newLogoId() {
+  return `logo-${Date.now().toString(36)}`;
+}
+
+function imageAspect(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image.naturalWidth && image.naturalHeight ? image.naturalWidth / image.naturalHeight : 1);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(1);
+    };
+    image.src = url;
+  });
+}
+
 function isImage(file: File) {
   return /^image\/(png|jpe?g|webp|gif|svg\+xml)$/.test(file.type);
 }
@@ -33,12 +60,14 @@ export default function CertificateLogosEditor() {
   const [loadError, setLoadError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState<"save" | "upload" | null>(null);
   const paper = React.useRef<HTMLDivElement>(null);
+  const row = React.useRef<HTMLDivElement>(null);
+  const [seal, setSeal] = React.useState({ shift: 0, blocked: false });
   const logoRefs = React.useRef(new Map<string, HTMLDivElement>());
   const addInput = React.useRef<HTMLInputElement>(null);
   const replaceInput = React.useRef<HTMLInputElement>(null);
   const gesture = React.useRef<
     | { kind: "move"; id: string; startX: number; moved: boolean }
-    | { kind: "resize"; id: string; startX: number; startY: number; startHeight: number; aspect: number }
+    | { kind: "resize"; id: string; startX: number; startY: number; startHeight: number; aspect: number; maxHeight: number }
     | null
   >(null);
 
@@ -51,6 +80,22 @@ export default function CertificateLogosEditor() {
       })
       .catch((err: Error) => setLoadError(err.message));
   }, []);
+
+  React.useEffect(() => {
+    const sheet = paper.current;
+    const line = row.current;
+    if (!sheet || !line) return;
+    const observer = new ResizeObserver(() => {
+      const box = sheet.getBoundingClientRect();
+      if (!box.width) return;
+      const right = Math.max(...Array.from(line.children, (child) => child.getBoundingClientRect().right));
+      const needed = ((right - box.left) / box.width) * 100 + SEAL_GAP - SEAL_LEFT;
+      setSeal({ shift: Math.min(SEAL_MAX_SHIFT, Math.max(0, needed)), blocked: needed > SEAL_MAX_SHIFT + 0.05 });
+    });
+    observer.observe(sheet);
+    Array.from(line.children).forEach((child) => observer.observe(child));
+    return () => observer.disconnect();
+  }, [logos, saved]);
 
   const dirty = saved !== null && JSON.stringify(saved) !== JSON.stringify(logos);
   const current = logos.find((logo) => logo.id === selected) ?? null;
@@ -93,18 +138,65 @@ export default function CertificateLogosEditor() {
     }
   };
 
+  const unit = () => (paper.current?.clientWidth ?? 1000) / 100;
+
+  const rowRight = () => {
+    const sheet = paper.current?.getBoundingClientRect();
+    const children = row.current ? Array.from(row.current.children) : [];
+    if (!sheet || children.length === 0) return 0;
+    return (Math.max(...children.map((child) => child.getBoundingClientRect().right)) - sheet.left) / unit();
+  };
+
+  const logoSize = (id: string) => {
+    const rect = logoRefs.current.get(id)?.getBoundingClientRect();
+    if (!rect || !rect.height) return null;
+    return { width: rect.width / unit(), aspect: rect.width / rect.height };
+  };
+
+  const maxHeightFor = (id: string) => {
+    const size = logoSize(id);
+    if (!size) return MAX_HEIGHT;
+    return Math.min(MAX_HEIGHT, (size.width + ROW_LIMIT - rowRight()) / size.aspect);
+  };
+
+  const setHeight = (id: string, height: number, limit = maxHeightFor(id)) =>
+    update(id, { height: clampHeight(Math.min(height, Math.floor(limit * 10) / 10)) });
+
   const addLogo = async (file: File) => {
+    if (!isImage(file)) {
+      window.Toast.error("Elige una imagen PNG, JPG, WEBP o SVG.");
+      return;
+    }
+    const aspect = await imageAspect(file);
+    const extra = logos.length > 0 ? LOGO_GAP : LOGO_GAP * 2 + DIVIDER_WIDTH;
+    const height = Math.min(DEFAULT_HEIGHT, Math.floor(((ROW_LIMIT - rowRight() - extra) / aspect) * 10) / 10);
+    if (height < MIN_HEIGHT) {
+      window.Toast.error(NO_ROOM);
+      return;
+    }
     const src = await upload(file);
     if (!src) return;
-    const logo = { id: `logo-${Date.now().toString(36)}`, src, alt: nameFromFile(file), height: DEFAULT_HEIGHT };
+    const logo = { id: newLogoId(), src, alt: nameFromFile(file), height };
     setLogos((list) => [...list, logo]);
     setSelected(logo.id);
   };
 
   const replaceLogo = async (file: File) => {
     if (!current) return;
+    if (!isImage(file)) {
+      window.Toast.error("Elige una imagen PNG, JPG, WEBP o SVG.");
+      return;
+    }
+    const size = logoSize(current.id);
+    const aspect = await imageAspect(file);
+    const room = size ? size.width + ROW_LIMIT - rowRight() : Infinity;
+    const height = Math.min(current.height, Math.floor((room / aspect) * 10) / 10);
+    if (height < MIN_HEIGHT) {
+      window.Toast.error("Esa imagen es muy ancha: no entra sin chocar con el sello.");
+      return;
+    }
     const src = await upload(file);
-    if (src) update(current.id, { src });
+    if (src) update(current.id, { src, height });
   };
 
   const save = async () => {
@@ -119,8 +211,6 @@ export default function CertificateLogosEditor() {
       setBusy(null);
     }
   };
-
-  const pxPerUnit = () => (paper.current?.clientWidth ?? 1000) / 100;
 
   const onLogoPointerDown = (event: React.PointerEvent<HTMLDivElement>, logo: Logo) => {
     if (event.button !== 0) return;
@@ -141,6 +231,7 @@ export default function CertificateLogosEditor() {
       startY: event.clientY,
       startHeight: logo.height,
       aspect: rect && rect.height ? rect.width / rect.height : 1,
+      maxHeight: maxHeightFor(logo.id),
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -151,8 +242,8 @@ export default function CertificateLogosEditor() {
     if (active.kind === "resize") {
       const dx = event.clientX - active.startX;
       const dy = event.clientY - active.startY;
-      const delta = (dx / active.aspect + dy) / 2 / pxPerUnit();
-      update(active.id, { height: clampHeight(active.startHeight + delta) });
+      const delta = (dx / active.aspect + dy) / 2 / unit();
+      setHeight(active.id, active.startHeight + delta, active.maxHeight);
       return;
     }
     if (!active.moved && Math.abs(event.clientX - active.startX) < 5) return;
@@ -172,8 +263,8 @@ export default function CertificateLogosEditor() {
   const onLogoKeyDown = (event: React.KeyboardEvent, logo: Logo, index: number) => {
     if (event.key === "ArrowLeft") move(logo.id, index - 1);
     else if (event.key === "ArrowRight") move(logo.id, index + 1);
-    else if (event.key === "+" || event.key === "=") update(logo.id, { height: clampHeight(logo.height + 0.2) });
-    else if (event.key === "-") update(logo.id, { height: clampHeight(logo.height - 0.2) });
+    else if (event.key === "+" || event.key === "=") setHeight(logo.id, logo.height + 0.2);
+    else if (event.key === "-") setHeight(logo.id, logo.height - 0.2);
     else if (event.key === "Delete" || event.key === "Backspace") remove(logo.id);
     else return;
     event.preventDefault();
@@ -199,7 +290,7 @@ export default function CertificateLogosEditor() {
           onPointerDown={(event) => {
             if (event.target === event.currentTarget) setSelected(null);
           }}
-          style={{ position: "relative", height: "29cqi", background: "#FDFCFB", color: "#2B211C" }}
+          style={{ position: "relative", height: "29cqi", background: "#FDFCFB", color: "#2B211C", userSelect: "none" }}
         >
           <div style={{ position: "absolute", inset: "0 0 auto 0", height: "1.3cqi", background: "linear-gradient(90deg,#E83B3B 0 33.3%,#F8AE31 33.3% 66.6%,#1B8F60 66.6%)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", top: "3cqi", left: "3cqi", right: "3cqi", bottom: "-5cqi", border: "0.35cqi solid #F8AE31", pointerEvents: "none" }} />
@@ -210,21 +301,23 @@ export default function CertificateLogosEditor() {
               position: "absolute",
               top: "7.5cqi",
               right: "14.5cqi",
+              transform: `translateX(${seal.shift}cqi)`,
               width: "15cqi",
               height: "19.5cqi",
-              border: "1px dashed rgba(43,33,28,0.25)",
+              border: seal.blocked ? "2px dashed #E83B3B" : "1px dashed rgba(43,33,28,0.25)",
               borderRadius: "50% 50% 0.5cqi 0.5cqi",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "1.2cqi",
-              color: "rgba(43,33,28,0.4)",
+              color: seal.blocked ? "#E83B3B" : "rgba(43,33,28,0.4)",
               pointerEvents: "none",
             }}
           >
             Sello
           </div>
           <div
+            ref={row}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
@@ -339,7 +432,7 @@ export default function CertificateLogosEditor() {
                 max={MAX_HEIGHT}
                 step={0.1}
                 value={current.height}
-                onChange={(event) => update(current.id, { height: clampHeight(Number(event.target.value)) })}
+                onChange={(event) => setHeight(current.id, Number(event.target.value))}
               />
             </label>
             <input

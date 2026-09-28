@@ -1,4 +1,4 @@
-import { useEffect, useState, type SyntheticEvent } from "react";
+import { useEffect, useRef, useState, type RefObject, type SyntheticEvent } from "react";
 import QRCode from "qrcode";
 
 import { findCertificates, normalizeCode, type Certificate } from "@/lib/certificate-crypto";
@@ -288,9 +288,39 @@ function Seal({ distinction, year, category }: { distinction: Distinction; year:
   );
 }
 
+const SEAL_LEFT = 70.5;
+const SEAL_GAP = 2;
+const SEAL_MAX_SHIFT = 8;
+
+/** Cuánto correr el sello a la derecha (en cqi) para que no lo tape la fila de logos. */
+function useSealShift(sheetRef: RefObject<HTMLElement | null>, rowRef: RefObject<HTMLDivElement | null>, logos: CertificateLogo[]) {
+  const [shift, setShift] = useState(0);
+
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    const row = rowRef.current;
+    if (!sheet || !row) return;
+    const observer = new ResizeObserver(() => {
+      const box = sheet.getBoundingClientRect();
+      if (!box.width) return;
+      const right = Math.max(...Array.from(row.children, (child) => child.getBoundingClientRect().right));
+      const used = ((right - box.left) / box.width) * 100;
+      setShift(Math.min(SEAL_MAX_SHIFT, Math.max(0, used + SEAL_GAP - SEAL_LEFT)));
+    });
+    observer.observe(sheet);
+    Array.from(row.children).forEach((child) => observer.observe(child));
+    return () => observer.disconnect();
+  }, [sheetRef, rowRef, logos]);
+
+  return shift;
+}
+
 function CertificateSheet({ sheet, castorSrc, logos }: { sheet: Sheet; castorSrc: string; logos: CertificateLogo[] }) {
   const { certificate, name } = sheet;
   const distinction = distinctionOf(certificate);
+  const sheetRef = useRef<HTMLElement>(null);
+  const logosRowRef = useRef<HTMLDivElement>(null);
+  const sealShift = useSealShift(sheetRef, logosRowRef, logos);
   const department = certificate.department && DEPARTMENTS[certificate.department] ? certificate.department : null;
   const course = [certificate.category ? `categoría ${certificate.category}` : null, certificate.grade].filter(Boolean).join(", ");
   const origin = [certificate.school, certificate.place].filter(Boolean).join(" · ");
@@ -298,6 +328,7 @@ function CertificateSheet({ sheet, castorSrc, logos }: { sheet: Sheet; castorSrc
 
   return (
     <article
+      ref={sheetRef}
       className="certificate-sheet relative aspect-[297/210] w-full overflow-hidden bg-[#FDFCFB] text-[#2B211C] shadow-xl"
       style={{ containerType: "inline-size" }}
     >
@@ -312,7 +343,7 @@ function CertificateSheet({ sheet, castorSrc, logos }: { sheet: Sheet; castorSrc
 
       <div className="relative grid h-full grid-cols-[1fr_30cqi] gap-[2cqi] py-[7.5cqi] pr-[7cqi] pl-[9cqi]">
         <div className="flex flex-col items-start justify-center text-left">
-          <div className="flex items-center gap-[1.6cqi]">
+          <div ref={logosRowRef} className="flex items-center gap-[1.6cqi]">
             <div className="flex shrink-0 items-center gap-[1.1cqi]">
               <img src={castorSrc} alt="" className="h-[6.6cqi] w-auto" />
               <p className="font-display text-[2.35cqi] leading-[0.9] font-bold uppercase text-[#1B8F60]">
@@ -376,7 +407,9 @@ function CertificateSheet({ sheet, castorSrc, logos }: { sheet: Sheet; castorSrc
         </div>
 
         <div className="flex h-full flex-col items-center justify-between">
-          <Seal distinction={distinction} year={certificate.year} category={certificate.category} />
+          <div style={{ transform: `translateX(${sealShift}cqi)` }}>
+            <Seal distinction={distinction} year={certificate.year} category={certificate.category} />
+          </div>
           <div className="flex flex-col items-center">
             <div className="relative flex items-end justify-center">
               <span className="absolute bottom-[0.6cqi] h-[2.2cqi] w-[70%] rounded-[50%] bg-[#2B211C]/10 blur-[0.3cqi]" />
