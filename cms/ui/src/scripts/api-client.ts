@@ -107,6 +107,11 @@ const API = {
     return this.upload("/api/snapshots/upload", fd);
   },
 
+  getCertificates() { return this.get("/api/certificates"); },
+  saveCertificatesSource(url: string) { return this.put("/api/certificates/source", { url }); },
+  syncCertificates() { return this.post("/api/certificates/sync"); },
+  removeCertificatesContest(id: string) { return this.del(`/api/certificates/contests/${encodeURIComponent(id)}`); },
+
   publish() { return this.post("/api/publish"); },
   publishStatus() { return this.get("/api/publish/status"); },
   publishChanges() { return this.get("/api/publish/changes"); },

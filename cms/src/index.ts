@@ -15,6 +15,7 @@ import { snapshotRouter } from "./snapshots/routes.js";
 import { publishRouter } from "./publish/routes.js";
 import { initializePublishScheduler } from "./publish/service.js";
 import { previewRouter } from "./preview/routes.js";
+import { certificatesRouter } from "./certificates/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
 import { startDailyBackupScheduler, stopDailyBackupScheduler } from "./snapshots/service.js";
 import { CONTENT_FILES } from "./content/schemas.js";
@@ -130,6 +131,7 @@ app.use("/api/media", requireAuth, mediaRouter);
 app.use("/api/snapshots", requireAuth, snapshotRouter);
 app.use("/api/publish", requireAuth, publishRouter);
 app.use("/api/preview", requireAuth, previewRouter);
+app.use("/api/certificates", requireAuth, certificatesRouter);
 
 // ── Health check ───────────────────────────────────────────
 app.get("/api/health", (_req, res) => {

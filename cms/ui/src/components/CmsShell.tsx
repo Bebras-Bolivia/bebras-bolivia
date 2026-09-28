@@ -25,6 +25,12 @@ export default function CmsShell() {
             Textos de la página
           </a>
 
+          <div className="sidebar-section">Concurso</div>
+          <a className="sidebar-link" data-nav="/certificados" href="/certificados">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
+            Certificados
+          </a>
+
           <div className="sidebar-section">Sistema</div>
           <a className="sidebar-link" data-nav="/publish" href="/publish">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16,16 12,12 8,16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>

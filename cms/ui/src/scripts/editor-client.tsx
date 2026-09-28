@@ -75,8 +75,11 @@ function FieldInput({
       <input
         id={`field-${field.path}`}
         type="checkbox"
-        checked={Boolean(value)}
-        onChange={(e) => onFieldChange(field.path, e.target.checked)}
+        checked={draftValue === "true"}
+        onChange={(e) => {
+          setDraftValue(String(e.target.checked));
+          onFieldChange(field.path, e.target.checked);
+        }}
         style={{ width: "16px", height: "16px" }}
       />
     );

@@ -292,7 +292,7 @@ const App = {
     document.querySelectorAll("[data-nav]").forEach((el) => el.classList.toggle("active", el.getAttribute("data-nav") === path));
 
     const publishBtn = document.getElementById("header-publish-btn");
-    if (publishBtn) publishBtn.style.display = path.startsWith("/blog") || path.startsWith("/snapshots") || path.startsWith("/publish") ? "none" : "";
+    if (publishBtn) publishBtn.style.display = path.startsWith("/blog") || path.startsWith("/snapshots") || path.startsWith("/publish") || path.startsWith("/certificados") ? "none" : "";
 
     if (path === "/" || path === "/dashboard") {
       const filename = this.firstContentFile();
@@ -323,6 +323,7 @@ const App = {
       this.showPage(`Editar: ${slug}`, () => window.Blog.renderEditor(slug));
     } else if (path === "/publish") this.showPage("Publicación", () => window.Publish.render());
     else if (path === "/snapshots") this.showPage("Respaldos", () => window.Snapshots.render());
+    else if (path === "/certificados") this.showPage("Certificados", () => window.CMSCertificates.render());
     else {
       const filename = this.firstContentFile();
       const meta = contentMeta[filename];
@@ -338,6 +339,7 @@ const App = {
     window.CMSEditor?.unmountPrimitives?.();
     window.CMSBlog?.unmount?.();
     window.CMSSnapshots?.unmount?.();
+    window.CMSCertificates?.unmount?.();
     const headerContext = document.getElementById("header-context-actions");
     if (headerContext) headerContext.innerHTML = "";
     const headerEditorActions = document.getElementById("header-editor-actions");

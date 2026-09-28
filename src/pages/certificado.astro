@@ -1,0 +1,53 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import InternalPageHero from "@/components/InternalPageHero.astro";
+import CertificateLookup from "@/components/CertificateLookup";
+import castor from "@/assets/castor-circle.png";
+---
+
+<Layout title="Tu certificado" description="Descarga tu certificado de participación en el Desafío Bebras Bolivia con tu código personal.">
+  <div class="relative w-full">
+    <InternalPageHero
+      tag="Desafío Bebras"
+      heading="Tu certificado"
+      description="Escribe el código personal que usaste en el desafío para ver e imprimir tu certificado."
+    />
+
+    <main class="relative z-10 w-full min-h-[60vh] bg-bebras-paper pt-10 pb-20 lg:pt-14 dark:bg-zinc-950">
+      <CertificateLookup client:load castorSrc={castor.src} />
+    </main>
+  </div>
+</Layout>
+
+<style is:global>
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    html,
+    body {
+      height: 210mm !important;
+      overflow: hidden !important;
+    }
+    body * {
+      visibility: hidden;
+    }
+    .certificate-sheet,
+    .certificate-sheet * {
+      visibility: visible;
+    }
+    .certificate-sheet {
+      position: fixed;
+      inset: 0;
+      width: 297mm !important;
+      height: 210mm !important;
+      box-shadow: none !important;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .certificate-no-print {
+      display: none !important;
+    }
+  }
+</style>

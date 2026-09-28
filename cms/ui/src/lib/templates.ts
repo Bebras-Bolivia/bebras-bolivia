@@ -31,6 +31,8 @@ export const fieldHints: Record<string, string> = {
   linkHref: "url",
   buttonHref: "url",
   ctaHref: "url",
+  openHref: "url",
+  openParagraph: "textarea",
   link: "url",
   imageUrl: "url",
   image: "text",

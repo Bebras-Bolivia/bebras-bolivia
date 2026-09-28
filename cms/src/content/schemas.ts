@@ -510,6 +510,14 @@ export const contactSchema = z.object({
 
 export const registroSchema = PageMetaSchema.extend({
   tag: z.string(),
+  registration: z
+    .object({
+      openHref: SafeHrefSchema,
+      openButton: z.string(),
+      openHeading: z.string(),
+      openParagraph: z.string(),
+    })
+    .optional(),
   heading: z.string(),
   paragraph: z.string(),
   disabledButton: z.string(),

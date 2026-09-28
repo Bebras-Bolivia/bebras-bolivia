@@ -41,6 +41,29 @@ function initSchema(db: Database): void {
       finished_at TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS settings (
+      key        TEXT PRIMARY KEY,
+      value      TEXT NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS certificate_contests (
+      id                   TEXT PRIMARY KEY,
+      title                TEXT NOT NULL,
+      year                 INTEGER NOT NULL,
+      results_published_at TEXT,
+      synced_at            TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS certificates (
+      contest_id TEXT NOT NULL REFERENCES certificate_contests(id) ON DELETE CASCADE,
+      code       TEXT NOT NULL,
+      data       TEXT NOT NULL,
+      file_id    TEXT NOT NULL,
+      secret     TEXT NOT NULL,
+      PRIMARY KEY (contest_id, code)
+    );
+
     CREATE TABLE IF NOT EXISTS scheduled_publishes (
       id             INTEGER PRIMARY KEY AUTOINCREMENT,
       run_at         TEXT    NOT NULL,

@@ -56,3 +56,5 @@ src/content/blog/*
 !src/content/blog/.gitkeep
 public/images/uploads/*
 !public/images/uploads/.gitkeep
+# Certificados cifrados que genera el CMS (datos de estudiantes)
+public/certificados/

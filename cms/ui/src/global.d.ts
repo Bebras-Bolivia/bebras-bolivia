@@ -14,6 +14,7 @@ declare global {
     CMSSnapshots: any;
     CMSPublish: any;
     CMSBlog: any;
+    CMSCertificates: any;
     Editor: any;
     Blog: any;
     Snapshots: any;

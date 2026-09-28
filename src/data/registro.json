@@ -1,5 +1,11 @@
 {
   "tag": "Inscripciones",
+  "registration": {
+    "openHref": "",
+    "openButton": "Inscribirme",
+    "openHeading": "Inscripciones abiertas",
+    "openParagraph": "Ya puedes inscribirte en el Desafío Bebras Bolivia. Toca el botón para ir a la plataforma del desafío."
+  },
   "heading": "Próximamente",
   "paragraph": "El registro estará habilitado hasta el 30 de octubre del 2026.\n\n",
   "disabledButton": "Isncribe a tu UE y envia lista de estudiantes",

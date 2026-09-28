@@ -5,6 +5,7 @@ import BebrasHeader from "@/components/BebrasHeader";
 import Footer from "@/components/Footer.astro";
 import "@/styles/global.css";
 import siteData from "@/data/site.json";
+import { registrationHref } from "@/lib/registration";
 
 interface Props {
   title: string;
@@ -30,6 +31,7 @@ const {
   showFooter = showNav,
 } = Astro.props;
 
+const directRegistration = registrationHref();
 const fullTitle = title === "Inicio" ? siteData.siteName : `${title} | ${siteData.siteName}`;
 const canonicalUrl = new URL(currentPath, siteUrl).href;
 const ogImage = image ? new URL(image, siteUrl).href : new URL("/images/logo-placeholder.svg", siteUrl).href;
@@ -88,6 +90,42 @@ const organizationJsonLd = JSON.stringify({
       </main>
       {showFooter && <Footer />}
     </div>
+
+    {
+      directRegistration && (
+        <script is:inline define:vars={{ directRegistration }}>
+          // Con las inscripciones abiertas, todo enlace a /registro va directo al desafío.
+          (function () {
+            function isRegistro(link) {
+              if (!link || link.target === "_blank") return false;
+              var url = new URL(link.href, location.href);
+              return url.origin === location.origin && /^\/registro\/?$/.test(url.pathname);
+            }
+            function rewrite() {
+              document.querySelectorAll("a[href]").forEach(function (link) {
+                if (isRegistro(link)) link.setAttribute("href", directRegistration);
+              });
+            }
+            if (!window.__directRegistration) {
+              window.__directRegistration = true;
+              document.addEventListener(
+                "click",
+                function (event) {
+                  var link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+                  if (!isRegistro(link)) return;
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                  location.href = directRegistration;
+                },
+                true
+              );
+              document.addEventListener("astro:page-load", rewrite);
+            }
+            rewrite();
+          })();
+        </script>
+      )
+    }
 
     <script>
       function initScrollReveal() {
