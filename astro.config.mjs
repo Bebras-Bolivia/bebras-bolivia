@@ -1,5 +1,4 @@
 // @ts-check
-// @ts-expect-error Astro executes this config in Node, whose types are intentionally absent from the app tsconfig.
 import { rm } from 'node:fs/promises';
 
 import { defineConfig } from 'astro/config';

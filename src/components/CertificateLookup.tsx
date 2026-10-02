@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type RefObject, type SyntheticEvent } from
 import QRCode from "qrcode";
 
 import { findCertificates, normalizeCode, type Certificate } from "@/lib/certificate-crypto";
+import { distinctionOf, type Distinction } from "@/lib/certificate-distinction";
 
 type Sheet = { name: string; code: string; certificate: Certificate };
 
@@ -209,24 +210,6 @@ function VerificationQr({ code }: { code: string }) {
       dangerouslySetInnerHTML={svg ? { __html: svg } : undefined}
     />
   );
-}
-
-type Distinction =
-  | { kind: "podium"; rank: number }
-  | { kind: "merit" }
-  | { kind: "participation" };
-
-/**
- * El puesto solo se muestra a quien destacó: los tres primeros de su
- * categoría y el 10 % con mejor puntaje. A los demás no les sirve ver que
- * quedaron 55.º; su certificado es de participación.
- */
-function distinctionOf(certificate: Certificate): Distinction {
-  const { rank, rankOf } = certificate;
-  if (rank && rank <= 3) return { kind: "podium", rank };
-  if (certificate.distinction) return { kind: certificate.distinction };
-  if (rank && rankOf && rankOf >= 10 && rank <= Math.ceil(rankOf * 0.1)) return { kind: "merit" };
-  return { kind: "participation" };
 }
 
 const SEAL_COLORS = {

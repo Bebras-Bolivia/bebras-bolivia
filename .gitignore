@@ -41,6 +41,7 @@ screenshots/
 .codex-logs/
 
 # CMS/runtime local content
+cms/content/published/
 cms/content/cms.sqlite-shm
 cms/content/cms.sqlite-wal
 cms/content/cms.sqlite

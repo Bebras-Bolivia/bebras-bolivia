@@ -9,6 +9,7 @@ import { isDevServerRunning, stopDevServer, startDevServer } from "../preview/se
 import { preserveDiacritics } from "../content/preserve-text.js";
 import { CONTENT_FILES } from "../content/schemas.js";
 import { copyUtf8TextFile } from "../lib/utf8-files.js";
+import { activatePublishedState, capturePublishedState, discardPublishedState, publishedDirectories } from "./published-state.js";
 
 // Publish lock — reject concurrent publishes
 let isPublishing = false;
@@ -25,6 +26,7 @@ const BLOG_PREVIEW_FILENAME = "cms-preview.md";
  * already running, keep retrying until the newest saved state is deployed.
  */
 export function queueAutoPublish(author = "CMS auto-publish"): void {
+  if (getPublishSchedule().active?.status === "scheduled") return;
   autoPublishPending = true;
   autoPublishAuthor = author;
   if (autoPublishTimer) clearTimeout(autoPublishTimer);
@@ -101,15 +103,16 @@ export function getPublishStatus(): PublishStatus {
 }
 
 export async function getUnpublishedChanges(): Promise<PublishChanges> {
+  const published = await publishedDirectories();
   const contentItems = await compareKnownFiles({
     type: "content",
     files: CONTENT_FILES,
     currentDir: config.currentDataDir,
-    publishedDir: config.landingDataDir,
+    publishedDir: published.data,
   });
   const blogFiles = Array.from(new Set([
     ...(await listFiles(config.currentBlogDir, ".md")),
-    ...(await listFiles(config.landingBlogDir, ".md")),
+    ...(await listFiles(published.blog, ".md")),
   ]))
     .filter((file) => file !== BLOG_PREVIEW_FILENAME)
     .sort((a, b) => a.localeCompare(b, "es"));
@@ -117,7 +120,7 @@ export async function getUnpublishedChanges(): Promise<PublishChanges> {
     type: "blog",
     files: blogFiles,
     currentDir: config.currentBlogDir,
-    publishedDir: config.landingBlogDir,
+    publishedDir: published.blog,
   });
   const items = [...contentItems, ...blogItems];
 
@@ -170,6 +173,9 @@ export function schedulePublish(runAt: string, author: string): ScheduledPublish
   const row = db
     .query("SELECT * FROM scheduled_publishes WHERE id = ?")
     .get(Number(result.lastInsertRowid)) as ScheduledPublishRow;
+  if (autoPublishTimer) clearTimeout(autoPublishTimer);
+  autoPublishTimer = null;
+  autoPublishPending = false;
   armScheduledPublish(row);
   return row;
 }
@@ -212,6 +218,11 @@ export async function publish(author: string): Promise<PublishLogRow> {
     throw new PublishError("A publish is already in progress", 409);
   }
   isPublishing = true;
+  // This build includes already queued writes. New writes during the build
+  // will schedule their own follow-up publication.
+  if (autoPublishTimer) clearTimeout(autoPublishTimer);
+  autoPublishTimer = null;
+  autoPublishPending = false;
 
   const db = getDb();
 
@@ -229,6 +240,8 @@ export async function publish(author: string): Promise<PublishLogRow> {
     .query("INSERT INTO publish_log (status, output) VALUES ('running', '')")
     .run();
   const logId = Number(logResult.lastInsertRowid);
+  const baselineRelease = `publish-${Date.now()}-${logId}`;
+  let baselineActivated = false;
 
   try {
     // Step 1: Create snapshot
@@ -283,7 +296,11 @@ export async function publish(author: string): Promise<PublishLogRow> {
     }
 
     // Step 5: Run astro build
+    // Capture the input before compilation: later saves must stay unpublished.
+    await capturePublishedState(baselineRelease);
     const buildOutput = await runBuild();
+    await activatePublishedState(baselineRelease);
+    baselineActivated = true;
 
     // Success
     db.query(
@@ -300,6 +317,7 @@ export async function publish(author: string): Promise<PublishLogRow> {
 
     return row;
   } catch (err) {
+    if (!baselineActivated) await discardPublishedState(baselineRelease).catch((cleanupError) => console.error("[Publish] Failed to remove unused baseline:", cleanupError));
     const errorMsg =
       err instanceof Error ? err.message : "Unknown error during publish";
 
@@ -500,8 +518,8 @@ async function copyJsonPreservingDiacritics(sourcePath: string, targetPath: stri
 }
 
 /**
- * Run Astro directly. `bun run build` may invoke Astro through the system Node,
- * which can be too old on production servers.
+ * Run Astro's JavaScript entry point without platform wrappers or a shell.
+ * Windows uses Node for build stability; POSIX preserves the CMS runtime.
  * Returns the combined stdout+stderr output.
  */
 async function runBuild(): Promise<string> {
@@ -511,28 +529,19 @@ async function runBuild(): Promise<string> {
   await mkdir(deploymentsDir, { recursive: true });
 
   const output = await new Promise<string>((resolve, reject) => {
-    const isBun = Boolean((process.versions as Record<string, string | undefined>).bun);
     const localAstro = resolvePath(
       config.landingDir,
       "node_modules",
-      ".bin",
-      process.platform === "win32" ? "astro.cmd" : "astro"
+      "astro",
+      "astro.js"
     );
     const canRunAstroDirectly = existsSync(localAstro);
     const buildCmd = canRunAstroDirectly
-      ? process.platform === "win32"
-        ? localAstro
-        : isBun
-          ? process.execPath
-          : localAstro
-      : process.platform === "win32"
-        ? "npm.cmd"
-        : "npm";
+      ? process.platform === "win32" && process.versions.bun ? "node" : process.execPath
+      : "bun";
     const baseArgs = canRunAstroDirectly
-      ? process.platform === "win32" || !isBun
-        ? ["build"]
-        : [localAstro, "build"]
-      : ["run", "build"];
+      ? [localAstro, "build"]
+      : ["x", "--no-install", "astro", "build"];
     const args = [...baseArgs, "--outDir", releaseDir];
 
     // execFile (no shell) avoids command-injection if the cwd or args ever
@@ -543,7 +552,7 @@ async function runBuild(): Promise<string> {
       {
         cwd: config.landingDir,
         timeout: 120_000,
-        env: { ...process.env },
+        env: { ...process.env, NODE_ENV: "production" },
         shell: false,
       },
       (error, stdout, stderr) => {
@@ -570,7 +579,12 @@ async function activateRelease(releaseName: string): Promise<void> {
   let legacyPath: string | null = null;
   await unlinkIfExists(nextLink);
   try {
-    await symlink(`.deployments/${releaseName}`, nextLink, "dir");
+    // Windows directory junctions do not require symlink privileges.
+    await symlink(
+      process.platform === "win32" ? resolvePath(config.landingDir, ".deployments", releaseName) : `.deployments/${releaseName}`,
+      nextLink,
+      process.platform === "win32" ? "junction" : "dir"
+    );
 
     try {
       const current = await lstat(distPath);
@@ -593,7 +607,7 @@ async function activateRelease(releaseName: string): Promise<void> {
   } catch (error) {
     if (!(await pathExists(distPath))) {
       try {
-        if (previousLinkTarget) await symlink(previousLinkTarget, distPath, "dir");
+        if (previousLinkTarget) await symlink(previousLinkTarget, distPath, process.platform === "win32" ? "junction" : "dir");
         else if (legacyPath) await rename(legacyPath, distPath);
       } catch (restoreError) {
         console.error("[Publish] Failed to restore previous dist release:", restoreError);

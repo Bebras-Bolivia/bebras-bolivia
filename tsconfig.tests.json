@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["tests/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "types": ["bun-types"],
+    "typeRoots": ["./cms/node_modules", "./node_modules/@types"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  }
+}

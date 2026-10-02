@@ -63,7 +63,16 @@ mediaRouter.get("/", async (_req: Request, res: Response) => {
  */
 mediaRouter.post(
   "/upload",
-  upload.single("file"),
+  (req: Request, res: Response, next) => {
+    upload.single("file")(req, res, (error: unknown) => {
+      if (!error) return next();
+      if (error instanceof multer.MulterError) {
+        res.status(error.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: error.message });
+        return;
+      }
+      res.status(400).json({ error: error instanceof Error ? error.message : "Invalid upload" });
+    });
+  },
   async (req: Request, res: Response) => {
     try {
       const file = (req as Request & { file?: Express.Multer.File }).file;

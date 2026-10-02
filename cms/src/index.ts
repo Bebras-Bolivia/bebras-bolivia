@@ -14,6 +14,7 @@ import { mediaRouter } from "./media/routes.js";
 import { snapshotRouter } from "./snapshots/routes.js";
 import { publishRouter } from "./publish/routes.js";
 import { initializePublishScheduler } from "./publish/service.js";
+import { initializePublishedState } from "./publish/published-state.js";
 import { previewRouter } from "./preview/routes.js";
 import { certificatesRouter } from "./certificates/routes.js";
 import { isDevServerRunning, getDevServerUrl, stopDevServer } from "./preview/service.js";
@@ -370,6 +371,7 @@ process.on("SIGTERM", cleanup);
 
 async function boot() {
   await ensureRuntimeDirectories();
+  await initializePublishedState();
   await syncWorkingCopiesFromLanding();
   getDb();
   initializePublishScheduler();

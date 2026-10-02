@@ -111,7 +111,7 @@ const formEmail =
                 <div class="brand-card-icon flex items-center justify-center size-12 shrink-0 rounded-2xl">
                   {Icon && <Icon className="size-6" strokeWidth={2.2} aria-hidden="true" />}
                 </div>
-                <div>
+                <div class="min-w-0 flex-1 break-words">
                   <p class="brand-card-muted text-sm uppercase tracking-[0.15em] font-bold mb-2">{card.title}</p>
                   <p class="brand-card-muted text-base leading-relaxed mb-2">{card.description}</p>
                   {card.linkHref && card.linkLabel && (() => {
@@ -134,7 +134,7 @@ const formEmail =
                     );
                   })()}
                   {card.socialLinks && (
-                    <div class="flex gap-4 mt-2">
+                    <div class="flex flex-wrap gap-4 mt-2">
                       {card.socialLinks.map((social, idx) => (
                         <>
                           {idx > 0 && <span class="brand-card-muted">|</span>}
@@ -157,7 +157,7 @@ const formEmail =
             {data.international.links.map((link, i) => (
               <li>
                 <a href={toSafeHref(link.href)} target="_blank" rel="noopener noreferrer" class:list={["group inline-flex items-center gap-4 text-base font-medium hover:opacity-75 transition-colors", internationalTextClass]}>
-                  <span class="font-mono text-xs opacity-60 font-bold">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="font-mono text-xs font-bold">{String(i + 1).padStart(2, "0")}</span>
                   <span class="group-hover:translate-x-2 transition-transform">{link.label}</span>
                 </a>
                 <p class="brand-card-muted ml-10 mt-1 text-sm leading-relaxed">{link.description}</p>
@@ -197,7 +197,7 @@ const formEmail =
               {data.form.submitLabel}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ml-3 transition-transform group-hover:translate-x-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </button>
-            <p class="text-xs text-muted-foreground/70 text-center font-mono mt-4 font-medium">{data.form.disclaimer}</p>
+            <p class="text-xs text-muted-foreground text-center font-mono mt-4 font-medium">{data.form.disclaimer}</p>
           </form>
         </div>
       </div>

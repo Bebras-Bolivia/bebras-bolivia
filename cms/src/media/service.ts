@@ -96,6 +96,9 @@ export function validateUpload(file: {
   originalname: string;
   size: number;
 }): void {
+  if (file.size <= 0) {
+    throw new MediaError("File is empty", 400);
+  }
   const ext = file.originalname
     .substring(file.originalname.lastIndexOf("."))
     .toLowerCase();

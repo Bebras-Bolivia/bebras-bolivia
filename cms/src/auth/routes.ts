@@ -17,10 +17,9 @@ const RATE_MAX_ATTEMPTS = 8;
 const rateBuckets = new Map<string, number[]>();
 
 function rateLimitByIp(req: Request, res: Response, next: NextFunction): void {
-  const ip =
-    (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() ||
-    req.socket.remoteAddress ||
-    "unknown";
+  // Express only accepts forwarded addresses when a trusted proxy is configured.
+  // Reading the header directly lets clients create a new bucket on every request.
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
   const now = Date.now();
   const recent = (rateBuckets.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
   if (recent.length >= RATE_MAX_ATTEMPTS) {

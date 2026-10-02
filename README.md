@@ -6,6 +6,7 @@ Sitio oficial de Bebras Bolivia, construido con Astro, React, Tailwind CSS y un 
 
 - Bun 1.3 o superior
 - Git
+- Node compatible con Astro para compilar en Windows y ejecutar Lighthouse (validado con Node 22.12).
 
 Este proyecto usa Bun como gestor oficial de paquetes. No uses `npm install` para evitar generar lockfiles incompatibles con `bun.lock`.
 
@@ -118,6 +119,30 @@ Variables de entorno importantes:
 En produccion, define al menos `JWT_SECRET` y `ADMIN_PASSWORD`.
 
 ## Verificacion
+
+### Pruebas automatizadas del CMS y sitio
+
+Instala el navegador una vez con `bunx playwright install chromium`.
+
+| Comando | Alcance |
+| --- | --- |
+| `bun run test:unidad` | Lógica, esquemas, cifrado, seguridad y cobertura LCOV. |
+| `bun run test:api` | Peticiones HTTP al CMS real con SQLite aislada. |
+| `bun run test:e2e:cms` | Flujos administrativos; compila primero la interfaz del CMS. |
+| `bun run test:e2e:sitio` | Sitio estático compilado, certificados y navegación. |
+| `bun run test:integracion` | Publicar desde el CMS y consultar el sitio generado. |
+| `bun run test:e2e` | Los tres proyectos de Playwright. |
+| `bun run test:calidad` | Lighthouse móvil, peso de recursos y 100 consultas simultáneas. |
+| `bun run test` | Todas las suites y calidad, conservando resultados. |
+| `bun run test:informe` | Consolida los últimos JUnit y JSON de Playwright en tabla y resumen. |
+
+Cada corrida de API o navegador crea una carpeta independiente en la carpeta temporal del sistema, con contenido y SQLite propios. El sitio temporal tiene su propio repositorio Git y una dirección de push local inválida. Los certificados usan personas inventadas. Las carpetas y procesos se eliminan al terminar; las dependencias se reutilizan mediante una unión de directorios.
+
+Los resultados, trazas y cobertura se guardan en `../_pruebas/cms-sitio/`. Lighthouse aplica el umbral de accesibilidad 90 propuesto en el plan; se puede cambiar con `QUALITY_MIN_ACCESSIBILITY`. Los otros puntajes y tiempos son mediciones locales, no equivalen a una prueba de producción.
+
+El CMS conserva la referencia publicada en `cms/content/published/`, fuera de los borradores usados en vista previa. La primera inicialización toma los archivos fuente actuales del sitio como referencia; los borradores que ya estuvieran sincronizados antes de instalar este cambio no pueden distinguirse retrospectivamente del último sitio compilado. Después de cada publicación exitosa se actualiza esa referencia. Una publicación programada impide que el guardado automático publique antes de la fecha elegida.
+
+`bunx tsc --noEmit -p tsconfig.tests.json` verifica también el código de las pruebas.
 
 Antes de entregar cambios, usa:
 
