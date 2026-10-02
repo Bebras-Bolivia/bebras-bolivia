@@ -11,6 +11,18 @@
       "src": "/images/certificado/umss.webp",
       "alt": "Universidad Mayor de San Simón",
       "height": 5.6
+    },
+    {
+      "id": "logo-mulvio2w",
+      "src": "/images/uploads/sponsor__1790637808943-codigo_qr_pedido_iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t_KAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAHUySURBVHhe7f1b7O37fp93JY5J4vgUO7YT59AcoJSqpaIJQkCFqnIR9YJSHBCpykWhIGhDFClCQuEkKBccQ.png",
+      "alt": "codigo qr pedido iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t+KAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7",
+      "height": 5.6
+    },
+    {
+      "id": "logo-mulvir4u",
+      "src": "/images/uploads/sponsor__1790637812913-WhatsApp_Image_2026-09-20_at_12.33.01.jpeg",
+      "alt": "WhatsApp Image 2026 09 20 at 12.33.01",
+      "height": 5.6
     }
   ]
 }
