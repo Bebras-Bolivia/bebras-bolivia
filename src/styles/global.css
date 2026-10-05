@@ -266,11 +266,11 @@
     background: rgba(255, 255, 255, 0.36);
   }
 
-  .brand-card-red { background-color: var(--color-bebras-red-dark); }
+  .brand-card-red { background-color: var(--color-bebras-red); }
   .brand-card-yellow { background-color: var(--color-bebras-yellow); color: var(--color-bebras-ink); }
   .brand-card-yellow .brand-card-muted { color: rgba(17, 0, 0, 0.8); }
   .brand-card-yellow :is(.brand-card-icon, .copy-email-btn) { color: var(--color-bebras-ink); background: rgba(17, 0, 0, 0.08); }
-  .brand-card-green { background-color: var(--color-bebras-green-dark); }
+  .brand-card-green { background-color: var(--color-bebras-green); }
   .brand-card-blue { background-color: var(--color-bebras-blue); }
   .brand-card-gray {
     background-color: var(--color-bebras-gray);
@@ -351,13 +351,13 @@
 
   /* Bebras brand accent utilities — official 5-color palette */
   .bg-bebras-green { background-color: #1B8F60; }
-  .text-bebras-green { color: #146E48; }
+  .text-bebras-green { color: #1B8F60; }
   .border-bebras-green { border-color: #1B8F60; }
   .bg-bebras-yellow { background-color: #F8AE31; }
   .text-bebras-yellow { color: #F8AE31; }
   .border-bebras-yellow { border-color: #F8AE31; }
   .bg-bebras-red { background-color: #E83B3B; }
-  .text-bebras-red { color: #B82323; }
+  .text-bebras-red { color: #E83B3B; }
   .border-bebras-red { border-color: #E83B3B; }
   .bg-bebras-blue { background-color: #324C87; }
   .text-bebras-blue { color: #324C87; }
@@ -365,10 +365,6 @@
   .bg-bebras-gray { background-color: #D9D9D9; }
   .text-bebras-gray { color: #D9D9D9; }
   .border-bebras-gray { border-color: #D9D9D9; }
-
-  /* Darker brand fills keep small white button and badge text readable. */
-  .bg-bebras-red.text-white { background-color: var(--color-bebras-red-dark); }
-  .bg-bebras-green.text-white { background-color: var(--color-bebras-green-dark); }
 
   /* Tactile hover lift */
   .lift-on-hover {
