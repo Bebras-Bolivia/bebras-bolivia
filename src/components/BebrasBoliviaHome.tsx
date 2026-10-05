@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { BebrasBeaverShowcase, type ShowcaseCategory } from "@/components/BebrasBeaverShowcase";
@@ -72,45 +72,6 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCateg
 
   return (
     <div className="relative -mt-25 flex min-h-svh flex-col overflow-hidden bg-bebras-yellow pt-25 text-white sm:-mt-29 sm:pt-29">
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full"
-        viewBox="0 0 1440 900"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <g fill="white" opacity="0.25">
-          {Array.from({ length: 7 }).map((_, row) =>
-            Array.from({ length: 7 }).map((_, col) => (
-              <circle key={`tl-${row}-${col}`} cx={40 + col * 18} cy={140 + row * 18} r={1.8} />
-            ))
-          )}
-        </g>
-        <g fill="white" opacity="0.25">
-          {Array.from({ length: 5 }).map((_, row) =>
-            Array.from({ length: 5 }).map((_, col) => (
-              <circle key={`br-${row}-${col}`} cx={1280 + col * 18} cy={680 + row * 18} r={1.8} />
-            ))
-          )}
-        </g>
-
-        <circle cx="180" cy="500" r="14" fill="var(--color-bebras-blue)" className="shape-float-slow" />
-        <circle cx="1330" cy="220" r="10" fill="var(--color-bebras-blue)" className="shape-float-medium" />
-        <circle cx="260" cy="800" r="8" fill="var(--color-bebras-blue)" className="shape-bob" />
-
-        <rect x="1100" y="160" width="26" height="26" rx="6" fill="var(--color-bebras-green)" className="shape-spin-slow" />
-        <rect x="80" y="700" width="20" height="20" rx="5" fill="none" stroke="var(--color-bebras-blue)" strokeWidth="3" className="shape-spin-slow" />
-
-        <polygon points="1240,420 1262,460 1218,460" fill="var(--color-bebras-red)" className="shape-float-slow" />
-        <polygon points="120,360 140,392 100,392" fill="none" stroke="white" strokeWidth="3" strokeOpacity="0.5" className="shape-float-medium" />
-
-        <path d="M 950 760 Q 970 740 990 760 T 1030 760" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.55" className="shape-bob" />
-        <path d="M 1180 540 L 1220 540 M 1200 520 L 1200 560" stroke="var(--color-bebras-green)" strokeWidth="3.5" strokeLinecap="round" className="shape-float-medium" />
-        <path d="M 320 240 L 360 240 M 340 220 L 340 260" stroke="var(--color-bebras-red)" strokeWidth="3.5" strokeLinecap="round" className="shape-float-slow" />
-
-        <circle cx="100" cy="450" r="22" fill="none" stroke="var(--color-bebras-blue)" strokeWidth="2.5" strokeDasharray="4 6" className="shape-spin-slow" />
-        <circle cx="1340" cy="540" r="18" fill="none" stroke="var(--color-bebras-green)" strokeWidth="2.5" strokeDasharray="3 5" className="shape-spin-slow" />
-      </svg>
-
       <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-8 md:px-8 sm:py-10">
         <section
           id="inicio"
@@ -168,14 +129,6 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCateg
                 aria-hidden="true"
                 className="absolute inset-0 rounded-full bg-bebras-green"
               />
-              <span
-                aria-hidden="true"
-                className="absolute -right-3 top-12 size-20 rounded-2xl bg-white rotate-12 shadow-lg sm:size-24"
-              />
-              <span
-                aria-hidden="true"
-                className="absolute -left-2 bottom-16 size-16 rounded-full bg-bebras-red shadow-lg sm:size-20"
-              />
               <div className="relative z-10 flex h-full w-full items-center justify-center">
                 <BebrasBeaverShowcase categories={showcaseCategories} />
               </div>
@@ -209,17 +162,6 @@ export default function BebrasBoliviaHome({ hero = {}, latestNews, showcaseCateg
           </div>
         )}
       </main>
-
-      <div className="relative z-10 flex justify-center pb-6 sm:pb-8">
-        <a
-          href="#contenido"
-          aria-label="Desplazarse hacia abajo"
-          className="group inline-flex flex-col items-center gap-1 text-white/85 transition-colors hover:text-white"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.32em]">Desplazar</span>
-          <ChevronDown className="size-7 animate-bounce" strokeWidth={2.2} aria-hidden="true" />
-        </a>
-      </div>
 
       <svg
         aria-hidden="true"

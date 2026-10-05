@@ -405,28 +405,6 @@
     animation: pulse-soft 2.2s ease-in-out infinite;
   }
 
-  /* Floating shape animations for hero decorations */
-  @keyframes shape-float-slow {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(0, -16px) rotate(6deg); }
-  }
-  @keyframes shape-float-medium {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(8px, -12px) rotate(-8deg); }
-  }
-  @keyframes shape-spin-slow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  @keyframes shape-bob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  .shape-float-slow { animation: shape-float-slow 6s ease-in-out infinite; transform-origin: center; }
-  .shape-float-medium { animation: shape-float-medium 5s ease-in-out infinite; transform-origin: center; }
-  .shape-spin-slow { animation: shape-spin-slow 18s linear infinite; transform-origin: center; transform-box: fill-box; }
-  .shape-bob { animation: shape-bob 3.5s ease-in-out infinite; }
-
   @keyframes beaver-entry {
     from {
       transform: translateX(64px) scale(0.92) rotate(-3deg);
