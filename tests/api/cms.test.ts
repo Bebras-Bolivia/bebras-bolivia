@@ -1,4 +1,6 @@
 import { beforeAll, afterAll, test, expect } from 'bun:test';
+import { Database } from 'bun:sqlite';
+import { findCertificates } from '../../src/lib/certificate-crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createServer } from 'node:http';
@@ -353,6 +355,7 @@ test('API-14 certificados manuales únicos cifrados e invalidación', async () =
       'POST',
       {
         name: `Persona Inventada ${i}`,
+        department: 'cochabamba',
         contest: 'Desafío ficticio',
         year: 2026,
         distinction: 'participation',
@@ -371,6 +374,119 @@ test('API-14 certificados manuales únicos cifrados e invalidación', async () =
     expect(await Bun.file(file).exists()).toBe(false);
   }
 });
+test('API-CERT lugar manual y compatibilidad con certificados antiguos', async () => {
+  const base = {
+    name: 'Persona de prueba',
+    contest: 'Desafío de prueba',
+    year: 2026,
+    distinction: 'participation',
+  };
+  for (const department of [undefined, '', null, 'inexistente']) {
+    expect(
+      (await json('/api/certificates/manual', 'POST', { ...base, department }, 400)).error
+    ).toBe('Elige el departamento.');
+  }
+  const db = new Database(join(s.content, 'cms.sqlite'));
+  const legacyCode = 'LEGACY23';
+  const legacySecrets = await deriveCertificateSecrets(legacyCode);
+  const legacyData = {
+    contest: base.contest,
+    year: 2026,
+    issuedAt: null,
+    participants: ['Persona antigua'],
+    category: '',
+    grade: null,
+    school: null,
+    place: null,
+    department: null,
+    score: 0,
+    correct: 0,
+    questions: 0,
+    rank: null,
+    rankOf: null,
+  };
+  db.query('INSERT INTO manual_certificates (code, data, file_id, secret) VALUES (?, ?, ?, ?)').run(
+    legacyCode,
+    JSON.stringify(legacyData),
+    legacySecrets.fileId,
+    legacySecrets.secret
+  );
+  const realFetch = globalThis.fetch;
+  async function decrypted(code: string) {
+    const { fileId } = await deriveCertificateSecrets(code);
+    const raw = await readFile(join(s.landing, 'public/certificados', `${fileId}.json`), 'utf8');
+    expect(raw).not.toContain('Persona');
+    expect(raw).not.toContain('Colegio');
+    globalThis.fetch = Object.assign(
+      async () => new Response(raw, { headers: { 'content-type': 'application/json' } }),
+      { preconnect: realFetch.preconnect }
+    );
+    try {
+      return await findCertificates(code);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  }
+  try {
+    const schools = await json('/api/certificates/schools?q=bolivia&dep=cochabamba');
+    expect(schools.length).toBeGreaterThan(0);
+    const selected = schools[0];
+    for (const fields of [
+      {},
+      { school: '' },
+      { school: '  Colegio   Ñandú Independiente  ', place: '' },
+      { schoolCode: selected.code, department: selected.department, place: selected.city },
+    ]) {
+      const created = await json(
+        '/api/certificates/manual',
+        'POST',
+        { ...base, department: 'cochabamba', ...fields },
+        201
+      );
+      const row = db
+        .query('SELECT data FROM manual_certificates WHERE code = ?')
+        .get(created.code) as { data: string };
+      const stored = JSON.parse(row.data);
+      expect(stored.school).toBe(
+        'schoolCode' in fields
+          ? selected.name
+          : fields.school
+            ? 'Colegio Ñandú Independiente'
+            : null
+      );
+      expect(stored.place).toBe('schoolCode' in fields ? selected.city : null);
+      expect(stored.department).toBe('cochabamba');
+      expect(await decrypted(created.code)).toEqual([stored]);
+      await json(`/api/certificates/manual/${created.code}`, 'DELETE');
+    }
+    expect(
+      (await json('/api/certificates')).manual.some(
+        (item: { code: string }) => item.code === legacyCode
+      )
+    ).toBe(true);
+    expect(await decrypted(legacyCode)).toEqual([legacyData]);
+    expect(
+      (
+        await json(
+          '/api/certificates/manual',
+          'POST',
+          { ...base, department: 'cochabamba', school: 'a'.repeat(161) },
+          400
+        )
+      ).error
+    ).toBe('El nombre del colegio no puede superar los 160 caracteres.');
+    await json(
+      '/api/certificates/manual',
+      'POST',
+      { ...base, department: 'cochabamba', schoolCode: 'inexistente' },
+      400
+    );
+  } finally {
+    db.close();
+    await json(`/api/certificates/manual/${legacyCode}`, 'DELETE');
+  }
+});
+
 test('API-CERT actualización falsa conserva desafíos ausentes y reemplaza recibidos', async () => {
   const certificate = (code: string, contestId: string) => ({
     code,

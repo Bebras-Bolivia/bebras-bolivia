@@ -38,7 +38,11 @@ export async function command(cmd: string, args: string[], cwd: string, env = pr
   });
 }
 
-export async function createSandbox({ buildSite = false } = {}) {
+export async function createSandbox({
+  buildSite = false,
+  port: requestedPort,
+  admin = credentials,
+}: { buildSite?: boolean; port?: number; admin?: typeof credentials } = {}) {
   const root = await mkdtemp(join(tmpdir(), 'bebras-cms-test-'));
   assertOutsideRepo(root);
   const landing = join(root, 'site');
@@ -107,8 +111,8 @@ export async function createSandbox({ buildSite = false } = {}) {
       LANDING_DATA_DIR: join(landing, 'src/data'),
       LANDING_BLOG_DIR: join(landing, 'src/content/blog'),
       LANDING_PUBLIC_DIR: join(landing, 'public'),
-      ADMIN_EMAIL: credentials.email,
-      ADMIN_PASSWORD: credentials.password,
+      ADMIN_EMAIL: admin.email,
+      ADMIN_PASSWORD: admin.password,
       ADMIN_NAME: 'Pruebas',
       JWT_SECRET: jwtSecret,
       COOKIE_NAME: 'cms_test_token',
@@ -118,12 +122,12 @@ export async function createSandbox({ buildSite = false } = {}) {
     // Reserve a free port and release it immediately before spawning.
     const probe = createServer();
     await new Promise<void>((done) => probe.listen(0, '127.0.0.1', done));
-    const port = (probe.address() as { port: number }).port;
+    const port = requestedPort ?? (probe.address() as { port: number }).port;
     await new Promise<void>((done) => probe.close(() => done()));
     env.PORT = String(port);
     const url = `http://127.0.0.1:${port}/admbb`;
     const child = spawn(bun, [join(repo, 'cms/src/index.ts')], {
-      cwd: root,
+      cwd: requestedPort ? join(repo, 'cms') : root,
       env,
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -152,7 +156,7 @@ export async function createSandbox({ buildSite = false } = {}) {
     const login = await fetch(`${url}/api/auth/login`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(credentials),
+      body: JSON.stringify(admin),
     });
     if (!login.ok) throw new Error(`Login fixture: ${await login.text()}`);
     const cookie = login.headers.get('set-cookie')!.split(';')[0];

@@ -83,6 +83,7 @@ test.describe('CMS → sitio compilado', () => {
   test('INT-04 un certificado inventado del CMS se consulta con su código', async ({ page }) => {
     const created = await json('/api/certificates/manual', 'POST', {
       name: 'Persona Ficticia Integración',
+      department: 'cochabamba',
       contest: 'Desafío ficticio integración',
       year: 2026,
       category: 'Kuntur',

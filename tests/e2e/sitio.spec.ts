@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { createSandbox } from '../helpers/sandbox';
-import { deriveCertificateSecrets } from '../../cms/src/certificates/crypto';
+import { deriveCertificateSecrets, encryptCertificate } from '../../cms/src/certificates/crypto';
 import jsQR from 'jsqr';
 import { PNG } from 'pngjs';
 
@@ -64,6 +65,7 @@ test.beforeAll(async () => {
   for (const distinction of ['participation', 'merit', '1']) {
     const response = await sandbox.request('/api/certificates/manual', 'POST', {
       name: `Persona ${distinction}`,
+      department: 'cochabamba',
       contest: 'Desafío de prueba',
       year: 2026,
       distinction,
@@ -75,6 +77,31 @@ test.beforeAll(async () => {
   }
   expect((await sandbox.request('/api/preview/sync', 'POST')).ok).toBe(true);
   await sandbox.build();
+  codes.legacy = 'LEGACY23';
+  const { fileId, secret } = await deriveCertificateSecrets(codes.legacy);
+  await writeFile(
+    join(sandbox.landing, 'dist/certificados', `${fileId}.json`),
+    JSON.stringify(
+      await encryptCertificate(secret, [
+        {
+          contest: 'Desafío antiguo',
+          year: 2025,
+          issuedAt: null,
+          participants: ['Persona antigua'],
+          category: '',
+          grade: null,
+          school: null,
+          place: null,
+          department: null,
+          score: 0,
+          correct: 0,
+          questions: 0,
+          rank: null,
+          rankOf: null,
+        },
+      ])
+    )
+  );
 });
 test.afterAll(async () => {
   await sandbox?.close();
@@ -170,6 +197,15 @@ test('Sitio código inválido avisa sin exponer personas', async ({ page }) => {
   await expect(page.locator('.certificate-sheet')).toHaveCount(0);
   await expect(page.getByText('Persona participation', { exact: true })).toHaveCount(0);
 });
+test('Sitio certificado antiguo sin departamento conserva el castor genérico', async ({ page }) => {
+  await page.goto(`${sandbox.siteUrl}/certificado/?codigo=${codes.legacy}`);
+  const sheet = page.locator('.certificate-sheet');
+  await expect(sheet).toContainText('Persona antigua');
+  await expect(sheet.locator('img[src="/images/castores/estandar.webp"]')).toBeVisible();
+  await expect(sheet).not.toContainText('null');
+  await expect(sheet).not.toContainText(' · ');
+});
+
 test('Sitio certificado se almacena cifrado sin nombre ni código', async ({ request }) => {
   const { fileId } = await deriveCertificateSecrets(codes.participation);
   const response = await request.get(`${sandbox.siteUrl}/certificados/${fileId}.json`);

@@ -208,6 +208,7 @@ test('CMS-08 certificado individual y enlace de verificación', async ({ page })
   await open(page, '/certificados');
   await page.getByRole('button', { name: 'Agregar persona' }).click();
   await page.getByLabel('Nombre completo').fill('Persona Inventada');
+  await page.getByLabel('Departamento', { exact: true }).selectOption('cochabamba');
   await page.getByLabel('Desafío', { exact: true }).fill('Desafío de prueba');
   await page.getByRole('button', { name: 'Agregar', exact: true }).click();
   await expect(
@@ -218,6 +219,86 @@ test('CMS-08 certificado individual y enlace de verificación', async ({ page })
     /certificado\?codigo=[A-Z2-9]{8}/
   );
 });
+test('CMS-CERT recorrido real de certificados manuales y sitio en puerto 4100', async ({
+  page,
+}) => {
+  test.setTimeout(240_000);
+  const admin = { email: 'admin@bebras.bo', password: 'admin123' };
+  const local = await createSandbox({ port: 4100, admin });
+  try {
+    await page.goto(`${local.url}/login.html`);
+    await page.getByLabel('Correo electrónico').fill(admin.email);
+    await page.getByLabel('Contraseña', { exact: true }).fill(admin.password);
+    await page.getByRole('button', { name: 'Ingresar', exact: true }).click();
+    await page.waitForURL((url) => !url.pathname.endsWith('/login.html'));
+    await page.goto(`${local.url}/certificados`);
+    await page.getByRole('button', { name: 'Agregar persona' }).click();
+    await page.getByLabel('Nombre completo').fill('Persona sin departamento');
+    await page.getByLabel('Desafío', { exact: true }).fill('Desafío de prueba');
+    await page.getByRole('button', { name: 'Agregar', exact: true }).click();
+    await expect(page.locator('#manual-department')).toHaveJSProperty(
+      'validationMessage',
+      'Elige el departamento.'
+    );
+    expect((await (await local.request('/api/certificates')).json()).total).toBe(0);
+    const cases = [
+      { name: 'Persona sin colegio', school: '', department: 'cochabamba', label: 'Cochabamba' },
+      {
+        name: 'Persona colegio libre',
+        school: '  Colegio   Ñandú Independiente  ',
+        department: 'la-paz',
+        label: 'La Paz',
+      },
+      { name: 'Persona del catálogo', school: null, department: 'cochabamba', label: 'Cochabamba' },
+    ];
+    const created: Array<{ code: string; name: string; school: string; label: string }> = [];
+    for (const item of cases) {
+      await page.getByLabel('Nombre completo').fill(item.name);
+      await page.getByLabel('Departamento', { exact: true }).selectOption(item.department);
+      let school = item.school?.replace(/\s+/g, ' ').trim() ?? '';
+      await page.getByLabel('Colegio (opcional)').fill(item.school ?? 'Bolivia');
+      if (item.school === null) {
+        const option = page
+          .getByRole('option')
+          .filter({ has: page.locator('div') })
+          .first();
+        await expect(option).toBeVisible();
+        school = (await option.locator('div').first().innerText()).trim();
+        await option.click();
+        await expect(page.locator('#manual-department')).toHaveValue('cochabamba');
+        expect(await page.locator('#manual-place').inputValue()).not.toBe('');
+      } else {
+        await page.getByLabel('Ciudad (opcional)').selectOption('');
+      }
+      const response = page.waitForResponse(
+        (res) => res.url().endsWith('/api/certificates/manual') && res.request().method() === 'POST'
+      );
+      await page.getByRole('button', { name: 'Agregar', exact: true }).click();
+      const result = await response;
+      expect(result.status()).toBe(201);
+      const { code } = await result.json();
+      await expect(
+        page.getByRole('heading', { name: `Certificado de ${item.name}`, exact: true })
+      ).toBeVisible();
+      created.push({ code, name: item.name, school, label: item.label });
+    }
+    await local.build();
+    for (const item of created) {
+      await page.goto(`${local.siteUrl}/certificado?codigo=${item.code}`);
+      const sheet = page.locator('.certificate-sheet');
+      await expect(sheet).toBeVisible();
+      await expect(sheet).toContainText(item.name);
+      await expect(sheet).toContainText(item.label);
+      if (item.school) await expect(sheet).toContainText(item.school);
+      await expect(sheet).not.toContainText('null');
+      await expect(sheet).not.toContainText('undefined');
+      await sheet.screenshot({ path: test.info().outputPath(`${item.code}.png`) });
+    }
+  } finally {
+    await local.close();
+  }
+});
+
 test('CMS-09 subir logos, reordenar, limitar tamaño y conservarlos', async ({ page }) => {
   expect((await sandbox.request('/api/content/certificate.json', 'PUT', { logos: [] })).ok).toBe(
     true
