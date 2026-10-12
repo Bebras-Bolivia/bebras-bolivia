@@ -54,6 +54,41 @@
               "color": "blue"
             }
           ]
+        },
+        {
+          "type": "itemsGrid",
+          "accent": "blue",
+          "tag": "Tarjetas",
+          "heading": "Recursos Bebras para practicar",
+          "intro": "Aquí encuentras tareas de Desafíos Bebras realizados en el pasado.",
+          "columns": 3,
+          "mediaType": "none",
+          "items": [
+            {
+              "title": "",
+              "description": "Tareas de práctica preparadas por Bebras UK",
+              "linkLabel": "Tareas Bebras Inglaterra",
+              "linkHref": "https://drive.google.com/file/d/1vH9XnP5sKskaIYtDb6oYx_K1v4MgjXaD/view?usp=drive_link",
+              "socialLinks": [],
+              "color": "red"
+            },
+            {
+              "title": "",
+              "description": "Tareas de práctica preparadas por Bebras Uruguay",
+              "linkLabel": "Tareas Bebras Uruguay",
+              "linkHref": "https://www.uprm.edu/bebras/wp-content/uploads/sites/39/2023/09/Tarjetas-Bebras_Desafios-2023_UY.pdf",
+              "socialLinks": [],
+              "color": "yellow"
+            },
+            {
+              "title": "",
+              "description": "Tareas de práctica desde Bebras Mexico",
+              "linkLabel": "Tareas Bebras Mexico",
+              "linkHref": "https://bebras.mx/generales",
+              "socialLinks": [],
+              "color": "blue"
+            }
+          ]
         }
       ]
     }
