@@ -14,7 +14,7 @@
         {
           "type": "linksList",
           "accent": "blue",
-          "tag": "",
+          "tag": "Desafíos para practicar",
           "heading": "Retos por categoría",
           "links": [
             {
@@ -58,7 +58,7 @@
         {
           "type": "itemsGrid",
           "accent": "blue",
-          "tag": "Tarjetas",
+          "tag": "Tareas Bebras para practicar",
           "heading": "Recursos Bebras para practicar",
           "intro": "Aquí encuentras tareas de Desafíos Bebras realizados en el pasado.",
           "columns": 3,
@@ -81,7 +81,7 @@
               "color": "yellow"
             },
             {
-              "title": "",
+              "title": "Tareas de práctica",
               "description": "Tareas de práctica desde Bebras Mexico",
               "linkLabel": "Tareas Bebras Mexico",
               "linkHref": "https://bebras.mx/generales",
