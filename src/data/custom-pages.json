@@ -20,37 +20,37 @@
             {
               "label": "Guacamayo",
               "href": "https://ville.utu.fi/?demo=start&dk=B6RfCCXmS5rp",
-              "description": "",
+              "description": "Desafío de ejemplo para estudiantes de 5 a 8 años.",
               "color": "red"
             },
             {
               "label": "Capibara",
               "href": "https://ville.utu.fi/?demo=start&dk=Acth6tRdFogC",
-              "description": "",
+              "description": "Desafío de ejemplo para estudiantes de 8 a 10 años.",
               "color": "yellow"
             },
             {
               "label": "Titi",
               "href": "https://ville.utu.fi/?demo=start&dk=m382q3B3d32G",
-              "description": "",
+              "description": "Desafío de ejemplo para estudiantes de 10 a 12 años.",
               "color": "green"
             },
             {
               "label": "Jucumari",
               "href": "https://ville.utu.fi/?demo=start&dk=qLbbQgw4zB9r",
-              "description": "",
+              "description": "Desafío de ejemplo para estudiantes de 12 a 14 años.",
               "color": "blue"
             },
             {
               "label": "Yaguarete",
               "href": "https://ville.utu.fi/?demo=start&dk=oTe9RamoZK9v",
-              "description": "",
+              "description": "Desafío de ejemplo para estudiantes de 14 a 16 años.",
               "color": "red"
             },
             {
               "label": "Kuntur",
               "href": "https://ville.utu.fi/?demo=start&dk=uKeKZQsEnLhM",
-              "description": "",
+              "description": "Desafío de ejemplo para estudiantes de 17 a 18 años.",
               "color": "yellow"
             }
           ]
@@ -62,10 +62,40 @@
           "heading": "Retos pasados",
           "links": [
             {
-              "label": "Tareas de práctica de Bebras Bolivia",
-              "href": "https://bebrasbolivia.org/practica",
-              "description": "Practica con las tareas de Desafíos Bebras anteriores, por categoría y sin necesidad de crear una cuenta.",
+              "label": "Guacamayo",
+              "href": "https://bebrasbolivia.org/practica/categoria?nombre=Guacamayo&from=/practica",
+              "description": "Para estudiantes de 5 a 8 años. 9 desafíos de práctica de ediciones anteriores.",
               "color": "red"
+            },
+            {
+              "label": "Capibara",
+              "href": "https://bebrasbolivia.org/practica/categoria?nombre=Capibara&from=/practica",
+              "description": "Para estudiantes de 8 a 10 años. 15 desafíos de práctica de ediciones anteriores.",
+              "color": "yellow"
+            },
+            {
+              "label": "Titi",
+              "href": "https://bebrasbolivia.org/practica/categoria?nombre=Titi&from=/practica",
+              "description": "Para estudiantes de 10 a 12 años. 18 desafíos de práctica de ediciones anteriores.",
+              "color": "green"
+            },
+            {
+              "label": "Jucumari",
+              "href": "https://bebrasbolivia.org/practica/categoria?nombre=Jucumari&from=/practica",
+              "description": "Para estudiantes de 12 a 14 años. 18 desafíos de práctica de ediciones anteriores.",
+              "color": "blue"
+            },
+            {
+              "label": "Yaguarete",
+              "href": "https://bebrasbolivia.org/practica/categoria?nombre=Yaguarete&from=/practica",
+              "description": "Para estudiantes de 14 a 16 años. 18 desafíos de práctica de ediciones anteriores.",
+              "color": "red"
+            },
+            {
+              "label": "Kuntur",
+              "href": "https://bebrasbolivia.org/practica/categoria?nombre=Kuntur&from=/practica",
+              "description": "Para estudiantes de 17 a 18 años. 18 desafíos de práctica de ediciones anteriores.",
+              "color": "yellow"
             }
           ]
         },
