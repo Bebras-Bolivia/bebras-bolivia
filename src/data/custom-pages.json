@@ -56,6 +56,20 @@
           ]
         },
         {
+          "type": "linksList",
+          "accent": "blue",
+          "tag": "Práctica de Bebras Bolivia",
+          "heading": "Retos pasados",
+          "links": [
+            {
+              "label": "Tareas de práctica de Bebras Bolivia",
+              "href": "https://bebrasbolivia.org/practica",
+              "description": "Practica con las tareas de Desafíos Bebras anteriores, por categoría y sin necesidad de crear una cuenta.",
+              "color": "red"
+            }
+          ]
+        },
+        {
           "type": "itemsGrid",
           "accent": "blue",
           "tag": "Tareas Bebras para practicar",
@@ -87,20 +101,6 @@
               "linkHref": "https://bebras.mx/generales",
               "socialLinks": [],
               "color": "blue"
-            }
-          ]
-        },
-        {
-          "type": "linksList",
-          "accent": "blue",
-          "tag": "Práctica de Bebras Bolivia",
-          "heading": "Retos pasados",
-          "links": [
-            {
-              "label": "Tareas de práctica de Bebras Bolivia",
-              "href": "https://bebras-contest.bebrasbolivia.workers.dev/practica",
-              "description": "",
-              "color": "red"
             }
           ]
         }
