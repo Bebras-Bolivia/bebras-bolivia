@@ -6,7 +6,7 @@
       "slug": "ejemplos",
       "active": true,
       "header": {
-        "tag": "Página",
+        "tag": "Práctica",
         "heading": "Ejemplos",
         "subtitle": "Aqui encuentras ejemplos de retos en un Desafío Bebras.  "
       },
@@ -21,19 +21,19 @@
               "label": "Guacamayo",
               "href": "https://ville.utu.fi/?demo=start&dk=B6RfCCXmS5rp",
               "description": "",
-              "color": "blue"
+              "color": "red"
             },
             {
               "label": "Capibara",
               "href": "https://ville.utu.fi/?demo=start&dk=Acth6tRdFogC",
               "description": "",
-              "color": "blue"
+              "color": "yellow"
             },
             {
               "label": "Titi",
               "href": "https://ville.utu.fi/?demo=start&dk=m382q3B3d32G",
               "description": "",
-              "color": "blue"
+              "color": "green"
             },
             {
               "label": "Jucumari",
@@ -45,13 +45,13 @@
               "label": "Yaguarete",
               "href": "https://ville.utu.fi/?demo=start&dk=oTe9RamoZK9v",
               "description": "",
-              "color": "blue"
+              "color": "red"
             },
             {
               "label": "Kuntur",
               "href": "https://ville.utu.fi/?demo=start&dk=uKeKZQsEnLhM",
               "description": "",
-              "color": "blue"
+              "color": "yellow"
             }
           ]
         },
