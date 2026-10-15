@@ -89,6 +89,20 @@
               "color": "blue"
             }
           ]
+        },
+        {
+          "type": "linksList",
+          "accent": "blue",
+          "tag": "Práctica de Bebras Bolivia",
+          "heading": "Retos pasados",
+          "links": [
+            {
+              "label": "Tareas de práctica de Bebras Bolivia",
+              "href": "https://bebras-contest.bebrasbolivia.workers.dev/practica",
+              "description": "",
+              "color": "red"
+            }
+          ]
         }
       ]
     }
